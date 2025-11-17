@@ -12,36 +12,46 @@ class Usuario extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'usuarios';
-    protected $primaryKey = 'idUsuario';
+    protected $primaryKey = 'id_usuario';
 
-    const CREATED_AT = 'fechaRegistro';
-    const UPDATED_AT = 'fechaActualizacion';
+    const CREATED_AT = 'fecha_registro';
+    const UPDATED_AT = 'fecha_actualizacion';
 
     /** Relación FK con empleados */
-    public function empleado()
+    public function persona()
     {
-        return $this->belongsTo(Empleado::class, 'idEmpleado', 'idEmpleado');
+        return $this->belongsTo(Persona::class, 'id_persona', 'id_persona');
     }
 
     /** Relación con atributo de auditoría */
-    public function editor(){
-        return $this->belongsTo(Usuario::class, 'modificadoPor', 'idUsuario');
+    public function creado(){
+        return $this->belongsTo(Usuario::class, 'creado_por', 'id_usuario');
     }
 
-    public function getAllUsuarios()
+    /** Relación con atributo de auditoría */
+    public function modificado(){
+        return $this->belongsTo(Usuario::class, 'modificado_por', 'id_usuario');
+    }
+
+    /** Relación con atributo de auditoría */
+    public function eliminado(){
+        return $this->belongsTo(Usuario::class, 'eliminado_por', 'id_usuario');
+    }
+
+    public function get_all_usuarios()
     {
-        return Usuario::with('empleado','editor')->get();
+        return Usuario::with('empleado','creado', 'modificado', 'eliminado')->get();
     }
     
-    public function getUsuario($idUsuario)
+    public function get_usuario($id_usuario)
     {
-        return Usuario::with('empleado','editor')->find($idUsuario);
+        return Usuario::with('empleado','creado', 'modificado', 'eliminado')->find($id_usuario);
     }
 
     /**Función utilizada para verificar y crear la sesión del Usuario.*/
-    public function login($nombreUsuario)
+    public function login($correo)
     {
-        return Usuario::where('nombreUsuario', $nombreUsuario)->first();
+        return Usuario::where('correo', $correo)->first();
     }
 
     /**Función para destruir y cerrar la sesión.*/

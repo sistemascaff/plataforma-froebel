@@ -1,11 +1,11 @@
 <?php
 
-function helper_tituloPagina(){
-    return "SISTEMA MAYORISTA";
+function helper_titulo_pagina(){
+    return "CAFF";
 }
 
-function helper_versionApp(){
-    return "1.1.0";
+function helper_version_app(){
+    return "0.1";
 }
 
 function helper_encrypt($string)

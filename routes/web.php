@@ -25,15 +25,16 @@ use App\Http\Controllers\VentaController;
 */
 
 // Ruta por defecto
-Route::get('/', function () {
-    return redirect()->route('dashboard');
-});
+//Route::get('/', function () {
+//    return redirect()->route('main.index');
+//});
 
-/*Estructura de Laravel => Route::get(URL web, método de controlador)->name(nombre para referenciar ruta)*/
+/*Estructura de Laravel => Route::get(URL web, método de controlador)->name('nombre.para.referenciar.ruta')*/
 
 /* Tabla con PK FK 'empleados'*/
 Route::controller(UsuarioController::class)->group(function () {
     /* Rutas para gestionar la sesión del usuario y el panel de administración */
+    Route::get('/', 'view_main_index')->name('main.index');
     Route::get('panel', 'view_dashboard')->name('dashboard');
     Route::get('iniciar-sesion', 'view_iniciar_sesion')->name('login');
     Route::get('cerrar-sesion', 'cerrar_sesion')->name('logout');

@@ -5,26 +5,31 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UsuarioValidation;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
-use App\Models\Empleado;
-use App\Models\Venta;
 
 class UsuarioController extends Controller
 {
+    public function view_main_index()
+    {
+        return view('index', [
+            'head_title' => 'Index'
+        ]);
+    }
+
     public function view_iniciar_sesion()
     {
-        return view('login');
+        return view('usuarios.login');
     }
 
     public function view_dashboard()
     {
         /*Si no tiene acceso, se redirige a la ventana de inicio de sesión.*/
-        if (!session('tieneAcceso')) {
+        if (!session('tiene_acceso')) {
             return redirect()->route('login');
         }
         /*Al ingresar a la vista del panel de administración, se verifica si el usuario aún tiene acceso al sistema.*/
         $usuario = (new Usuario())->getUsuario(session('idUsuario'));
         if ($usuario->estado == '0') {
-            session(['tieneAcceso' => false]);
+            session(['tiene_acceso' => false]);
         }
 
         $estadisticas = (new Venta())->dashboard_getEstadisticasVentas();
@@ -41,7 +46,7 @@ class UsuarioController extends Controller
 
     public function view_index()
     {
-        if (!session('tieneAcceso')) {
+        if (!session('tiene_acceso')) {
             return redirect()->route('login');
         }
 
@@ -55,7 +60,7 @@ class UsuarioController extends Controller
 
     public function listarUsuarios()
     {
-        if (!session('tieneAcceso')) {
+        if (!session('tiene_acceso')) {
             return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
         }
 
@@ -67,7 +72,7 @@ class UsuarioController extends Controller
 
     public function mostrarUsuario(Request $request)
     {
-        if (!session('tieneAcceso')) {
+        if (!session('tiene_acceso')) {
             return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
         }
 
@@ -79,7 +84,7 @@ class UsuarioController extends Controller
 
     public function create(UsuarioValidation $request)
     {
-        if (!session('tieneAcceso')) {
+        if (!session('tiene_acceso')) {
             return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
         }
 
@@ -91,7 +96,7 @@ class UsuarioController extends Controller
 
         $usuario = new Usuario();
         $usuario->idEmpleado = $request->idEmpleado;
-        $usuario->nombreUsuario = strtoupper($request->nombreUsuario);
+        $usuario->correo = strtoupper($request->correo);
         $usuario->contrasenha = helper_encrypt($request->contrasenha);
         $usuario->temaPreferido = $request->temaPreferido;
         $usuario->save();
@@ -110,12 +115,12 @@ class UsuarioController extends Controller
 
     public function update(UsuarioValidation $request, $idUsuario)
     {
-        if (!session('tieneAcceso')) {
+        if (!session('tiene_acceso')) {
             return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
         }
 
         $usuario = (new Usuario())->getUsuario($idUsuario);
-        $usuario->nombreUsuario = strtoupper($request->nombreUsuario);
+        $usuario->correo = strtoupper($request->correo);
         if ($request->contrasenha) {
             $usuario->contrasenha = helper_encrypt($request->contrasenha);
         }
@@ -132,7 +137,7 @@ class UsuarioController extends Controller
 
     public function deleteOrRestore(Request $request)
     {
-        if (!session('tieneAcceso')) {
+        if (!session('tiene_acceso')) {
             return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
         }
 
@@ -155,38 +160,35 @@ class UsuarioController extends Controller
     public function verificar(Request $request)
     {
         $usuario = (new Usuario())->login(
-            trim(strtoupper($request->nombreUsuario))
+            trim(strtoupper($request->correo))
         );
 
         if (!$usuario) {
             return redirect()->route('login')->with([
                 'mensaje' => 'EL USUARIO NO EXISTE.',
-                'loginNombreUsuario' => $request->nombreUsuario,
-                'loginContrasenha' => $request->contrasenha,
+                'login_correo' => $request->correo,
+                'login_contrasenha' => $request->contrasenha,
             ]);
         }
-        if ($usuario->estado == '0') {
+        if ($usuario->tiene_acceso == '0') {
             return redirect()->route('login')->with([
                 'mensaje' => 'EL USUARIO NO TIENE ACCESO AL SISTEMA.',
-                'loginNombreUsuario' => $request->nombreUsuario,
-                'loginContrasenha' => $request->contrasenha,
+                'login_correo' => $request->correo,
+                'login_contrasenha' => $request->contrasenha,
             ]);
         }
         if ($request->contrasenha != helper_decrypt($usuario->contrasenha)) {
             return redirect()->route('login')->with([
                 'mensaje' => 'LA CONTRASEÑA ES INCORRECTA.',
-                'loginNombreUsuario' => $request->nombreUsuario,
-                'loginContrasenha' => $request->contrasenha,
+                'login_correo' => $request->correo,
+                'login_contrasenha' => $request->contrasenha,
             ]);
         }
         //Si el usuario y la contraseña son correctos, se crea la sesión y se redirige al panel de administración.
         session([
-            'tieneAcceso' => true,
-            'idUsuario' => $usuario->idUsuario,
-            'idEmpleado' => $usuario->idEmpleado,
-            'nombreUsuario' => $usuario->nombreUsuario,
-            'temaPreferido' => $usuario->temaPreferido,
-            'nombreEmpleado' => $usuario->empleado->nombreEmpleado,
+            'tiene_acceso' => true,
+            'id_usuario' => $usuario->id_usuario,
+            'correo' => $usuario->correo,
         ]);
         return redirect()->route('dashboard');
     }
@@ -194,6 +196,6 @@ class UsuarioController extends Controller
     public function cerrar_sesion()
     {
         (new Usuario())->logout();
-        return redirect()->route('login');
+        return redirect()->route('main.index');
     }
 }
