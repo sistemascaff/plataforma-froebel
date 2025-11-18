@@ -1,8 +1,9 @@
 <header
     class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom mx-3">
     <div class="col-md-3 mb-2 mb-md-0">
-        <a href="{{ route('main.index') }}" class="nav-link">
-            <i class="fa-solid fa-duotone fa-school fa-2xl"></i> <b>Federico Froebel</b>
+        <a href="{{ route('main.index') }}">
+            <img class="img-fluid mx-auto d-block bg-light rounded" alt="Logo"
+                src="{{ URL::to('/') }}/public/img/orgullo_froebeliano.png" style="width: 150px;">
         </a>
     </div>
 

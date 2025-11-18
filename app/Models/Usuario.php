@@ -17,7 +17,7 @@ class Usuario extends Authenticatable
     const CREATED_AT = 'fecha_registro';
     const UPDATED_AT = 'fecha_actualizacion';
 
-    /** Relación FK con empleados */
+    /** Relación FK con personas */
     public function persona()
     {
         return $this->belongsTo(Persona::class, 'id_persona', 'id_persona');
@@ -40,18 +40,18 @@ class Usuario extends Authenticatable
 
     public function get_all_usuarios()
     {
-        return Usuario::with('empleado','creado', 'modificado', 'eliminado')->get();
+        return Usuario::with('persona','creado', 'modificado', 'eliminado')->get();
     }
     
     public function get_usuario($id_usuario)
     {
-        return Usuario::with('empleado','creado', 'modificado', 'eliminado')->find($id_usuario);
+        return Usuario::with('persona','creado', 'modificado', 'eliminado')->find($id_usuario);
     }
 
     /**Función utilizada para verificar y crear la sesión del Usuario.*/
     public function login($correo)
     {
-        return Usuario::where('correo', $correo)->first();
+        return Usuario::with('persona','creado', 'modificado', 'eliminado')->where('correo', $correo)->first();
     }
 
     /**Función para destruir y cerrar la sesión.*/

@@ -32,3 +32,17 @@ function helper_decrypt($string)
     }
     return $result;
 }
+
+function helper_tipo_perfil_a_font_awesome_icono($tipo_perfil)
+{
+    $font_awesome_icon = match($tipo_perfil) {
+        'ADMIN' => 'fa-user-shield',
+        'BIBLIOTECA' => 'fa-book-open',
+        'DOCENTE' => 'fa-chalkboard-teacher',
+        'TUTOR' => 'fa-people-roof', //nota: aquí se refiere tanto a socio o padre de familia o tutor*
+        'ESTUDIANTE' => 'fa-user-graduate',
+        default => 'fa-circle-question'
+    };
+
+    return $font_awesome_icon;
+}

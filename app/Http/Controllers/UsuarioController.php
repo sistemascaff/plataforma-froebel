@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UsuarioValidation;
 use App\Models\Usuario;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class UsuarioController extends Controller
@@ -24,23 +25,20 @@ class UsuarioController extends Controller
     {
         /*Si no tiene acceso, se redirige a la ventana de inicio de sesión.*/
         if (!session('tiene_acceso')) {
-            return redirect()->route('login');
+            return redirect()->route('login')->with([
+                'mensaje' => '¡Para acceder al panel necesitas iniciar sesión!',
+                'login_correo' => '',
+                'login_contrasenha' => '',
+            ]);
         }
         /*Al ingresar a la vista del panel de administración, se verifica si el usuario aún tiene acceso al sistema.*/
-        $usuario = (new Usuario())->getUsuario(session('idUsuario'));
-        if ($usuario->estado == '0') {
+        $usuario = (new Usuario())->get_usuario(session('id_usuario'));
+        if ($usuario->tiene_acceso == '0') {
             session(['tiene_acceso' => false]);
         }
 
-        $estadisticas = (new Venta())->dashboard_getEstadisticasVentas();
-        $saldos_pendientes = (new Venta())->dashboard_getClientesConSaldo();
-        $saldos_pendientes_detalles = (new Venta())->dashboard_getVentasConSaldo();
-
-        return view('panel.admin', [
-            'headTitle' => 'PANEL DE ADMINISTRACIÓN',
-            'estadisticas' => $estadisticas,
-            'saldos_pendientes' => $saldos_pendientes,
-            'saldos_pendientes_detalles' => $saldos_pendientes_detalles,
+        return view('panel.admin_super.dashboard', [
+            'head_title' => 'PANEL DE ' . session('tipo_perfil'),
         ]);
     }
 
@@ -76,7 +74,7 @@ class UsuarioController extends Controller
             return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
         }
 
-        $usuario = (new Usuario())->getUsuario($request->usuario);
+        $usuario = (new Usuario())->get_usuario($request->usuario);
         return response()->json([
             'data' => $usuario
         ]);
@@ -119,7 +117,7 @@ class UsuarioController extends Controller
             return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
         }
 
-        $usuario = (new Usuario())->getUsuario($idUsuario);
+        $usuario = (new Usuario())->get_usuario($idUsuario);
         $usuario->correo = strtoupper($request->correo);
         if ($request->contrasenha) {
             $usuario->contrasenha = helper_encrypt($request->contrasenha);
@@ -145,7 +143,7 @@ class UsuarioController extends Controller
             'idUsuario' => ['required', 'numeric', 'integer']
         ]);
 
-        $usuario = (new Usuario())->getUsuario($request->idUsuario);
+        $usuario = (new Usuario())->get_usuario($request->idUsuario);
         $usuario->estado = $usuario->estado == '1' ? '0' : '1';
         $usuario->modificadoPor = session('idUsuario');
         $usuario->save();
@@ -184,12 +182,27 @@ class UsuarioController extends Controller
                 'login_contrasenha' => $request->contrasenha,
             ]);
         }
+
         //Si el usuario y la contraseña son correctos, se crea la sesión y se redirige al panel de administración.
         session([
             'tiene_acceso' => true,
             'id_usuario' => $usuario->id_usuario,
             'correo' => $usuario->correo,
+            'tipo_perfil' => $usuario->persona?->tipo_perfil,
+            'nombres' => $usuario->persona?->nombres,
+            'apellido_paterno' => $usuario->persona?->apellido_paterno,
+            'apellido_materno' => $usuario->persona?->apellido_materno,
+            'dispositivo' => gethostbyaddr($request->ip()),
+            'ip' => $request->ip(),
         ]);
+
+        //Actualizar datos de la última conexión
+        $usuario->timestamps = false;
+        $usuario->ultima_conexion = Carbon::now();
+        $usuario->ultimo_dispositivo = gethostbyaddr($request->ip());
+        $usuario->ultima_ip = $request->ip();
+        $usuario->save();
+
         return redirect()->route('dashboard');
     }
 

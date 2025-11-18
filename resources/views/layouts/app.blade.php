@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="{{ session('temaPreferido') ? session('temaPreferido') : 'dark' }}">
+<html lang="en" data-bs-theme="dark">
 
 <head>
     <meta charset="UTF-8">
@@ -11,13 +11,13 @@
     <!-- Token para formularios -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    @include('layouts.dependencies_css')
+    @include('components.dependencies_css')
 
 </head>
 
 <body class="d-flex flex-column min-vh-100">
 
-    @include('layouts.header')
+    @include('components.app.header')
 
     <main class="flex-grow-1">
         <div class="container">
@@ -25,11 +25,11 @@
         </div>
     </main>
     
-    @include('layouts.modal_sign_out')
+    @include('components.app.modal_sign_out')
 
-    @include('layouts.footer')
+    @include('components.app.footer')
 
-    @include('layouts.dependencies_js')
+    @include('components.dependencies_js')
 
     @yield('scripts')
 </body>

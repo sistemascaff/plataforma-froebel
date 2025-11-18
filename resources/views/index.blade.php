@@ -12,18 +12,18 @@
 
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         @else
-            Bienvenido, <b>{{ session('correo') }}</b>.
+            Bienvenido, <i
+                class="fa-solid fa-duotone {{ helper_tipo_perfil_a_font_awesome_icono(session('tipo_perfil')) }}"></i>
+            <b>[{{ session('tipo_perfil') }}]
+                {{ trim(session('nombres') . ' ' . session('apellido_paterno') . ' ' . session('apellido_materno')) }}</b>.
             </br>
 
-            ¿Necesitas dirigirte a tu panel? <a href="{{ route('dashboard') }}" class="alert-link">Haz clic aquí.</a>
+            Te encuentras en el index público, ¿necesitas dirigirte a tu panel? <a href="{{ route('dashboard') }}"
+                class="alert-link">Haz clic aquí.</a>
         @endif
     </div>
 
     <div class="card mb-3">
-        <div class="card-header">
-            <span class="h2 text-info fw-bold align-middle"><i class="fa-solid fa-duotone fa-bars"></i> MENÚ</span>
-        </div>
-
         <div class="card-body">
             <div class="row">
 
