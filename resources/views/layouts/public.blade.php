@@ -10,7 +10,7 @@
 
     <!-- Icono -->
     <link rel="icon" type="image/x-icon" href="{{ URL::to('/') }}/public/favicon.ico">
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @include('components.dependencies_css')
 </head>
 

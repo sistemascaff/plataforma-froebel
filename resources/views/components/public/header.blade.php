@@ -8,14 +8,17 @@
     </div>
 
     <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0 fw-bold">
-        <li><a href="{{ route('main.index') }}" class="nav-link px-2 link-secondary">Inicio</a></li>
+        <li><a href="{{ route('main.index') }}" class="nav-link px-2 {{ request()->is('/') ? 'link-secondary' : '' }}">Inicio</a></li>
         @if (session('tiene_acceso'))
             <li><a href="{{ route('dashboard') }}" class="nav-link px-2 text-info">Panel</a></li>
         @endif
-        <li><a href="#" class="nav-link px-2">Biblioteca</a></li>
+        <li><a href="{{ route('libros.public.index') }}" class="nav-link px-2 {{ request()->is('biblioteca') ? 'link-secondary' : '' }}">Biblioteca</a></li>
     </ul>
 
     <div class="col-md-3 text-end">
+        <button class="btn btn-light me-2" id="toggle_theme">
+            <i class="fa-chisel fa-regular fa-sun"></i>
+        </button>
         @if (session('tiene_acceso'))
             <a href="{{ route('dashboard') }}" type="button" class="btn btn-primary me-2">
                 <i class="fa-solid fa-duotone fa-dashboard"></i>

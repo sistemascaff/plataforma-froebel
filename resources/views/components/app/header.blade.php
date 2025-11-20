@@ -14,6 +14,12 @@
                             Panel</a>
                     </li>
 
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->is('libros') ? 'active' : '' }}" aria-current="page"
+                            href="{{ route('libros.index') }}"><i class="fa-solid fa-duotone fa-book-open"></i>
+                            Libros</a>
+                    </li>
+
                     {{-- 
                     <li class="nav-item">
                         <a class="nav-link {{ request()->is('ventas/crear') ? 'active' : '' }}" aria-current="page"
@@ -41,10 +47,16 @@
                     --}}
                 </ul>
             </ul>
-            <div class="dropdown text-end"> <a href="#"
-                    class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
-                    aria-expanded="false"> <img src="{{ URL::to('/') }}/public/img/user.jpeg" alt="mdo"
-                        width="32" height="32" class="rounded-circle"> </a>
+
+            <button class="btn btn-light me-2" id="toggle_theme">
+                <i class="fa-chisel fa-regular fa-sun"></i>
+            </button>
+
+            <div class="dropdown text-end">
+
+                <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
+                    data-bs-toggle="dropdown" aria-expanded="false"> <img src="{{ URL::to('/') }}/public/img/user.jpeg"
+                        alt="mdo" width="32" height="32" class="rounded-circle"> </a>
                 <ul class="dropdown-menu text-small" style="">
                     <li><a class="dropdown-item" href="#"><i
                                 class="fa-solid fa-duotone {{ helper_tipo_perfil_a_font_awesome_icono(session('tipo_perfil')) }}"></i>
@@ -52,11 +64,11 @@
                     <li>
                         <hr class="dropdown-divider">
                     </li>
-                    <li><a class="dropdown-item"
-                            href="{{ route('main.index') }}"><i class="fa-solid fa-duotone fa-house"></i>
+                    <li><a class="dropdown-item" href="{{ route('main.index') }}"><i
+                                class="fa-solid fa-duotone fa-house"></i>
                             Index</a></li>
                     <li>
-                    {{-- <li><a class="dropdown-item {{ request()->is('parametros') ? 'active' : '' }}"
+                        {{-- <li><a class="dropdown-item {{ request()->is('parametros') ? 'active' : '' }}"
                             href="{{ route('parametros.index') }}"><i class="fa-solid fa-duotone fa-sliders"></i>
                             Parámetros</a></li>
                     <li> --}}

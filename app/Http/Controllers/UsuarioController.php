@@ -48,11 +48,8 @@ class UsuarioController extends Controller
             return redirect()->route('login');
         }
 
-        $empleados = (new Empleado())->getAllEmpleados();
-
         return view('usuarios.index', [
             'headTitle' => 'GESTIÓN DE USUARIOS',
-            'empleados' => $empleados,
         ]);
     }
 
@@ -82,76 +79,17 @@ class UsuarioController extends Controller
 
     public function create(UsuarioValidation $request)
     {
-        if (!session('tiene_acceso')) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
-        $request->validate([
-            'idEmpleado' => ['unique:usuarios'],
-            'contrasenha' => ['required', 'string', 'min:8', 'max:100'],
-            'recontrasenha' => ['required', 'string', 'min:8', 'max:100', 'same:contrasenha'],
-        ]);
-
-        $usuario = new Usuario();
-        $usuario->idEmpleado = $request->idEmpleado;
-        $usuario->correo = strtoupper($request->correo);
-        $usuario->contrasenha = helper_encrypt($request->contrasenha);
-        $usuario->temaPreferido = $request->temaPreferido;
-        $usuario->save();
-
-        $empleado = (new Empleado())->getEmpleado($request->idEmpleado);
-        $empleado->estado = 2;
-        $empleado->modificadoPor = session('idUsuario');
-        $empleado->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Usuario registrado correctamente',
-            'usuario' => $usuario
-        ]);
+        return;
     }
 
     public function update(UsuarioValidation $request, $idUsuario)
     {
-        if (!session('tiene_acceso')) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
-        $usuario = (new Usuario())->get_usuario($idUsuario);
-        $usuario->correo = strtoupper($request->correo);
-        if ($request->contrasenha) {
-            $usuario->contrasenha = helper_encrypt($request->contrasenha);
-        }
-        $usuario->temaPreferido = $request->temaPreferido;
-        $usuario->modificadoPor = session('idUsuario');
-        $usuario->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Usuario actualizado correctamente',
-            'usuario' => $usuario
-        ]);
+        return;
     }
 
     public function deleteOrRestore(Request $request)
     {
-        if (!session('tiene_acceso')) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
-        $request->validate([
-            'idUsuario' => ['required', 'numeric', 'integer']
-        ]);
-
-        $usuario = (new Usuario())->get_usuario($request->idUsuario);
-        $usuario->estado = $usuario->estado == '1' ? '0' : '1';
-        $usuario->modificadoPor = session('idUsuario');
-        $usuario->save();
-        return response()->json([
-            'success' => true,
-            'message' => $usuario->estado == '1' ? 'El usuario fue habilitado con éxito' : 'El usuario fue deshabilitado con éxito',
-            'usuario' => $usuario
-        ]);
+        return;
     }
 
 
@@ -188,6 +126,7 @@ class UsuarioController extends Controller
             'tiene_acceso' => true,
             'id_usuario' => $usuario->id_usuario,
             'correo' => $usuario->correo,
+            'id_colegio' => $usuario->persona?->id_colegio,
             'tipo_perfil' => $usuario->persona?->tipo_perfil,
             'nombres' => $usuario->persona?->nombres,
             'apellido_paterno' => $usuario->persona?->apellido_paterno,

@@ -15,34 +15,60 @@ class Libro extends Model
     const CREATED_AT = 'fecha_registro';
     const UPDATED_AT = 'fecha_actualizacion';
 
-    /** Relación FK con personas */
+    /** Relación muchos a muchos con prestamos_libros */
+    public function prestamos_libros()
+    {
+        return $this->belongsToMany(
+            PrestamoLibro::class,           // Modelo relacionado
+            'detalles_prestamos_libros',    // Tabla pivote
+            'id_libro',                     // FK en la tabla pivote hacia ventas
+            'id_prestamo_libro'             // FK en la tabla pivote hacia productos
+        )->withPivot('fecha_retorno');      // Campos extras de la tabla pivote
+    }
+
+    /** Relación FK con colegios */
     public function colegio()
     {
         return $this->belongsTo(Colegio::class, 'id_colegio', 'id_colegio');
     }
 
+    /** Relación FK con personas */
+    public function prestado()
+    {
+        return $this->belongsTo(Persona::class, 'prestado_a', 'id_persona');
+    }
+
     /** Relación con atributo de auditoría */
-    public function creado(){
+    public function creado()
+    {
         return $this->belongsTo(Usuario::class, 'creado_por', 'id_usuario');
     }
 
     /** Relación con atributo de auditoría */
-    public function modificado(){
+    public function modificado()
+    {
         return $this->belongsTo(Usuario::class, 'modificado_por', 'id_usuario');
     }
 
     /** Relación con atributo de auditoría */
-    public function eliminado(){
+    public function eliminado()
+    {
         return $this->belongsTo(Usuario::class, 'eliminado_por', 'id_usuario');
     }
 
     public function get_all_libros()
     {
-        return Usuario::with('persona','creado', 'modificado', 'eliminado')->get();
+        return $this::with('prestamos_libros', 'colegio', 'prestado', 'creado', 'modificado', 'eliminado')->get();
     }
-    
+
     public function get_libro($id_libro)
     {
-        return Usuario::with('persona','creado', 'modificado', 'eliminado')->find($id_libro);
+        return $this::with('prestamos_libros', 'colegio', 'prestado', 'creado', 'modificado', 'eliminado')->find($id_libro);
+    }
+
+    public function get_all_libros_public()
+    {
+        return $this::select('id_libro', 'titulo', 'codigo', 'autor', 'categoria', 'editorial', 'presentacion', 'anio', 'estado')
+            ->get();
     }
 }
