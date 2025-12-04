@@ -85,7 +85,7 @@
         <div id="datatable_export_buttons_container"></div>
     </div>
 
-    <table class="table table-bordered table-striped rounded" id="dataTable">
+    <table class="table table-bordered table-striped" id="dataTable">
         <thead>
             <tr>
                 <th>#</th>

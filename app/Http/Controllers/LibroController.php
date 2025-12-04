@@ -12,11 +12,25 @@ class LibroController extends Controller
     public function view_index()
     {
         if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
-            return redirect()->route('login');
+            return redirect()->route('main.index');
         }
+
+        $codigo_iteracion = Libro::whereBetween('fecha_registro', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->count() + 1;
+        $libro_insert_codigo = date('y') . str_pad($codigo_iteracion, 3, '0', STR_PAD_LEFT);
+        $libro_titulos = Libro::select('titulo')->distinct()->orderBy('titulo')->get()->pluck('titulo')->toArray();
+        $libro_autores = Libro::select('autor')->distinct()->orderBy('autor')->get()->pluck('autor')->toArray();
+        $libro_categorias = Libro::select('categoria')->distinct()->orderBy('categoria')->get()->pluck('categoria')->toArray();
+        $libro_editoriales = Libro::select('editorial')->distinct()->orderBy('editorial')->get()->pluck('editorial')->toArray();
+        $libro_presentaciones = Libro::select('presentacion')->distinct()->orderBy('presentacion')->get()->pluck('presentacion')->toArray();
 
         return view('libros.index', [
             'head_title' => 'GESTIÓN DE LIBROS',
+            'libro_insert_codigo' => $libro_insert_codigo,
+            'libro_titulos' => $libro_titulos,
+            'libro_autores' => $libro_autores,
+            'libro_categorias' => $libro_categorias,
+            'libro_editoriales' => $libro_editoriales,
+            'libro_presentaciones' => $libro_presentaciones,
         ]);
     }
 
@@ -81,6 +95,8 @@ class LibroController extends Controller
         $libro->adquisicion = $request->adquisicion;
         $libro->fecha_ingreso_cooperativa = $request->fecha_ingreso_cooperativa;
         $libro->creado_por = session('id_usuario');
+        $libro->ip = session('ip');
+        $libro->dispositivo = session('dispositivo');
         $libro->save();
 
         return response()->json([
@@ -110,6 +126,8 @@ class LibroController extends Controller
         $libro->adquisicion = $request->adquisicion;
         $libro->fecha_ingreso_cooperativa = $request->fecha_ingreso_cooperativa;
         $libro->modificado_por = session('id_usuario');
+        $libro->ip = session('ip');
+        $libro->dispositivo = session('dispositivo');
         $libro->save();
 
         return response()->json([
@@ -134,6 +152,8 @@ class LibroController extends Controller
             $libro->estado = $libro->estado == '1' ? '0' : '1';
             $libro->fecha_eliminacion = $libro->estado == '0' ? Carbon::now() : null;
             $libro->eliminado_por = $libro->estado == '0' ? session('id_usuario') : null;
+            $libro->ip = session('ip');
+            $libro->dispositivo = session('dispositivo');
             $libro->save();
         } else {
             return response()->json([

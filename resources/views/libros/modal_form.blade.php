@@ -14,8 +14,14 @@
 
                     <div class="mb-3">
                         <label for="titulo" class="form-label">Título <span class="text-danger">*</span></label>
-                        <textarea class="form-control" id="titulo" name="titulo" rows="3"></textarea>
+                        <input type="text" class="form-control" id="titulo" name="titulo" list="libro_titulos" required>
                     </div>
+
+                    <datalist id="libro_titulos">
+                        @foreach ($libro_titulos as $titulo)
+                            <option value="{{ $titulo }}"></option>
+                        @endforeach
+                    </datalist>
 
                     <div class="mb-3">
                         <label for="codigo" class="form-label">Código <span class="text-danger">*</span></label>
@@ -24,24 +30,48 @@
 
                     <div class="mb-3">
                         <label for="autor" class="form-label">Autor <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="autor" name="autor" required>
+                        <input type="text" class="form-control" id="autor" name="autor" list="libro_autores" required>
                     </div>
+
+                    <datalist id="libro_autores">
+                        @foreach ($libro_autores as $autor)
+                            <option value="{{ $autor }}"></option>
+                        @endforeach
+                    </datalist>
 
                     <div class="mb-3">
                         <label for="categoria" class="form-label">Categoria <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="categoria" name="categoria" required>
+                        <input type="text" class="form-control" id="categoria" name="categoria" list="libro_categorias" required>
                     </div>
+
+                    <datalist id="libro_categorias">
+                        @foreach ($libro_categorias as $categoria)
+                            <option value="{{ $categoria }}"></option>
+                        @endforeach
+                    </datalist>
 
                     <div class="mb-3">
                         <label for="editorial" class="form-label">Editorial <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="editorial" name="editorial" required>
+                        <input type="text" class="form-control" id="editorial" name="editorial" list="libro_editoriales" required>
                     </div>
+
+                    <datalist id="libro_editoriales">
+                        @foreach ($libro_editoriales as $editorial)
+                            <option value="{{ $editorial }}"></option>
+                        @endforeach
+                    </datalist>
 
                     <div class="mb-3">
                         <label for="presentacion" class="form-label">Presentacion <span
                                 class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="presentacion" name="presentacion" required>
+                        <input type="text" class="form-control" id="presentacion" name="presentacion" list="libro_presentaciones" required>
                     </div>
+
+                    <datalist id="libro_presentaciones">
+                        @foreach ($libro_presentaciones as $presentacion)
+                            <option value="{{ $presentacion }}"></option>
+                        @endforeach
+                    </datalist>
 
                     <div class="mb-3">
                         <label for="anio" class="form-label">Año <span class="text-danger">*</span></label>

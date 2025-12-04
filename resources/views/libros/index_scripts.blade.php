@@ -1,5 +1,6 @@
 <script>
     $(document).ready(function() {
+        var libro_insert_codigo = '{{ $libro_insert_codigo }}';
         $("#dataTable").DataTable({
             processing: true,
             ajax: {
@@ -59,6 +60,9 @@
                 },
                 {
                     data: "descripcion",
+                    render: function(data, type, row) {
+                        return data || '-';
+                    }
                 },
                 {
                     data: "costo",
@@ -79,17 +83,35 @@
                 {
                     data: "fecha_ingreso_cooperativa",
                     render: function(data, type, row) {
-                        return new Date(data).toDateString();
+                        const fecha = new Date(data);
+                        const anio = fecha.getFullYear();
+                        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+                        const dia = String(fecha.getDate()).padStart(2, '0');
+                        return `${anio}-${mes}-${dia}`;
+                        //return `${dia}/${mes}/${anio}`;
                     }
                 },
                 {
                     data: null,
                     render: function(data, type, row) {
-                        prestado_a = row.prestado ? row.prestado.tipo_perfil + ' - ' + row
-                            .prestado.apellido_paterno + ' ' + row.prestado.apellido_materno +
-                            ' ' + row.prestado.nombres : '-';
-                        return prestado_a.trim();
+                        const cursoRaw = row.prestado?.estudiante?.curso?.curso || '';
+
+                        const abreviar = (window.Helpers && typeof window.Helpers
+                                .abreviarCurso === 'function') ?
+                            window.Helpers.abreviarCurso(cursoRaw) :
+                            cursoRaw;
+
+                        const curso = abreviar ? ` (${abreviar})` : '';
+
+                        const prestado_a = row.prestado ?
+                            `${row.prestado.tipo_perfil} ${curso} - ${row.prestado.apellido_paterno} ${row.prestado.apellido_materno} ${row.prestado.nombres}` :
+                            '-';
+
+                        return `<b class="text-info">${prestado_a.trim()}</b>`;
                     }
+                },
+                {
+                    data: "prestamos_libros_count",
                 },
                 {
                     data: "estado",
@@ -142,23 +164,45 @@
                     }
                 },
                 {
+                    data: "ip",
+                    render: function(data, type, row) {
+                        return data || '-';
+                    }
+                },
+                {
+                    data: "dispositivo",
+                    render: function(data, type, row) {
+                        return data || '-';
+                    }
+                },
+                {
                     data: null,
                     orderable: false,
                     searchable: false,
                     render: function(data, type, row) {
-                        return `
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-warning btn-sm btn-editar" 
-                                data-id="${row.id_libro}" data-toggle="tooltip" title="Editar">
-                            <i class="fa-duotone fa-solid fa-edit"></i>
-                        </button>
-                        <button type="button" class="btn btn-${row.estado == 1 ? 'danger' : 'success'} btn-sm btn-cambiar-estado" 
-                                data-id="${row.id_libro}" data-estado="${row.estado}" data-nombre="${row.codigo} - ${row.titulo}" 
-                                data-toggle="tooltip" title="${row.estado == 1 ? 'Deshabilitar' : 'Habilitar'}">
-                            <i class="fa-duotone fa-solid fa-toggle-${row.estado == 1 ? 'off' : 'on'}"></i>
-                        </button>
-                    </div>
-                `;
+                        if (row.estado != 2) {
+                            return `
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-warning btn-sm btn-editar" 
+                                        data-id="${row.id_libro}" data-toggle="tooltip" title="Editar">
+                                    <i class="fa-duotone fa-solid fa-edit"></i>
+                                </button>
+                                <button type="button" class="btn btn-${row.estado == 1 ? 'danger' : 'success'} btn-sm btn-cambiar-estado" 
+                                        data-id="${row.id_libro}" data-estado="${row.estado}" data-nombre="${row.codigo} - ${row.titulo}" 
+                                        data-toggle="tooltip" title="${row.estado == 1 ? 'Deshabilitar' : 'Habilitar'}">
+                                    <i class="fa-duotone fa-solid fa-toggle-${row.estado == 1 ? 'off' : 'on'}"></i>
+                                </button>
+                            </div>`;
+                        } else {
+                            return `
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-warning btn-sm btn-editar" 
+                                        data-id="${row.id_libro}" data-toggle="tooltip" title="Editar">
+                                    <i class="fa-duotone fa-solid fa-edit"></i>
+                                </button>
+                            </div>
+                        `;
+                        }
                     }
                 }
             ],
@@ -206,20 +250,20 @@
         $(document).on('click', '.btn-crear', function() {
             $('#formCreateOrEdit input[name="id_libro"]').val(0);
             $('#formCreateOrEdit input[name="titulo"]').val('');
-            $('#formCreateOrEdit input[name="codigo"]').val('');
+            $('#formCreateOrEdit input[name="codigo"]').val(libro_insert_codigo);
             $('#formCreateOrEdit input[name="autor"]').val('');
             $('#formCreateOrEdit input[name="categoria"]').val('');
             $('#formCreateOrEdit input[name="editorial"]').val('');
             $('#formCreateOrEdit input[name="presentacion"]').val('');
             $('#formCreateOrEdit input[name="anio"]').val('{{ date('Y') }}');
             $('#formCreateOrEdit input[name="costo"]').val('');
-            $('#formCreateOrEdit input[name="descripcion"]').val('');
+            $('#descripcion').val('');
             $('#formCreateOrEdit input[name="adquisicion"]').val(1);
             $('#formCreateOrEdit input[name="fecha_ingreso_cooperativa"]').val('{{ date('Y-m-d') }}');
-            $('#formCreateOrEdit input[name="observacion"]').val('');
+            $('#observacion').val('');
 
             const titleElement = document.getElementById('modal_form_title');
-            titleElement.innerHTML = '<i class="fa-solid fa-duotone fa-plus"></i> CREAR CLIENTE';
+            titleElement.innerHTML = '<i class="fa-solid fa-duotone fa-plus"></i> CREAR LIBRO';
             $('#modal_form').modal('show');
         });
 
@@ -230,7 +274,7 @@
 
             $.get("{{ route('libros.index') . '/' }}" + id, function(libro) {
                 $('#formCreateOrEdit input[name="id_libro"]').val(libro.data.id_libro);
-                $('#titulo').val(libro.data.titulo);
+                $('#formCreateOrEdit input[name="titulo"]').val(libro.data.titulo);
                 $('#formCreateOrEdit input[name="codigo"]').val(libro.data.codigo);
                 $('#formCreateOrEdit input[name="autor"]').val(libro.data.autor);
                 $('#formCreateOrEdit input[name="categoria"]').val(libro.data.categoria);
@@ -240,23 +284,30 @@
                 $('#formCreateOrEdit input[name="costo"]').val(libro.data.costo);
                 $('#descripcion').val(libro.data.descripcion);
                 $('#formCreateOrEdit input[name="adquisicion"]').val(libro.data.adquisicion);
-                $('#formCreateOrEdit input[name="fecha_ingreso_cooperativa"]').val(new Date(libro.data.fecha_ingreso_cooperativa).toISOString().split('T')[0]);
+                $('#formCreateOrEdit input[name="fecha_ingreso_cooperativa"]').val(new Date(
+                    libro.data.fecha_ingreso_cooperativa).toISOString().split('T')[0]);
                 $('#observacion').val(libro.data.observacion);
 
                 const titleElement = document.getElementById('modal_form_title');
                 titleElement.innerHTML =
-                    '<i class="fa-solid fa-duotone fa-edit"></i> EDITAR CLIENTE';
+                    '<i class="fa-solid fa-duotone fa-edit"></i> EDITAR LIBRO';
                 $('#modal_form').modal('show');
             });
         });
 
 
         $(document).on('click', '#btnSave', function() {
+            const btn = $(this);
+            // Deshabilitar el botón para evitar múltiples clics y cambiar el texto
+            btn.prop('disabled', true);
+            btn.html('<i class="fa-solid fa-duotone fa-spinner fa-spin"></i> Guardando...');
+
             const id_libro = $('#formCreateOrEdit input[name="id_libro"]').val();
             const url = id_libro == 0 ?
                 "{{ route('libros.create') }}" // POST -> crear
                 :
-                "{{ route('libros.index') . '/' }}" + id_libro; // PUT -> actualizar
+                "{{ route('libros.update', ':id') }}"
+                .replace(':id', id_libro); // PUT -> actualizar
 
             const type = id_libro == 0 ? 'POST' : 'PUT';
 
@@ -268,25 +319,53 @@
                 },
                 data: $('#formCreateOrEdit').serialize(),
                 success: function(response) {
-                    if (response.success) {
-                        Swal.fire('Éxito', response.message, 'success');
-                        $('#modal_form').modal('hide');
-                        $('#dataTable').DataTable().ajax.reload();
-                    } else {
-                        Swal.fire('Error', response.message, 'error');
+                    Swal.fire({
+                        theme: localStorage.getItem('theme') || 'dark',
+                        title: 'Éxito',
+                        text: response.message,
+                        icon: 'success'
+                    });
+                    $('#modal_form').modal('hide');
+                    $('#dataTable').DataTable().ajax.reload();
+                    if (type === 'POST') {
+                        // Incrementar el código para el próximo libro
+                        libro_insert_codigo++;
                     }
+                    btn.prop('disabled', false);
+                    btn.html('<i class="fa-solid fa-duotone fa-save"></i> Guardar');
                 },
                 error: function(xhr) {
-                    //console.error(xhr.responseText);
-                    //console.error(JSON.parse(xhr.responseText));
+                    let respuesta = {};
+                    try {
+                        respuesta = JSON.parse(xhr.responseText);
+                    } catch (e) {
+                        respuesta = {
+                            message: "Error desconocido"
+                        };
+                    }
 
-                    const erroresConcatenados = Object.values(JSON.parse(xhr.responseText)
-                            .errors)
-                        .flatMap(errores => errores)
-                        .join('<br>');
+                    let htmlError = "";
 
-                    Swal.fire('Error', 'Ocurrió un error al intentar la acción: <br>' +
-                        erroresConcatenados, 'error');
+                    if (respuesta.errors) {
+                        // Errores de validación (422)
+                        htmlError = Object.values(respuesta.errors)
+                            .flat()
+                            .join("<br>");
+                    } else if (respuesta.message) {
+                        // Errores manuales (400, 403, 500...)
+                        htmlError = respuesta.message;
+                    } else {
+                        htmlError = "Ocurrió un error inesperado.";
+                    }
+                    Swal.fire({
+                        theme: localStorage.getItem('theme') || 'dark',
+                        title: 'Error',
+                        html: 'Ocurrió un error al intentar la acción: <br>' +
+                            erroresConcatenados,
+                        icon: 'error'
+                    });
+                    btn.prop('disabled', false);
+                    btn.html('<i class="fa-solid fa-duotone fa-save"></i> Guardar');
                 }
             });
         });
@@ -299,6 +378,7 @@
             const accion = nuevo_estado == 1 ? 'habilitar' : 'deshabilitar';
 
             Swal.fire({
+                theme: localStorage.getItem('theme') || 'dark',
                 title: `¡ATENCIÓN!`,
                 html: `¿Estás seguro de <b>${accion}</b> el libro <span class="text-primary fw-bold">${nombre}</span>?`,
                 icon: 'question',
@@ -319,13 +399,45 @@
                             id_libro: id
                         },
                         success: function(response) {
-                            Swal.fire('Actualizado', response.message, 'success');
+                            Swal.fire({
+                                theme: localStorage.getItem('theme') ||
+                                    'dark',
+                                title: 'Actualizado',
+                                text: response.message,
+                                icon: 'success'
+                            });
                             $('#dataTable').DataTable().ajax.reload();
                         },
                         error: function(xhr) {
-                            console.error(xhr.responseText);
-                            Swal.fire('Error', `No se pudo ${accion} el/la libro`,
-                                'error');
+                            let respuesta = {};
+                            try {
+                                respuesta = JSON.parse(xhr.responseText);
+                            } catch (e) {
+                                respuesta = {
+                                    message: "Error desconocido"
+                                };
+                            }
+
+                            let htmlError = "";
+
+                            if (respuesta.errors) {
+                                // Errores de validación (422)
+                                htmlError = Object.values(respuesta.errors)
+                                    .flat()
+                                    .join("<br>");
+                            } else if (respuesta.message) {
+                                // Errores manuales (400, 403, 500...)
+                                htmlError = respuesta.message;
+                            } else {
+                                htmlError = "Ocurrió un error inesperado.";
+                            }
+                            Swal.fire({
+                                theme: localStorage.getItem('theme') ||
+                                    'dark',
+                                title: 'Error',
+                                text: `No se pudo ${accion} el/la libro`,
+                                icon: 'error'
+                            });
                         }
                     });
 
@@ -336,16 +448,16 @@
         function actualizar_estadisticas() {
             // Obtener todos los datos del DataTable
             const dataTable = $("#dataTable").DataTable();
-            const all_data = dataTable.rows().data();
+            const allData = dataTable.rows().data();
 
             // Calcular totales
-            let cantidad_libros_total = all_data.count();
+            let cantidad_libros_total = allData.count();
             let cantidad_libros_disponibles = 0;
             let cantidad_libros_prestados = 0;
             let cantidad_libros_eliminados = 0;
 
             // Iterar sobre los datos para contar según el estado
-            all_data.each(function(libro) {
+            allData.each(function(libro) {
                 if (libro.estado == 1) {
                     cantidad_libros_disponibles++;
                 } else if (libro.estado == 2) {

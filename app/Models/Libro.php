@@ -58,17 +58,22 @@ class Libro extends Model
 
     public function get_all_libros()
     {
-        return $this::with('prestamos_libros', 'colegio', 'prestado', 'creado', 'modificado', 'eliminado')->get();
+        return $this::with('prestamos_libros', /*'colegio',*/ 'prestado.estudiante.curso', 'creado', 'modificado', 'eliminado')
+            ->withCount('prestamos_libros')   // ← agrega la cantidad de préstamos
+            ->orderBy('categoria', 'ASC')
+            ->orderBy('codigo', 'ASC')
+            ->get();
     }
 
     public function get_libro($id_libro)
     {
-        return $this::with('prestamos_libros', 'colegio', 'prestado', 'creado', 'modificado', 'eliminado')->find($id_libro);
+        return $this::with('prestamos_libros', /*'colegio',*/ 'prestado.estudiante.curso', 'creado', 'modificado', 'eliminado')->find($id_libro);
     }
 
     public function get_all_libros_public()
     {
         return $this::select('id_libro', 'titulo', 'codigo', 'autor', 'categoria', 'editorial', 'presentacion', 'anio', 'estado')
+            ->orderBy('titulo', 'ASC')
             ->get();
     }
 }

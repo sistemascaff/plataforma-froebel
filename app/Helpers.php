@@ -1,10 +1,12 @@
 <?php
 
-function helper_titulo_pagina(){
+function helper_titulo_pagina()
+{
     return "CAFF";
 }
 
-function helper_version_app(){
+function helper_version_app()
+{
     return "0.1";
 }
 
@@ -35,7 +37,7 @@ function helper_decrypt($string)
 
 function helper_tipo_perfil_a_font_awesome_icono($tipo_perfil)
 {
-    $font_awesome_icon = match($tipo_perfil) {
+    $font_awesome_icon = match ($tipo_perfil) {
         'ADMIN' => 'fa-user-shield',
         'BIBLIOTECA' => 'fa-book-open',
         'DOCENTE' => 'fa-chalkboard-teacher',
@@ -45,4 +47,63 @@ function helper_tipo_perfil_a_font_awesome_icono($tipo_perfil)
     };
 
     return $font_awesome_icon;
+}
+
+function helper_abreviar_curso($cadena)
+{
+    if (!$cadena) {
+        return '';
+    }
+
+    $cadena = strtoupper(trim($cadena));
+    $partes = explode(' ', $cadena);
+
+    // Casos especiales
+    $especiales = [
+        'TALLER INICIAL ROT' => 'TIR',
+        'TALLER INICIAL WEISS' => 'TIW',
+        'PRE KINDER ROT' => 'PKR',
+        'PRE KINDER WEISS' => 'PKW',
+        'KINDER ROT' => 'KR',
+        'KINDER WEISS' => 'KW',
+    ];
+
+    if (isset($especiales[$cadena])) {
+        return $especiales[$cadena];
+    }
+
+    // Tablas para los casos regulares
+    $cursos = [
+        'PRIMERO' => '1',
+        'SEGUNDO' => '2',
+        'TERCERO' => '3',
+        'CUARTO' => '4',
+        'QUINTO' => '5',
+        'SEXTO' => '6',
+    ];
+
+    $niveles = [
+        'PRIMARIA' => 'P',
+        'SECUNDARIA' => 'S',
+    ];
+
+    $paralelos = [
+        'ROT' => 'R',
+        'WEISS' => 'W',
+    ];
+
+    // Búsqueda y armado del resultado
+    $curso = $cursos[$partes[0]] ?? '';
+    $nivel = $niveles[$partes[2] ?? ''] ?? '';
+    $paralelo = $paralelos[$partes[3] ?? $partes[2] ?? ''] ?? '';
+
+    return $curso . $nivel . $paralelo;
+}
+
+function helper_recortar_texto($texto, $longitudMaxima)
+{
+    if (strlen($texto) > $longitudMaxima) {
+        return substr($texto, 0, $longitudMaxima - 3) . '...';
+    }
+    return $texto;
 }

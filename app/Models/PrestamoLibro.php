@@ -52,11 +52,33 @@ class PrestamoLibro extends Model
 
     public function get_all_prestamos_libros()
     {
-        return Usuario::with('libros.prestado', 'persona', 'creado', 'modificado', 'eliminado')->get();
+        return $this::with([
+            'libros' => function ($q) {
+                $q->orderBy('codigo', 'ASC'); // ordenar los libros por código
+            },
+            'libros.prestado',
+            'persona',
+            'creado',
+            'modificado',
+            'eliminado'
+        ])
+            ->orderBy('id_prestamo_libro', 'DESC')
+            ->get();
     }
+
 
     public function get_prestamo_libro($id_libro)
     {
-        return Usuario::with('libros.prestado', 'persona', 'creado', 'modificado', 'eliminado')->find($id_libro);
+        return $this::with([
+            'libros' => function ($q) {
+                $q->orderBy('codigo', 'ASC');
+            },
+            'libros.prestado',
+            'persona',
+            'creado',
+            'modificado',
+            'eliminado'
+        ])
+            ->find($id_libro);
     }
 }

@@ -88,7 +88,7 @@
         <div id="datatable_export_buttons_container"></div>
     </div>
 
-    <table class="table table-bordered table-striped rounded" id="dataTable">
+    <table class="table table-bordered table-striped" id="dataTable">
         <thead>
             <tr>
                 <th>#</th>
@@ -105,6 +105,7 @@
                 <th>Observación</th>
                 <th>F. Ingreso Cooperativa</th>
                 <th>Prestado a</th>
+                <th>Cant. Préstamos</th>
                 <th>Estado</th>
                 <th>F. Registro</th>
                 <th>F. Actualización</th>
@@ -112,6 +113,8 @@
                 <th>Creado por</th>
                 <th>Modificado por</th>
                 <th>Eliminado por</th>
+                <th>Ip</th>
+                <th>Dispositivo</th>
                 <th>Acciones</th>
             </tr>
         </thead>

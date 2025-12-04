@@ -37,15 +37,25 @@ class UsuarioController extends Controller
             session(['tiene_acceso' => false]);
         }
 
-        return view('panel.admin_super.dashboard', [
-            'head_title' => 'PANEL DE ' . session('tipo_perfil'),
-        ]);
+        if (session('tipo_perfil') === 'ADMIN') {
+            return view('panel.admin_super.dashboard', [
+                'head_title' => 'PANEL DE ' . session('tipo_perfil'),
+            ]);
+        }
+        else if (session('tipo_perfil') === 'BIBLIOTECA') {
+            return view('panel.biblioteca.dashboard', [
+                'head_title' => 'PANEL DE ' . session('tipo_perfil'),
+            ]);
+        }
+        else {
+            return redirect()->route('main.index');
+        }
     }
 
     public function view_index()
     {
         if (!session('tiene_acceso')) {
-            return redirect()->route('login');
+            return redirect()->route('main.index');
         }
 
         return view('usuarios.index', [

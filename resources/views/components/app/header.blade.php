@@ -20,6 +20,12 @@
                             Libros</a>
                     </li>
 
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->is('prestamos_libros*') ? 'active' : '' }}" aria-current="page"
+                            href="{{ route('prestamos_libros.index') }}"><i class="fa-solid fa-duotone fa-books fa-rotate-270"></i>
+                            Préstamos de libros</a>
+                    </li>
+
                     {{-- 
                     <li class="nav-item">
                         <a class="nav-link {{ request()->is('ventas/crear') ? 'active' : '' }}" aria-current="page"
@@ -48,8 +54,8 @@
                 </ul>
             </ul>
 
-            <button class="btn btn-light me-2" id="toggle_theme">
-                <i class="fa-chisel fa-regular fa-sun"></i>
+            <button class="btn btn-light me-2" id="toggle_theme" data-toggle="tooltip" title="Cambiar tema">
+                <i class="fa-solid fa-sun text-warning"></i>
             </button>
 
             <div class="dropdown text-end">
