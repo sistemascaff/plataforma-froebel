@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class PrestamoLibro extends Model
 {
@@ -80,5 +81,76 @@ class PrestamoLibro extends Model
             'eliminado'
         ])
             ->find($id_libro);
+    }
+
+    public function get_prestamos_libros_pendientes()
+    {
+        $personas = $this::select(
+            'personas.id_persona',
+            'personas.tipo_perfil',
+            'personas.apellido_paterno',
+            'personas.apellido_materno',
+            'personas.nombres',
+            'prestamos_libros.curso',
+            'prestamos_libros.celular',
+            DB::raw('COUNT(detalles_prestamos_libros.id_libro) AS cantidad_adeudados')
+        )
+            ->join('personas', 'personas.id_persona', '=', 'prestamos_libros.id_persona')
+            ->join('detalles_prestamos_libros', 'detalles_prestamos_libros.id_prestamo_libro', '=', 'prestamos_libros.id_prestamo_libro')
+            ->join('libros', 'libros.id_libro', '=', 'detalles_prestamos_libros.id_libro')
+            ->whereNull('detalles_prestamos_libros.fecha_retorno')
+            ->where('prestamos_libros.estado', 1)
+            ->groupBy('personas.id_persona')
+            ->orderBy('cantidad_adeudados', 'DESC')
+            ->get();
+
+        // Añadir los libros pendientes con fechas y días de retraso
+        foreach ($personas as $p) {
+            $p->detalles = DB::table('detalles_prestamos_libros')
+                ->join('prestamos_libros', 'prestamos_libros.id_prestamo_libro', '=', 'detalles_prestamos_libros.id_prestamo_libro')
+                ->join('libros', 'libros.id_libro', '=', 'detalles_prestamos_libros.id_libro')
+                ->where('prestamos_libros.id_persona', $p->id_persona)
+                ->where('prestamos_libros.estado', 1)
+                ->whereNull('detalles_prestamos_libros.fecha_retorno')
+                ->select(
+                    'libros.codigo',
+                    'libros.titulo',
+                    'prestamos_libros.fecha_registro as fecha_prestamo',
+                    'prestamos_libros.fecha_devolucion as fecha_devolucion_teorica',
+                    DB::raw('DATEDIFF(NOW(), prestamos_libros.fecha_devolucion) AS dias_retraso')
+                )
+                ->orderBy('prestamos_libros.fecha_registro', 'ASC')
+                ->get();
+        }
+
+        return $personas;
+    }
+
+    public function get_prestamos_libros_totales_y_pendientes()
+    {
+        return $this::select(
+            'personas.id_persona',
+            'personas.tipo_perfil',
+            'personas.apellido_paterno',
+            'personas.apellido_materno',
+            'personas.nombres',
+            'prestamos_libros.curso',
+            'prestamos_libros.celular',
+            DB::raw('COUNT(detalles_prestamos_libros.id_libro) AS total_libros'),
+            DB::raw('SUM(
+                CASE 
+                    WHEN detalles_prestamos_libros.fecha_retorno IS NULL 
+                    THEN 1 ELSE 0 
+                END
+            ) AS libros_debe')
+        )
+            ->join('personas', 'personas.id_persona', '=', 'prestamos_libros.id_persona')
+            ->join('detalles_prestamos_libros', 'detalles_prestamos_libros.id_prestamo_libro', '=', 'prestamos_libros.id_prestamo_libro')
+            // Solo personas y préstamos activos
+            ->where('personas.estado', 1)
+            ->where('prestamos_libros.estado', 1)
+            ->groupBy('personas.id_persona')
+            ->orderBy('total_libros', 'DESC')
+            ->get();
     }
 }

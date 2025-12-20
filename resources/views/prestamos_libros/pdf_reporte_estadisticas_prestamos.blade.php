@@ -114,6 +114,15 @@
             <li>
                 <a class="text-dark" href="#prestamos_por_persona"><u>6. PRÉSTAMOS POR PERSONA</u></a>
             </li>
+            <li>
+                <a class="text-dark" href="#pendientes_hasta_hoy"><u>7. LIBROS PENDIENTES HASTA HOY
+                        ({{ date('d/m/Y') }})</u></a>
+            </li>
+            <li>
+                <a class="text-dark" href="#relacion_prestamos_devoluciones"><u>8. RELACIÓN ENTRE LIBROS PRESTADOS Y
+                        DEVUELTOS HASTA HOY
+                        ({{ date('d/m/Y') }})</u></a>
+            </li>
         </ul>
     </div>
 
@@ -189,7 +198,7 @@
             <tfoot>
                 <tr class="font-weight-bold">
                     <td colspan="3" class="text-right">Total:</td>
-                    <td class="text-center">{{ $libros_mas_prestados->sum('total') }}</td>
+                    <td class="table-info text-center">{{ $libros_mas_prestados->sum('total') }}</td>
                 </tr>
             </tfoot>
         </table>
@@ -223,7 +232,7 @@
             <tfoot>
                 <tr class="font-weight-bold">
                     <td colspan="2" class="text-right">Total:</td>
-                    <td class="text-center">{{ $prestamos_por_categoria->sum('total') }}</td>
+                    <td class="table-info text-center">{{ $prestamos_por_categoria->sum('total') }}</td>
                 </tr>
             </tfoot>
         </table>
@@ -257,7 +266,7 @@
             <tfoot>
                 <tr class="font-weight-bold">
                     <td colspan="2" class="text-right">Total:</td>
-                    <td class="text-center">{{ $prestamos_por_curso->sum('total') }}</td>
+                    <td class="table-info text-center">{{ $prestamos_por_curso->sum('total') }}</td>
                 </tr>
             </tfoot>
         </table>
@@ -287,7 +296,7 @@
             <tfoot>
                 <tr class="font-weight-bold">
                     <td colspan="2" class="text-right">Total:</td>
-                    <td class="text-center">{{ $prestamos_por_tipo_perfil->sum('total') }}</td>
+                    <td class="table-info text-center">{{ $prestamos_por_tipo_perfil->sum('total') }}</td>
                 </tr>
             </tfoot>
         </table>
@@ -321,7 +330,139 @@
             <tfoot>
                 <tr class="font-weight-bold">
                     <td colspan="2" class="text-right">Total:</td>
-                    <td class="text-center">{{ $prestamos_por_persona->sum('total') }}</td>
+                    <td class="table-info text-center">{{ $prestamos_por_persona->sum('total') }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    @else
+        <p class="font-weight-bold">No se encontraron registros :(</p>
+    @endif
+
+    @if (count($prestamos_por_persona) > 0)
+        <div class="page-break"></div>
+    @endif
+
+    <p class="subtitulo text-info" id="pendientes_hasta_hoy"><u>7. LIBROS PENDIENTES HASTA HOY
+            ({{ date('d/m/Y') }})</u></p>
+    @if (count($prestamos_pendientes) > 0)
+        <table class="table-bordered table-striped tabla-relleno-corto col-12">
+            <thead class="bg-secondary text-light">
+                <tr class="text-center">
+                    <th>N°</th>
+                    <th>PERSONA</th>
+                    <th>CURSO</th>
+                    <th>CELULAR</th>
+                    <th>CANT.</th>
+                    <th>LIBROS ADEUDADOS</th>
+                    <th>F. PRESTAMOS</th>
+                    <th>DIAS DE RETRASO</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($prestamos_pendientes as $prestamo_pendiente)
+                    <tr class="align-top">
+                        <td class="text-center font-weight-bold">{{ $loop->index + 1 }}</td>
+                        <td>
+                            {{ trim(
+                                '(' .
+                                    $prestamo_pendiente->tipo_perfil .
+                                    ') ' .
+                                    $prestamo_pendiente->apellido_paterno .
+                                    ' ' .
+                                    $prestamo_pendiente->apellido_materno .
+                                    ' ' .
+                                    $prestamo_pendiente->nombres,
+                            ) }}
+                        </td>
+                        <td class="text-center">{{ $prestamo_pendiente->curso }}</td>
+                        <td class="text-center">{{ $prestamo_pendiente->celular }}</td>
+                        <td class="text-center">{{ $prestamo_pendiente->cantidad_adeudados }}</td>
+                        <td>
+                            @foreach ($prestamo_pendiente->detalles as $libro)
+                                <b class="text-primary">{{ $loop->index + 1 }}.</b> <b>{{ $libro->codigo }}</b> -
+                                {{ $libro->titulo }}<br>
+                            @endforeach
+                        </td>
+                        <td>
+                            @foreach ($prestamo_pendiente->detalles as $libro)
+                                <b>{{ $loop->index + 1 }}.</b>
+                                {{ date('d/m/Y H:i:s', strtotime($libro->fecha_prestamo)) }}<br>
+                            @endforeach
+                        </td>
+                        <td>
+                            @foreach ($prestamo_pendiente->detalles as $libro)
+                                <b>{{ $loop->index + 1 }}.</b>
+                                @if ($libro->dias_retraso < 0)
+                                    <b class="text-primary">{{ $libro->dias_retraso * -1 }} días restantes</b>
+                                @elseif ($libro->dias_retraso == 0)
+                                    <b class="text-warning">Vence hoy</b>
+                                @else
+                                    <b class="text-danger">{{ $libro->dias_retraso }}</b>
+                                @endif
+                                <br>
+                            @endforeach
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+            <tfoot>
+                <tr class="font-weight-bold">
+                    <td colspan="7" class="text-right">Total:</td>
+                    <td class="table-info text-center">{{ $prestamos_pendientes->sum('cantidad_adeudados') }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    @else
+        <p class="font-weight-bold">No se encontraron registros :(</p>
+    @endif
+
+    @if (count($prestamos_pendientes) > 0)
+        <div class="page-break"></div>
+    @endif
+
+    <p class="subtitulo text-info" id="relacion_prestamos_devoluciones"><u>8. RELACIÓN ENTRE LIBROS PRESTADOS Y
+            DEVUELTOS HASTA HOY
+            ({{ date('d/m/Y') }})</u></p>
+    @if (count($prestamos_totales) > 0)
+        <table class="table-bordered table-striped tabla-relleno-corto col-12">
+            <thead class="bg-secondary text-light">
+                <tr class="text-center">
+                    <th>N°</th>
+                    <th>PERSONA</th>
+                    <th>CURSO</th>
+                    <th>CELULAR</th>
+                    <th>TOTAL</th>
+                    <th>PENDIENTES</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($prestamos_totales as $prestamo_total)
+                    <tr class="align-top">
+                        <td class="text-center font-weight-bold">{{ $loop->index + 1 }}</td>
+                        <td>
+                            {{ trim(
+                                '(' .
+                                    $prestamo_total->tipo_perfil .
+                                    ') ' .
+                                    $prestamo_total->apellido_paterno .
+                                    ' ' .
+                                    $prestamo_total->apellido_materno .
+                                    ' ' .
+                                    $prestamo_total->nombres,
+                            ) }}
+                        </td>
+                        <td class="text-center">{{ $prestamo_total->curso }}</td>
+                        <td class="text-center">{{ $prestamo_total->celular }}</td>
+                        <td class="text-center">{{ $prestamo_total->total_libros }}</td>
+                        <td class="text-center">{{ $prestamo_total->libros_debe }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+            <tfoot>
+                <tr class="font-weight-bold">
+                    <td colspan="4" class="text-right">Totales:</td>
+                    <td class="table-info text-center">{{ $prestamos_totales->sum('total_libros') }}</td>
+                    <td class="table-info text-center">{{ $prestamos_totales->sum('libros_debe') }}</td>
                 </tr>
             </tfoot>
         </table>

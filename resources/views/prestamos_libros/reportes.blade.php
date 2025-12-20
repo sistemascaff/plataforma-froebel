@@ -76,6 +76,13 @@
                 <li>
                     <a href="#prestamos_por_persona">6. PRÉSTAMOS POR PERSONA</a>
                 </li>
+                <li>
+                    <a href="#pendientes_hasta_hoy">7. LIBROS PENDIENTES HASTA HOY ({{ date('d/m/Y') }})</a>
+                </li>
+                <li>
+                    <a href="#relacion_prestamos_devoluciones">8. RELACIÓN ENTRE LIBROS PRESTADOS Y DEVUELTOS HASTA HOY
+                        ({{ date('d/m/Y') }})</a>
+                </li>
             </ul>
         </div>
     </div>
@@ -299,6 +306,133 @@
     </table>
 
     <div class="mb-3"></div>
+
+    <h3 class="text-info fw-bold" id="pendientes_hasta_hoy">
+        <u>7. LIBROS PENDIENTES HASTA HOY ({{ date('d/m/Y') }}):</u>
+    </h3>
+
+    <table class="table table-bordered table-striped dataTable">
+        <thead>
+            <tr class="text-center">
+                <th>N°</th>
+                <th>PERSONA</th>
+                <th>CURSO</th>
+                <th>CELULAR</th>
+                <th>CANT.</th>
+                <th>LIBROS ADEUDADOS</th>
+                <th>F. PRESTAMOS</th>
+                <th>DIAS DE RETRASO</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($prestamos_pendientes as $prestamo_pendiente)
+                <tr>
+                    <td>{{ $loop->index + 1 }}</td>
+                    <td>
+                        {{ trim(
+                            '(' .
+                                $prestamo_pendiente->tipo_perfil .
+                                ') ' .
+                                $prestamo_pendiente->apellido_paterno .
+                                ' ' .
+                                $prestamo_pendiente->apellido_materno .
+                                ' ' .
+                                $prestamo_pendiente->nombres,
+                        ) }}
+                    </td>
+                    <td>{{ $prestamo_pendiente->curso }}</td>
+                    <td>{{ $prestamo_pendiente->celular }}</td>
+                    <td>{{ $prestamo_pendiente->cantidad_adeudados }}</td>
+                    <td>
+                        @foreach ($prestamo_pendiente->detalles as $libro)
+                            <b class="text-primary">{{ $loop->index + 1 }}.</b> <b>{{ $libro->codigo }}</b> -
+                            {{ $libro->titulo }}<br>
+                        @endforeach
+                    </td>
+                    <td>
+                        @foreach ($prestamo_pendiente->detalles as $libro)
+                            <b>{{ $loop->index + 1 }}.</b>
+                            {{ date('d/m/Y H:i:s', strtotime($libro->fecha_prestamo)) }}<br>
+                        @endforeach
+                    </td>
+                    <td>
+                        @foreach ($prestamo_pendiente->detalles as $libro)
+                            <b>{{ $loop->index + 1 }}.</b>
+                            @if ($libro->dias_retraso < 0)
+                                <b class="text-primary">{{ $libro->dias_retraso * -1 }} días restantes</b>
+                            @elseif ($libro->dias_retraso == 0)
+                                <b class="text-warning">Vence hoy</b>
+                            @else
+                                <b class="text-danger">{{ $libro->dias_retraso }} y contando...</b>
+                            @endif
+                            <br>
+                        @endforeach
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+        <tfoot>
+            <tr class="table-info fw-bold">
+                <td colspan="7" class="text-end">Total:</td>
+                <td>{{ $prestamos_pendientes->sum('cantidad_adeudados') }}</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="mb-3"></div>
+
+    <h3 class="text-info fw-bold" id="relacion_prestamos_devoluciones">
+        <u>8. RELACIÓN ENTRE LIBROS PRESTADOS Y DEVUELTOS HASTA HOY ({{ date('d/m/Y') }}):</u>
+    </h3>
+
+    <div class="border border-info rounded mb-3 p-2">
+        <canvas id="chart_relacion_prestamos_devoluciones"></canvas>
+    </div>
+
+    <table class="table table-bordered table-striped dataTable">
+        <thead>
+            <tr class="text-center">
+                <th>N°</th>
+                <th>PERSONA</th>
+                <th>CURSO</th>
+                <th>CELULAR</th>
+                <th>TOTAL</th>
+                <th>PENDIENTES</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($prestamos_totales as $prestamo_total)
+                <tr>
+                    <td>{{ $loop->index + 1 }}</td>
+                    <td>
+                        {{ trim(
+                            '(' .
+                                $prestamo_total->tipo_perfil .
+                                ') ' .
+                                $prestamo_total->apellido_paterno .
+                                ' ' .
+                                $prestamo_total->apellido_materno .
+                                ' ' .
+                                $prestamo_total->nombres,
+                        ) }}
+                    </td>
+                    <td>{{ $prestamo_total->curso }}</td>
+                    <td>{{ $prestamo_total->celular }}</td>
+                    <td>{{ $prestamo_total->total_libros }}</td>
+                    <td>{{ $prestamo_total->libros_debe }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+        <tfoot>
+            <tr class="table-info fw-bold">
+                <td colspan="4" class="text-end">Totales:</td>
+                <td>{{ $prestamos_totales->sum('total_libros') }}</td>
+                <td>{{ $prestamos_totales->sum('libros_debe') }}</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="mb-3"></div>
 @endsection
 
 @section('scripts')
@@ -517,6 +651,41 @@
                     borderColor: coloresPersona.borderColors,
                     borderWidth: 1
                 }]
+            }
+        });
+
+        // ==========================================
+        // Préstamos totales y pendientes por persona
+        // ==========================================
+
+        const prestamosLabels = {!! json_encode(
+            $prestamos_totales->map(function ($p) {
+                return trim(
+                    '(' . $p->tipo_perfil . ') ' . $p->apellido_paterno . ' ' . $p->apellido_materno . ' ' . $p->nombres,
+                );
+            }),
+        ) !!};
+        const prestamosTotalesData = {!! json_encode($prestamos_totales->pluck('total_libros')) !!};
+        const prestamosPendientesData = {!! json_encode($prestamos_totales->pluck('libros_debe')) !!};
+        new Chart(document.getElementById('chart_relacion_prestamos_devoluciones'), {
+            type: 'bar',
+            data: {
+                labels: prestamosLabels,
+                datasets: [{
+                        label: 'Total de libros',
+                        data: prestamosTotalesData,
+                        backgroundColor: 'rgba(0, 255, 255, 0.2)', // cian
+                        borderColor: 'rgb(0, 255, 255)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Libros pendientes',
+                        data: prestamosPendientesData,
+                        backgroundColor: 'rgba(255, 40, 40, 0.2)', // rojo
+                        borderColor: 'rgb(255, 40, 40)',
+                        borderWidth: 1
+                    }
+                ]
             }
         });
     </script>

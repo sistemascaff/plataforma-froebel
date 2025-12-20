@@ -180,9 +180,16 @@
                     orderable: false,
                     searchable: false,
                     render: function(data, type, row) {
+                        const url_detalles = "{{ route('libros.detalles', ':id') }}"
+                            .replace(':id', row.id_libro);
+
                         if (row.estado != 2) {
                             return `
                             <div class="btn-group" role="group">
+                                <a class="btn btn-info btn-sm" href="${url_detalles}" target="_blank" rel="noopener noreferrer"
+                                    data-toggle="tooltip" title="Editar">
+                                    <i class="fa-duotone fa-solid fa-eye"></i>
+                                </a>
                                 <button type="button" class="btn btn-warning btn-sm btn-editar" 
                                         data-id="${row.id_libro}" data-toggle="tooltip" title="Editar">
                                     <i class="fa-duotone fa-solid fa-edit"></i>
@@ -196,6 +203,10 @@
                         } else {
                             return `
                             <div class="btn-group" role="group">
+                                <a class="btn btn-info btn-sm" href="${url_detalles}" target="_blank" rel="noopener noreferrer"
+                                    data-toggle="tooltip" title="Editar">
+                                    <i class="fa-duotone fa-solid fa-eye"></i>
+                                </a>
                                 <button type="button" class="btn btn-warning btn-sm btn-editar" 
                                         data-id="${row.id_libro}" data-toggle="tooltip" title="Editar">
                                     <i class="fa-duotone fa-solid fa-edit"></i>

@@ -44,6 +44,8 @@ Route::controller(LibroController::class)->group(function () {
     Route::post('libros', 'create')->name('libros.create');
     Route::put('libros/{libro}', 'update')->name('libros.update');
     Route::patch('libros/{libro}', 'delete')->name('libros.delete');
+
+    Route::get('libros/{libro}/detalles', 'view_details')->name('libros.detalles');
 });
 
 /* Tabla con PK FK 'personas' y relación muchos a muchos con 'productos' mediante 'detalles_prestamos_libros'*/

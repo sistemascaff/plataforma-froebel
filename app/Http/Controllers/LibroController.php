@@ -34,6 +34,20 @@ class LibroController extends Controller
         ]);
     }
 
+    public function view_details($libro)
+    {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+            return redirect()->route('login');
+        }
+
+        $libro = (new Libro())->get_libro($libro);
+
+        return view('libros.details', [
+            'head_title' => 'LIBRO: ' . $libro->codigo . ' - ' . $libro->titulo,
+            'libro' => $libro,
+        ]);
+    }
+
     public function view_public()
     {
         return view('libros.public', [

@@ -125,7 +125,7 @@
     @else
         <div class="alert alert-danger" role="alert">
             <i class="fa-solid fa-duotone fa-exclamation-triangle"></i>
-            No se puede editar este préstamo de libros porque el préstamo ha sido anulado. 
+            No se puede editar la información porque el préstamo ha sido anulado. 
         </div>
     @endif
 

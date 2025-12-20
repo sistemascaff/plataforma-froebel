@@ -38,6 +38,23 @@
     <label for="celular">Fecha de devolución:</label>
     <p class="form-control mb-3" id="celular"> {{ date('d/m/Y', strtotime($prestamo_libro->fecha_devolucion)) }}</p>
 
+    @php
+        $estado = match ($prestamo_libro->estado) {
+            0 => 'ANULADO',
+            1 => 'ACTIVO',
+            default => 'DESCONOCIDO',
+        };
+        $class = match ($prestamo_libro->estado) {
+            0 => 'alert alert-danger',
+            1 => 'alert alert-success',
+            default => 'alert alert-secondary',
+        };
+    @endphp
+
+    <div class="{{ $class }} fw-bold mb-3">
+        Estado: {{ $estado }}
+    </div>
+
     <h2 class="text-info fw-bold">Detalles</h2>
 
     <table class="table table-bordered table-striped mb-3" id="detalles">

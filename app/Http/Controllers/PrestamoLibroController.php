@@ -90,6 +90,10 @@ class PrestamoLibroController extends Controller
             ->groupBy('persona')
             ->orderByDesc('total')
             ->get();
+        
+        $prestamos_pendientes = (new PrestamoLibro())->get_prestamos_libros_pendientes();
+
+        $prestamos_totales = (new PrestamoLibro())->get_prestamos_libros_totales_y_pendientes();
 
         return view('prestamos_libros.reportes', [
             'head_title' => 'PRÉSTAMOS DE LIBROS - REPORTES',
@@ -101,6 +105,8 @@ class PrestamoLibroController extends Controller
             'prestamos_por_curso' => $prestamos_por_curso,
             'prestamos_por_tipo_perfil' => $prestamos_por_tipo_perfil,
             'prestamos_por_persona' => $prestamos_por_persona,
+            'prestamos_pendientes' => $prestamos_pendientes,
+            'prestamos_totales' => $prestamos_totales,
         ]);
     }
 
@@ -176,11 +182,15 @@ class PrestamoLibroController extends Controller
             ->groupBy('persona')
             ->orderByDesc('total')
             ->get();
+        
+        $prestamos_pendientes = (new PrestamoLibro())->get_prestamos_libros_pendientes();
+
+        $prestamos_totales = (new PrestamoLibro())->get_prestamos_libros_totales_y_pendientes();
 
         $pdf = Pdf::loadView(
             'prestamos_libros.pdf_reporte_estadisticas_prestamos',
             compact('fecha_inicio', 'fecha_fin', 'prestamos_libros', 'libros_mas_prestados', 'prestamos_por_categoria',
-            'prestamos_por_curso', 'prestamos_por_tipo_perfil', 'prestamos_por_persona')
+            'prestamos_por_curso', 'prestamos_por_tipo_perfil', 'prestamos_por_persona', 'prestamos_pendientes', 'prestamos_totales')
         );
 
         $pdf->setOption("isPhpEnabled", true);
