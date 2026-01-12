@@ -3,7 +3,7 @@
 @section('content')
     <h1 class="text-center text-info fw-bold"><i class="fa-solid fa-duotone fa-user-tie"></i> {{ $headTitle }}</h1>
 
-    <button type="button" class="btn btn-success mb-3 btn-crear" data-bs-toggle="modal" data-bs-target="#modalCreateOrEdit">
+    <button type="button" class="btn btn-success mb-3 btn-crear" data-bs-toggle="modal" data-bs-target="#modal-crear-o-editar">
         <i class="fa-solid fa-duotone fa-plus"></i> Crear usuario</button>
 
     <h2 class="text-info fw-bold">Lista de usuarios</h2>
@@ -14,7 +14,7 @@
     <div class="card p-3 mb-3">
         <p>Seleccione una opción para <i class="fa-solid fa-duotone fa-file-export"></i> exportar o <i
                 class="fa-solid fa-duotone fa-filter"></i> filtrar la tabla:</p>
-        <div id="dataTableExportButtonsContainer"></div>
+        <div id="dataTable-export-buttons-container"></div>
     </div>
 
     <table class="table table-bordered table-striped" id="dataTable">
@@ -36,17 +36,17 @@
     <div class="mb-3"></div>
 
     <!-- Modal para crear y editar usuarios -->
-    <div class="modal fade" id="modalCreateOrEdit" tabindex="-1" aria-labelledby="modalCreateOrEdit_Title"
+    <div class="modal fade" id="modal-crear-o-editar" tabindex="-1" aria-labelledby="modal-crear-o-editar_Title"
         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalCreateOrEdit_Title"><i class="fa-solid fa-duotone fa-plus"></i>
+                    <h1 class="modal-title fs-5" id="modal-crear-o-editar_Title"><i class="fa-solid fa-duotone fa-plus"></i>
                         CREAR USUARIO</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="formCreateOrEdit">
+                    <form id="form-crear-o-editar">
                         <!-- input de idUsuario en caso de editar -->
                         <input type="hidden" name="idUsuario" value="0">
 
@@ -206,24 +206,24 @@
                 ],
                 @include('datatables.dataTablesGlobalProperties')
                 @include('datatables.dataTablesLanguageProperty')
-            }).buttons().container().appendTo('#dataTableExportButtonsContainer');
+            }).buttons().container().appendTo('#dataTable-export-buttons-container');
 
 
 
             $(document).on('click', '.btn-crear', function() {
                 const id = 0;
-                $('#formCreateOrEdit input[name="idUsuario"]').val(0);
-                $('#formCreateOrEdit input[name="nombreUsuario"]').val('');
-                $('#formCreateOrEdit select[name="idEmpleado"]').val('')
+                $('#form-crear-o-editar input[name="idUsuario"]').val(0);
+                $('#form-crear-o-editar input[name="nombreUsuario"]').val('');
+                $('#form-crear-o-editar select[name="idEmpleado"]').val('')
                     .trigger('change');
-                $('#formCreateOrEdit select[name="temaPreferido"]').val('light')
+                $('#form-crear-o-editar select[name="temaPreferido"]').val('light')
                     .trigger('change');
-                $('#formCreateOrEdit input[name="contrasenha"]').val('');
-                $('#formCreateOrEdit input[name="recontrasenha"]').val('');
+                $('#form-crear-o-editar input[name="contrasenha"]').val('');
+                $('#form-crear-o-editar input[name="recontrasenha"]').val('');
 
-                const titleElement = document.getElementById('modalCreateOrEdit_Title');
+                const titleElement = document.getElementById('modal-crear-o-editar_Title');
                 titleElement.innerHTML = '<i class="fa-solid fa-duotone fa-plus"></i> CREAR USUARIO';
-                $('#modalCreateOrEdit').modal('show');
+                $('#modal-crear-o-editar').modal('show');
             });
 
 
@@ -232,27 +232,27 @@
                 const id = $(this).data('id');
 
                 $.get("{{ route('usuarios.index') . '/' }}" + id, function(usuario) {
-                    $('#formCreateOrEdit input[name="idUsuario"]').val(usuario.data.idUsuario);
-                    $('#formCreateOrEdit input[name="nombreUsuario"]').val(usuario.data
+                    $('#form-crear-o-editar input[name="idUsuario"]').val(usuario.data.idUsuario);
+                    $('#form-crear-o-editar input[name="nombreUsuario"]').val(usuario.data
                         .nombreUsuario);
-                    $('#formCreateOrEdit select[name="idEmpleado"]').val(usuario.data.idEmpleado)
+                    $('#form-crear-o-editar select[name="idEmpleado"]').val(usuario.data.idEmpleado)
                         .trigger('change');
-                    $('#formCreateOrEdit select[name="temaPreferido"]').val(usuario.data
+                    $('#form-crear-o-editar select[name="temaPreferido"]').val(usuario.data
                             .temaPreferido)
                         .trigger('change');
-                    $('#formCreateOrEdit input[name="contrasenha"]').val(''); // opcional, vacío
-                    $('#formCreateOrEdit input[name="recontrasenha"]').val('');
+                    $('#form-crear-o-editar input[name="contrasenha"]').val(''); // opcional, vacío
+                    $('#form-crear-o-editar input[name="recontrasenha"]').val('');
 
-                    const titleElement = document.getElementById('modalCreateOrEdit_Title');
+                    const titleElement = document.getElementById('modal-crear-o-editar_Title');
                     titleElement.innerHTML =
                         '<i class="fa-solid fa-duotone fa-edit"></i> EDITAR USUARIO';
-                    $('#modalCreateOrEdit').modal('show');
+                    $('#modal-crear-o-editar').modal('show');
                 });
             });
 
 
             $(document).on('click', '#btnGuardar', function() {
-                const idUsuario = $('#formCreateOrEdit input[name="idUsuario"]').val();
+                const idUsuario = $('#form-crear-o-editar input[name="idUsuario"]').val();
                 const url = idUsuario == 0 ?
                     "{{ route('usuarios.create') }}" // POST -> crear
                     :
@@ -266,11 +266,11 @@
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                    data: $('#formCreateOrEdit').serialize(),
+                    data: $('#form-crear-o-editar').serialize(),
                     success: function(response) {
                         if (response.success) {
                             Swal.fire('Éxito', response.message, 'success');
-                            $('#modalCreateOrEdit').modal('hide');
+                            $('#modal-crear-o-editar').modal('hide');
                             $('#dataTable').DataTable().ajax.reload();
                         } else {
                             Swal.fire('Error', response.message, 'error');
@@ -340,7 +340,7 @@
                 language: "es",
                 dropdownCssClass: "{{ session('temaPreferido') == 'dark' ? 'bg-dark' : '' }}",
                 selectionCssClass: "{{ session('temaPreferido') == 'dark' ? 'bg-dark' : '' }}",
-                dropdownParent: $('#modalCreateOrEdit')
+                dropdownParent: $('#modal-crear-o-editar')
             });
             document.querySelectorAll('.toggle-password').forEach(btn => {
                 btn.addEventListener('click', function() {

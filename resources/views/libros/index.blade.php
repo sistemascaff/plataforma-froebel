@@ -3,7 +3,7 @@
 @section('content')
     <h1 class="text-center text-info fw-bold"><i class="fa-solid fa-duotone fa-book-open"></i> {{ $head_title }}</h1>
 
-    <button type="button" class="btn btn-success mb-3 btn-crear" data-bs-toggle="modal" data-bs-target="#modal_form">
+    <button type="button" class="btn btn-success mb-3 btn-crear" data-bs-toggle="modal" data-bs-target="#modal-formulario">
         <i class="fa-solid fa-duotone fa-plus"></i> Crear libro</button>
 
     <h2 class="text-info fw-bold">Lista de libros</h2>
@@ -32,7 +32,7 @@
                         </div>
                         <div>
                             <h6 class="text-muted mb-1 small">Total</h6>
-                            <h3 id="cantidad_libros_total" class="fw-bold">0</h3>
+                            <h3 id="cantidad-libros-total" class="fw-bold">0</h3>
                         </div>
                     </div>
                 </div>
@@ -46,7 +46,7 @@
                         </div>
                         <div>
                             <h6 class="text-muted mb-1 small">Disponibles</h6>
-                            <h3 id="cantidad_libros_disponibles" class="fw-bold">0</h3>
+                            <h3 id="cantidad-libros-disponibles" class="fw-bold">0</h3>
                         </div>
                     </div>
                 </div>
@@ -60,7 +60,7 @@
                         </div>
                         <div>
                             <h6 class="text-muted mb-1 small">Prestados</h6>
-                            <h3 id="cantidad_libros_prestados" class="fw-bold">0</h3>
+                            <h3 id="cantidad-libros-prestados" class="fw-bold">0</h3>
                         </div>
                     </div>
                 </div>
@@ -74,7 +74,7 @@
                         </div>
                         <div>
                             <h6 class="text-muted mb-1 small">Bajas</h6>
-                            <h3 id="cantidad_libros_eliminados" class="fw-bold">0</h3>
+                            <h3 id="cantidad-libros-eliminados" class="fw-bold">0</h3>
                         </div>
                     </div>
                 </div>
@@ -85,7 +85,7 @@
     <div class="card p-3 mb-3">
         <p>Seleccione una opción para <i class="fa-solid fa-duotone fa-file-export"></i> exportar o <i
                 class="fa-solid fa-duotone fa-filter"></i> filtrar la tabla:</p>
-        <div id="datatable_export_buttons_container"></div>
+        <div id="dataTable-export-buttons-container"></div>
     </div>
 
     <table class="table table-bordered table-striped" id="dataTable">

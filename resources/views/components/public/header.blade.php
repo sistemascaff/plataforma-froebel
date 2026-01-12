@@ -2,7 +2,7 @@
     class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom mx-3">
     <div class="col-md-3 mb-2 mb-md-0">
         <a href="{{ route('main.index') }}">
-            <img class="img-fluid mx-auto d-block bg-light rounded" alt="Logo"
+            <img class="img-fluid mx-auto bg-light rounded" alt="Logo"
                 src="{{ URL::to('/') }}/public/img/orgullo_froebeliano.png" style="width: 150px;">
         </a>
     </div>
@@ -16,7 +16,7 @@
     </ul>
 
     <div class="col-md-3 text-end">
-        <button class="btn btn-light me-2" id="toggle_theme">
+        <button class="btn btn-light me-2" id="toggle-theme">
             <i class="fa-chisel fa-regular fa-sun"></i>
         </button>
         @if (session('tiene_acceso'))

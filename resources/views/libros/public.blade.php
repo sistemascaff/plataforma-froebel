@@ -29,7 +29,7 @@
                         </div>
                         <div>
                             <h6 class="text-muted mb-1 small">Total</h6>
-                            <h3 id="cantidad_libros_total" class="fw-bold">0</h3>
+                            <h3 id="cantidad-libros-total" class="fw-bold">0</h3>
                         </div>
                     </div>
                 </div>
@@ -43,7 +43,7 @@
                         </div>
                         <div>
                             <h6 class="text-muted mb-1 small">Disponibles</h6>
-                            <h3 id="cantidad_libros_disponibles" class="fw-bold">0</h3>
+                            <h3 id="cantidad-libros-disponibles" class="fw-bold">0</h3>
                         </div>
                     </div>
                 </div>
@@ -57,7 +57,7 @@
                         </div>
                         <div>
                             <h6 class="text-muted mb-1 small">Prestados</h6>
-                            <h3 id="cantidad_libros_prestados" class="fw-bold">0</h3>
+                            <h3 id="cantidad-libros-prestados" class="fw-bold">0</h3>
                         </div>
                     </div>
                 </div>
@@ -71,7 +71,7 @@
                         </div>
                         <div>
                             <h6 class="text-muted mb-1 small">Bajas</h6>
-                            <h3 id="cantidad_libros_eliminados" class="fw-bold">0</h3>
+                            <h3 id="cantidad-libros-eliminados" class="fw-bold">0</h3>
                         </div>
                     </div>
                 </div>
@@ -82,7 +82,7 @@
     <div class="card p-3 mb-3">
         <p>Seleccione una opción para <i class="fa-solid fa-duotone fa-file-export"></i> exportar o <i
                 class="fa-solid fa-duotone fa-filter"></i> filtrar la tabla:</p>
-        <div id="datatable_export_buttons_container"></div>
+        <div id="dataTable-export-buttons-container"></div>
     </div>
 
     <table class="table table-bordered table-striped" id="dataTable">
@@ -184,35 +184,35 @@
                 ],
                 @include('components.datatables.datatables_global_properties')
                 @include('components.datatables.datatables_language_property')
-            }).buttons().container().appendTo('#datatable_export_buttons_container');
+            }).buttons().container().appendTo('#dataTable-export-buttons-container');
 
-            function actualizar_estadisticas() {
+            function actualizarEstadisticas() {
                 const dataTable = $("#dataTable").DataTable();
-                const all_data = dataTable.rows().data();
+                const allData = dataTable.rows().data();
 
-                let cantidad_libros_total = all_data.count();
-                let cantidad_libros_disponibles = 0;
-                let cantidad_libros_prestados = 0;
-                let cantidad_libros_eliminados = 0;
+                let cantidadLibrosTotal = allData.count();
+                let cantidadLibrosDisponibles = 0;
+                let cantidadLibrosPrestados = 0;
+                let cantidadLibrosEliminados = 0;
 
-                all_data.each(function(libro) {
+                allData.each(function(libro) {
                     if (libro.estado == 1) {
-                        cantidad_libros_disponibles++;
+                        cantidadLibrosDisponibles++;
                     } else if (libro.estado == 2) {
-                        cantidad_libros_prestados++;
+                        cantidadLibrosPrestados++;
                     } else if (libro.estado == 0) {
-                        cantidad_libros_eliminados++;
+                        cantidadLibrosEliminados++;
                     }
                 });
 
-                $('#cantidad_libros_total').text(cantidad_libros_total);
-                $('#cantidad_libros_disponibles').text(cantidad_libros_disponibles);
-                $('#cantidad_libros_prestados').text(cantidad_libros_prestados);
-                $('#cantidad_libros_eliminados').text(cantidad_libros_eliminados);
+                $('#cantidad-libros-total').text(cantidadLibrosTotal);
+                $('#cantidad-libros-disponibles').text(cantidadLibrosDisponibles);
+                $('#cantidad-libros-prestados').text(cantidadLibrosPrestados);
+                $('#cantidad-libros-eliminados').text(cantidadLibrosEliminados);
             }
 
             $('#dataTable').on('draw.dt', function() {
-                actualizar_estadisticas();
+                actualizarEstadisticas();
             });
         });
     </script>

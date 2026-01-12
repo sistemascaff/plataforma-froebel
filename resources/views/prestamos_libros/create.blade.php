@@ -73,7 +73,7 @@
         </tbody>
     </table>
 
-    <button type="button" class="btn btn-primary" id="btnSave"><i class="fa-solid fa-duotone fa-floppy-disk"></i>
+    <button type="button" class="btn btn-primary" id="btn-guardar"><i class="fa-solid fa-duotone fa-floppy-disk"></i>
         Guardar</button>
 
     <div class="mb-3"></div>

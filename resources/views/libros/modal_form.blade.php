@@ -1,23 +1,23 @@
 <!-- Modal para crear y editar libros -->
-<div class="modal fade" id="modal_form" tabindex="-1" aria-labelledby="modal_form_title" aria-hidden="true">
+<div class="modal fade" id="modal-formulario" tabindex="-1" aria-labelledby="modal-formulario-titulo" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="modal_form_title"><i class="fa-solid fa-duotone fa-plus"></i>
+                <h1 class="modal-title fs-5" id="modal-formulario-titulo"><i class="fa-solid fa-duotone fa-plus"></i>
                     CREAR CLIENTE</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="formCreateOrEdit">
+                <form id="form-crear-o-editar">
                     <!-- input de id_libro en caso de editar -->
                     <input type="hidden" name="id_libro" value="0">
 
                     <div class="mb-3">
                         <label for="titulo" class="form-label">Título <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="titulo" name="titulo" list="libro_titulos" required>
+                        <input type="text" class="form-control" id="titulo" name="titulo" list="libro-titulos" required>
                     </div>
 
-                    <datalist id="libro_titulos">
+                    <datalist id="libro-titulos">
                         @foreach ($libro_titulos as $titulo)
                             <option value="{{ $titulo }}"></option>
                         @endforeach
@@ -30,10 +30,10 @@
 
                     <div class="mb-3">
                         <label for="autor" class="form-label">Autor <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="autor" name="autor" list="libro_autores" required>
+                        <input type="text" class="form-control" id="autor" name="autor" list="libro-autores" required>
                     </div>
 
-                    <datalist id="libro_autores">
+                    <datalist id="libro-autores">
                         @foreach ($libro_autores as $autor)
                             <option value="{{ $autor }}"></option>
                         @endforeach
@@ -41,10 +41,10 @@
 
                     <div class="mb-3">
                         <label for="categoria" class="form-label">Categoria <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="categoria" name="categoria" list="libro_categorias" required>
+                        <input type="text" class="form-control" id="categoria" name="categoria" list="libro-categorias" required>
                     </div>
 
-                    <datalist id="libro_categorias">
+                    <datalist id="libro-categorias">
                         @foreach ($libro_categorias as $categoria)
                             <option value="{{ $categoria }}"></option>
                         @endforeach
@@ -52,10 +52,10 @@
 
                     <div class="mb-3">
                         <label for="editorial" class="form-label">Editorial <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="editorial" name="editorial" list="libro_editoriales" required>
+                        <input type="text" class="form-control" id="editorial" name="editorial" list="libro-editoriales" required>
                     </div>
 
-                    <datalist id="libro_editoriales">
+                    <datalist id="libro-editoriales">
                         @foreach ($libro_editoriales as $editorial)
                             <option value="{{ $editorial }}"></option>
                         @endforeach
@@ -64,10 +64,10 @@
                     <div class="mb-3">
                         <label for="presentacion" class="form-label">Presentacion <span
                                 class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="presentacion" name="presentacion" list="libro_presentaciones" required>
+                        <input type="text" class="form-control" id="presentacion" name="presentacion" list="libro-presentaciones" required>
                     </div>
 
-                    <datalist id="libro_presentaciones">
+                    <datalist id="libro-presentaciones">
                         @foreach ($libro_presentaciones as $presentacion)
                             <option value="{{ $presentacion }}"></option>
                         @endforeach
@@ -116,7 +116,7 @@
             <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
                                 class="fa-solid fa-duotone fa-close"></i>Cerrar</button>
-                        <button type="button" id="btnSave" class="btn btn-primary"><i
+                        <button type="button" id="btn-guardar" class="btn btn-primary"><i
                                 class="fa-solid fa-duotone fa-save"></i>
                             Guardar</button>
                     </div>

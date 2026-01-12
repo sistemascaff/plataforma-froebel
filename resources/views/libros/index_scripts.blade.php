@@ -256,26 +256,26 @@
             ],
             /* @include('components.datatables.datatables_global_properties') */
             @include('components.datatables.datatables_language_property')
-        }).buttons().container().appendTo('#datatable_export_buttons_container');
+        }).buttons().container().appendTo('#dataTable-export-buttons-container');
 
         $(document).on('click', '.btn-crear', function() {
-            $('#formCreateOrEdit input[name="id_libro"]').val(0);
-            $('#formCreateOrEdit input[name="titulo"]').val('');
-            $('#formCreateOrEdit input[name="codigo"]').val(libro_insert_codigo);
-            $('#formCreateOrEdit input[name="autor"]').val('');
-            $('#formCreateOrEdit input[name="categoria"]').val('');
-            $('#formCreateOrEdit input[name="editorial"]').val('');
-            $('#formCreateOrEdit input[name="presentacion"]').val('');
-            $('#formCreateOrEdit input[name="anio"]').val('{{ date('Y') }}');
-            $('#formCreateOrEdit input[name="costo"]').val('');
+            $('#form-crear-o-editar input[name="id_libro"]').val(0);
+            $('#form-crear-o-editar input[name="titulo"]').val('');
+            $('#form-crear-o-editar input[name="codigo"]').val(libro_insert_codigo);
+            $('#form-crear-o-editar input[name="autor"]').val('');
+            $('#form-crear-o-editar input[name="categoria"]').val('');
+            $('#form-crear-o-editar input[name="editorial"]').val('');
+            $('#form-crear-o-editar input[name="presentacion"]').val('');
+            $('#form-crear-o-editar input[name="anio"]').val('{{ date('Y') }}');
+            $('#form-crear-o-editar input[name="costo"]').val('');
             $('#descripcion').val('');
-            $('#formCreateOrEdit input[name="adquisicion"]').val(1);
-            $('#formCreateOrEdit input[name="fecha_ingreso_cooperativa"]').val('{{ date('Y-m-d') }}');
+            $('#form-crear-o-editar input[name="adquisicion"]').val(1);
+            $('#form-crear-o-editar input[name="fecha_ingreso_cooperativa"]').val('{{ date('Y-m-d') }}');
             $('#observacion').val('');
 
-            const titleElement = document.getElementById('modal_form_title');
+            const titleElement = document.getElementById('modal-formulario-titulo');
             titleElement.innerHTML = '<i class="fa-solid fa-duotone fa-plus"></i> CREAR LIBRO';
-            $('#modal_form').modal('show');
+            $('#modal-formulario').modal('show');
         });
 
 
@@ -284,36 +284,36 @@
             const id = $(this).data('id');
 
             $.get("{{ route('libros.index') . '/' }}" + id, function(libro) {
-                $('#formCreateOrEdit input[name="id_libro"]').val(libro.data.id_libro);
-                $('#formCreateOrEdit input[name="titulo"]').val(libro.data.titulo);
-                $('#formCreateOrEdit input[name="codigo"]').val(libro.data.codigo);
-                $('#formCreateOrEdit input[name="autor"]').val(libro.data.autor);
-                $('#formCreateOrEdit input[name="categoria"]').val(libro.data.categoria);
-                $('#formCreateOrEdit input[name="editorial"]').val(libro.data.editorial);
-                $('#formCreateOrEdit input[name="presentacion"]').val(libro.data.presentacion);
-                $('#formCreateOrEdit input[name="anio"]').val(libro.data.anio);
-                $('#formCreateOrEdit input[name="costo"]').val(libro.data.costo);
+                $('#form-crear-o-editar input[name="id_libro"]').val(libro.data.id_libro);
+                $('#form-crear-o-editar input[name="titulo"]').val(libro.data.titulo);
+                $('#form-crear-o-editar input[name="codigo"]').val(libro.data.codigo);
+                $('#form-crear-o-editar input[name="autor"]').val(libro.data.autor);
+                $('#form-crear-o-editar input[name="categoria"]').val(libro.data.categoria);
+                $('#form-crear-o-editar input[name="editorial"]').val(libro.data.editorial);
+                $('#form-crear-o-editar input[name="presentacion"]').val(libro.data.presentacion);
+                $('#form-crear-o-editar input[name="anio"]').val(libro.data.anio);
+                $('#form-crear-o-editar input[name="costo"]').val(libro.data.costo);
                 $('#descripcion').val(libro.data.descripcion);
-                $('#formCreateOrEdit input[name="adquisicion"]').val(libro.data.adquisicion);
-                $('#formCreateOrEdit input[name="fecha_ingreso_cooperativa"]').val(new Date(
+                $('#form-crear-o-editar input[name="adquisicion"]').val(libro.data.adquisicion);
+                $('#form-crear-o-editar input[name="fecha_ingreso_cooperativa"]').val(new Date(
                     libro.data.fecha_ingreso_cooperativa).toISOString().split('T')[0]);
                 $('#observacion').val(libro.data.observacion);
 
-                const titleElement = document.getElementById('modal_form_title');
+                const titleElement = document.getElementById('modal-formulario-titulo');
                 titleElement.innerHTML =
                     '<i class="fa-solid fa-duotone fa-edit"></i> EDITAR LIBRO';
-                $('#modal_form').modal('show');
+                $('#modal-formulario').modal('show');
             });
         });
 
 
-        $(document).on('click', '#btnSave', function() {
+        $(document).on('click', '#btn-guardar', function() {
             const btn = $(this);
             // Deshabilitar el botón para evitar múltiples clics y cambiar el texto
             btn.prop('disabled', true);
             btn.html('<i class="fa-solid fa-duotone fa-spinner fa-spin"></i> Guardando...');
 
-            const id_libro = $('#formCreateOrEdit input[name="id_libro"]').val();
+            const id_libro = $('#form-crear-o-editar input[name="id_libro"]').val();
             const url = id_libro == 0 ?
                 "{{ route('libros.create') }}" // POST -> crear
                 :
@@ -328,7 +328,7 @@
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                data: $('#formCreateOrEdit').serialize(),
+                data: $('#form-crear-o-editar').serialize(),
                 success: function(response) {
                     Swal.fire({
                         theme: localStorage.getItem('theme') || 'dark',
@@ -336,7 +336,7 @@
                         text: response.message,
                         icon: 'success'
                     });
-                    $('#modal_form').modal('hide');
+                    $('#modal-formulario').modal('hide');
                     $('#dataTable').DataTable().ajax.reload();
                     if (type === 'POST') {
                         // Incrementar el código para el próximo libro
@@ -383,10 +383,10 @@
 
         $(document).on('click', '.btn-cambiar-estado', function() {
             const id = $(this).data('id');
-            const estado_actual = $(this).data('estado');
-            const nuevo_estado = estado_actual == 1 ? 0 : 1;
+            const estadoActual = $(this).data('estado');
+            const estadoNuevo = estadoActual == 1 ? 0 : 1;
             const nombre = $(this).data('nombre');
-            const accion = nuevo_estado == 1 ? 'habilitar' : 'deshabilitar';
+            const accion = estadoNuevo == 1 ? 'habilitar' : 'deshabilitar';
 
             Swal.fire({
                 theme: localStorage.getItem('theme') || 'dark',
@@ -462,27 +462,27 @@
             const allData = dataTable.rows().data();
 
             // Calcular totales
-            let cantidad_libros_total = allData.count();
-            let cantidad_libros_disponibles = 0;
-            let cantidad_libros_prestados = 0;
-            let cantidad_libros_eliminados = 0;
+            let cantidadLibrosTotal = allData.count();
+            let cantidadLibrosDisponibles = 0;
+            let cantidadLibrosPrestados = 0;
+            let cantidadLibrosEliminados = 0;
 
             // Iterar sobre los datos para contar según el estado
             allData.each(function(libro) {
                 if (libro.estado == 1) {
-                    cantidad_libros_disponibles++;
+                    cantidadLibrosDisponibles++;
                 } else if (libro.estado == 2) {
-                    cantidad_libros_prestados++;
+                    cantidadLibrosPrestados++;
                 } else if (libro.estado == 0) {
-                    cantidad_libros_eliminados++;
+                    cantidadLibrosEliminados++;
                 }
             });
 
             // Actualizar los elementos HTML
-            $('#cantidad_libros_total').text(cantidad_libros_total);
-            $('#cantidad_libros_disponibles').text(cantidad_libros_disponibles);
-            $('#cantidad_libros_prestados').text(cantidad_libros_prestados);
-            $('#cantidad_libros_eliminados').text(cantidad_libros_eliminados);
+            $('#cantidad-libros-total').text(cantidadLibrosTotal);
+            $('#cantidad-libros-disponibles').text(cantidadLibrosDisponibles);
+            $('#cantidad-libros-prestados').text(cantidadLibrosPrestados);
+            $('#cantidad-libros-eliminados').text(cantidadLibrosEliminados);
         }
 
         $('#dataTable').on('draw.dt', function() {

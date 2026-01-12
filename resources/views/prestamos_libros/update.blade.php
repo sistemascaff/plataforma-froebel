@@ -119,7 +119,7 @@
     </table>
 
     @if ($prestamo_libro->estado != 0)
-        <button type="button" class="btn btn-warning" id="btnSave" {{ $prestamo_libro->estado == 0 ? 'disabled' : '' }}>
+        <button type="button" class="btn btn-warning" id="btn-guardar" {{ $prestamo_libro->estado == 0 ? 'disabled' : '' }}>
             <i class="fa-solid fa-duotone fa-floppy-disk"></i> Guardar
         </button>
     @else

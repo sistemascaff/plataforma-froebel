@@ -54,7 +54,7 @@
                 </ul>
             </ul>
 
-            <button class="btn btn-light me-2" id="toggle_theme" data-toggle="tooltip" title="Cambiar tema">
+            <button class="btn btn-light me-2" id="toggle-theme" data-toggle="tooltip" title="Cambiar tema">
                 <i class="fa-solid fa-sun text-warning"></i>
             </button>
 

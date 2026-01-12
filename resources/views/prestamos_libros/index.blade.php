@@ -27,7 +27,7 @@
                         </div>
                         <div>
                             <h6 class="text-muted mb-1 small">Total</h6>
-                            <h3 id="cantidad_prestamos_total" class="fw-bold">0</h3>
+                            <h3 id="cantidad-prestamos-total" class="fw-bold">0</h3>
                         </div>
                     </div>
                 </div>
@@ -41,7 +41,7 @@
                         </div>
                         <div>
                             <h6 class="text-muted mb-1 small">Completados</h6>
-                            <h3 id="cantidad_prestamos_completados" class="fw-bold">0</h3>
+                            <h3 id="cantidad-prestamos-completados" class="fw-bold">0</h3>
                         </div>
                     </div>
                 </div>
@@ -55,7 +55,7 @@
                         </div>
                         <div>
                             <h6 class="text-muted mb-1 small">Pendientes</h6>
-                            <h3 id="cantidad_prestamos_pendientes" class="fw-bold">0</h3>
+                            <h3 id="cantidad-prestamos-pendientes" class="fw-bold">0</h3>
                         </div>
                     </div>
                 </div>
@@ -69,7 +69,7 @@
                         </div>
                         <div>
                             <h6 class="text-muted mb-1 small">Anulados</h6>
-                            <h3 id="cantidad_prestamos_anulados" class="fw-bold">0</h3>
+                            <h3 id="cantidad-prestamos-anulados" class="fw-bold">0</h3>
                         </div>
                     </div>
                 </div>
@@ -80,7 +80,7 @@
     <div class="card p-3 mb-3">
         <p>Seleccione una opción para <i class="fa-solid fa-duotone fa-file-export"></i> exportar o <i
                 class="fa-solid fa-duotone fa-filter"></i> filtrar la tabla:</p>
-        <div id="datatable_export_buttons_container"></div>
+        <div id="dataTable-export-buttons-container"></div>
     </div>
 
     <table class="table table-bordered table-striped" id="dataTable">

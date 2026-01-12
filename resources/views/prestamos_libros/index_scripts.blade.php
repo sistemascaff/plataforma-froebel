@@ -294,27 +294,27 @@
             ],
             /* @include('components.datatables.datatables_global_properties') */
             @include('components.datatables.datatables_language_property')
-        }).buttons().container().appendTo('#datatable_export_buttons_container');
+        }).buttons().container().appendTo('#dataTable-export-buttons-container');
 
-        function actualizar_estadisticas() {
+        function actualizarEstadisticas() {
             // Obtener referencia al DataTable y sus datos
             const dataTable = $("#dataTable").DataTable();
             const allData = dataTable.rows().data();
 
             // Total (compatibilizar .count() y .length)
-            const cantidad_prestamos_total = (typeof allData.count === 'function') ? allData.count() : allData.length || 0;
+            const cantidadPrestamosTotal = (typeof allData.count === 'function') ? allData.count() : allData.length || 0;
 
-            let cantidad_prestamos_completados = 0;
-            let cantidad_prestamos_pendientes = 0;
-            let cantidad_prestamos_anulados = 0;
+            let cantidadPrestamosCompletados = 0;
+            let cantidadPrestamosPendientes = 0;
+            let cantidadPrestamosAnulados = 0;
 
-            for (let i = 0; i < (allData.length || cantidad_prestamos_total); i++) {
+            for (let i = 0; i < (allData.length || cantidadPrestamosTotal); i++) {
                 const row = allData[i];
                 // Si no existe fila, continuar
                 if (!row) continue;
 
                 if (row.estado == 0) {
-                    cantidad_prestamos_anulados++;
+                    cantidadPrestamosAnulados++;
                     continue;
                 }
 
@@ -322,7 +322,7 @@
 
                 // Si no hay libros, consideramos el préstamo como completado
                 if (!Array.isArray(libros) || libros.length === 0) {
-                    cantidad_prestamos_completados++;
+                    cantidadPrestamosCompletados++;
                     continue;
                 }
 
@@ -333,21 +333,21 @@
                 });
 
                 if (todosDevueltos) {
-                    cantidad_prestamos_completados++;
+                    cantidadPrestamosCompletados++;
                 } else {
-                    cantidad_prestamos_pendientes++;
+                    cantidadPrestamosPendientes++;
                 }
             }
 
             // Actualizar los elementos HTML
-            $('#cantidad_prestamos_total').text(cantidad_prestamos_total);
-            $('#cantidad_prestamos_completados').text(cantidad_prestamos_completados);
-            $('#cantidad_prestamos_pendientes').text(cantidad_prestamos_pendientes);
-            $('#cantidad_prestamos_anulados').text(cantidad_prestamos_anulados);
+            $('#cantidad-prestamos-total').text(cantidadPrestamosTotal);
+            $('#cantidad-prestamos-completados').text(cantidadPrestamosCompletados);
+            $('#cantidad-prestamos-pendientes').text(cantidadPrestamosPendientes);
+            $('#cantidad-prestamos-anulados').text(cantidadPrestamosAnulados);
         }
 
         $('#dataTable').on('draw.dt', function() {
-            actualizar_estadisticas();
+            actualizarEstadisticas();
         });
     });
 </script>

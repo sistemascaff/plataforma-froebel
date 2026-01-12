@@ -54,7 +54,7 @@ window.Helpers.abreviarCurso = function(cadena) {
 
 $(document).ready(function () {
     // Obtener elementos
-    const toggleButton = document.getElementById('toggle_theme');
+    const toggleButton = document.getElementById('toggle-theme');
     const htmlElement = document.documentElement;
     const icon = toggleButton.querySelector('i');
 

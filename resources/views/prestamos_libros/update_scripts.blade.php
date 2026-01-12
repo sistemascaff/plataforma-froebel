@@ -299,7 +299,7 @@
             });
         });
 
-        $(document).on('click', '#btnSave', function() {
+        $(document).on('click', '#btn-guardar', function() {
             const id_persona = $('#persona').val();
             const celular = $('#celular').val();
             let detalles = [];
@@ -362,7 +362,7 @@
         });
 
         function editarPrestamoLibrosAJAX(id_persona, celular, detalles, fecha_devolucion) {
-            const btn = $('#btnSave');
+            const btn = $('#btn-guardar');
             // Deshabilitar el botón para evitar múltiples clics y cambiar el texto
             btn.prop('disabled', true);
             btn.html('<i class="fa-solid fa-duotone fa-spinner fa-spin"></i> Guardando...');
