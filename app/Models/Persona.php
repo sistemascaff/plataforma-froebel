@@ -70,25 +70,46 @@ class Persona extends Model
 
     public function get_all_personas()
     {
-        return $this::with(
-            'usuario',
-            'estudiante.curso',
-            'creado',
-            'modificado',
-            'eliminado'
-        )
+        return $this::query()
+            ->select('personas.*')
+            ->leftJoin('estudiantes', 'estudiantes.id_persona', '=', 'personas.id_persona')
+            ->leftJoin('cursos', 'cursos.id_curso', '=', 'estudiantes.id_curso')
+            ->leftJoin('grados', 'grados.id_grado', '=', 'cursos.id_grado')
+            ->leftJoin('niveles', 'niveles.id_nivel', '=', 'grados.id_nivel')
+
+            ->with(
+                'usuario',
+                'estudiante.curso',
+                'creado',
+                'modificado',
+                'eliminado'
+            )
+
             ->withCount([
                 // Cantidad total de libros prestados (todos los detalles)
                 'prestamosDetalles as cantidad_total_prestamos',
-
+                
                 // Cantidad de libros que debe (fecha_retorno NULL)
                 'prestamosDetalles as cantidad_libros_debe' => function ($query) {
                     $query->whereNull('fecha_retorno');
                 }
             ])
-            ->orderBy('id_colegio', 'ASC')
+
+            ->orderBy('personas.id_colegio', 'ASC')
+            ->orderBy('personas.tipo_perfil', 'ASC')
+
+            // orden académico de estudiantes
+            ->orderBy('niveles.posicion_ordinal', 'ASC')
+            ->orderBy('grados.posicion_ordinal', 'ASC')
+            ->orderBy('cursos.id_paralelo', 'ASC')
+
+            ->orderBy('personas.apellido_paterno', 'ASC')
+            ->orderBy('personas.apellido_materno', 'ASC')
+            ->orderBy('personas.nombres', 'ASC')
+
             ->get();
     }
+
 
     public function get_persona($id_persona)
     {

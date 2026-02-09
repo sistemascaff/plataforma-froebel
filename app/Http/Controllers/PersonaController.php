@@ -9,7 +9,7 @@ class PersonaController extends Controller
 {
     public function listar()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return response()->json(['success' => false, 'message' => 'No tiene acceso',], 403);
         }
 
@@ -21,7 +21,7 @@ class PersonaController extends Controller
 
     public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
         }
 

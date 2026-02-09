@@ -11,7 +11,7 @@ class LibroController extends Controller
 {
     public function view_index()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return redirect()->route('main.index');
         }
 
@@ -36,7 +36,7 @@ class LibroController extends Controller
 
     public function view_details($libro)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return redirect()->route('login');
         }
 
@@ -51,13 +51,13 @@ class LibroController extends Controller
     public function view_public()
     {
         return view('libros.public', [
-            'head_title' => 'BIBLIOTECA',
+            'head_title' => 'BIBLIOTECARIA',
         ]);
     }
 
     public function listar()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return response()->json(['success' => false, 'message' => 'No tiene acceso',], 403);
         }
 
@@ -78,7 +78,7 @@ class LibroController extends Controller
 
     public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
         }
 
@@ -90,7 +90,7 @@ class LibroController extends Controller
 
     public function create(LibroValidation $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
         }
 
@@ -122,7 +122,7 @@ class LibroController extends Controller
 
     public function update(LibroValidation $request, $id_libro)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
         }
 
@@ -153,7 +153,7 @@ class LibroController extends Controller
 
     public function delete(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
         }
 

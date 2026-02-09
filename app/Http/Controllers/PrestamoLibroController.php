@@ -15,7 +15,7 @@ class PrestamoLibroController extends Controller
 {
     public function view_index()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return redirect()->route('login');
         }
 
@@ -26,7 +26,7 @@ class PrestamoLibroController extends Controller
 
     public function view_reportes(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return redirect()->route('login');
         }
 
@@ -113,7 +113,7 @@ class PrestamoLibroController extends Controller
 
     public function view_reportes_imprimir(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return redirect()->route('login');
         }
         //Para evitar problemas de memoria y tiempo de ejecución al generar el reporte, se incrementan los límites.
@@ -202,7 +202,7 @@ class PrestamoLibroController extends Controller
 
     public function view_details($prestamo_libro)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return redirect()->route('login');
         }
 
@@ -216,7 +216,7 @@ class PrestamoLibroController extends Controller
 
     public function view_create()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return redirect()->route('login');
         }
 
@@ -227,7 +227,7 @@ class PrestamoLibroController extends Controller
 
     public function view_update($prestamo_libro)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return redirect()->route('login');
         }
 
@@ -241,7 +241,7 @@ class PrestamoLibroController extends Controller
 
     public function view_imprimir($prestamo_libro)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return redirect()->route('login');
         }
 
@@ -258,7 +258,7 @@ class PrestamoLibroController extends Controller
 
     public function listar()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
         }
 
@@ -271,7 +271,7 @@ class PrestamoLibroController extends Controller
 
     public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
         }
 
@@ -284,7 +284,7 @@ class PrestamoLibroController extends Controller
 
     public function create(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
         }
 
@@ -362,7 +362,7 @@ class PrestamoLibroController extends Controller
 
     public function update(Request $request, $id_prestamo_libro)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
         }
 
@@ -517,7 +517,7 @@ class PrestamoLibroController extends Controller
 
     public function delete($id_prestamo_libro)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
         }
 
@@ -568,7 +568,7 @@ class PrestamoLibroController extends Controller
 
     public function marcar_devolucion($id_prestamo_libro, $id_libro)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECA'])) {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
             return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
         }
 

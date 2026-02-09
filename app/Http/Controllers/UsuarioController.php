@@ -42,7 +42,7 @@ class UsuarioController extends Controller
                 'head_title' => 'PANEL DE ' . session('tipo_perfil'),
             ]);
         }
-        else if (session('tipo_perfil') === 'BIBLIOTECA') {
+        else if (session('tipo_perfil') === 'BIBLIOTECARIA') {
             return view('panel.biblioteca.dashboard', [
                 'head_title' => 'PANEL DE ' . session('tipo_perfil'),
             ]);

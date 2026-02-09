@@ -17,34 +17,50 @@
                     $select.empty();
                     $select.append('<option value="">-- Seleccione una persona --</option>');
 
-                    $.each(response.data, function(i, persona) {
+                    // ORDENAR por cantidad_total_prestamos (desc)
+                    let personasOrdenadas = response.data.sort((a, b) => {
+                        return (b.cantidad_total_prestamos ?? 0) - (a
+                            .cantidad_total_prestamos ?? 0);
+                    });
+
+                    $.each(personasOrdenadas, function(i, persona) {
                         // Omitir personas inactivos
                         if (persona.estado == '0') return;
-                        // Se verifica si la persona es un estudiante y de ser así se obtiene el curso.
+
+                        // Curso si es estudiante
                         let curso = persona.estudiante ?
-                            ` - ${persona.estudiante.curso.curso}` : '';
-                        let nombre_completo = persona.apellido_paterno + ' ' + persona
-                            .apellido_materno + ' ' + persona.nombres;
-                        nombre_completo.trim();
-                        // Se verifica si la persona se ha prestado libros y de ser así se agrega dicha información a la fila.
+                            ` - ${persona.estudiante.curso.curso}` :
+                            '';
+
+                        let nombre_completo =
+                            persona.apellido_paterno + ' ' +
+                            persona.apellido_materno + ' ' +
+                            persona.nombres;
+
+                        nombre_completo = nombre_completo.trim();
+
+                        // Información de préstamos
                         let datos_libros = persona.cantidad_total_prestamos > 0 ?
                             ` - Total ${persona.cantidad_total_prestamos}, debe ${persona.cantidad_libros_debe}` :
                             '';
 
-                        // Se construye la fila en base al nombre completo, tipo de perfil, curso, correo y la información de los libros prestados.
+                        // Correo
+                        let correo = persona.usuario?.correo || 'sin correo';
+
                         let fila =
-                            `(${persona.tipo_perfil}${curso}) ${nombre_completo} - ${persona.usuario.correo}${datos_libros}`
+                            `(${persona.tipo_perfil}${curso}) ${nombre_completo} - ${correo}${datos_libros}`
                             .trim();
 
                         $select.append(
                             `<option value="${persona.id_persona}">
-                                ${fila}
-                            </option>`
+                        ${fila}
+                    </option>`
                         );
                     });
                 }
             });
         }
+
 
         recargarPersonasSelect();
 
