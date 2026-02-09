@@ -12,6 +12,10 @@ window.Helpers.abreviarCurso = function(cadena) {
 
     // Casos especiales
     const especiales = {
+        'JARDIN MATERNAL ROT': 'JMR',
+        'JARDIN MATERNAL WEISS': 'JMW',
+        'JARDIN INFANTIL ROT': 'JIR',
+        'JARDIN INFANTIL WEISS': 'JIW',
         'TALLER INICIAL ROT': 'TIR',
         'TALLER INICIAL WEISS': 'TIW',
         'PRE KINDER ROT': 'PKR',

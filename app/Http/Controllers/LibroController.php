@@ -51,7 +51,7 @@ class LibroController extends Controller
     public function view_public()
     {
         return view('libros.public', [
-            'head_title' => 'BIBLIOTECARIA',
+            'head_title' => 'BIBLIOTECA',
         ]);
     }
 
