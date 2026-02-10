@@ -22,11 +22,8 @@ class UsuarioValidation extends FormRequest
      */
     public function rules(): array
     {
-        $idUsuario = $this->route('idUsuario');
         return [
-            'idEmpleado' => ['required', 'numeric', 'integer'],
-            'nombreUsuario' => ['required', 'min:3', 'max:50'],
-            Rule::unique('usuarios', 'nombreUsuario')->ignore($idUsuario, 'idUsuario'),
+            
         ];
     }
 }
