@@ -372,7 +372,7 @@
                         theme: localStorage.getItem('theme') || 'dark',
                         title: 'Error',
                         html: 'Ocurrió un error al intentar la acción: <br>' +
-                            erroresConcatenados,
+                            htmlError,
                         icon: 'error'
                     });
                     btn.prop('disabled', false);

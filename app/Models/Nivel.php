@@ -15,6 +15,13 @@ class Nivel extends Model
     const CREATED_AT = 'fecha_registro';
     const UPDATED_AT = 'fecha_actualizacion';
 
+    /** Relación uno a muchos con grados */
+    public function grados()
+    {
+        return $this->hasMany(Grado::class, 'id_nivel', 'id_nivel')
+        ->orderBy('posicion_ordinal', 'ASC');
+    }
+
     /** Relación con atributo de auditoría */
     public function creado()
     {
@@ -35,11 +42,11 @@ class Nivel extends Model
 
     public function get_all_niveles()
     {
-        return $this::with('creado', 'modificado', 'eliminado')->orderBy('posicion_ordinal', 'ASC')->get();
+        return $this::with('grados', 'creado', 'modificado', 'eliminado')->orderBy('posicion_ordinal', 'ASC')->get();
     }
 
     public function get_nivel($id_nivel)
     {
-        return $this::with('creado', 'modificado', 'eliminado')->find($id_nivel);
+        return $this::with('grados', 'creado', 'modificado', 'eliminado')->find($id_nivel);
     }
 }

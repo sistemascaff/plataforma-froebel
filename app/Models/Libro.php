@@ -67,7 +67,7 @@ class Libro extends Model
 
     public function get_libro($id_libro)
     {
-        return $this::with('prestamos_libros.persona', /*'colegio',*/ 'prestado.estudiante.curso', 'creado', 'modificado', 'eliminado')->find($id_libro);
+        return $this::with('prestamos_libros.persona', /*'colegio',*/ 'prestado.estudiante.curso', 'creado', 'modificado', 'eliminado')->findOrFail($id_libro);
     }
 
     public function get_all_libros_public()

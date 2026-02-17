@@ -15,6 +15,12 @@ class Paralelo extends Model
     const CREATED_AT = 'fecha_registro';
     const UPDATED_AT = 'fecha_actualizacion';
 
+    /** Relación uno a muchos con cursos */
+    public function cursos()
+    {
+        return $this->hasMany(Curso::class, 'id_paralelo', 'id_paralelo');
+    }
+
     /** Relación con atributo de auditoría */
     public function creado()
     {
@@ -35,12 +41,11 @@ class Paralelo extends Model
 
     public function get_all_paralelos()
     {
-        return $this::with('creado', 'modificado', 'eliminado')
-            ->orderBy('id_nivel', 'ASC')->orderBy('posicion_ordinal', 'ASC')->get();
+        return $this::with('cursos', 'creado', 'modificado', 'eliminado')->get();
     }
 
     public function get_paralelo($id_paralelo)
     {
-        return $this::with('creado', 'modificado', 'eliminado')->find($id_paralelo);
+        return $this::with('cursos', 'creado', 'modificado', 'eliminado')->find($id_paralelo);
     }
 }

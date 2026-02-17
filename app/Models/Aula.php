@@ -5,27 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Curso extends Model
+class Aula extends Model
 {
     use HasFactory;
 
-    protected $table = 'cursos';
-    protected $primaryKey = 'id_curso';
+    protected $table = 'aulas';
+    protected $primaryKey = 'id_aula';
 
     const CREATED_AT = 'fecha_registro';
     const UPDATED_AT = 'fecha_actualizacion';
-
-    /** Relación FK con grados */
-    public function grado()
-    {
-        return $this->belongsTo(Grado::class, 'id_grado', 'id_grado');
-    }
-
-    /** Relación FK con paralelos */
-    public function paralelo()
-    {
-        return $this->belongsTo(Paralelo::class, 'id_paralelo', 'id_paralelo');
-    }
 
     /** Relación con atributo de auditoría */
     public function creado()
@@ -45,14 +33,16 @@ class Curso extends Model
         return $this->belongsTo(Usuario::class, 'eliminado_por', 'id_usuario');
     }
 
-    public function get_all_cursos()
+    public function get_all_aulas()
     {
-        return $this->with('grado', 'paralelo', 'creado', 'modificado', 'eliminado')
-            ->orderBy('id_grado', 'ASC')->orderBy('id_paralelo', 'ASC')->get();
+        return $this->with('creado', 'modificado', 'eliminado')
+            ->orderBy('aula', 'asc')
+            ->get();
     }
 
-    public function get_curso($id_curso)
+    public function get_aula($id_aula)
     {
-        return $this->with('grado', 'paralelo', 'creado', 'modificado', 'eliminado')->findOrFail($id_curso);
+        return $this->with('creado', 'modificado', 'eliminado')
+            ->findOrFail($id_aula);
     }
 }

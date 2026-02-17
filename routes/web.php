@@ -1,7 +1,14 @@
 <?php
 
+use App\Http\Controllers\AulaController;
+use App\Http\Controllers\CursoController;
+use App\Http\Controllers\DimensionController;
+use App\Http\Controllers\GestionController;
+use App\Http\Controllers\GradoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LibroController;
+use App\Http\Controllers\NivelController;
+use App\Http\Controllers\PeriodoController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\PrestamoLibroController;
 use App\Http\Controllers\UsuarioController;
@@ -73,4 +80,73 @@ Route::controller(PrestamoLibroController::class)->group(function () {
 Route::controller(PersonaController::class)->group(function () {
     Route::get('personas/listar', 'listar')->name('personas.listar');
     Route::get('personas/{persona}', 'mostrar')->name('personas.mostrar');
+});
+
+Route::controller(GestionController::class)->group(function () {
+    Route::get('gestiones', 'view_index')->name('gestiones.index');
+    Route::get('gestiones/listar', 'listar')->name('gestiones.listar');
+    Route::get('gestiones/{gestion}', 'mostrar')->name('gestiones.mostrar');
+    Route::post('gestiones', 'create')->name('gestiones.create');
+    Route::put('gestiones/{gestion}', 'update')->name('gestiones.update');
+    Route::patch('gestiones/{gestion}', 'delete')->name('gestiones.delete');
+
+    Route::get('gestiones/{gestion}/detalles', 'view_details')->name('gestiones.detalles');
+});
+
+Route::controller(PeriodoController::class)->group(function () {
+    Route::get('periodos', 'view_index')->name('periodos.index');
+    Route::get('periodos/listar', 'listar')->name('periodos.listar');
+    Route::get('periodos/{periodo}', 'mostrar')->name('periodos.mostrar');
+    Route::post('periodos', 'create')->name('periodos.create');
+    Route::put('periodos/{periodo}', 'update')->name('periodos.update');
+    Route::patch('periodos/{periodo}', 'delete')->name('periodos.delete');
+});
+
+Route::controller(DimensionController::class)->group(function () {
+    Route::get('dimensiones', 'view_index')->name('dimensiones.index');
+    Route::get('dimensiones/listar', 'listar')->name('dimensiones.listar');
+    Route::get('dimensiones/{dimension}', 'mostrar')->name('dimensiones.mostrar');
+    Route::post('dimensiones', 'create')->name('dimensiones.create');
+    Route::put('dimensiones/{dimension}', 'update')->name('dimensiones.update');
+    Route::patch('dimensiones/{dimension}', 'delete')->name('dimensiones.delete');
+});
+
+Route::controller(AulaController::class)->group(function () {
+    Route::get('aulas', 'view_index')->name('aulas.index');
+    Route::get('aulas/listar', 'listar')->name('aulas.listar');
+    Route::get('aulas/{aula}', 'mostrar')->name('aulas.mostrar');
+    Route::post('aulas', 'create')->name('aulas.create');
+    Route::put('aulas/{aula}', 'update')->name('aulas.update');
+    Route::patch('aulas/{aula}', 'delete')->name('aulas.delete');
+});
+
+Route::controller(NivelController::class)->group(function () {
+    Route::get('niveles', 'view_index')->name('niveles.index');
+    Route::get('niveles/listar', 'listar')->name('niveles.listar');
+    Route::get('niveles/{nivel}', 'mostrar')->name('niveles.mostrar');
+    Route::post('niveles', 'create')->name('niveles.create');
+    Route::put('niveles/{nivel}', 'update')->name('niveles.update');
+    Route::patch('niveles/{nivel}', 'delete')->name('niveles.delete');
+
+    Route::get('niveles/{nivel}/detalles', 'view_details')->name('niveles.detalles');
+});
+
+Route::controller(GradoController::class)->group(function () {
+    Route::get('grados', 'view_index')->name('grados.index');
+    Route::get('grados/listar', 'listar')->name('grados.listar');
+    Route::get('grados/{grado}', 'mostrar')->name('grados.mostrar');
+    Route::post('grados', 'create')->name('grados.create');
+    Route::put('grados/{grado}', 'update')->name('grados.update');
+    Route::patch('grados/{grado}', 'delete')->name('grados.delete');
+
+    Route::get('grados/{grado}/detalles', 'view_details')->name('grados.detalles');
+});
+
+Route::controller(CursoController::class)->group(function () {
+    Route::get('cursos', 'view_index')->name('cursos.index');
+    Route::get('cursos/listar', 'listar')->name('cursos.listar');
+    Route::get('cursos/{curso}', 'mostrar')->name('cursos.mostrar');
+    Route::post('cursos', 'create')->name('cursos.create');
+    Route::put('cursos/{curso}', 'update')->name('cursos.update');
+    Route::patch('cursos/{curso}', 'delete')->name('cursos.delete');
 });

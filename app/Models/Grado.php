@@ -21,6 +21,13 @@ class Grado extends Model
         return $this->belongsTo(Nivel::class, 'id_nivel', 'id_nivel');
     }
 
+    /** Relación uno a muchos con cursos */
+    public function cursos()
+    {
+        return $this->hasMany(Curso::class, 'id_grado', 'id_grado')
+        ->orderBy('curso', 'asc');
+    }
+
     /** Relación con atributo de auditoría */
     public function creado()
     {
@@ -41,12 +48,12 @@ class Grado extends Model
 
     public function get_all_grados()
     {
-        return $this::with('nivel', 'creado', 'modificado', 'eliminado')
+        return $this::with('nivel', 'cursos', 'creado', 'modificado', 'eliminado')
             ->orderBy('id_nivel', 'ASC')->orderBy('posicion_ordinal', 'ASC')->get();
     }
 
     public function get_grado($id_grado)
     {
-        return $this::with('nivel', 'creado', 'modificado', 'eliminado')->find($id_grado);
+        return $this::with('nivel', 'cursos', 'creado', 'modificado', 'eliminado')->find($id_grado);
     }
 }

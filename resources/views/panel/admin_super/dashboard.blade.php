@@ -21,6 +21,9 @@
         <div class="card-body">
             @if (session('id_usuario') == 1 && session('tipo_perfil') == 'ADMIN')
                 @include('panel.admin_super.dashboard_botones')
+            @else
+                <!-- Editar posteriormente -->
+                @include('panel.admin_super.dashboard_botones')
             @endif
         </div>
     </div>

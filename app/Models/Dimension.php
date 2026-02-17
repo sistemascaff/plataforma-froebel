@@ -5,26 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Curso extends Model
+class Dimension extends Model
 {
     use HasFactory;
 
-    protected $table = 'cursos';
-    protected $primaryKey = 'id_curso';
+    protected $table = 'dimensiones';
+    protected $primaryKey = 'id_dimension';
 
     const CREATED_AT = 'fecha_registro';
     const UPDATED_AT = 'fecha_actualizacion';
 
-    /** Relación FK con grados */
-    public function grado()
+    /** Relación FK con gestiones */
+    public function gestion()
     {
-        return $this->belongsTo(Grado::class, 'id_grado', 'id_grado');
-    }
-
-    /** Relación FK con paralelos */
-    public function paralelo()
-    {
-        return $this->belongsTo(Paralelo::class, 'id_paralelo', 'id_paralelo');
+        return $this->belongsTo(Gestion::class, 'id_gestion', 'id_gestion');
     }
 
     /** Relación con atributo de auditoría */
@@ -45,14 +39,18 @@ class Curso extends Model
         return $this->belongsTo(Usuario::class, 'eliminado_por', 'id_usuario');
     }
 
-    public function get_all_cursos()
+    public function get_all_dimensiones()
     {
-        return $this->with('grado', 'paralelo', 'creado', 'modificado', 'eliminado')
-            ->orderBy('id_grado', 'ASC')->orderBy('id_paralelo', 'ASC')->get();
+        return $this->with('gestion', 'creado', 'modificado', 'eliminado')
+            ->join('gestiones', 'dimensiones.id_gestion', '=', 'gestiones.id_gestion')
+            ->orderBy('gestiones.anio', 'desc')
+            ->orderBy('dimensiones.posicion_ordinal', 'asc')
+            ->select('dimensiones.*')
+            ->get();
     }
 
-    public function get_curso($id_curso)
+    public function get_dimension($id_dimension)
     {
-        return $this->with('grado', 'paralelo', 'creado', 'modificado', 'eliminado')->findOrFail($id_curso);
+        return $this->with('gestion', 'creado', 'modificado', 'eliminado')->findOrFail($id_dimension);
     }
 }
