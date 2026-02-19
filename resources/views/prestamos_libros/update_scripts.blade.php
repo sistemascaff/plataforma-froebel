@@ -34,12 +34,12 @@
                             ` - ${persona.estudiante.curso.curso}` :
                             '';
 
-                        let nombre_completo =
-                            persona.apellido_paterno + ' ' +
-                            persona.apellido_materno + ' ' +
-                            persona.nombres;
+                        let nombre_completo = [persona.apellido_paterno, persona
+                                .apellido_materno, persona.nombres
+                            ]
+                            .filter(Boolean)
+                            .join(' ');
 
-                        nombre_completo = nombre_completo.trim();
 
                         // Información de préstamos
                         let datos_libros = persona.cantidad_total_prestamos > 0 ?
@@ -151,14 +151,6 @@
                 },
                 {
                     data: "fecha_ingreso_cooperativa",
-                    render: function(data, type, row) {
-                        const fecha = new Date(data); // tu fecha
-                        const anio = fecha.getFullYear();
-                        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-                        const dia = String(fecha.getDate()).padStart(2, '0');
-                        return `${anio}-${mes}-${dia}`;
-                        //return `${dia}/${mes}/${anio}`;
-                    }
                 },
                 {
                     data: null,

@@ -1,17 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="text-center text-info fw-bold"><i class="fa-solid fa-duotone fa-stairs"></i> {{ $head_title }}</h1>
+    <h1 class="text-center text-info fw-bold"><i class="fa-solid fa-duotone fa-object-group"></i> {{ $head_title }}</h1>
 
     <button type="button" class="btn btn-success mb-3 btn-crear" data-bs-toggle="modal" data-bs-target="#modal-formulario">
-        <i class="fa-solid fa-duotone fa-plus"></i> Crear nivel</button>
+        <i class="fa-solid fa-duotone fa-plus"></i> Crear materia</button>
 
-    <h2 class="text-info fw-bold">Lista de niveles</h2>
-    
-    <p>
-        Los niveles representan las etapas educativas dentro del sistema académico. Cada nivel puede contener varios grados, y es fundamental para organizar la estructura educativa de la institución. 
-    </p>
-    
+    <h2 class="text-info fw-bold">Lista de materias</h2>
+
     <div class="card p-3 mb-3">
         <p>Seleccione una opción para <i class="fa-solid fa-duotone fa-file-export"></i> exportar o <i
                 class="fa-solid fa-duotone fa-filter"></i> filtrar la tabla:</p>
@@ -22,9 +18,10 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Nivel</th>
+                <th>Materia</th>
+                <th>Abreviatura</th>
                 <th>P. Ordinal</th>
-                <th>Grados</th>
+                <th>Campo</th>
                 <th>Estado</th>
                 <th>F. Registro</th>
                 <th>F. Actualización</th>
@@ -41,9 +38,9 @@
 
     <div class="mb-3"></div>
 
-    @include('niveles.modal_form')
+    @include('materias.modal_form')
 @endsection
 
 @section('scripts')
-    @include('niveles.index_scripts')
+    @include('materias.index_scripts')
 @endsection

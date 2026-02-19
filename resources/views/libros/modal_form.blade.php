@@ -81,7 +81,7 @@
 
                     <div class="mb-3">
                         <label for="costo" class="form-label">Costo <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" id="costo" name="costo" required>
+                        <input type="number" class="form-control" id="costo" name="costo" min="1" max="99999.99" step="0.01" required>
                     </div>
 
                     <div class="mb-3">

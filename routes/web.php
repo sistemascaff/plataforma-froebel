@@ -1,12 +1,15 @@
 <?php
 
+use App\Http\Controllers\AreaController;
 use App\Http\Controllers\AulaController;
+use App\Http\Controllers\CampoController;
 use App\Http\Controllers\CursoController;
 use App\Http\Controllers\DimensionController;
 use App\Http\Controllers\GestionController;
 use App\Http\Controllers\GradoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LibroController;
+use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\NivelController;
 use App\Http\Controllers\PeriodoController;
 use App\Http\Controllers\PersonaController;
@@ -149,4 +152,37 @@ Route::controller(CursoController::class)->group(function () {
     Route::post('cursos', 'create')->name('cursos.create');
     Route::put('cursos/{curso}', 'update')->name('cursos.update');
     Route::patch('cursos/{curso}', 'delete')->name('cursos.delete');
+});
+
+Route::controller(CampoController::class)->group(function () {
+    Route::get('campos', 'view_index')->name('campos.index');
+    Route::get('campos/listar', 'listar')->name('campos.listar');
+    Route::get('campos/{campo}', 'mostrar')->name('campos.mostrar');
+    Route::post('campos', 'create')->name('campos.create');
+    Route::put('campos/{campo}', 'update')->name('campos.update');
+    Route::patch('campos/{campo}', 'delete')->name('campos.delete');
+
+    Route::get('campos/{campo}/detalles', 'view_details')->name('campos.detalles');
+});
+
+Route::controller(AreaController::class)->group(function () {
+    Route::get('areas', 'view_index')->name('areas.index');
+    Route::get('areas/listar', 'listar')->name('areas.listar');
+    Route::get('areas/{area}', 'mostrar')->name('areas.mostrar');
+    Route::post('areas', 'create')->name('areas.create');
+    Route::put('areas/{area}', 'update')->name('areas.update');
+    Route::patch('areas/{area}', 'delete')->name('areas.delete');
+
+    Route::get('areas/{area}/detalles', 'view_details')->name('areas.detalles');
+});
+
+Route::controller(MateriaController::class)->group(function () {
+    Route::get('materias', 'view_index')->name('materias.index');
+    Route::get('materias/listar', 'listar')->name('materias.listar');
+    Route::get('materias/{materia}', 'mostrar')->name('materias.mostrar');
+    Route::post('materias', 'create')->name('materias.create');
+    Route::put('materias/{materia}', 'update')->name('materias.update');
+    Route::patch('materias/{materia}', 'delete')->name('materias.delete');
+
+    Route::get('materias/{materia}/detalles', 'view_details')->name('materias.detalles');
 });

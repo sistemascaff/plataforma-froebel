@@ -23,7 +23,7 @@ class LibroValidation extends FormRequest
     {
         return [
             'titulo' => ['required', 'string', 'max:200'],
-            'codigo' => ['required', 'integer', 'min:1'],
+            'codigo' => ['required', 'integer', 'min:1', 'max:999999'],
             'autor' => ['required', 'string', 'max:100'],
             'categoria' => ['required', 'string', 'max:100'],
             'editorial' => ['required', 'string', 'max:100'],
@@ -52,6 +52,7 @@ class LibroValidation extends FormRequest
             'codigo.required' => 'El código es obligatorio.',
             'codigo.integer' => 'El código debe ser un número entero.',
             'codigo.min' => 'El código debe ser mayor o igual a 1.',
+            'codigo.max' => 'El código no puede exceder 999999.',
             
             'autor.required' => 'El autor es obligatorio.',
             'autor.string' => 'El autor debe ser un texto.',

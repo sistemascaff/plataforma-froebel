@@ -82,14 +82,6 @@
                 },
                 {
                     data: "fecha_ingreso_cooperativa",
-                    render: function(data, type, row) {
-                        const fecha = new Date(data);
-                        const anio = fecha.getFullYear();
-                        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-                        const dia = String(fecha.getDate()).padStart(2, '0');
-                        return `${anio}-${mes}-${dia}`;
-                        //return `${dia}/${mes}/${anio}`;
-                    }
                 },
                 {
                     data: null,
@@ -270,7 +262,8 @@
             $('#form-crear-o-editar input[name="costo"]').val('');
             $('#descripcion').val('');
             $('#form-crear-o-editar input[name="adquisicion"]').val(1);
-            $('#form-crear-o-editar input[name="fecha_ingreso_cooperativa"]').val('{{ date('Y-m-d') }}');
+            $('#form-crear-o-editar input[name="fecha_ingreso_cooperativa"]').val(
+            '{{ date('Y-m-d') }}');
             $('#observacion').val('');
 
             const titleElement = document.getElementById('modal-formulario-titulo');
@@ -290,13 +283,17 @@
                 $('#form-crear-o-editar input[name="autor"]').val(libro.data.autor);
                 $('#form-crear-o-editar input[name="categoria"]').val(libro.data.categoria);
                 $('#form-crear-o-editar input[name="editorial"]').val(libro.data.editorial);
-                $('#form-crear-o-editar input[name="presentacion"]').val(libro.data.presentacion);
+                $('#form-crear-o-editar input[name="presentacion"]').val(libro.data
+                    .presentacion);
                 $('#form-crear-o-editar input[name="anio"]').val(libro.data.anio);
                 $('#form-crear-o-editar input[name="costo"]').val(libro.data.costo);
                 $('#descripcion').val(libro.data.descripcion);
                 $('#form-crear-o-editar input[name="adquisicion"]').val(libro.data.adquisicion);
-                $('#form-crear-o-editar input[name="fecha_ingreso_cooperativa"]').val(new Date(
-                    libro.data.fecha_ingreso_cooperativa).toISOString().split('T')[0]);
+                /* const fechaRaw = libro.data.fecha_ingreso_cooperativa;
+                const fechaFormateada = fechaRaw ? fechaRaw.split('T')[0] : '';
+                $('#form-crear-o-editar input[name="fecha_ingreso_cooperativa"]').val(
+                    fechaFormateada); */
+                $('#form-crear-o-editar input[name="fecha_ingreso_cooperativa"]').val(libro.data.fecha_ingreso_cooperativa);
                 $('#observacion').val(libro.data.observacion);
 
                 const titleElement = document.getElementById('modal-formulario-titulo');
