@@ -112,11 +112,12 @@
     }
 
 
+    const MAX_BARRAS_CHART = 20;
     // ==========================================
     // 1. Libros más prestados
     // ==========================================
-    const librosLabels = {!! json_encode($libros_mas_prestados->pluck('titulo')) !!};
-    const librosData = {!! json_encode($libros_mas_prestados->pluck('total')) !!};
+    const librosLabels = {!! json_encode($libros_mas_prestados->pluck('titulo')) !!}.slice(0, MAX_BARRAS_CHART);
+    const librosData = {!! json_encode($libros_mas_prestados->pluck('total')) !!}.slice(0, MAX_BARRAS_CHART);
     const coloresLibros = generarColoresChartJS(librosData.length);
 
     new Chart(document.getElementById('chart-libros-mas-prestados'), {
@@ -136,8 +137,8 @@
     // ==========================================
     // 2. Préstamos por categoría
     // ==========================================
-    const categoriaLabels = {!! json_encode($prestamos_por_categoria->pluck('categoria')) !!};
-    const categoriaData = {!! json_encode($prestamos_por_categoria->pluck('total')) !!};
+    const categoriaLabels = {!! json_encode($prestamos_por_categoria->pluck('categoria')) !!}.slice(0, MAX_BARRAS_CHART);
+    const categoriaData = {!! json_encode($prestamos_por_categoria->pluck('total')) !!}.slice(0, MAX_BARRAS_CHART);
     const coloresCategoria = generarColoresChartJS(categoriaData.length);
 
     new Chart(document.getElementById('chart-prestamos-por-categoria'), {
@@ -199,8 +200,8 @@
     // ==========================================
     // 5. Préstamos por persona
     // ==========================================
-    const personaLabels = {!! json_encode($prestamos_por_persona->pluck('persona')) !!};
-    const personaData = {!! json_encode($prestamos_por_persona->pluck('total')) !!};
+    const personaLabels = {!! json_encode($prestamos_por_persona->pluck('persona')) !!}.slice(0, MAX_BARRAS_CHART);
+    const personaData = {!! json_encode($prestamos_por_persona->pluck('total')) !!}.slice(0, MAX_BARRAS_CHART);
     const coloresPersona = generarColoresChartJS(personaData.length);
 
     new Chart(document.getElementById('chart-prestamos-por-persona'), {
@@ -227,9 +228,9 @@
                 '(' . $p->tipo_perfil . ') ' . $p->apellido_paterno . ' ' . $p->apellido_materno . ' ' . $p->nombres,
             );
         }),
-    ) !!};
-    const prestamosTotalesData = {!! json_encode($prestamos_totales->pluck('total_libros')) !!};
-    const prestamosPendientesData = {!! json_encode($prestamos_totales->pluck('libros_debe')) !!};
+    ) !!}.slice(0, MAX_BARRAS_CHART);
+    const prestamosTotalesData = {!! json_encode($prestamos_totales->pluck('total_libros')) !!}.slice(0, MAX_BARRAS_CHART);
+    const prestamosPendientesData = {!! json_encode($prestamos_totales->pluck('libros_debe')) !!}.slice(0, MAX_BARRAS_CHART);
     new Chart(document.getElementById('chart-relacion-prestamos-devoluciones'), {
         type: 'bar',
         data: {

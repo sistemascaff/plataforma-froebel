@@ -14,7 +14,8 @@
 
                     <div class="mb-3">
                         <label for="titulo" class="form-label">Título <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="titulo" name="titulo" list="libro-titulos" required>
+                        <input type="text" class="form-control" id="titulo" name="titulo" list="libro-titulos"
+                            required>
                     </div>
 
                     <datalist id="libro-titulos">
@@ -25,12 +26,14 @@
 
                     <div class="mb-3">
                         <label for="codigo" class="form-label">Código <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" id="codigo" name="codigo" step="1" required>
+                        <input type="number" class="form-control" id="codigo" name="codigo" step="1"
+                            required>
                     </div>
 
                     <div class="mb-3">
                         <label for="autor" class="form-label">Autor <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="autor" name="autor" list="libro-autores" required>
+                        <input type="text" class="form-control" id="autor" name="autor" list="libro-autores"
+                            required>
                     </div>
 
                     <datalist id="libro-autores">
@@ -41,7 +44,8 @@
 
                     <div class="mb-3">
                         <label for="categoria" class="form-label">Categoria <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="categoria" name="categoria" list="libro-categorias" required>
+                        <input type="text" class="form-control" id="categoria" name="categoria"
+                            list="libro-categorias" required>
                     </div>
 
                     <datalist id="libro-categorias">
@@ -52,7 +56,8 @@
 
                     <div class="mb-3">
                         <label for="editorial" class="form-label">Editorial <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="editorial" name="editorial" list="libro-editoriales" required>
+                        <input type="text" class="form-control" id="editorial" name="editorial"
+                            list="libro-editoriales" required>
                     </div>
 
                     <datalist id="libro-editoriales">
@@ -64,7 +69,8 @@
                     <div class="mb-3">
                         <label for="presentacion" class="form-label">Presentacion <span
                                 class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="presentacion" name="presentacion" list="libro-presentaciones" required>
+                        <input type="text" class="form-control" id="presentacion" name="presentacion"
+                            list="libro-presentaciones" required>
                     </div>
 
                     <datalist id="libro-presentaciones">
@@ -81,13 +87,14 @@
 
                     <div class="mb-3">
                         <label for="costo" class="form-label">Costo <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" id="costo" name="costo" min="1" max="99999.99" step="0.01" required>
+                        <input type="number" class="form-control" id="costo" name="costo" min="1"
+                            max="99999.99" step="0.01" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="descripcion" class="form-label">Descripción</label>
                         <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
-                    </div>                    
+                    </div>
 
                     <div class="mb-3">
                         <label for="adquisicion" class="form-label">Adquisición <span
@@ -102,24 +109,23 @@
                         <label for="fecha_ingreso_cooperativa" class="form-label">Fecha de ingreso cooperativa <span
                                 class="text-danger">*</span></label>
                         <input type="date" class="form-control" id="fecha_ingreso_cooperativa"
-                            name="fecha_ingreso_cooperativa"
-                            value="{{ date('Y-m-d') }}" required>
+                            name="fecha_ingreso_cooperativa" value="{{ date('Y-m-d') }}" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="observacion" class="form-label">Observación</label>
                         <textarea class="form-control" id="observacion" name="observacion" rows="3"></textarea>
                     </div>
-                    
+
                 </form>
             </div>
             <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
-                                class="fa-solid fa-duotone fa-close"></i>Cerrar</button>
-                        <button type="button" id="btn-guardar" class="btn btn-primary"><i
-                                class="fa-solid fa-duotone fa-save"></i>
-                            Guardar</button>
-                    </div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
+                        class="fa-solid fa-duotone fa-close"></i>Cerrar</button>
+                <button type="submit" id="btn-guardar" form="form-crear-o-editar" class="btn btn-primary">
+                    Guardar
+                </button>
             </div>
         </div>
     </div>
+</div>

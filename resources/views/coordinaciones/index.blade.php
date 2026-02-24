@@ -1,16 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="text-center text-info fw-bold"><i class="fa-solid fa-duotone fa-object-group"></i> {{ $head_title }}</h1>
+    <h1 class="text-center text-info fw-bold"><i class="fa-solid fa-duotone fa-sitemap"></i> {{ $head_title }}</h1>
 
     <button type="button" class="btn btn-success mb-3 btn-crear" data-bs-toggle="modal" data-bs-target="#modal-formulario">
-        <i class="fa-solid fa-duotone fa-plus"></i> Crear materia</button>
+        <i class="fa-solid fa-duotone fa-plus"></i> Crear coordinación</button>
 
-    <h2 class="text-info fw-bold">Lista de materias (internas)</h2>
-
-    <p>
-        Las materias son <b>áreas de estudio internas</b> que se estudian en nuestra institución, las cuales van de la mano con las <a href="{{route('areas.index')}}">áreas SIE</a> para la generación de calificaciones y reportes académicos. Estas materias no necesariamente coinciden con las materias oficiales del SIE, ya que pueden ser adaptadas o personalizadas para satisfacer las necesidades específicas de nuestra institución educativa, pero si deben estar asociadas a un área SIE para su correcta integración en el sistema académico.
-    </p>
+    <h2 class="text-info fw-bold">Lista de coordinaciones</h2>
     
     <div class="card p-3 mb-3">
         <p>Seleccione una opción para <i class="fa-solid fa-duotone fa-file-export"></i> exportar o <i
@@ -22,10 +18,9 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Materia</th>
-                <th>Abreviatura</th>
-                <th>P. Ordinal</th>
-                <th>Campo</th>
+                <th>Coordinación</th>
+                <th>Responsables</th>
+                <th>Asignaturas</th>
                 <th>Estado</th>
                 <th>F. Registro</th>
                 <th>F. Actualización</th>
@@ -42,9 +37,9 @@
 
     <div class="mb-3"></div>
 
-    @include('materias.modal_form')
+    @include('coordinaciones.modal_form')
 @endsection
 
 @section('scripts')
-    @include('materias.index_scripts')
+    @include('coordinaciones.index_scripts')
 @endsection

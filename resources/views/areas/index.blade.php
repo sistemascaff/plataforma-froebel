@@ -6,7 +6,7 @@
     <button type="button" class="btn btn-success mb-3 btn-crear" data-bs-toggle="modal" data-bs-target="#modal-formulario">
         <i class="fa-solid fa-duotone fa-plus"></i> Crear área</button>
 
-    <h2 class="text-info fw-bold">Lista de áreas</h2>
+    <h2 class="text-info fw-bold">Lista de áreas (SIE)</h2>
 
     <div class="card p-3 mb-3">
         <p>Seleccione una opción para <i class="fa-solid fa-duotone fa-file-export"></i> exportar o <i

@@ -23,9 +23,10 @@ class DimensionValidation extends FormRequest
     public function rules(): array
     {
         return [
-            'dimension' => [
-                'required', 'string', 'min:3', 'max:45',
-                Rule::unique('dimensiones', 'dimension')->ignore($this->route('dimension'), 'id_dimension'),
+            'dimension' => ['required', 'string', 'min:3', 'max:45',
+                Rule::unique('dimensiones', 'dimension')
+                    ->where('id_gestion', $this->input('id_gestion'))
+                    ->ignore($this->route('dimension'), 'id_dimension'),
             ],
             'posicion_ordinal' => 'required|integer|min:1|max:5',
             'id_gestion' => 'required|exists:gestiones,id_gestion',
@@ -44,7 +45,7 @@ class DimensionValidation extends FormRequest
             'dimension.string' => 'La dimensión debe ser un texto válido.',
             'dimension.min' => 'La dimensión debe tener al menos 3 caracteres.',
             'dimension.max' => 'La dimensión no puede tener más de 45 caracteres.',
-            'dimension.unique' => 'La dimensión ya está registrada.',
+            'dimension.unique' => 'La dimensión ya está registrado en la gestión seleccionada.',
 
             'posicion_ordinal.required' => 'La posición ordinal es obligatoria.',
             'posicion_ordinal.integer' => 'La posición ordinal debe ser un número entero.',

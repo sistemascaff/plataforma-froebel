@@ -14,17 +14,18 @@
 
                     <div class="mb-3">
                         <label for="anio" class="form-label">Año <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" id="anio" name="anio" min="2000" max="2050" step="1" required>
+                        <input type="number" class="form-control" id="anio" name="anio" min="2000"
+                            max="2050" step="1" required>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
-                                class="fa-solid fa-duotone fa-close"></i>Cerrar</button>
-                        <button type="button" id="btn-guardar" class="btn btn-primary"><i
-                                class="fa-solid fa-duotone fa-save"></i>
-                            Guardar</button>
-                    </div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
+                        class="fa-solid fa-duotone fa-close"></i>Cerrar</button>
+                <button type="submit" id="btn-guardar" form="form-crear-o-editar" class="btn btn-primary">
+                    Guardar
+                </button>
             </div>
         </div>
     </div>
+</div>

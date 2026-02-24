@@ -14,17 +14,22 @@
 
                     <div class="mb-3">
                         <label for="materia" class="form-label">Materia <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="materia" name="materia" min="3" max="60" required>
+                        <input type="text" class="form-control" id="materia" name="materia" min="3"
+                            max="60" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="abreviatura" class="form-label">Abreviatura <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="abreviatura" name="abreviatura" min="1" max="5" required>
+                        <label for="abreviatura" class="form-label">Abreviatura <span
+                                class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="abreviatura" name="abreviatura" min="1"
+                            max="5" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="posicion_ordinal" class="form-label">Posición ordinal <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" id="posicion_ordinal" name="posicion_ordinal" step="1" min="1" max="30" required>
+                        <label for="posicion_ordinal" class="form-label">Posición ordinal <span
+                                class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="posicion_ordinal" name="posicion_ordinal"
+                            step="1" min="1" max="30" required>
                     </div>
 
                     <div class="mb-3">
@@ -39,12 +44,12 @@
                 </form>
             </div>
             <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
-                                class="fa-solid fa-duotone fa-close"></i>Cerrar</button>
-                        <button type="button" id="btn-guardar" class="btn btn-primary"><i
-                                class="fa-solid fa-duotone fa-save"></i>
-                            Guardar</button>
-                    </div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
+                        class="fa-solid fa-duotone fa-close"></i>Cerrar</button>
+                <button type="submit" id="btn-guardar" form="form-crear-o-editar" class="btn btn-primary">
+                    Guardar
+                </button>
             </div>
         </div>
     </div>
+</div>

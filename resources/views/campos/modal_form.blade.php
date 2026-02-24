@@ -14,22 +14,25 @@
 
                     <div class="mb-3">
                         <label for="campo" class="form-label">Campo <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="campo" name="campo" min="3" max="45" required>
+                        <input type="text" class="form-control" id="campo" name="campo" min="3"
+                            max="45" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="posicion_ordinal" class="form-label">Posición ordinal <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" id="posicion_ordinal" name="posicion_ordinal" step="1" min="1" max="5" required>
+                        <label for="posicion_ordinal" class="form-label">Posición ordinal <span
+                                class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="posicion_ordinal" name="posicion_ordinal"
+                            step="1" min="1" max="5" required>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
-                                class="fa-solid fa-duotone fa-close"></i>Cerrar</button>
-                        <button type="button" id="btn-guardar" class="btn btn-primary"><i
-                                class="fa-solid fa-duotone fa-save"></i>
-                            Guardar</button>
-                    </div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
+                        class="fa-solid fa-duotone fa-close"></i>Cerrar</button>
+                <button type="submit" id="btn-guardar" form="form-crear-o-editar" class="btn btn-primary">
+                    Guardar
+                </button>
             </div>
         </div>
     </div>
+</div>

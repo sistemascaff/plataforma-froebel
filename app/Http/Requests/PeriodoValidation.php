@@ -23,9 +23,10 @@ class PeriodoValidation extends FormRequest
     public function rules(): array
     {
         return [
-            'periodo' => [
-                'required', 'string', 'min:3', 'max:45',
-                Rule::unique('periodos', 'periodo')->ignore($this->route('periodo'), 'id_periodo'),
+            'periodo' => ['required','string','min:3','max:45',
+                Rule::unique('periodos', 'periodo')
+                    ->where('id_gestion', $this->input('id_gestion'))
+                    ->ignore($this->route('periodo'), 'id_periodo'),
             ],
             'posicion_ordinal' => 'required|integer|min:1|max:4',
             'id_gestion' => 'required|exists:gestiones,id_gestion',
@@ -44,7 +45,7 @@ class PeriodoValidation extends FormRequest
             'periodo.string' => 'El periodo debe ser un texto válido.',
             'periodo.min' => 'El periodo debe tener al menos 3 caracteres.',
             'periodo.max' => 'El periodo no puede tener más de 45 caracteres.',
-            'periodo.unique' => 'El periodo ya está registrado.',
+            'periodo.unique' => 'El periodo ya está registrado en la gestión seleccionada.',
 
             'posicion_ordinal.required' => 'La posición ordinal es obligatoria.',
             'posicion_ordinal.integer' => 'La posición ordinal debe ser un número entero.',

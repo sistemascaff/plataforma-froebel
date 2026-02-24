@@ -14,11 +14,12 @@
 
                     <div class="mb-3">
                         <label for="curso" class="form-label">Curso <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="curso" name="curso" min="3" required>
+                        <input type="text" class="form-control" id="curso" name="curso" min="3"
+                            required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="grado" class="form-label">Nivel <span class="text-danger">*</span></label>
+                        <label for="grado" class="form-label">Grado <span class="text-danger">*</span></label>
                         <select class="form-select" id="grado" name="id_grado" required>
                             <option value="" disabled selected>Seleccione un grado</option>
                             @foreach ($grados as $grado)
@@ -39,12 +40,12 @@
                 </form>
             </div>
             <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
-                                class="fa-solid fa-duotone fa-close"></i>Cerrar</button>
-                        <button type="button" id="btn-guardar" class="btn btn-primary"><i
-                                class="fa-solid fa-duotone fa-save"></i>
-                            Guardar</button>
-                    </div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
+                        class="fa-solid fa-duotone fa-close"></i>Cerrar</button>
+                <button type="submit" id="btn-guardar" form="form-crear-o-editar" class="btn btn-primary">
+                    Guardar
+                </button>
             </div>
         </div>
     </div>
+</div>

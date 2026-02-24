@@ -3,6 +3,7 @@
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\AulaController;
 use App\Http\Controllers\CampoController;
+use App\Http\Controllers\CoordinacionController;
 use App\Http\Controllers\CursoController;
 use App\Http\Controllers\DimensionController;
 use App\Http\Controllers\GestionController;
@@ -185,4 +186,15 @@ Route::controller(MateriaController::class)->group(function () {
     Route::patch('materias/{materia}', 'delete')->name('materias.delete');
 
     Route::get('materias/{materia}/detalles', 'view_details')->name('materias.detalles');
+});
+
+Route::controller(CoordinacionController::class)->group(function () {
+    Route::get('coordinaciones', 'view_index')->name('coordinaciones.index');
+    Route::get('coordinaciones/listar', 'listar')->name('coordinaciones.listar');
+    Route::get('coordinaciones/{coordinacion}', 'mostrar')->name('coordinaciones.mostrar');
+    Route::post('coordinaciones', 'create')->name('coordinaciones.create');
+    Route::put('coordinaciones/{coordinacion}', 'update')->name('coordinaciones.update');
+    Route::patch('coordinaciones/{coordinacion}', 'delete')->name('coordinaciones.delete');
+
+    Route::get('coordinaciones/{coordinacion}/detalles', 'view_details')->name('coordinaciones.detalles');
 });

@@ -14,12 +14,15 @@
 
                     <div class="mb-3">
                         <label for="grado" class="form-label">Grado <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="grado" name="grado" min="3" required>
+                        <input type="text" class="form-control" id="grado" name="grado" min="3"
+                            required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="posicion_ordinal" class="form-label">Posición ordinal <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" id="posicion_ordinal" name="posicion_ordinal" step="1" min="1" max="4" required>
+                        <label for="posicion_ordinal" class="form-label">Posición ordinal <span
+                                class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="posicion_ordinal" name="posicion_ordinal"
+                            step="1" min="1" max="4" required>
                     </div>
 
                     <div class="mb-3">
@@ -34,12 +37,12 @@
                 </form>
             </div>
             <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
-                                class="fa-solid fa-duotone fa-close"></i>Cerrar</button>
-                        <button type="button" id="btn-guardar" class="btn btn-primary"><i
-                                class="fa-solid fa-duotone fa-save"></i>
-                            Guardar</button>
-                    </div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
+                        class="fa-solid fa-duotone fa-close"></i>Cerrar</button>
+                <button type="submit" id="btn-guardar" form="form-crear-o-editar" class="btn btn-primary">
+                    Guardar
+                </button>
             </div>
         </div>
     </div>
+</div>

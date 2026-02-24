@@ -25,7 +25,9 @@ class AreaValidation extends FormRequest
         return [
             'area' => [
                 'required', 'string', 'min:3', 'max:100',
-                Rule::unique('areas', 'area')->ignore($this->route('area'), 'id_area'),
+                Rule::unique('areas', 'area')
+                    ->where('id_campo', $this->input('id_campo'))
+                    ->ignore($this->route('area'), 'id_area'),
             ],
             'abreviatura' => 'required|string|max:5',
             'posicion_ordinal' => 'required|integer|min:1|max:30',
@@ -45,7 +47,7 @@ class AreaValidation extends FormRequest
             'area.string' => 'El nombre del área debe ser una cadena de texto.',
             'area.min' => 'El nombre del área debe tener al menos 3 caracteres.',
             'area.max' => 'El nombre del área no debe exceder los 100 caracteres.',
-            'area.unique' => 'Este nombre de área ya está registrado.',
+            'area.unique' => 'Este nombre de área ya existe para el campo seleccionado.',
 
             'abreviatura.required' => 'La abreviatura del área es obligatoria.',
             'abreviatura.string' => 'La abreviatura del área debe ser una cadena de texto.',

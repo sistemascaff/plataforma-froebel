@@ -23,9 +23,10 @@ class GradoValidation extends FormRequest
     public function rules(): array
     {
         return [
-            'grado' => [
-                'required', 'string', 'min:3', 'max:45',
-                Rule::unique('grados', 'grado')->ignore($this->route('grado'), 'id_grado'),
+            'grado' => ['required', 'string', 'min:3', 'max:45',
+                Rule::unique('grados', 'grado')
+                    ->where('id_nivel', $this->input('id_nivel'))
+                    ->ignore($this->route('grado'), 'id_grado'),
             ],
             'posicion_ordinal' => 'required|integer|min:1|max:20',
             'id_nivel' => 'required|exists:niveles,id_nivel',
@@ -44,7 +45,7 @@ class GradoValidation extends FormRequest
             'grado.string' => 'El grado debe ser un texto válido.',
             'grado.min' => 'El grado debe tener al menos 3 caracteres.',
             'grado.max' => 'El grado no puede tener más de 45 caracteres.',
-            'grado.unique' => 'El grado ya está registrado.',
+            'grado.unique' => 'El grado ya está registrado en el nivel seleccionado.',
 
             'posicion_ordinal.required' => 'La posición ordinal es obligatoria.',
             'posicion_ordinal.integer' => 'La posición ordinal debe ser un número entero.',

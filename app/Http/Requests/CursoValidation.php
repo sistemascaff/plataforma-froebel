@@ -23,11 +23,15 @@ class CursoValidation extends FormRequest
     public function rules(): array
     {
         return [
-            'curso' => [
-                'required', 'string', 'min:3', 'max:45',
-                Rule::unique('cursos', 'curso')->ignore($this->route('curso'), 'id_curso'),
+            'curso' => ['required', 'string', 'min:3', 'max:45',
+                Rule::unique('cursos', 'curso')
+                    ->ignore($this->route('curso'), 'id_curso'),
             ],
-            'id_grado'   => 'required|exists:grados,id_grado',
+            'id_grado' => ['required', 'exists:grados,id_grado',
+                Rule::unique('cursos', 'id_grado')
+                    ->where('id_paralelo', $this->input('id_paralelo'))
+                    ->ignore($this->route('curso'), 'id_curso'),
+            ],
             'id_paralelo' => 'required|exists:paralelos,id_paralelo',
         ];
     }
@@ -45,14 +49,14 @@ class CursoValidation extends FormRequest
             'curso.string'   => 'El nombre del curso debe ser texto.',
             'curso.min'      => 'El nombre del curso debe tener al menos 3 caracteres.',
             'curso.max'      => 'El nombre del curso no debe superar los 45 caracteres.',
-            'curso.unique'   => 'Este curso ya está registrado.',
+            'curso.unique'   => 'Este curso ya existe.',
 
             'id_grado.required'    => 'El grado es obligatorio.',
             'id_grado.exists'      => 'El grado seleccionado no existe.',
-            
+            'id_grado.unique'      => 'Ya existe un curso con el mismo grado y paralelo.',
+
             'id_paralelo.required' => 'El paralelo es obligatorio.',
             'id_paralelo.exists'   => 'El paralelo seleccionado no existe.',
         ];
     }
-    
 }

@@ -14,17 +14,18 @@
 
                     <div class="mb-3">
                         <label for="aula" class="form-label">Aula <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="aula" name="aula" min="3" max="65" required>
+                        <input type="text" class="form-control" id="aula" name="aula" min="3"
+                            max="65" required>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
-                                class="fa-solid fa-duotone fa-close"></i>Cerrar</button>
-                        <button type="button" id="btn-guardar" class="btn btn-primary"><i
-                                class="fa-solid fa-duotone fa-save"></i>
-                            Guardar</button>
-                    </div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
+                        class="fa-solid fa-duotone fa-close"></i>Cerrar</button>
+                <button type="submit" id="btn-guardar" form="form-crear-o-editar" class="btn btn-primary">
+                    Guardar
+                </button>
             </div>
         </div>
     </div>
+</div>

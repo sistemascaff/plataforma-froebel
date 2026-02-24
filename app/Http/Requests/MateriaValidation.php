@@ -25,7 +25,9 @@ class MateriaValidation extends FormRequest
         return [
             'materia' => [
                 'required', 'string', 'min:3', 'max:60',
-                Rule::unique('materias', 'materia')->ignore($this->route('materia'), 'id_materia'),
+                Rule::unique('materias', 'materia')
+                    ->where('id_campo', $this->input('id_campo'))
+                    ->ignore($this->route('materia'), 'id_materia'),
             ],
             'abreviatura' => 'required|string|max:5',
             'posicion_ordinal' => 'required|integer|min:1|max:30',
@@ -45,7 +47,7 @@ class MateriaValidation extends FormRequest
             'materia.string' => 'El nombre de la materia debe ser una cadena de texto.',
             'materia.min' => 'El nombre de la materia debe tener al menos 3 caracteres.',
             'materia.max' => 'El nombre de la materia no debe exceder los 60 caracteres.',
-            'materia.unique' => 'Este nombre de materia ya está registrado.',
+            'materia.unique' => 'Este nombre de materia ya existe para el campo seleccionado.',
 
             'abreviatura.required' => 'La abreviatura de la materia es obligatoria.',
             'abreviatura.string' => 'La abreviatura de la materia debe ser una cadena de texto.',
