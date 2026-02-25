@@ -8,7 +8,7 @@
 
     <h2 class="text-info fw-bold">Lista de cursos</h2>
     
-    <p>
+    <p class="text-justify">
         Los cursos representan las unidades académicas que se ofrecen en la institución educativa.
     </p>
     <div class="card p-3 mb-3">

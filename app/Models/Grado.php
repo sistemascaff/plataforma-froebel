@@ -28,6 +28,14 @@ class Grado extends Model
         ->orderBy('curso', 'asc');
     }
 
+    /** Relación uno a muchos con mallas_curriculares */
+    public function mallas_curriculares()
+    {
+        return $this->hasMany(MallaCurricular::class, 'id_grado', 'id_grado')
+        ->orderBy('id_gestion', 'DESC')
+        ->orderBy('id_materia', 'ASC');
+    }
+
     /** Relación con atributo de auditoría */
     public function creado()
     {
@@ -48,12 +56,12 @@ class Grado extends Model
 
     public function get_all_grados()
     {
-        return $this::with('nivel', 'cursos', 'creado', 'modificado', 'eliminado')
+        return $this::with('nivel', 'cursos', 'mallas_curriculares.materia', 'mallas_curriculares.area', 'mallas_curriculares.gestion', 'creado', 'modificado', 'eliminado')
             ->orderBy('id_nivel', 'ASC')->orderBy('posicion_ordinal', 'ASC')->get();
     }
 
     public function get_grado($id_grado)
     {
-        return $this::with('nivel', 'cursos', 'creado', 'modificado', 'eliminado')->find($id_grado);
+        return $this::with('nivel', 'cursos', 'mallas_curriculares.materia', 'mallas_curriculares.area', 'mallas_curriculares.gestion', 'creado', 'modificado', 'eliminado')->findOrFail($id_grado);
     }
 }

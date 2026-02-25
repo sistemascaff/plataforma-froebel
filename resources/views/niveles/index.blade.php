@@ -8,7 +8,7 @@
 
     <h2 class="text-info fw-bold">Lista de niveles</h2>
     
-    <p>
+    <p class="text-justify">
         Los niveles representan las etapas educativas dentro del sistema académico. Cada nivel puede contener varios grados, y es fundamental para organizar la estructura educativa de la institución. 
     </p>
     

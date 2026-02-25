@@ -8,7 +8,7 @@
 
     <h2 class="text-info fw-bold">Lista de materias (internas)</h2>
 
-    <p>
+    <p class="text-justify">
         Las materias son <b>áreas de estudio internas</b> que se estudian en nuestra institución, las cuales van de la mano con las <a href="{{route('areas.index')}}">áreas SIE</a> para la generación de calificaciones y reportes académicos. Estas materias no necesariamente coinciden con las materias oficiales del SIE, ya que pueden ser adaptadas o personalizadas para satisfacer las necesidades específicas de nuestra institución educativa, pero si deben estar asociadas a un área SIE para su correcta integración en el sistema académico.
     </p>
     

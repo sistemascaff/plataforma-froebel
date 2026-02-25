@@ -101,7 +101,7 @@
                         return `
                             <div class="btn-group" role="group">
                                 <a class="btn btn-info btn-sm" href="${url_detalles}" target="_blank" rel="noopener noreferrer"
-                                    data-toggle="tooltip" title="Editar">
+                                    data-toggle="tooltip" title="Detalles">
                                     <i class="fa-duotone fa-solid fa-eye"></i>
                                 </a>
                                 <button type="button" class="btn btn-warning btn-sm btn-editar" 

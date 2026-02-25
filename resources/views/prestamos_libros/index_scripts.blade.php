@@ -231,7 +231,7 @@
                         return `
                             <div class="btn-group" role="group">
                                 <a class="btn btn-info btn-sm" href="${url_detalles}" target="_blank" rel="noopener noreferrer"
-                                    data-toggle="tooltip" title="Editar">
+                                    data-toggle="tooltip" title="Detalles">
                                     <i class="fa-duotone fa-solid fa-eye"></i>
                                 </a>
                                 <a class="btn btn-warning btn-sm" href="${url_editar}" target="_blank" rel="noopener noreferrer"

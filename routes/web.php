@@ -10,6 +10,7 @@ use App\Http\Controllers\GestionController;
 use App\Http\Controllers\GradoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LibroController;
+use App\Http\Controllers\MallaCurricularController;
 use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\NivelController;
 use App\Http\Controllers\PeriodoController;
@@ -197,4 +198,15 @@ Route::controller(CoordinacionController::class)->group(function () {
     Route::patch('coordinaciones/{coordinacion}', 'delete')->name('coordinaciones.delete');
 
     Route::get('coordinaciones/{coordinacion}/detalles', 'view_details')->name('coordinaciones.detalles');
+});
+
+Route::controller(MallaCurricularController::class)->group(function () {
+    Route::get('mallas_curriculares', 'view_index')->name('mallas_curriculares.index');
+    Route::get('mallas_curriculares/listar', 'listar')->name('mallas_curriculares.listar');
+    Route::get('mallas_curriculares/{malla_curricular}', 'mostrar')->name('mallas_curriculares.mostrar');
+    Route::post('mallas_curriculares', 'create')->name('mallas_curriculares.create');
+    Route::put('mallas_curriculares/{malla_curricular}', 'update')->name('mallas_curriculares.update');
+    Route::patch('mallas_curriculares/{malla_curricular}', 'delete')->name('mallas_curriculares.delete');
+
+    Route::get('mallas_curriculares/{malla_curricular}/detalles', 'view_details')->name('mallas_curriculares.detalles');
 });

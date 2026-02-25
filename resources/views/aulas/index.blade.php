@@ -8,7 +8,7 @@
 
     <h2 class="text-info fw-bold">Lista de aulas</h2>
 
-    <p>Las aulas son espacios físicos donde se llevan a cabo las actividades académicas.</p>
+    <p class="text-justify">Las aulas son espacios físicos donde se llevan a cabo las actividades académicas.</p>
 
     <div class="card p-3 mb-3">
         <p>Seleccione una opción para <i class="fa-solid fa-duotone fa-file-export"></i> exportar o <i

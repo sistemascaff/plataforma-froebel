@@ -40,6 +40,18 @@
                     }
                 },
                 {
+                    data: "mallas_curriculares",
+                    render: function(data, type, row) {
+                        if (!data || data.length === 0) {
+                            return "-";
+                        }
+
+                        return data.map((malla_curricular, index) =>
+                            `<b class="text-info">${index + 1}.</b> ${malla_curricular.materia.abreviatura} (${malla_curricular.area.abreviatura}, ${malla_curricular.gestion.anio})`
+                        ).join("<br>");
+                    }
+                },
+                {
                     data: "estado",
                     render: function(data, type, row) {
                         if (data == 1) {
@@ -104,8 +116,15 @@
                     orderable: false,
                     searchable: false,
                     render: function(data, type, row) {
+                        const url_detalles = "{{ route('grados.detalles', ':id') }}"
+                            .replace(':id', row.id_grado);
+
                         return `
                             <div class="btn-group" role="group" aria-label="Acciones">
+                                <a class="btn btn-info btn-sm" href="${url_detalles}" target="_blank" rel="noopener noreferrer"
+                                    data-toggle="tooltip" title="Detalles">
+                                    <i class="fa-duotone fa-solid fa-eye"></i>
+                                </a>
                                 <button type="button" class="btn btn-warning btn-sm btn-editar" 
                                     data-id="${row.id_grado}" data-toggle="tooltip" title="Editar">
                                     <i class="fa-duotone fa-solid fa-edit"></i>

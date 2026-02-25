@@ -8,7 +8,7 @@
 
     <h2 class="text-info fw-bold">Lista de periodos</h2>
 
-    <p>
+    <p class="text-justify">
         Los periodos representan las etapas de una gestión académica, cada periodo tiene un nombre, una posición ordinal que determina su orden de aparición y una gestión a la que pertenece. Los periodos permiten organizar y estructurar la información de manera clara y coherente, facilitando la evaluación y el análisis de los registros pedagógicos.
     </p>
 

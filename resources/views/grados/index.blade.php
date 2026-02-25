@@ -8,7 +8,7 @@
 
     <h2 class="text-info fw-bold">Lista de grados</h2>
 
-    <p>
+    <p class="text-justify">
         Los grados representan las divisiones dentro de cada nivel educativo. Cada grado puede contener varios cursos y la <span class="badge bg-secondary">posición ordinal</span> de los grados dentro de un nivel determina la promoción de los estudiantes al siguiente grado correspondiente.
     </p>
 
@@ -26,6 +26,7 @@
                 <th>P. Ordinal</th>
                 <th>Nivel</th>
                 <th>Cursos</th>
+                <th>Malla curricular</th>
                 <th>Estado</th>
                 <th>F. Registro</th>
                 <th>F. Actualización</th>

@@ -24,6 +24,19 @@ class GradoController extends Controller
         ]);
     }
 
+    public function view_details($grado){
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
+            return redirect()->route('main.index');
+        }
+
+        $grado = (new Grado())->get_grado($grado);
+
+        return view('grados.details', [
+            'head_title' => 'DETALLES DEL GRADO: ' . $grado->grado,
+            'grado' => $grado
+        ]);
+    }
+
     public function listar()
     {
         if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {

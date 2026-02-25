@@ -8,7 +8,7 @@
 
     <h2 class="text-info fw-bold">Lista de dimensiones</h2>
 
-    <p>
+    <p class="text-justify">
         Las dimensiones son las capas de evaluación que conforman la estructura del registro pedagógico. Cada dimensión tiene un <span class="badge bg-secondary">nombre</span>, una <span class="badge bg-secondary">posición ordinal</span> que determina su orden de aparición, un <span class="badge bg-secondary">puntaje máximo</span> que indica la puntuación máxima asignada a esa dimensión, un <span class="badge bg-secondary">tipo de cálculo</span> que especifica cómo se calculará el puntaje (ya sea sumatoria o promedio) y una gestión a la que pertenece.
     </p>
 

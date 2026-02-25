@@ -1,9 +1,17 @@
 <script>
     $(document).ready(function() {
+        $('.select2').select2({
+            width: '100%',
+            language: "es",
+            dropdownCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
+            selectionCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
+            dropdownParent: $('#modal-formulario'),
+        });
+
         $("#dataTable").DataTable({
             processing: true,
             ajax: {
-                url: "{{ route('materias.listar') }}", // Ruta de Laravel
+                url: "{{ route('mallas_curriculares.listar') }}", // Ruta de Laravel
                 type: "GET",
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -19,16 +27,22 @@
                     }
                 },
                 {
-                    data: "materia",
+                    data: "grado.grado",
                 },
                 {
-                    data: "abreviatura",
+                    data: "materia.materia",
                 },
                 {
-                    data: "posicion_ordinal",
+                    data: "materia.abreviatura",
                 },
                 {
-                    data: "campo.campo",
+                    data: "area.area",
+                },
+                {
+                    data: "area.abreviatura",
+                },
+                {
+                    data: "gestion.anio",
                 },
                 {
                     data: "estado",
@@ -95,8 +109,8 @@
                     orderable: false,
                     searchable: false,
                     render: function(data, type, row) {
-                        const url_detalles = "{{ route('materias.detalles', ':id') }}"
-                            .replace(':id', row.id_materia);
+                        const url_detalles = "{{ route('mallas_curriculares.detalles', ':id') }}"
+                            .replace(':id', row.id_malla_curricular);
 
                         return `
                             <div class="btn-group" role="group">
@@ -105,11 +119,11 @@
                                     <i class="fa-duotone fa-solid fa-eye"></i>
                                 </a>
                                 <button type="button" class="btn btn-warning btn-sm btn-editar" 
-                                        data-id="${row.id_materia}" data-toggle="tooltip" title="Editar">
+                                        data-id="${row.id_malla_curricular}" data-toggle="tooltip" title="Editar">
                                     <i class="fa-duotone fa-solid fa-edit"></i>
                                 </button>
                                 <button type="button" class="btn btn-${row.estado == 1 ? 'danger' : 'success'} btn-sm btn-cambiar-estado" 
-                                        data-id="${row.id_materia}" data-estado="${row.estado}" data-nombre="${row.materia}" 
+                                        data-id="${row.id_malla_curricular}" data-estado="${row.estado}" data-nombre="${row.gestion.gestion}" 
                                         data-toggle="tooltip" title="${row.estado == 1 ? 'Deshabilitar' : 'Habilitar'}">
                                     <i class="fa-duotone fa-solid fa-toggle-${row.estado == 1 ? 'off' : 'on'}"></i>
                                 </button>
@@ -122,14 +136,15 @@
         }).buttons().container().appendTo('#dataTable-export-buttons-container');
 
         $(document).on('click', '.btn-crear', function() {
-            $('#form-crear-o-editar input[name="id_materia"]').val(0);
-            $('#form-crear-o-editar input[name="materia"]').val('');
-            $('#form-crear-o-editar input[name="abreviatura"]').val('');
-            $('#form-crear-o-editar input[name="posicion_ordinal"]').val('');
-            $('#form-crear-o-editar select[name="id_campo"]').val('');
+            $('#form-crear-o-editar input[name="id_malla_curricular"]').val(0);
+            //se usa trigger('change') para que los select2 actualicen su valor, de normal no sería necesario.
+            $('#form-crear-o-editar select[name="id_grado"]').val('').trigger('change');
+            $('#form-crear-o-editar select[name="id_materia"]').val('').trigger('change');
+            $('#form-crear-o-editar select[name="id_area"]').val('').trigger('change');
+            $('#form-crear-o-editar select[name="id_gestion"]').val('').trigger('change');
 
             const titleElement = document.getElementById('modal-formulario-titulo');
-            titleElement.innerHTML = '<i class="fa-solid fa-duotone fa-plus"></i> CREAR MATERIA';
+            titleElement.innerHTML = '<i class="fa-solid fa-duotone fa-plus"></i> CREAR MALLA CURRICULAR';
             $('#modal-formulario').modal('show');
         });
 
@@ -138,16 +153,17 @@
         $(document).on('click', '.btn-editar', function() {
             const id = $(this).data('id');
 
-            $.get("{{ route('materias.index') . '/' }}" + id, function(materia) {
-                $('#form-crear-o-editar input[name="id_materia"]').val(materia.data.id_materia);
-                $('#form-crear-o-editar input[name="materia"]').val(materia.data.materia);
-                $('#form-crear-o-editar input[name="abreviatura"]').val(materia.data.abreviatura);
-                $('#form-crear-o-editar input[name="posicion_ordinal"]').val(materia.data.posicion_ordinal);
-                $('#form-crear-o-editar select[name="id_campo"]').val(materia.data.id_campo);
+            $.get("{{ route('mallas_curriculares.index') . '/' }}" + id, function(malla_curricular) {
+                $('#form-crear-o-editar input[name="id_malla_curricular"]').val(malla_curricular.data.id_malla_curricular);
+                //se usa trigger('change') para que los select2 actualicen su valor, de normal no sería necesario.
+                $('#form-crear-o-editar select[name="id_grado"]').val(malla_curricular.data.id_grado).trigger('change');
+                $('#form-crear-o-editar select[name="id_materia"]').val(malla_curricular.data.id_materia).trigger('change');
+                $('#form-crear-o-editar select[name="id_area"]').val(malla_curricular.data.id_area).trigger('change');
+                $('#form-crear-o-editar select[name="id_gestion"]').val(malla_curricular.data.id_gestion).trigger('change');
 
                 const titleElement = document.getElementById('modal-formulario-titulo');
                 titleElement.innerHTML =
-                    '<i class="fa-solid fa-duotone fa-edit"></i> EDITAR MATERIA';
+                    '<i class="fa-solid fa-duotone fa-edit"></i> EDITAR MALLA CURRICULAR';
                 $('#modal-formulario').modal('show');
             });
         });
@@ -159,14 +175,14 @@
             btn.prop('disabled', true);
             btn.html('<i class="fa-solid fa-duotone fa-spinner fa-spin"></i> Guardando...');
 
-            const id_materia = $('#form-crear-o-editar input[name="id_materia"]').val();
-            const url = id_materia == 0 ?
-                "{{ route('materias.create') }}" // POST -> crear
+            const id_malla_curricular = $('#form-crear-o-editar input[name="id_malla_curricular"]').val();
+            const url = id_malla_curricular == 0 ?
+                "{{ route('mallas_curriculares.create') }}" // POST -> crear
                 :
-                "{{ route('materias.update', ':id') }}"
-                .replace(':id', id_materia); // PUT -> actualizar
+                "{{ route('mallas_curriculares.update', ':id') }}"
+                .replace(':id', id_malla_curricular); // PUT -> actualizar
 
-            const type = id_materia == 0 ? 'POST' : 'PUT';
+            const type = id_malla_curricular == 0 ? 'POST' : 'PUT';
 
             $.ajax({
                 url: url,
@@ -233,7 +249,7 @@
             Swal.fire({
                 theme: localStorage.getItem('theme') || 'dark',
                 title: `¡ATENCIÓN!`,
-                html: `¿Estás seguro de <b>${accion}</b> el materia <span class="text-primary fw-bold">${nombre}</span>?`,
+                html: `¿Estás seguro de <b>${accion}</b> la malla curricular <span class="text-primary fw-bold">${nombre}</span>?`,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -243,13 +259,13 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: "{{ route('materias.index') . '/' }}" + id,
+                        url: "{{ route('mallas_curriculares.index') . '/' }}" + id,
                         type: "PATCH",
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
                         data: {
-                            id_materia: id
+                            id_malla_curricular: id
                         },
                         success: function(response) {
                             Swal.fire({
@@ -288,7 +304,7 @@
                                 theme: localStorage.getItem('theme') ||
                                     'dark',
                                 title: 'Error',
-                                text: `No se pudo ${accion} la materia`,
+                                text: `No se pudo ${accion} la malla curricular`,
                                 icon: 'error'
                             });
                         }
