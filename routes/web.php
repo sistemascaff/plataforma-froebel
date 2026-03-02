@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AreaController;
+use App\Http\Controllers\AsignaturaController;
 use App\Http\Controllers\AulaController;
 use App\Http\Controllers\CampoController;
 use App\Http\Controllers\CoordinacionController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\CursoController;
 use App\Http\Controllers\DimensionController;
 use App\Http\Controllers\GestionController;
 use App\Http\Controllers\GradoController;
+use App\Http\Controllers\HorarioAsignaturaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LibroController;
 use App\Http\Controllers\MallaCurricularController;
@@ -81,7 +83,6 @@ Route::controller(PrestamoLibroController::class)->group(function () {
     Route::post('prestamos_libros/{prestamo_libro}/marcar/{libro}', 'marcar_devolucion')->name('prestamos_libros.marcar');
 });
 
-/* Tabla con PK FK 'colegios'*/
 Route::controller(PersonaController::class)->group(function () {
     Route::get('personas/listar', 'listar')->name('personas.listar');
     Route::get('personas/{persona}', 'mostrar')->name('personas.mostrar');
@@ -209,4 +210,26 @@ Route::controller(MallaCurricularController::class)->group(function () {
     Route::patch('mallas_curriculares/{malla_curricular}', 'delete')->name('mallas_curriculares.delete');
 
     Route::get('mallas_curriculares/{malla_curricular}/detalles', 'view_details')->name('mallas_curriculares.detalles');
+});
+
+Route::controller(AsignaturaController::class)->group(function () {
+    Route::get('asignaturas', 'view_index')->name('asignaturas.index');
+    Route::get('asignaturas/listar', 'listar')->name('asignaturas.listar');
+    Route::get('asignaturas/{asignatura}', 'mostrar')->name('asignaturas.mostrar');
+    Route::post('asignaturas', 'create')->name('asignaturas.create');
+    Route::put('asignaturas/{asignatura}', 'update')->name('asignaturas.update');
+    Route::patch('asignaturas/{asignatura}', 'delete')->name('asignaturas.delete');
+
+    Route::get('asignaturas/{asignatura}/detalles', 'view_details')->name('asignaturas.detalles');
+});
+
+Route::controller(HorarioAsignaturaController::class)->group(function () {
+    Route::get('horarios_asignaturas', 'view_index')->name('horarios_asignaturas.index');
+    Route::get('horarios_asignaturas/listar', 'listar')->name('horarios_asignaturas.listar');
+    Route::get('horarios_asignaturas/{horario_asignatura}', 'mostrar')->name('horarios_asignaturas.mostrar');
+    Route::post('horarios_asignaturas', 'create')->name('horarios_asignaturas.create');
+    Route::put('horarios_asignaturas/{horario_asignatura}', 'update')->name('horarios_asignaturas.update');
+    Route::patch('horarios_asignaturas/{horario_asignatura}', 'delete')->name('horarios_asignaturas.delete');
+
+    Route::get('horarios_asignaturas/{horario_asignatura}/detalles', 'view_details')->name('horarios_asignaturas.detalles');
 });

@@ -7,7 +7,7 @@ function helper_titulo_pagina()
 
 function helper_version_app()
 {
-    return "0.1";
+    return "0.3";
 }
 
 function helper_encrypt($string)

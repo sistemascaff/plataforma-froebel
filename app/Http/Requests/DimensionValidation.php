@@ -29,6 +29,8 @@ class DimensionValidation extends FormRequest
                     ->ignore($this->route('dimension'), 'id_dimension'),
             ],
             'posicion_ordinal' => 'required|integer|min:1|max:5',
+            'puntaje_maximo' => 'required|integer|min:1|max:100',
+            'tipo_calculo' => 'required|string|max:20|in:sumatoria,promedio',
             'id_gestion' => 'required|exists:gestiones,id_gestion',
         ];
     }
@@ -51,6 +53,16 @@ class DimensionValidation extends FormRequest
             'posicion_ordinal.integer' => 'La posición ordinal debe ser un número entero.',
             'posicion_ordinal.min' => 'La posición ordinal debe ser al menos 1.',
             'posicion_ordinal.max' => 'La posición ordinal no puede ser mayor a 5.',
+
+            'puntaje_maximo.required' => 'El puntaje máximo es obligatorio.',
+            'puntaje_maximo.integer' => 'El puntaje máximo debe ser un número entero.',
+            'puntaje_maximo.min' => 'El puntaje máximo debe ser al menos 1.',
+            'puntaje_maximo.max' => 'El puntaje máximo no puede ser mayor a 100.',
+            
+            'tipo_calculo.required' => 'El tipo de cálculo es obligatorio.',
+            'tipo_calculo.string' => 'El tipo de cálculo debe ser un texto válido.',
+            'tipo_calculo.max' => 'El tipo de cálculo no puede tener más de 20 caracteres.',
+            'tipo_calculo.in' => 'El tipo de cálculo debe ser "sumatoria" o "promedio".',
 
             'id_gestion.required' => 'Debe seleccionar una gestión.',
             'id_gestion.exists' => 'La gestión seleccionada no existe.',

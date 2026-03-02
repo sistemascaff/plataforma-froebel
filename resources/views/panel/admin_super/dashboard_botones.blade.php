@@ -113,6 +113,26 @@
     </div>
 </div>
 
+<div class="row">
+    <div class="col-6 col-md-4 col-lg-2 d-flex justify-content-center my-3">
+        <a class="btn btn-sq-lg btn-info" href="{{ route('asignaturas.index') }}">
+            <div>
+                <i class="fa-solid fa-duotone fa-star fa-2xl"></i>
+                <br>Gestión de asignaturas
+            </div>
+        </a>
+    </div>
+
+    <div class="col-6 col-md-4 col-lg-2 d-flex justify-content-center my-3">
+        <a class="btn btn-sq-lg btn-info" href="{{ route('horarios_asignaturas.index') }}">
+            <div>
+                <i class="fa-solid fa-duotone fa-clock fa-2xl"></i>
+                <br>Gestión de horarios de asignaturas
+            </div>
+        </a>
+    </div>
+</div>
+
 <span class="h3 text-decoration-underline fw-bold">BIBLIOTECA</span>
 
 <div class="row">
