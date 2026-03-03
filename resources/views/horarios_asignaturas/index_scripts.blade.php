@@ -23,9 +23,15 @@
                 },
                 {
                     data: "hora_inicio",
+                    render: function(data, type, row) {
+                        return data.substring(0, 5);
+                    }
                 },
                 {
                     data: "hora_fin",
+                    render: function(data, type, row) {
+                        return data.substring(0, 5);
+                    }
                 },
                 {
                     data: "nivel.nivel",

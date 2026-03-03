@@ -88,7 +88,13 @@
                     data: "codigo",
                     render: function(data, type, rowData, row) {
                         if (rowData.estado == 1) {
-                            return `<span class="text-success fw-bold">${data}</span>`;
+                            return `<span class="text-success fw-bold codigo-clickeable" style="cursor:pointer;"
+                                    data-id="${rowData.id_libro}" 
+                                    data-codigo="${data}" 
+                                    data-titulo="${rowData.titulo}"
+                                    title="Clic para agregar al préstamo">
+                                    ${data}
+                                </span>`;
                         } else if (rowData.estado == 0) {
                             return `<span class="text-secondary fw-bold">${data}</span>`;
                         } else if (rowData.estado == 2) {
@@ -256,6 +262,12 @@
                         </td>
                     </tr>`
             );
+        });
+
+        // Permite hacer clic en el código del libro para agregar el libro al préstamo.
+        $(document).on('click', '.codigo-clickeable', function() {
+            // Reutiliza exactamente la misma lógica del btn-agregar
+            $(this).closest('tr').find('.btn-agregar').trigger('click');
         });
 
         $(document).on('click', '.btn-remover', function() {
