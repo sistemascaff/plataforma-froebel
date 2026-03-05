@@ -221,6 +221,7 @@ Route::controller(AsignaturaController::class)->group(function () {
     Route::patch('asignaturas/{asignatura}', 'delete')->name('asignaturas.delete');
 
     Route::get('asignaturas/{asignatura}/detalles', 'view_details')->name('asignaturas.detalles');
+    Route::post('asignaturas/{asignatura}/horarios/sync', 'syncHorarios')->name('asignaturas.horarios.sync');
 });
 
 Route::controller(HorarioAsignaturaController::class)->group(function () {

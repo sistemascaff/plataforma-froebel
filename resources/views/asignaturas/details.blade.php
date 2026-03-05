@@ -24,6 +24,31 @@
         {{ strtoupper($asignatura->tipo_bloque) }}
     </p>
 
+    <label for="materia">Materia:</label>
+    <p class="form-control mb-3" id="materia">
+        {{ $asignatura->materia->abreviatura }} - {{ $asignatura->materia->materia }}
+    </p>
+
+    <label for="area">Área:</label>
+    <p class="form-control mb-3" id="area">
+        {{ $asignatura->area->abreviatura }} - {{ $asignatura->area->area }}
+    </p>
+
+    <label for="aula">Aula:</label>
+    <p class="form-control mb-3" id="aula">
+        {{ $asignatura->aula->aula }}
+    </p>
+
+    <label for="nivel">Nivel:</label>
+    <p class="form-control mb-3" id="nivel">
+        {{ $asignatura->nivel->nivel }}
+    </p>
+
+    <label for="coordinacion">Coordinación:</label>
+    <p class="form-control mb-3" id="coordinacion">
+        {{ $asignatura->coordinacion?->coordinacion ?? 'N/A' }}
+    </p>
+
     @php
         $estado = match ($asignatura->estado) {
             0 => 'ARCHIVADO',
@@ -41,16 +66,76 @@
         Estado: {{ $estado }}
     </div>
 
+    <div class="accordion" id="bootstrap-acordeon">
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    <b>ASIGNAR HORARIOS DISPONIBLES</b>
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#bootstrap-acordeon">
+                <div class="accordion-body">
+
+                    <div class="mb-3">
+                        <label for="dia_semana" class="form-label">Día de la semana <span
+                                class="text-danger">*</span></label>
+                        <select class="form-select" id="dia_semana" name="dia_semana" required>
+                            <option value="" disabled selected>Selecciona un día de la semana</option>
+                            <option value="1">LUNES</option>
+                            <option value="2">MARTES</option>
+                            <option value="3">MIÉRCOLES</option>
+                            <option value="4">JUEVES</option>
+                            <option value="5">VIERNES</option>
+                            <option value="6">SÁBADO</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="horario" class="form-label">Horario <span class="text-danger">*</span></label>
+                        <p class="text-info">Se omite los horarios que no sean del nivel de la asignatura, que estén
+                            inactivos o que la denominación del horario contenga "RECESO" o "RECREO"</p>
+                        <select class="form-select" id="horario" name="horario" required>
+                        </select>
+                    </div>
+
+                    <button type="button" class="btn btn-success" id="btn-agregar">
+                        <i class="fa-solid fa-duotone fa-plus"></i> Agregar horario
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="text-info fw-bold mt-3">Horarios de la asignatura</h2>
+
+    <table class="table table-bordered table-striped mb-3 dataTable" id="detalles">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Día</th>
+                <th>Denominación</th>
+                <th>Hora de inicio</th>
+                <th>Hora de fin</th>
+                <th>Gestión</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{-- Las filas existentes se renderizan desde JS para que el estado (pendiente borrar) sea consistente --}}
+        </tbody>
+    </table>
+
+    <div class="mb-3"></div>
+
+    <button type="button" class="btn btn-primary" id="btn-guardar">
+        <i class="fa-solid fa-duotone fa-floppy-disk"></i> Guardar
+    </button>
+
     <div class="mb-3"></div>
 @endsection
 
 @section('scripts')
-    <script>
-        $(document).ready(function() {
-            $(".dataTable").DataTable({
-                @include('components.datatables.datatables_global_properties')
-                @include('components.datatables.datatables_language_property')
-            });
-        });
-    </script>
+    @include("asignaturas.details_scripts")
 @endsection

@@ -15,6 +15,18 @@ class HorarioAsignatura extends Model
     const CREATED_AT = 'fecha_registro';
     const UPDATED_AT = 'fecha_actualizacion';
 
+    /** Relación muchos a muchos con asignaturas */
+    public function asignaturas()
+    {
+        return $this->belongsToMany(
+            Asignatura::class,              // Modelo relacionado
+            'detalles_horarios_asignaturas', // Tabla pivote
+            'id_horario_asignatura',        // FK en la tabla pivote hacia asignaturas
+            'id_asignatura'                 // FK en la tabla pivote hacia horarios de asignaturas
+        )->withPivot('dia_semana')        // Campos extras de la tabla pivote
+            ->orderByPivot('dia_semana', 'ASC');
+    }
+
     /** Relación FK con gestiones */
     public function gestion()
     {
@@ -60,6 +72,6 @@ class HorarioAsignatura extends Model
 
     public function get_horario_asignatura($id_horario_asignatura)
     {
-        return $this::with('gestion', 'nivel', 'creado', 'modificado', 'eliminado')->find($id_horario_asignatura);
+        return $this::with('asignaturas', 'gestion', 'nivel', 'creado', 'modificado', 'eliminado')->find($id_horario_asignatura);
     }
 }

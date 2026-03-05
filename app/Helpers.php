@@ -111,3 +111,18 @@ function helper_recortar_texto($texto, $longitudMaxima)
     }
     return $texto;
 }
+
+function helper_dia_semana_a_nombre($dia_semana)
+{
+    $dias = [
+        1 => 'LUNES',
+        2 => 'MARTES',
+        3 => 'MIÉRCOLES',
+        4 => 'JUEVES',
+        5 => 'VIERNES',
+        6 => 'SÁBADO',
+        7 => 'DOMINGO',
+    ];
+
+    return $dias[$dia_semana] ?? 'Desconocido';
+}

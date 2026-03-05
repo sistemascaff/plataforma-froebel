@@ -11,6 +11,7 @@ use App\Models\Materia;
 use App\Models\Nivel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AsignaturaController extends Controller
 {
@@ -19,7 +20,7 @@ class AsignaturaController extends Controller
         if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
             return redirect()->route('main.index');
         }
-        
+
         $materias = (new Materia())->get_all_materias();
         $areas = (new Area())->get_all_areas();
         $aulas = (new Aula())->get_all_aulas();
@@ -151,5 +152,63 @@ class AsignaturaController extends Controller
             'message' => $asignatura->estado == '1' ? 'La asignatura fue restaurada con éxito.' : 'La asignatura fue archivada con éxito.',
             'asignatura' => $asignatura
         ]);
+    }
+
+    public function syncHorarios(Request $request, $asignatura)
+    {
+        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
+            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
+        }
+
+        $request->validate([
+            'agregar' => ['sometimes', 'array'],
+            'agregar.*.id_horario_asignatura' => ['required_with:agregar', 'integer', 'exists:horarios_asignaturas,id_horario_asignatura'],
+            'agregar.*.dia_semana' => ['required_with:agregar', 'integer', 'between:1,6'],
+
+            'eliminar' => ['sometimes', 'array'],
+            'eliminar.*.id_horario_asignatura' => ['required_with:eliminar', 'integer', 'exists:horarios_asignaturas,id_horario_asignatura'],
+            'eliminar.*.dia_semana' => ['required_with:eliminar', 'integer', 'between:1,6'],
+        ]);
+
+        $asignatura = (new Asignatura())->get_asignatura($asignatura);
+
+        $agregar  = $request->input('agregar', []);
+        $eliminar = $request->input('eliminar', []);
+
+        DB::beginTransaction();
+        try {
+            foreach ($eliminar as $item) {
+                $asignatura->horarios_asignaturas()->wherePivot('dia_semana', $item['dia_semana'])
+                    ->detach($item['id_horario_asignatura']);
+            }
+
+            foreach ($agregar as $item) {
+                // Evitar duplicados: solo adjuntar si la combinación no existe aún
+                $existe = $asignatura->horarios_asignaturas()
+                    ->wherePivot('dia_semana', $item['dia_semana'])
+                    ->where('horarios_asignaturas.id_horario_asignatura', $item['id_horario_asignatura'])
+                    ->exists();
+
+                if (!$existe) {
+                    $asignatura->horarios_asignaturas()->attach($item['id_horario_asignatura'], [
+                        'dia_semana' => $item['dia_semana'],
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success'    => true,
+                'message'    => 'Horarios actualizados correctamente.',
+                'asignatura' => $asignatura->load('horarios_asignaturas'),
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

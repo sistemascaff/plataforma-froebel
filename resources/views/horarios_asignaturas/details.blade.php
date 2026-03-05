@@ -51,6 +51,31 @@
         Estado: {{ $estado }}
     </div>
 
+    <h2 class="text-info fw-bold">Asignaturas dentro del horario</h2>
+
+    <table class="table table-bordered table-striped mb-3 dataTable" id="detalles">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Día</th>
+                <th>Asignatura</th>
+                <th>Tipo de calificación</th>
+                <th>Tipo de bloque</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($horario_asignatura->asignaturas as $asignatura)
+                <tr>
+                    <td>{{ $loop->index + 1 }}</td>
+                    <td>{{ helper_dia_semana_a_nombre($asignatura->pivot->dia_semana) }}</td>
+                    <td>{{ $asignatura->asignatura }}</td>
+                    <td>{{ strtoupper($asignatura->tipo_calificacion) }}</td>
+                    <td>{{ strtoupper($asignatura->tipo_bloque) }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
     <div class="mb-3"></div>
 @endsection
 
