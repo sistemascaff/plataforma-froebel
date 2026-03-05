@@ -15,6 +15,12 @@ class Materia extends Model
     const CREATED_AT = 'fecha_registro';
     const UPDATED_AT = 'fecha_actualizacion';
 
+    /* Relación uno a muchos con mallas curriculares */
+    public function mallas_curriculares()
+    {
+        return $this->hasMany(MallaCurricular::class, 'id_materia', 'id_materia');
+    }
+
     /** Relación FK con campos */
     public function campo()
     {
@@ -46,6 +52,6 @@ class Materia extends Model
 
     public function get_materia($id_materia)
     {
-        return $this::with('campo','creado', 'modificado', 'eliminado')->find($id_materia);
+        return $this::with('mallas_curriculares.grado', 'mallas_curriculares.area', 'mallas_curriculares.gestion', 'campo', 'creado', 'modificado', 'eliminado')->findOrFail($id_materia);
     }
 }

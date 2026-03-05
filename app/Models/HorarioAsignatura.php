@@ -72,6 +72,6 @@ class HorarioAsignatura extends Model
 
     public function get_horario_asignatura($id_horario_asignatura)
     {
-        return $this::with('asignaturas', 'gestion', 'nivel', 'creado', 'modificado', 'eliminado')->find($id_horario_asignatura);
+        return $this::with('asignaturas', 'gestion', 'nivel', 'creado', 'modificado', 'eliminado')->findOrFail($id_horario_asignatura);
     }
 }

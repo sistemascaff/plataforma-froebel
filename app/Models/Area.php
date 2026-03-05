@@ -15,6 +15,12 @@ class Area extends Model
     const CREATED_AT = 'fecha_registro';
     const UPDATED_AT = 'fecha_actualizacion';
 
+    /* Relación uno a muchos con mallas curriculares */
+    public function mallas_curriculares()
+    {
+        return $this->hasMany(MallaCurricular::class, 'id_area', 'id_area');
+    }
+
     /** Relación FK con campos */
     public function campo()
     {
@@ -46,6 +52,6 @@ class Area extends Model
 
     public function get_area($id_area)
     {
-        return $this::with('campo', 'creado', 'modificado', 'eliminado')->find($id_area);
+        return $this::with('mallas_curriculares.grado', 'mallas_curriculares.materia', 'mallas_curriculares.gestion', 'campo', 'creado', 'modificado', 'eliminado')->findOrFail($id_area);
     }
 }

@@ -37,6 +37,6 @@ class Colegio extends Model
     
     public function get_colegio($id_colegio)
     {
-        return Colegio::with('creado', 'modificado', 'eliminado')->find($id_colegio);
+        return Colegio::with('creado', 'modificado', 'eliminado')->findOrFail($id_colegio);
     }
 }

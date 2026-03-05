@@ -80,7 +80,7 @@ class PrestamoLibro extends Model
             'modificado',
             'eliminado'
         ])
-            ->find($id_libro);
+            ->findOrFail($id_libro);
     }
 
     public function get_prestamos_libros_pendientes()

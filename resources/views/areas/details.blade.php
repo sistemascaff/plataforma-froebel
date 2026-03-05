@@ -41,6 +41,33 @@
         Estado: {{ $estado }}
     </div>
 
+    <h2 class="text-info fw-bold mt-3">Mallas curriculares del área</h2>
+
+    <p class="text-info">Cuando existen más de un registro por grado, se promedian las dos o más materias involucradas entre sí.</p>
+
+    <table class="table table-bordered table-striped mb-3 dataTable" id="detalles">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Grado</th>
+                <th>P. Ordinal de grado</th>
+                <th>Materia</th>
+                <th>Gestión</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($area->mallas_curriculares as $malla_curricular)
+                <tr>
+                    <td>{{ $loop->index + 1 }}</td>
+                    <td>{{ $malla_curricular->grado->grado }}</td>
+                    <td>{{ $malla_curricular->grado->posicion_ordinal }}</td>
+                    <td>{{ $malla_curricular->materia->abreviatura }} - {{ $malla_curricular->materia->materia }}</td>
+                    <td>{{ $malla_curricular->gestion->anio }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
     <div class="mb-3"></div>
 @endsection
 
@@ -48,7 +75,38 @@
     <script>
         $(document).ready(function() {
             $(".dataTable").DataTable({
-                @include('components.datatables.datatables_global_properties')
+                responsive: true,
+                lengthChange: true,
+                autoWidth: true,
+                colReorder: true,
+                order: [],
+                pageLength: 100,
+                dom: 'Blfrtip',
+                buttons: [{
+                        extend: 'copy',
+                        className: 'btn btn-secondary'
+                    },
+                    {
+                        extend: 'csv',
+                        className: 'btn btn-success'
+                    },
+                    {
+                        extend: 'excel',
+                        className: 'btn btn-success'
+                    },
+                    {
+                        extend: 'pdf',
+                        className: 'btn btn-danger'
+                    },
+                    {
+                        extend: 'colvis',
+                        className: 'btn btn-info'
+                    },
+                    {
+                        extend: 'searchBuilder',
+                        className: 'btn btn-warning'
+                    },
+                ],
                 @include('components.datatables.datatables_language_property')
             });
         });

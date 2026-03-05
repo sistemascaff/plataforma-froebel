@@ -126,6 +126,6 @@ class Persona extends Model
                     $query->whereNull('fecha_retorno');
                 }
             ])
-            ->find($id_persona);
+            ->findOrFail($id_persona);
     }
 }

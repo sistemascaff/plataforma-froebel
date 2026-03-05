@@ -68,6 +68,6 @@ class MallaCurricular extends Model
 
     public function get_malla_curricular($id_malla_curricular)
     {
-        return $this::with('grado', 'materia', 'area', 'gestion', 'creado', 'modificado', 'eliminado')->find($id_malla_curricular);
+        return $this::with('grado', 'materia', 'area', 'gestion', 'creado', 'modificado', 'eliminado')->findOrFail($id_malla_curricular);
     }
 }

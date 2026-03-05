@@ -54,6 +54,6 @@ class Campo extends Model
 
     public function get_campo($id_campo)
     {
-        return $this::with('areas', 'materias', 'creado', 'modificado', 'eliminado')->find($id_campo);
+        return $this::with('areas', 'materias', 'creado', 'modificado', 'eliminado')->findOrFail($id_campo);
     }
 }

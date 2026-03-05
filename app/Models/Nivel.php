@@ -47,6 +47,6 @@ class Nivel extends Model
 
     public function get_nivel($id_nivel)
     {
-        return $this::with('grados', 'creado', 'modificado', 'eliminado')->find($id_nivel);
+        return $this::with('grados', 'creado', 'modificado', 'eliminado')->findOrFail($id_nivel);
     }
 }

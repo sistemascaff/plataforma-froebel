@@ -29,6 +29,18 @@ class Gestion extends Model
             ->orderBy('posicion_ordinal', 'asc');
     }
 
+    /* Relación uno a muchos con mallas curriculares */
+    public function mallas_curriculares()
+    {
+        return $this->hasMany(MallaCurricular::class, 'id_gestion', 'id_gestion');
+    }
+
+    /* Relación uno a muchos con horarios_asignaturas */
+    public function horarios_asignaturas()
+    {
+        return $this->hasMany(HorarioAsignatura::class, 'id_gestion', 'id_gestion');
+    }
+
     /** Relación con atributo de auditoría */
     public function creado()
     {
@@ -56,7 +68,7 @@ class Gestion extends Model
 
     public function get_gestion($id_gestion)
     {
-        return $this->with('periodos', 'dimensiones', 'creado', 'modificado', 'eliminado')
+        return $this->with('mallas_curriculares.grado', 'mallas_curriculares.materia', 'mallas_curriculares.area', 'horarios_asignaturas.nivel', 'periodos', 'dimensiones', 'creado', 'modificado', 'eliminado')
             ->findOrFail($id_gestion);
     }
 }

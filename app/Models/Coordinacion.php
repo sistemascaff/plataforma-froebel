@@ -40,6 +40,6 @@ class Coordinacion extends Model
 
     public function get_coordinacion($id_coordinacion)
     {
-        return $this::with('creado', 'modificado', 'eliminado')->find($id_coordinacion);
+        return $this::with('creado', 'modificado', 'eliminado')->findOrFail($id_coordinacion);
     }
 }

@@ -51,6 +51,6 @@ class Estudiante extends Model
 
     public function get_estudiante($id_estudiante)
     {
-        return $this::with('persona', 'curso', 'creado', 'modificado', 'eliminado')->find($id_estudiante);
+        return $this::with('persona', 'curso', 'creado', 'modificado', 'eliminado')->findOrFail($id_estudiante);
     }
 }

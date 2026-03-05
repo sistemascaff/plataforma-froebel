@@ -83,6 +83,6 @@ class Asignatura extends Model
 
     public function get_asignatura($id_asignatura)
     {
-        return $this::with('horarios_asignaturas.gestion', 'materia', 'area', 'aula', 'nivel', 'coordinacion', 'creado', 'modificado', 'eliminado')->find($id_asignatura);
+        return $this::with('horarios_asignaturas.gestion', 'materia', 'area', 'aula', 'nivel', 'coordinacion', 'creado', 'modificado', 'eliminado')->findOrFail($id_asignatura);
     }
 }
