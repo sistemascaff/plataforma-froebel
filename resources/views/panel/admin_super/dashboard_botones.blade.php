@@ -133,6 +133,19 @@
     </div>
 </div>
 
+<span class="h3 text-decoration-underline fw-bold">PERFILES</span>
+
+<div class="row">
+    <div class="col-6 col-md-4 col-lg-2 d-flex justify-content-center my-3">
+        <a class="btn btn-sq-lg btn-info" href="{{ route('docentes.index') }}">
+            <div>
+                <i class="fa-solid fa-duotone fa-chalkboard-user fa-2xl"></i>
+                <br>Gestión de docentes
+            </div>
+        </a>
+    </div>
+</div>
+
 <span class="h3 text-decoration-underline fw-bold">BIBLIOTECA</span>
 
 <div class="row">

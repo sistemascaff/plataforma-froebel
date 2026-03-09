@@ -40,18 +40,23 @@ class Usuario extends Authenticatable
 
     public function get_all_usuarios()
     {
-        return Usuario::with('persona','creado', 'modificado', 'eliminado')->get();
+        return $this::with('persona','creado', 'modificado', 'eliminado')->get();
     }
     
     public function get_usuario($id_usuario)
     {
-        return Usuario::with('persona','creado', 'modificado', 'eliminado')->findOrFail($id_usuario);
+        return $this::with('persona','creado', 'modificado', 'eliminado')->findOrFail($id_usuario);
+    }
+
+    public function get_usuario_desde_persona($id_persona)
+    {
+        return $this::with('persona','creado', 'modificado', 'eliminado')->where('id_persona', $id_persona)->first();
     }
 
     /**Función utilizada para verificar y crear la sesión del Usuario.*/
     public function login($correo)
     {
-        return Usuario::with('persona','creado', 'modificado', 'eliminado')->where('correo', $correo)->first();
+        return $this::with('persona','creado', 'modificado', 'eliminado')->where('correo', $correo)->first();
     }
 
     /**Función para destruir y cerrar la sesión.*/

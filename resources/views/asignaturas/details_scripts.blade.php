@@ -50,7 +50,7 @@
 
         // ─── Renderizar tabla ─────────────────────────────────────────────────────
         function renderizarTabla() {
-            let $tbody = $('#detalles tbody');
+            let $tbody = $('#horarios tbody');
             $tbody.empty();
             let contador = 1;
 

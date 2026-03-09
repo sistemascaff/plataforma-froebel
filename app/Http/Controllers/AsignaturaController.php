@@ -7,8 +7,10 @@ use App\Models\Area;
 use App\Models\Asignatura;
 use App\Models\Aula;
 use App\Models\Coordinacion;
+use App\Models\ListaAsignatura;
 use App\Models\Materia;
 use App\Models\Nivel;
+use App\Models\Periodo;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -43,6 +45,25 @@ class AsignaturaController extends Controller
             return redirect()->route('login');
         }
 
+        // IDs de periodos activos que YA tienen lista para esta asignatura
+        $periodosConLista = ListaAsignatura::where('id_asignatura', $asignatura)
+            ->pluck('id_periodo')
+            ->toArray();
+
+        // Periodos activos que AÚN NO tienen lista → crearlos
+        Periodo::where('estado', 1)
+            ->whereNotIn('id_periodo', $periodosConLista)
+            ->each(function ($periodo) use ($asignatura) {
+                $lista = new ListaAsignatura();
+                $lista->id_asignatura = $asignatura;
+                $lista->id_periodo    = $periodo->id_periodo;
+                $lista->creado_por    = session('id_usuario') ?? 0;
+                $lista->ip            = session('ip');
+                $lista->dispositivo   = session('dispositivo');
+                $lista->save();
+            });
+
+        // Se carga DESPUÉS de generar las listas para que el eager loading las incluya todas
         $asignatura = (new Asignatura())->get_asignatura($asignatura);
 
         return view('asignaturas.details', [

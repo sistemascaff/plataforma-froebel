@@ -110,7 +110,7 @@
 
     <h2 class="text-info fw-bold mt-3">Horarios de la asignatura</h2>
 
-    <table class="table table-bordered table-striped mb-3 dataTable" id="detalles">
+    <table class="table table-bordered table-striped mb-3 dataTable" id="horarios">
         <thead>
             <tr>
                 <th>#</th>
@@ -132,6 +132,33 @@
     <button type="button" class="btn btn-primary" id="btn-guardar">
         <i class="fa-solid fa-duotone fa-floppy-disk"></i> Guardar
     </button>
+
+    <div class="mb-3"></div>
+
+    <h2 class="text-info fw-bold mt-3">Listas de la asignatura</h2>
+
+    <table class="table table-bordered table-striped mb-3 dataTable" id="listas">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Periodo</th>
+                <th>Gestión</th>
+                <th>Docente</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        @foreach ($asignatura->listas_asignaturas as $lista_asignatura)
+            <tr>
+                <td>{{ $loop->iteration }}</td>
+                <td>{{ $lista_asignatura->periodo->periodo }}</td>
+                <td>{{ $lista_asignatura->periodo->gestion->anio }}</td>
+                <td>{{ trim($lista_asignatura->docente?->persona->apellido_paterno . ' ' . $lista_asignatura->docente?->persona->apellido_materno . ' ' . $lista_asignatura->docente?->persona->nombres) }}</td>
+                <td>
+                    {{ $lista_asignatura->id_lista_asignatura }}</td>
+                </td>
+            </tr>
+        @endforeach
+    </table>
 
     <div class="mb-3"></div>
 @endsection

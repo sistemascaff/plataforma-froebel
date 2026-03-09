@@ -28,6 +28,12 @@ class Asignatura extends Model
             ->orderBy('hora_inicio', 'ASC');
     }
 
+    /** Relación uno a muchos con listas_asignaturas */
+    public function listas_asignaturas()
+    {
+        return $this->hasMany(ListaAsignatura::class, 'id_asignatura', 'id_asignatura');
+    }
+
     /** Relación FK con materias */
     public function materia()
     {
@@ -83,6 +89,6 @@ class Asignatura extends Model
 
     public function get_asignatura($id_asignatura)
     {
-        return $this::with('horarios_asignaturas.gestion', 'materia', 'area', 'aula', 'nivel', 'coordinacion', 'creado', 'modificado', 'eliminado')->findOrFail($id_asignatura);
+        return $this::with('horarios_asignaturas.gestion', 'listas_asignaturas.periodo.gestion', 'listas_asignaturas.docente.persona', 'materia', 'area', 'aula', 'nivel', 'coordinacion', 'creado', 'modificado', 'eliminado')->findOrFail($id_asignatura);
     }
 }
