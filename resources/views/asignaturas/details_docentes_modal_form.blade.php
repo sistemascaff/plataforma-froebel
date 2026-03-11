@@ -12,7 +12,6 @@
                     <div class="mb-3">
                         <label for="docente" class="form-label">Docente <span class="text-danger">*</span></label>
                         <select class="form-select" id="docente" name="docente" required>
-                                <option value="" selected>Selecciona un docente</option>
                         </select>
                     </div>
                 </form>
@@ -20,7 +19,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
                         class="fa-solid fa-duotone fa-close"></i>Cerrar</button>
-                <button type="submit" id="btn-guardar" form="form-editar-docente" class="btn btn-primary">
+                <button type="submit" id="btn-guardar-docente" form="form-editar-docente" class="btn btn-primary">
                     Guardar
                 </button>
             </div>

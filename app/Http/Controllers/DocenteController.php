@@ -127,7 +127,10 @@ class DocenteController extends Controller
                 $nombreArchivo = 'foto_perfil_docente_' . $persona->id_persona . '.' . $foto->getClientOriginalExtension();
                 $foto->storeAs('public/fotos_perfil/docentes', $nombreArchivo);
                 
-                $usuario->url_foto_perfil = 'storage/fotos_perfil/docentes/' . $nombreArchivo;
+                $usuario->url_foto_perfil = 'public/storage/fotos_perfil/docentes/' . $nombreArchivo;
+            }
+            else{
+                $usuario->url_foto_perfil = 'public/img/user.png';
             }
 
             $usuario->creado_por = session('id_usuario');
@@ -210,7 +213,7 @@ class DocenteController extends Controller
                 $nombreArchivo = 'foto_perfil_docente_' . $persona->id_persona . '.' . $foto->getClientOriginalExtension();
                 $foto->storeAs('public/fotos_perfil/docentes', $nombreArchivo);
                 
-                $usuario->url_foto_perfil = 'storage/fotos_perfil/docentes/' . $nombreArchivo;
+                $usuario->url_foto_perfil = 'public/storage/fotos_perfil/docentes/' . $nombreArchivo;
             }
 
             $usuario->modificado_por = session('id_usuario');

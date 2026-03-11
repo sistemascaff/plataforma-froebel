@@ -51,7 +51,7 @@
                     <div class="mb-3">
                         <label for="documento_expedido" class="form-label">C.I. Expedido <span
                                 class="text-danger">*</span></label>
-                        <select class="form-control" id="documento_expedido" name="documento_expedido" required>
+                        <select class="form-select" id="documento_expedido" name="documento_expedido" required>
                             <option value="" disabled selected>Seleccione una opción</option>
                             <option>LA PAZ</option>
                             <option>COCHABAMBA</option>
@@ -74,7 +74,7 @@
 
                     <div class="mb-3">
                         <label for="sexo" class="form-label">Género <span class="text-danger">*</span></label>
-                        <select class="form-control" id="sexo" name="sexo" required>
+                        <select class="form-select" id="sexo" name="sexo" required>
                             <option value="" disabled selected>Seleccione una opción</option>
                             <option value="M">Masculino</option>
                             <option value="F">Femenino</option>
@@ -83,7 +83,7 @@
 
                     <div class="mb-3">
                         <label for="idioma" class="form-label">Idioma <span class="text-danger">*</span></label>
-                        <select class="form-control" id="idioma" name="idioma" required>
+                        <select class="form-select" id="idioma" name="idioma" required>
                             <option value="" disabled selected>Seleccione una opción</option>
                             <option>ESPAÑOL</option>
                             <option>ALEMÁN</option>
@@ -102,8 +102,8 @@
 
                     <h2 class="text-info fw-bold">Datos de acceso</h2>
 
-                    <div class="mb-3">
-                        <img class="mb-3" style="max-width: 200px; display: none;"
+                    <div class="mb-3 d-flex justify-content-center">
+                        <img class="rounded" style="max-width: 200px; display: none;"
                             alt="Foto de perfil" id="preview_foto_perfil" src="#">
                     </div>
 

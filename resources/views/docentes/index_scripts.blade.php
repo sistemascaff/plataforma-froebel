@@ -38,7 +38,6 @@
                     }
                 },
                 {
-                    // Foto de perfil
                     data: "persona.usuario.url_foto_perfil",
                     orderable: false,
                     searchable: false,
@@ -46,7 +45,7 @@
                         const src = (data && data !== '') ?
                             URL_BASE + '/' + data :
                             URL_BASE + '/public/img/user.png';
-                        return `<img src="${src}" alt="Foto" style="width:40px; height:40px; object-fit:cover; border-radius:50%;">`;
+                        return `<img class="rounded" src="${src}" alt="Foto" style="width:40px; height:40px; object-fit:cover;">`;
                     }
                 },
                 {
@@ -95,7 +94,7 @@
                     data: "persona.usuario.tiene_acceso",
                     render: function(data) {
                         if (data == 1) return '<span class="badge bg-success">SI</span>';
-                        if (data == 0) return '<span class="badge bg-secondary">NO</span>';
+                        if (data == 0) return '<span class="badge bg-danger">NO</span>';
                         return '<span class="badge bg-warning">DESCONOCIDO</span>';
                     }
                 },

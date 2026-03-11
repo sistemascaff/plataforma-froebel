@@ -9,6 +9,14 @@
             selectionCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
         });
 
+        $('#docente').select2({
+            width: '100%',
+            language: "es",
+            dropdownCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
+            selectionCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
+            dropdownParent: $('#modal-formulario'),
+        });
+
         // ─── DataTable ────────────────────────────────────────────────────────────
         $(".dataTable").DataTable({
             @include('components.datatables.datatables_global_properties')
@@ -72,13 +80,13 @@
                 if (esPendienteBorrar) {
                     // Botón para deshacer el marcado
                     btnAccion = `
-                            <button type="button" class="btn btn-warning btn-sm btn-deshacer"
+                            <button type="button" class="btn btn-warning btn-sm btn-deshacer-horario"
                                     data-index="${index}" data-toggle="tooltip" title="Deshacer">
                                 <i class="fa fa-rotate-left"></i>
                             </button>`;
                 } else {
                     btnAccion = `
-                            <button type="button" class="btn btn-danger btn-sm btn-remover"
+                            <button type="button" class="btn btn-danger btn-sm btn-remover-horario"
                                     data-index="${index}" data-toggle="tooltip" title="Remover">
                                 <i class="fa fa-trash"></i>
                             </button>`;
@@ -101,7 +109,7 @@
         renderizarTabla();
 
         // ─── Cargar select de horarios disponibles ────────────────────────────────
-        function recargarHorariosSelect(idSeleccionado = null) {
+        function cargarHorariosSelect() {
             $.ajax({
                 url: "{{ route('horarios_asignaturas.listar') }}",
                 type: "GET",
@@ -130,18 +138,123 @@
                                 ${fila}
                             </option>`);
                     });
-
-                    if (idSeleccionado) {
-                        $select.val(idSeleccionado).trigger('change');
-                    }
                 }
             });
         }
 
-        recargarHorariosSelect();
+        cargarHorariosSelect();
+
+        // ─── Cargar select de docentes disponibles ────────────────────────────────
+        function cargarDocentesSelect() {
+            $.ajax({
+                url: "{{ route('docentes.listar') }}",
+                type: "GET",
+                dataType: "json",
+                success: function(response) {
+                    let $select = $("#docente");
+                    $select.empty();
+                    $select.append('<option value="">Selecciona un docente</option>');
+
+                    $.each(response.data, function(i, docente) {
+                        if (docente.estado != 1) return;
+
+                        let fila =
+                            `${docente.persona.apellido_paterno} ${docente.persona.apellido_materno} ${docente.persona.nombres}`
+                            .trim();
+                        $select.append(
+                            `<option value="${docente.id_docente}">${fila}</option>`);
+                    });
+                }
+            });
+        }
+
+        cargarDocentesSelect();
+
+        // ─── Abrir modal: guardar id_lista_asignatura en el modal ─────────────────
+        $(document).on('click', '.btn-editar-docente', function() {
+            const idDocente = $(this).data('id-docente'); // docente actual (para preseleccionar)
+            const idLista = $(this).data('id-lista'); // <-- necesitamos este dato
+
+            // Guardar el id_lista_asignatura en el modal para usarlo al guardar
+            $('#modal-formulario').data('id-lista', idLista);
+
+            $('#docente').val(idDocente).trigger('change');
+
+            $('#modal-formulario').modal('show');
+        });
+
+        // ─── Guardar docente en la lista ──────────────────────────────────────────
+        $(document).on('click', '#btn-guardar-docente', function() {
+            const btn = $(this);
+            const idLista = $('#modal-formulario').data('id-lista');
+            const idDocente = $('#docente').val();
+
+            if (!idDocente) {
+                Swal.fire({
+                    theme: localStorage.getItem('theme') || 'dark',
+                    title: 'Atención',
+                    text: 'Debes seleccionar un docente.',
+                    icon: 'warning'
+                });
+                return;
+            }
+
+            btn.prop('disabled', true)
+                .html('<i class="fa-solid fa-spinner fa-spin"></i> Guardando...');
+
+            const url = "{{ route('listas_asignaturas.actualizar_docente', ':id') }}"
+                .replace(':id', idLista);
+
+            $.ajax({
+                url: url,
+                type: 'PATCH',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    docente: idDocente
+                },
+                success: function(response) {
+                    Swal.fire({
+                        theme: localStorage.getItem('theme') || 'dark',
+                        title: 'Éxito',
+                        text: response.message,
+                        icon: 'success'
+                    });
+                    $('#modal-formulario').modal('hide');
+                    // Refresca la fila del docente en la tabla sin recargar la página
+                    location.reload(); // o puedes actualizar solo la celda si prefieres
+                },
+                error: function(xhr) {
+                    let respuesta = {};
+                    try {
+                        respuesta = JSON.parse(xhr.responseText);
+                    } catch (e) {
+                        respuesta = {
+                            message: "Error desconocido"
+                        };
+                    }
+
+                    let htmlError = respuesta.errors ?
+                        Object.values(respuesta.errors).flat().join("<br>") :
+                        (respuesta.message || "Ocurrió un error inesperado.");
+
+                    Swal.fire({
+                        theme: localStorage.getItem('theme') || 'dark',
+                        title: 'Error',
+                        html: 'Ocurrió un error: <br>' + htmlError,
+                        icon: 'error'
+                    });
+                },
+                complete: function() {
+                    btn.prop('disabled', false)
+                        .html('<i class="fa-solid fa-duotone fa-save"></i> Guardar');
+                }
+            });
+        });
 
         // ─── Agregar horario a memoria ─────────────────────────────────────────────
-        $('#btn-agregar').on('click', function() {
+        $('#btn-agregar-horario').on('click', function() {
             const diaSemana = $('#dia_semana').val();
             const idHorario = $('#horario').val();
 
@@ -208,7 +321,7 @@
         });
 
         // ─── Marcar como "pendiente borrar" (filas existentes o nuevas) ────────────
-        $(document).on('click', '.btn-remover', function() {
+        $(document).on('click', '.btn-remover-horario', function() {
             let index = $(this).data('index');
             if (horarios[index]._estado === 'nuevo') {
                 // Las filas nuevas se eliminan directamente del array
@@ -221,14 +334,14 @@
         });
 
         // ─── Deshacer el marcado "pendiente borrar" ───────────────────────────────
-        $(document).on('click', '.btn-deshacer', function() {
+        $(document).on('click', '.btn-deshacer-horario', function() {
             let index = $(this).data('index');
             horarios[index]._estado = 'existente';
             renderizarTabla();
         });
 
         // ─── Guardar ──────────────────────────────────────────────────────────────
-        $('#btn-guardar').on('click', function() {
+        $('#btn-guardar-horarios').on('click', function() {
             let agregar = horarios
                 .filter(h => h._estado === 'nuevo')
                 .map(h => ({
@@ -278,7 +391,7 @@
 
         // ─── AJAX guardar ─────────────────────────────────────────────────────────
         function guardarHorariosAJAX(agregar, eliminar) {
-            const btn = $('#btn-guardar');
+            const btn = $('#btn-guardar-horarios');
             btn.prop('disabled', true);
             btn.html('<i class="fa-solid fa-duotone fa-spinner fa-spin"></i> Guardando...');
 

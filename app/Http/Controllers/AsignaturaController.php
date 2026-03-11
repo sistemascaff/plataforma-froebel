@@ -175,7 +175,7 @@ class AsignaturaController extends Controller
         ]);
     }
 
-    public function syncHorarios(Request $request, $asignatura)
+    public function sync_horarios(Request $request, $asignatura)
     {
         if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
             return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);

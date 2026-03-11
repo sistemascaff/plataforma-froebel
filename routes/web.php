@@ -13,6 +13,7 @@ use App\Http\Controllers\GradoController;
 use App\Http\Controllers\HorarioAsignaturaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LibroController;
+use App\Http\Controllers\ListaAsignaturaController;
 use App\Http\Controllers\MallaCurricularController;
 use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\NivelController;
@@ -40,6 +41,7 @@ use App\Http\Controllers\UsuarioController;
 /*Estructura de Laravel => Route::get(URL web, método de controlador)->name('nombre.para.referenciar.ruta')*/
 
 /* Tabla con PK FK 'personas'*/
+
 Route::controller(UsuarioController::class)->group(function () {
     /* Rutas para gestionar la sesión del usuario y el panel de administración */
     Route::get('/', 'view_main_index')->name('main.index');
@@ -222,7 +224,11 @@ Route::controller(AsignaturaController::class)->group(function () {
     Route::patch('asignaturas/{asignatura}', 'delete')->name('asignaturas.delete');
 
     Route::get('asignaturas/{asignatura}/detalles', 'view_details')->name('asignaturas.detalles');
-    Route::post('asignaturas/{asignatura}/horarios/sync', 'syncHorarios')->name('asignaturas.horarios.sync');
+    Route::post('asignaturas/{asignatura}/horarios/sync', 'sync_horarios')->name('asignaturas.horarios.sync');
+});
+
+Route::controller(ListaAsignaturaController::class)->group(function () {
+    Route::patch('listas_asignaturas/{lista_asignatura}/docente', 'actualizar_docente')->name('listas_asignaturas.actualizar_docente');
 });
 
 Route::controller(HorarioAsignaturaController::class)->group(function () {

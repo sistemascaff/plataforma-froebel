@@ -99,7 +99,7 @@
                         </select>
                     </div>
 
-                    <button type="button" class="btn btn-success" id="btn-agregar">
+                    <button type="button" class="btn btn-success" id="btn-agregar-horario">
                         <i class="fa-solid fa-duotone fa-plus"></i> Agregar horario
                     </button>
 
@@ -129,7 +129,7 @@
 
     <div class="mb-3"></div>
 
-    <button type="button" class="btn btn-primary" id="btn-guardar">
+    <button type="button" class="btn btn-primary" id="btn-guardar-horarios">
         <i class="fa-solid fa-duotone fa-floppy-disk"></i> Guardar
     </button>
 
@@ -152,17 +152,33 @@
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $lista_asignatura->periodo->periodo }}</td>
                 <td>{{ $lista_asignatura->periodo->gestion->anio }}</td>
-                <td>{{ trim($lista_asignatura->docente?->persona->apellido_paterno . ' ' . $lista_asignatura->docente?->persona->apellido_materno . ' ' . $lista_asignatura->docente?->persona->nombres) }}</td>
+                <td>{{ trim($lista_asignatura->docente?->persona->apellido_paterno . ' ' . $lista_asignatura->docente?->persona->apellido_materno . ' ' . $lista_asignatura->docente?->persona->nombres) }}
+                </td>
                 <td>
-                    {{ $lista_asignatura->id_lista_asignatura }}</td>
+                    <div class="btn-group" role="group">
+                        <a class="btn btn-info btn-sm" href="#" target="_blank" rel="noopener noreferrer"
+                            data-toggle="tooltip" title="Detalles de la lista de asignatura">
+                            <i class="fa-duotone fa-solid fa-eye"></i>
+                        </a>
+                        <button type="button" class="btn btn-warning btn-sm btn-editar-docente"
+                            data-id-docente="{{ $lista_asignatura->id_docente }}"
+                            data-id-lista="{{ $lista_asignatura->id_lista_asignatura }}"
+                            data-toggle="tooltip" title="Editar docente">
+                            <i class="fa-duotone fa-solid fa-edit"></i>
+                        </button>
+                    </div>
+                    {{ $lista_asignatura->id_lista_asignatura }}
+                </td>
                 </td>
             </tr>
         @endforeach
     </table>
 
     <div class="mb-3"></div>
+
+    @include('asignaturas.details_docentes_modal_form')
 @endsection
 
 @section('scripts')
-    @include("asignaturas.details_scripts")
+    @include('asignaturas.details_scripts')
 @endsection
