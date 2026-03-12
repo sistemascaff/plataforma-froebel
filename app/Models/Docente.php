@@ -15,6 +15,12 @@ class Docente extends Model
     const CREATED_AT = 'fecha_registro';
     const UPDATED_AT = 'fecha_actualizacion';
 
+    /** Relación uno a muchos con listas_asignaturas */
+    public function listas_asignaturas()
+    {
+        return $this->hasMany(ListaAsignatura::class, 'id_docente', 'id_docente');
+    }
+
     /** Relación FK con personas */
     public function persona()
     {
@@ -64,6 +70,6 @@ class Docente extends Model
 
     public function get_docente($id_docente)
     {
-        return $this::with('persona.usuario', 'nivel', 'coordinacion', 'creado', 'modificado', 'eliminado')->findOrFail($id_docente);
+        return $this::with('listas_asignaturas.asignatura', 'listas_asignaturas.periodo.gestion', 'persona.usuario', 'nivel', 'coordinacion', 'creado', 'modificado', 'eliminado')->findOrFail($id_docente);
     }
 }

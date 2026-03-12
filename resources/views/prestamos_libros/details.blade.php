@@ -13,8 +13,6 @@
     <a class="btn btn-warning mb-3 ms-2" href="{{ route('prestamos_libros.editar', $prestamo_libro->id_prestamo_libro) }}">
         <i class="fa-solid fa-duotone fa-edit"></i> Editar</a>
 
-    <div></div>
-
     <label for="persona">Persona:</label>
     <p class="form-control mb-3" id="persona">
         {{ trim(

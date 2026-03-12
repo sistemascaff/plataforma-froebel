@@ -96,7 +96,14 @@ class DocenteController extends Controller
             $persona->idioma = $request->idioma ?? 'ESPAÑOL';
             $persona->celular = $request->celular;
             $persona->telefono = $request->telefono ?? '0';
-            $persona->tipo_perfil = 'DOCENTE';
+            // Se prioriza el tipo de perfil de subdirector si tiene nivel asignado, coordinador si tiene coordinación asignada y sino se establece como docente
+            if ($request->id_nivel) {
+                $persona->tipo_perfil = 'SUBDIRECTOR';
+            } elseif ($request->id_coordinacion) {
+                $persona->tipo_perfil = 'COORDINADOR';
+            } else {
+                $persona->tipo_perfil = 'DOCENTE';
+            }
             $persona->creado_por = session('id_usuario');
             $persona->ip = session('ip');
             $persona->dispositivo = session('dispositivo');
@@ -126,10 +133,9 @@ class DocenteController extends Controller
                 $foto = $request->file('foto_perfil');
                 $nombreArchivo = 'foto_perfil_docente_' . $persona->id_persona . '.' . $foto->getClientOriginalExtension();
                 $foto->storeAs('public/fotos_perfil/docentes', $nombreArchivo);
-                
+
                 $usuario->url_foto_perfil = 'public/storage/fotos_perfil/docentes/' . $nombreArchivo;
-            }
-            else{
+            } else {
                 $usuario->url_foto_perfil = 'public/img/user.png';
             }
 
@@ -178,6 +184,14 @@ class DocenteController extends Controller
             $persona->idioma                   = $request->idioma ?? 'ESPAÑOL';
             $persona->celular                  = $request->celular;
             $persona->telefono                 = $request->telefono ?? '0';
+            // Se prioriza el tipo de perfil de subdirector si tiene nivel asignado, coordinador si tiene coordinación asignada y sino se establece como docente
+            if ($request->id_nivel) {
+                $persona->tipo_perfil = 'SUBDIRECTOR';
+            } elseif ($request->id_coordinacion) {
+                $persona->tipo_perfil = 'COORDINADOR';
+            } else {
+                $persona->tipo_perfil = 'DOCENTE';
+            }
             $persona->modificado_por           = session('id_usuario');
             $persona->ip                       = session('ip');
             $persona->dispositivo              = session('dispositivo');
@@ -212,7 +226,7 @@ class DocenteController extends Controller
                 $foto = $request->file('foto_perfil');
                 $nombreArchivo = 'foto_perfil_docente_' . $persona->id_persona . '.' . $foto->getClientOriginalExtension();
                 $foto->storeAs('public/fotos_perfil/docentes', $nombreArchivo);
-                
+
                 $usuario->url_foto_perfil = 'public/storage/fotos_perfil/docentes/' . $nombreArchivo;
             }
 

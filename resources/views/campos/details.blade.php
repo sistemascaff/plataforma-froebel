@@ -7,8 +7,6 @@
     <a class="btn btn-secondary mb-3" href="{{ route('campos.index') }}">
         <i class="fa-solid fa-duotone fa-arrow-left"></i> Volver</a>
 
-    <div></div>
-
     <label for="campo">Campo:</label>
     <p class="form-control mb-3" id="campo">
         {{ $campo->campo }}

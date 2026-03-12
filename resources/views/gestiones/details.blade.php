@@ -7,8 +7,6 @@
     <a class="btn btn-secondary mb-3" href="{{ route('gestiones.index') }}">
         <i class="fa-solid fa-duotone fa-arrow-left"></i> Volver</a>
 
-    <div></div>
-
     <label for="anio">Año:</label>
     <p class="form-control mb-3" id="anio">
         {{ $gestion->anio }}

@@ -76,8 +76,8 @@
                         <label for="sexo" class="form-label">Género <span class="text-danger">*</span></label>
                         <select class="form-select" id="sexo" name="sexo" required>
                             <option value="" disabled selected>Seleccione una opción</option>
-                            <option value="M">Masculino</option>
-                            <option value="F">Femenino</option>
+                            <option value="M">MASCULINO</option>
+                            <option value="F">FEMENINO</option>
                         </select>
                     </div>
 

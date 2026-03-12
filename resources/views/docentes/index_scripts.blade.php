@@ -73,7 +73,10 @@
                     }
                 },
                 {
-                    data: "persona.sexo"
+                    data: "persona.sexo",
+                    render: function(data) {
+                        return data == 'M' ? 'MASCULINO' : 'FEMENINO';
+                    }
                 },
                 {
                     data: "persona.idioma"
