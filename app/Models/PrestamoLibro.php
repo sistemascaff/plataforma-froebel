@@ -151,6 +151,7 @@ class PrestamoLibro extends Model
             ->where('prestamos_libros.estado', 1)
             ->groupBy('personas.id_persona')
             ->orderBy('total_libros', 'DESC')
+            ->limit(100)
             ->get();
     }
 }

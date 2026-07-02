@@ -91,10 +91,10 @@
 
                     <div class="mb-3">
                         <label for="horario" class="form-label">Horario <span class="text-danger">*</span></label>
-                        <p class="text-info">Se omite los horarios que no sean del nivel de la asignatura, que estén
-                            inactivos o que la denominación del horario contenga "RECESO" o "RECREO"</p>
                         <select class="form-select" id="horario" name="horario" required>
                         </select>
+                        <div class="form-text">Se omite los horarios que no sean del nivel de la asignatura, que estén
+                            inactivos o que la denominación del horario contenga "RECESO" o "RECREO"</div>
                     </div>
 
                     <button type="button" class="btn btn-success" id="btn-agregar-horario">
@@ -160,8 +160,8 @@
                         </a>
                         <button type="button" class="btn btn-warning btn-sm btn-editar-docente"
                             data-id-docente="{{ $lista_asignatura->id_docente }}"
-                            data-id-lista="{{ $lista_asignatura->id_lista_asignatura }}"
-                            data-toggle="tooltip" title="Editar docente">
+                            data-id-lista="{{ $lista_asignatura->id_lista_asignatura }}" data-toggle="tooltip"
+                            title="Editar docente">
                             <i class="fa-duotone fa-solid fa-edit"></i>
                         </button>
                     </div>

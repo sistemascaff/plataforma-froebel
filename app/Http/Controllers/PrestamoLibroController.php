@@ -49,11 +49,15 @@ class PrestamoLibroController extends Controller
             ->whereBetween('fecha_registro', [$fecha_inicio, $fecha_fin])
             ->get();
 
-        $libros_mas_prestados = DetallePrestamoLibro::select('libros.titulo', 'libros.categoria', DB::raw('COUNT(detalles_prestamos_libros.id_libro) as total'))
+        $libros_mas_prestados = DetallePrestamoLibro::select(
+                'libros.titulo', 
+                'libros.categoria', 
+                DB::raw('COUNT(detalles_prestamos_libros.id_libro) as total')
+            )
             ->join('prestamos_libros', 'prestamos_libros.id_prestamo_libro', '=', 'detalles_prestamos_libros.id_prestamo_libro')
             ->join('libros', 'libros.id_libro', '=', 'detalles_prestamos_libros.id_libro')
             ->whereBetween('prestamos_libros.fecha_registro', [$fecha_inicio, $fecha_fin])
-            ->groupBy('libros.id_libro')
+            ->groupBy('libros.titulo', 'libros.categoria')
             ->orderByDesc('total')
             ->get();
 
@@ -141,11 +145,15 @@ class PrestamoLibroController extends Controller
             ->whereBetween('fecha_registro', [$fecha_inicio, $fecha_fin])
             ->get();
 
-        $libros_mas_prestados = DetallePrestamoLibro::select('libros.titulo', 'libros.categoria', DB::raw('COUNT(detalles_prestamos_libros.id_libro) as total'))
+        $libros_mas_prestados = DetallePrestamoLibro::select(
+                'libros.titulo', 
+                'libros.categoria', 
+                DB::raw('COUNT(detalles_prestamos_libros.id_libro) as total')
+            )
             ->join('prestamos_libros', 'prestamos_libros.id_prestamo_libro', '=', 'detalles_prestamos_libros.id_prestamo_libro')
             ->join('libros', 'libros.id_libro', '=', 'detalles_prestamos_libros.id_libro')
             ->whereBetween('prestamos_libros.fecha_registro', [$fecha_inicio, $fecha_fin])
-            ->groupBy('libros.id_libro')
+            ->groupBy('libros.titulo', 'libros.categoria')
             ->orderByDesc('total')
             ->get();
 
@@ -155,6 +163,7 @@ class PrestamoLibroController extends Controller
             ->whereBetween('prestamos_libros.fecha_registro', [$fecha_inicio, $fecha_fin])
             ->groupBy('libros.categoria')
             ->orderByDesc('total')
+            ->limit(30)
             ->get();
 
         $prestamos_por_curso = DetallePrestamoLibro::select('prestamos_libros.curso', DB::raw('COUNT(*) as total'))

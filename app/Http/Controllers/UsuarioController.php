@@ -111,21 +111,21 @@ class UsuarioController extends Controller
 
         if (!$usuario) {
             return redirect()->route('login')->with([
-                'mensaje' => 'EL USUARIO NO EXISTE.',
+                'mensaje' => "El usuario con el correo {$request->correo} no existe.",
                 'login_correo' => $request->correo,
                 'login_contrasenha' => $request->contrasenha,
             ]);
         }
         if ($usuario->tiene_acceso == '0') {
             return redirect()->route('login')->with([
-                'mensaje' => 'EL USUARIO NO TIENE ACCESO AL SISTEMA.',
+                'mensaje' => "El usuario con el correo {$request->correo} no tiene acceso al sistema.",
                 'login_correo' => $request->correo,
                 'login_contrasenha' => $request->contrasenha,
             ]);
         }
         if ($request->contrasenha != helper_decrypt($usuario->contrasenha)) {
             return redirect()->route('login')->with([
-                'mensaje' => 'LA CONTRASEÑA ES INCORRECTA.',
+                'mensaje' => 'Contraseña incorrecta.',
                 'login_correo' => $request->correo,
                 'login_contrasenha' => $request->contrasenha,
             ]);

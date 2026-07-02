@@ -31,14 +31,14 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="nivel" class="form-label">Nivel <span class="text-danger">*</span></label>
-                        <p class="text-info">El nivel del horario debe coincidir con el nivel de la asignatura para designar el horario en la asignatura.</p>
+                        <label for="nivel" class="form-label">Nivel <span class="text-danger">*</span></label> 
                         <select class="form-select" id="nivel" name="id_nivel" required>
                             <option value="" disabled selected>Seleccione un nivel</option>
                             @foreach ($niveles as $nivel)
                                 <option value="{{ $nivel->id_nivel }}">{{ $nivel->nivel }}</option>
                             @endforeach
                         </select>
+                        <div class="form-text">Nota: en las asignaturas, el nivel del horario debe coincidir con el nivel de la asignatura para poder designar ese horario en la asignatura.</div>
                     </div>
 
                     <div class="mb-3">

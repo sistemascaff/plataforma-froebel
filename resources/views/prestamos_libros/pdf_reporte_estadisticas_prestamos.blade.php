@@ -137,8 +137,8 @@
                     <th>N° Préstamo</th>
                     <th>Código</th>
                     <th>Título</th>
-                    <th>Autor</th>
-                    <th>Editorial</th>
+                    {{-- <th>Autor</th>
+                    <th>Editorial</th> --}}
                     <th>Prestado a</th>
                     <th>Curso</th>
                     <th>F. Registro</th>
@@ -152,9 +152,10 @@
                             <td class="text-info font-weight-bold">{{ $prestamo_libro->id_prestamo_libro }}</td>
                             <td>{{ $libro->codigo }}</td>
                             <td>{{ $libro->titulo }}</td>
-                            <td>{{ $libro->autor }}</td>
-                            <td>{{ $libro->editorial }}</td>
-                            <td>{{ trim('(' . $prestamo_libro->persona->tipo_perfil . ') ' . $prestamo_libro->persona->apellido_paterno . ' ' . $prestamo_libro->persona->apellido_materno . ' ' . $prestamo_libro->persona->nombres) }}
+                            {{-- <td>{{ $libro->autor }}</td>
+                            <td>{{ $libro->editorial }}</td> --}}
+                            <td><b>{{ $prestamo_libro->persona->tipo_perfil }}</b> -
+                                {{ trim($prestamo_libro->persona->apellido_paterno . ' ' . $prestamo_libro->persona->apellido_materno . ' ' . $prestamo_libro->persona->nombres) }}
                             </td>
                             <td>{{ $prestamo_libro->curso }}</td>
                             <td>{{ date('d/m/Y H:i:s', strtotime($prestamo_libro->fecha_registro)) }}</td>
@@ -363,16 +364,8 @@
                     <tr class="align-top">
                         <td class="text-center font-weight-bold">{{ $loop->index + 1 }}</td>
                         <td>
-                            {{ trim(
-                                '(' .
-                                    $prestamo_pendiente->tipo_perfil .
-                                    ') ' .
-                                    $prestamo_pendiente->apellido_paterno .
-                                    ' ' .
-                                    $prestamo_pendiente->apellido_materno .
-                                    ' ' .
-                                    $prestamo_pendiente->nombres,
-                            ) }}
+                            <b>{{ $prestamo_pendiente->tipo_perfil }}</b> -
+                            {{ trim($prestamo_pendiente->apellido_paterno . ' ' . $prestamo_pendiente->apellido_materno . ' ' . $prestamo_pendiente->nombres) }}
                         </td>
                         <td class="text-center">{{ $prestamo_pendiente->curso }}</td>
                         <td class="text-center">{{ $prestamo_pendiente->celular }}</td>
@@ -439,17 +432,8 @@
                 @foreach ($prestamos_totales as $prestamo_total)
                     <tr class="align-top">
                         <td class="text-center font-weight-bold">{{ $loop->index + 1 }}</td>
-                        <td>
-                            {{ trim(
-                                '(' .
-                                    $prestamo_total->tipo_perfil .
-                                    ') ' .
-                                    $prestamo_total->apellido_paterno .
-                                    ' ' .
-                                    $prestamo_total->apellido_materno .
-                                    ' ' .
-                                    $prestamo_total->nombres,
-                            ) }}
+                        <td><b>{{ $prestamo_total->tipo_perfil }}</b> - 
+                            {{ trim($prestamo_total->apellido_paterno . ' ' . $prestamo_total->apellido_materno . ' ' . $prestamo_total->nombres) }}
                         </td>
                         <td class="text-center">{{ $prestamo_total->curso }}</td>
                         <td class="text-center">{{ $prestamo_total->celular }}</td>
