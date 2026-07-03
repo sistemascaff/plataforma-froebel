@@ -222,8 +222,30 @@
                         icon: 'success'
                     });
                     $('#modal-formulario').modal('hide');
-                    // Refresca la fila del docente en la tabla sin recargar la página
-                    location.reload(); // o puedes actualizar solo la celda si prefieres
+                    btn.prop('disabled', false)
+                        .html('<i class="fa-solid fa-duotone fa-save"></i> Guardar');
+
+                    // Se obtiene el nuevo docente desde la respuesta y se actualiza la tabla
+                    const nuevoDocente = response.nuevoDocente;
+                    const nombreCompleto =
+                        `${nuevoDocente.persona.apellido_paterno} ${nuevoDocente.persona.apellido_materno} ${nuevoDocente.persona.nombres}`
+                        .trim();
+
+                    // 1. Encontrar el botón de edición específico de esta fila usando el data-id-lista
+                    const botonEdicion = $(
+                        `#listas .btn-editar-docente[data-id-lista="${idLista}"]`);
+
+                    // 2. Navegar hacia arriba en el DOM hasta encontrar la fila (tr) correspondiente
+                    const fila = botonEdicion.closest('tr');
+
+                    // 3. Actualizar el texto de la celda del docente (es la 4ta columna, índice 3)
+                    fila.find('td:eq(3)').text(nombreCompleto);
+
+                    // 4. Mantenimiento crucial: Actualizar el atributo data-id-docente del botón
+                    // Esto asegura que si el usuario vuelve a hacer clic en "Editar" sin recargar la página, 
+                    // el modal cargue el ID del nuevo docente y no el antiguo.
+                    botonEdicion.data('id-docente', idDocente);
+                    botonEdicion.attr('data-id-docente', idDocente);
                 },
                 error: function(xhr) {
                     let respuesta = {};

@@ -24,9 +24,12 @@ class ListaAsignaturaController extends Controller
         $lista_asignatura->dispositivo = session('dispositivo');
         $lista_asignatura->save();
 
+        $nuevoDocente = $lista_asignatura->docente()->with('persona')->first();
         return response()->json([
             'success' => true,
             'message' => 'El/la docente de la lista seleccionada se ha actualizado correctamente.',
-            'lista_asignatura' => $lista_asignatura]);
+            'lista_asignatura' => $lista_asignatura,
+            'nuevoDocente' => $nuevoDocente
+        ]);
     }
 }

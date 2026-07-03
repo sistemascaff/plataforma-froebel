@@ -53,11 +53,11 @@ class ListaAsignatura extends Model
 
     public function get_all_listas_asignaturas()
     {
-        return $this->with('asignatura', 'periodo', 'docente', 'creado', 'modificado', 'eliminado')->get();
+        return $this->with('asignatura', 'periodo', 'docente.persona', 'creado', 'modificado', 'eliminado')->get();
     }
 
     public function get_lista_asignatura($id_lista_asignatura)
     {
-        return $this->with('asignatura', 'periodo', 'docente', 'creado', 'modificado', 'eliminado')->findOrFail($id_lista_asignatura);
+        return $this->with('asignatura', 'periodo', 'docente.persona', 'creado', 'modificado', 'eliminado')->findOrFail($id_lista_asignatura);
     }
 }

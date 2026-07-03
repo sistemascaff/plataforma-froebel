@@ -58,35 +58,35 @@
 
                     <div class="mb-3">
                         <label for="aula" class="form-label">Aula <span class="text-danger">*</span></label>
-                        <p class="text-info">El espacio físico donde se desarrolla la asignatura.</p>
                         <select class="form-select select2" id="aula" name="id_aula" required>
                             <option value="" disabled selected>Seleccione un aula</option>
                             @foreach ($aulas as $aula)
-                                <option value="{{ $aula->id_aula }}">{{ $aula->aula }}</option>
+                            <option value="{{ $aula->id_aula }}">{{ $aula->aula }}</option>
                             @endforeach
                         </select>
+                        <div class="form-text">El espacio físico donde se desarrolla la asignatura.</div>
                     </div>
 
                     <div class="mb-3">
                         <label for="nivel" class="form-label">Nivel <span class="text-danger">*</span></label>
-                        <p class="text-info">Permite que un director de nivel pueda gestionar la asignatura.</p>
                         <select class="form-select select2" id="nivel" name="id_nivel" required>
                             <option value="" disabled selected>Seleccione un nivel</option>
                             @foreach ($niveles as $nivel)
                                 <option value="{{ $nivel->id_nivel }}">{{ $nivel->nivel }}</option>
                             @endforeach
                         </select>
+                        <div class="form-text">Permite que un <b>director de nivel</b> pueda gestionar la asignatura.</div>
                     </div>
 
                     <div class="mb-3">
                         <label for="coordinacion" class="form-label">Coordinación</label>
-                        <p class="text-info">Permite que un coordinador pueda gestionar la asignatura.</p>
                         <select class="form-select select2" id="coordinacion" name="id_coordinacion" required>
                             <option value="" selected>Seleccione una coordinación (opcional)</option>
                             @foreach ($coordinaciones as $coordinacion)
                                 <option value="{{ $coordinacion->id_coordinacion }}">{{ $coordinacion->coordinacion }}</option>
                             @endforeach
                         </select>
+                        <div class="form-text">Permite que un <b>coordinador</b> pueda gestionar la asignatura.</div>
                     </div>
                 </form>
             </div>

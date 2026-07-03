@@ -165,7 +165,6 @@
                             <i class="fa-duotone fa-solid fa-edit"></i>
                         </button>
                     </div>
-                    {{ $lista_asignatura->id_lista_asignatura }}
                 </td>
                 </td>
             </tr>
