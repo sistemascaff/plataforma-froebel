@@ -16,13 +16,22 @@ if (!function_exists('helper_version_app')) {
 if (!function_exists('helper_encrypt')) {
     function helper_encrypt(string $string)
     {
+        $key = config('app.llave_cifrado');
+        
+        if (empty($key)) {
+            return $string; 
+        }
+
         $result = '';
+        
         for ($i = 0; $i < strlen($string); $i++) {
             $char = substr($string, $i, 1);
-            $keychar = substr(env('PHP_ENCRYPT_AND_DECRYPT_KEY'), ($i % strlen(env('PHP_ENCRYPT_AND_DECRYPT_KEY'))) - 1, 1);
-            $char = chr(ord($char) + ord($keychar));
-            $result .= $char;
+            $keychar = substr($key, $i % strlen($key), 1);
+            
+            $valor_ascii = (ord($char) + ord($keychar)) % 256;
+            $result .= chr($valor_ascii);
         }
+        
         return base64_encode($result);
     }
 }
@@ -30,15 +39,24 @@ if (!function_exists('helper_encrypt')) {
 if (!function_exists('helper_decrypt')) {
     function helper_decrypt(string $string)
     {
+        $key = config('app.llave_cifrado');
+        
+        if (empty($key)) {
+            return $string; 
+        }
+
         $result = '';
         $string = base64_decode($string);
+        
         for ($i = 0; $i < strlen($string); $i++) {
             $char = substr($string, $i, 1);
-            $keychar = substr(env('PHP_ENCRYPT_AND_DECRYPT_KEY'), ($i % strlen(env('PHP_ENCRYPT_AND_DECRYPT_KEY'))) - 1, 1);
-            $char = chr(ord($char) - ord($keychar));
-            $result .= $char;
+            $keychar = substr($key, $i % strlen($key), 1);
+            
+            $valor_ascii = (ord($char) - ord($keychar) + 256) % 256;
+            $result .= chr($valor_ascii);
         }
-        return $result;
+        
+        return mb_convert_encoding($result, 'UTF-8', 'UTF-8');
     }
 }
 
@@ -126,7 +144,7 @@ if (!function_exists('helper_recortar_texto')) {
 }
 
 if (!function_exists('helper_dia_semana_a_nombre')) {
-    function helper_dia_semana_a_nombre(int$dia_semana)
+    function helper_dia_semana_a_nombre(int $dia_semana)
     {
         $dias = [
             1 => 'LUNES',

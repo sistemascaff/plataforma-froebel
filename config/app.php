@@ -186,4 +186,15 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Llaves Personalizadas del Sistema
+    |--------------------------------------------------------------------------
+    |
+    | Aquí registramos las variables de entorno personalizadas para que puedan
+    | ser cacheadas correctamente por el sistema.
+    |
+    */
+    'llave_cifrado' => env('PHP_ENCRYPT_AND_DECRYPT_KEY', ''),
+
 ];

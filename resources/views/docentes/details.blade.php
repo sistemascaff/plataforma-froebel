@@ -1,130 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="text-center text-info fw-bold"><i class="fa-solid fa-duotone fa-chalkboard-user"></i> {{ $head_title }}
-    </h1>
-
-    <a class="btn btn-secondary mb-3" href="{{ route('docentes.index') }}">
-        <i class="fa-solid fa-duotone fa-arrow-left"></i> Volver</a>
-
-    <div class="col-12 col-md-12 col-lg-12 mb-3 d-flex justify-content-center">
-        <img class="rounded" style="max-width: 200px;" alt="Foto de perfil"
-            src="{{ URL::to('/') }}/{{ $docente->persona->usuario->url_foto_perfil }}">
-    </div>
-
-    <div class="row">
-        <div class="col-12 col-md-6 col-lg-6">
-            <h2 class="text-info fw-bold">Datos personales</h2>
-
-            <label for="apellido_paterno">Apellido paterno:</label>
-            <p class="form-control mb-3" id="apellido_paterno">
-                {{ $docente->persona->apellido_paterno }}
-            </p>
-
-            <label for="apellido_materno">Apellido materno:</label>
-            <p class="form-control mb-3" id="apellido_materno">
-                {{ $docente->persona->apellido_materno }}
-            </p>
-
-            <label for="nombres">Nombres:</label>
-            <p class="form-control mb-3" id="nombres">
-                {{ $docente->persona->nombres }}
-            </p>
-
-            <label for="documento_identificacion">C.I.:</label>
-            <p class="form-control mb-3" id="documento_identificacion">
-                {{ $docente->persona->documento_identificacion }}
-            </p>
-
-            <label for="documento_complemento">C.I. Complemento:</label>
-            <p class="form-control mb-3" id="documento_complemento">
-                {{ $docente->persona->documento_complemento ?: '-' }}
-            </p>
-
-            <label for="documento_expedido">C.I. Expedido:</label>
-            <p class="form-control mb-3" id="documento_expedido">
-                {{ $docente->persona->documento_expedido }}
-            </p>
-
-            <label for="fecha_nacimiento">Fecha de nacimiento:</label>
-            <p class="form-control mb-3" id="fecha_nacimiento">
-                {{ date('d/m/Y', strtotime($docente->persona->fecha_nacimiento)) }}
-            </p>
-
-            <label for="sexo">Sexo:</label>
-            <p class="form-control mb-3" id="sexo">
-                {{ $docente->persona->sexo == 'M' ? 'MASCULINO' : 'FEMENINO' }}
-            </p>
-
-            <label for="idioma">Idioma:</label>
-            <p class="form-control mb-3" id="idioma">
-                {{ $docente->persona->idioma }}
-            </p>
-
-            <label for="celular">Celular:</label>
-            <p class="form-control mb-3" id="celular">
-                {{ $docente->persona->celular }}
-            </p>
-
-            <label for="telefono">Teléfono:</label>
-            <p class="form-control mb-3" id="telefono">
-                {{ $docente->persona->telefono }}
-            </p>
-
-            <label for="tipo_perfil">Tipo de perfil:</label>
-            <p class="form-control mb-3" id="tipo_perfil">
-                {{ $docente->persona->tipo_perfil }}
-            </p>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-6">
-            <h2 class="text-info fw-bold">Datos de acceso</h2>
-
-            <label for="correo">Correo:</label>
-            <p class="form-control mb-3 fw-bold bg-info text-dark" id="correo">
-                {{ $docente->persona->usuario->correo }}
-            </p>
-
-            @if (session('tipo_perfil') === 'ADMIN')
-                <label for="contrasenha">Contraseña:</label>
-                <b><i class="fa-solid fa-duotone fa-circle-info"></i> Este dato solo es visible para el tipo de perfil <span class="text-primary">ADMIN</span></b>
-                <p class="form-control mb-3 fw-bold bg-warning text-dark" id="contrasenha">
-                    {{ helper_decrypt($docente->persona->usuario->contrasenha) }}
-                </p>
-            @endif
-
-            <label for="tiene_acceso">Tiene acceso:</label>
-            <p class="form-control mb-3 fw-bold {{ $docente->persona->usuario->tiene_acceso ? 'bg-success' : 'bg-danger' }}" id="tiene_acceso">
-                {{ $docente->persona->usuario->tiene_acceso ? 'SI' : 'NO' }}
-            </p>
-
-            <h2 class="text-info fw-bold">Datos del docente</h2>
-
-            <label for="nivel">Responsable de nivel:</label>
-            <p class="form-control mb-3" id="nivel">
-                {{ $docente->nivel?->nivel ?: '-' }}
-            </p>
-
-            <label for="coordinacion">Responsable de coordinacion:</label>
-            <p class="form-control mb-3" id="coordinacion">
-                {{ $docente->coordinacion?->coordinacion ?: '-' }}
-            </p>
-
-            <label for="especialidad">Especialidad:</label>
-            <p class="form-control mb-3" id="especialidad">
-                {{ $docente->especialidad ?: '-' }}
-            </p>
-
-            <label for="grado_estudios">Grado de estudios:</label>
-            <p class="form-control mb-3" id="grado_estudios">
-                {{ $docente->grado_estudios }}
-            </p>
-
-            <label for="domicilio">domicilio:</label>
-            <p class="form-control mb-3" id="domicilio">
-                {{ $docente->domicilio }}
-            </p>
-        </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-info fw-bold mb-0">
+            <i class="fa-solid fa-duotone fa-chalkboard-user me-2"></i> {{ $head_title }}
+        </h1>
+        <a class="btn btn-outline-secondary shadow-sm" href="{{ route('docentes.index') }}">
+            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver
+        </a>
     </div>
 
     @php
@@ -133,48 +16,173 @@
             1 => 'ACTIVO',
             default => 'DESCONOCIDO',
         };
-        $class = match ($docente->estado) {
-            0 => 'alert alert-secondary',
-            1 => 'alert alert-success',
-            default => 'alert alert-secondary',
+        $badgeClass = match ($docente->estado) {
+            0 => 'bg-secondary',
+            1 => 'bg-success',
+            default => 'bg-dark',
         };
     @endphp
 
-    <div class="{{ $class }} fw-bold mb-3">
-        Estado: {{ $estado }}
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-lg-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body text-center pt-4">
+                    <img class="rounded-circle img-thumbnail shadow-sm mb-3"
+                        style="width: 160px; height: 160px; object-fit: cover;" alt="Foto de perfil"
+                        src="{{ URL::to('/') }}/{{ $docente->persona->usuario->url_foto_perfil }}">
+
+                    <h4 class="fw-bold text-dark mb-1">
+                        {{ $docente->persona->nombres }} {{ $docente->persona->apellido_paterno }}
+                    </h4>
+                    <p class="text-muted mb-3"><i class="fa-solid fa-id-badge me-1"></i> CI:
+                        {{ $docente->persona->documento_identificacion }}
+                        {{ $docente->persona->documento_complemento ? '- ' . $docente->persona->documento_complemento : '' }}
+                        {{ $docente->persona->documento_expedido }}</p>
+
+                    <span class="badge {{ $badgeClass }} fs-6 px-3 py-2 rounded-pill mb-3">
+                        <i class="fa-solid fa-circle-user me-1"></i> {{ $estado }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-info fw-bold">
+                    <i class="fa-solid fa-key me-2"></i> Datos de Acceso
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Correo:</span>
+                        <span class="fw-bold">{{ $docente->persona->usuario->correo }}</span>
+                    </li>
+
+                    @if (session('tipo_perfil') === 'ADMIN')
+                        <li
+                            class="list-group-item flex-column align-items-start border-warning border-start border-4">
+                            <div class="d-flex justify-content-between w-100 mb-1">
+                                <span class="text-muted">Contraseña:</span>
+                                <span
+                                    class="fw-bold text-muted">{{ helper_decrypt($docente->persona->usuario->contrasenha) }}</span>
+                            </div>
+                            <small class="text-warning-emphasis"><i class="fa-solid fa-circle-info"></i> Visible solo para
+                                ADMIN</small>
+                        </li>
+                    @endif
+
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Acceso al sistema:</span>
+                        @if ($docente->persona->usuario->tiene_acceso)
+                            <span class="badge bg-success rounded-pill px-3">SÍ</span>
+                        @else
+                            <span class="badge bg-danger rounded-pill px-3">NO</span>
+                        @endif
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Perfil:</span>
+                        <span class="fw-bold text-secondary">{{ $docente->persona->tipo_perfil }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header border-bottom-0 pt-4 pb-0">
+                    <h5 class="text-info fw-bold"><i class="fa-solid fa-address-card me-2"></i> Información Personal</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row border-bottom pb-2 mb-2">
+                        <div class="col-sm-4 text-muted">Nombre completo:</div>
+                        <div class="col-sm-8 fw-bold">{{ $docente->persona->nombres }}
+                            {{ $docente->persona->apellido_paterno }} {{ $docente->persona->apellido_materno }}</div>
+                    </div>
+                    <div class="row border-bottom pb-2 mb-2">
+                        <div class="col-sm-4 text-muted">Fecha de nacimiento:</div>
+                        <div class="col-sm-8">{{ date('d/m/Y', strtotime($docente->persona->fecha_nacimiento)) }}</div>
+                    </div>
+                    <div class="row border-bottom pb-2 mb-2">
+                        <div class="col-sm-4 text-muted">Sexo:</div>
+                        <div class="col-sm-8">{{ $docente->persona->sexo == 'M' ? 'MASCULINO' : 'FEMENINO' }}</div>
+                    </div>
+                    <div class="row border-bottom pb-2 mb-2">
+                        <div class="col-sm-4 text-muted">Idioma:</div>
+                        <div class="col-sm-8">{{ $docente->persona->idioma }}</div>
+                    </div>
+                    <div class="row border-bottom pb-2 mb-2">
+                        <div class="col-sm-4 text-muted">Celular:</div>
+                        <div class="col-sm-8">{{ $docente->persona->celular }}</div>
+                    </div>
+                    <div class="row pb-2">
+                        <div class="col-sm-4 text-muted">Teléfono fijo:</div>
+                        <div class="col-sm-8">{{ $docente->persona->telefono }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header border-bottom-0 pt-4 pb-0">
+                    <h5 class="text-info fw-bold"><i class="fa-solid fa-graduation-cap me-2"></i> Información Académica</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row border-bottom pb-2 mb-2">
+                        <div class="col-sm-4 text-muted">Resp. de Nivel:</div>
+                        <div class="col-sm-8 fw-bold text-primary">{{ $docente->nivel?->nivel ?: '-' }}</div>
+                    </div>
+                    <div class="row border-bottom pb-2 mb-2">
+                        <div class="col-sm-4 text-muted">Resp. de Coordinación:</div>
+                        <div class="col-sm-8 fw-bold text-primary">{{ $docente->coordinacion?->coordinacion ?: '-' }}</div>
+                    </div>
+                    <div class="row border-bottom pb-2 mb-2">
+                        <div class="col-sm-4 text-muted">Especialidad:</div>
+                        <div class="col-sm-8">{{ $docente->especialidad ?: '-' }}</div>
+                    </div>
+                    <div class="row border-bottom pb-2 mb-2">
+                        <div class="col-sm-4 text-muted">Grado de estudios:</div>
+                        <div class="col-sm-8">{{ $docente->grado_estudios }}</div>
+                    </div>
+                    <div class="row pb-2">
+                        <div class="col-sm-4 text-muted">Domicilio:</div>
+                        <div class="col-sm-8">{{ $docente->domicilio }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    
-    <div class="mb-3"></div>
-    
-    <h2 class="text-info fw-bold">Listas de asignaturas</h2>
-    
-    <table class="table table-bordered table-striped mb-3 dataTable" id="materias">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Asignatura</th>
-                <th>Periodo</th>
-                <th>Gestión</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($docente->listas_asignaturas as $lista_asignatura)
-            <tr>
-                <td>{{ $loop->index + 1 }}</td>
-                <td>{{ $lista_asignatura->asignatura->asignatura }}</td>
-                <td>{{ $lista_asignatura->periodo->periodo }}</td>
-                <td>{{ $lista_asignatura->periodo->gestion->anio }}</td>
-                <td>
-
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <div class="mb-3"></div>
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-header pt-4 pb-2 border-bottom">
+            <h5 class="text-info fw-bold mb-0"><i class="fa-solid fa-book-open me-2"></i> Listas de asignaturas asignadas
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0 dataTable" id="materias">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Asignatura</th>
+                            <th scope="col">Periodo</th>
+                            <th scope="col">Gestión</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($docente->listas_asignaturas as $lista_asignatura)
+                            <tr>
+                                <td class="fw-bold">{{ $loop->index + 1 }}</td>
+                                <td>{{ $lista_asignatura->asignatura->asignatura }}</td>
+                                <td><span
+                                        class="badge bg-light text-dark border">{{ $lista_asignatura->periodo->periodo }}</span>
+                                </td>
+                                <td>{{ $lista_asignatura->periodo->gestion->anio }}</td>
+                                <td>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')

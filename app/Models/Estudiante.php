@@ -46,11 +46,11 @@ class Estudiante extends Model
 
     public function get_all_estudiantes()
     {
-        return $this::with('persona', 'curso', 'creado', 'modificado', 'eliminado')->orderBy('id_estudiante', 'ASC')->get();
+        return $this::with('persona.usuario', 'curso', 'creado', 'modificado', 'eliminado')->orderBy('id_estudiante', 'ASC')->get();
     }
 
     public function get_estudiante($id_estudiante)
     {
-        return $this::with('persona', 'curso', 'creado', 'modificado', 'eliminado')->findOrFail($id_estudiante);
+        return $this::with('persona.usuario', 'curso', 'creado', 'modificado', 'eliminado')->findOrFail($id_estudiante);
     }
 }

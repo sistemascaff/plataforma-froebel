@@ -8,6 +8,7 @@ use App\Http\Controllers\CoordinacionController;
 use App\Http\Controllers\CursoController;
 use App\Http\Controllers\DimensionController;
 use App\Http\Controllers\DocenteController;
+use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\GestionController;
 use App\Http\Controllers\GradoController;
 use App\Http\Controllers\HorarioAsignaturaController;
@@ -251,4 +252,15 @@ Route::controller(DocenteController::class)->group(function () {
     Route::patch('docentes/{docente}', 'delete')->name('docentes.delete');
 
     Route::get('docentes/{docente}/detalles', 'view_details')->name('docentes.detalles');
+});
+
+Route::controller(EstudianteController::class)->group(function () {
+    Route::get('estudiantes', 'view_index')->name('estudiantes.index');
+    Route::get('estudiantes/listar', 'listar')->name('estudiantes.listar');
+    Route::get('estudiantes/{estudiante}', 'mostrar')->name('estudiantes.mostrar');
+    Route::post('estudiantes', 'create')->name('estudiantes.create');
+    Route::put('estudiantes/{estudiante}', 'update')->name('estudiantes.update');
+    Route::patch('estudiantes/{estudiante}', 'delete')->name('estudiantes.delete');
+
+    Route::get('estudiantes/{estudiante}/detalles', 'view_details')->name('estudiantes.detalles');
 });
