@@ -7,6 +7,7 @@ use App\Models\Area;
 use App\Models\Asignatura;
 use App\Models\Aula;
 use App\Models\Coordinacion;
+use App\Models\Curso;
 use App\Models\ListaAsignatura;
 use App\Models\Materia;
 use App\Models\Nivel;
@@ -28,6 +29,7 @@ class AsignaturaController extends Controller
         $aulas = (new Aula())->get_all_aulas();
         $niveles = (new Nivel())->get_all_niveles();
         $coordinaciones = (new Coordinacion())->get_all_coordinaciones();
+        $cursos = (new Curso())->get_all_cursos();
 
         return view('asignaturas.index', [
             'head_title' => 'GESTIÓN DE ASIGNATURAS',
@@ -35,7 +37,8 @@ class AsignaturaController extends Controller
             'areas' => $areas,
             'aulas' => $aulas,
             'niveles' => $niveles,
-            'coordinaciones' => $coordinaciones
+            'coordinaciones' => $coordinaciones,
+            'cursos' => $cursos,
         ]);
     }
 
@@ -111,6 +114,7 @@ class AsignaturaController extends Controller
         $asignatura->id_aula = $request->id_aula;
         $asignatura->id_nivel = $request->id_nivel;
         $asignatura->id_coordinacion = $request->id_coordinacion;
+        $asignatura->id_curso = $request->tipo_bloque === 'curso' ? $request->id_curso : null;
         $asignatura->creado_por = session('id_usuario');
         $asignatura->ip = session('ip');
         $asignatura->dispositivo = session('dispositivo');
@@ -138,6 +142,7 @@ class AsignaturaController extends Controller
         $asignatura->id_aula = $request->id_aula;
         $asignatura->id_nivel = $request->id_nivel;
         $asignatura->id_coordinacion = $request->id_coordinacion;
+        $asignatura->id_curso = $request->tipo_bloque === 'curso' ? $request->id_curso : null;
         $asignatura->modificado_por = session('id_usuario');
         $asignatura->ip = session('ip');
         $asignatura->dispositivo = session('dispositivo');

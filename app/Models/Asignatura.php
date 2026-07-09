@@ -64,6 +64,12 @@ class Asignatura extends Model
         return $this->belongsTo(Coordinacion::class, 'id_coordinacion', 'id_coordinacion');
     }
 
+    /** Relación FK con cursos */
+    public function curso()
+    {
+        return $this->belongsTo(Curso::class, 'id_curso', 'id_curso');
+    }
+
     /** Relación con atributo de auditoría */
     public function creado()
     {
@@ -84,11 +90,11 @@ class Asignatura extends Model
 
     public function get_all_asignaturas()
     {
-        return $this::with('materia', 'area', 'aula', 'nivel', 'coordinacion', 'creado', 'modificado', 'eliminado')->orderBy('asignatura', 'ASC')->get();
+        return $this::with('materia', 'area', 'aula', 'nivel', 'curso', 'coordinacion', 'creado', 'modificado', 'eliminado')->orderBy('asignatura', 'ASC')->get();
     }
 
     public function get_asignatura($id_asignatura)
     {
-        return $this::with('horarios_asignaturas.gestion', 'listas_asignaturas.periodo.gestion', 'listas_asignaturas.docente.persona', 'materia', 'area', 'aula', 'nivel', 'coordinacion', 'creado', 'modificado', 'eliminado')->findOrFail($id_asignatura);
+        return $this::with('horarios_asignaturas.gestion', 'listas_asignaturas.periodo.gestion', 'listas_asignaturas.docente.persona', 'materia', 'area', 'aula', 'nivel', 'curso', 'coordinacion', 'creado', 'modificado', 'eliminado')->findOrFail($id_asignatura);
     }
 }

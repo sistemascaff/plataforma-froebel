@@ -57,6 +57,9 @@
                     data: "coordinacion.coordinacion",
                 },
                 {
+                    data: "curso.curso",
+                },
+                {
                     data: "estado",
                     render: function(data, type, row) {
                         if (data == 1) {
@@ -158,6 +161,7 @@
             $('#form-crear-o-editar select[name="id_aula"]').val('').trigger('change');
             $('#form-crear-o-editar select[name="id_nivel"]').val('').trigger('change');
             $('#form-crear-o-editar select[name="id_coordinacion"]').val('').trigger('change');
+            $('#form-crear-o-editar select[name="id_curso"]').val('').trigger('change');
 
             const titleElement = document.getElementById('modal-formulario-titulo');
             titleElement.innerHTML = '<i class="fa-solid fa-duotone fa-plus"></i> CREAR ASIGNATURA';
@@ -180,6 +184,7 @@
                 $('#form-crear-o-editar select[name="id_aula"]').val(asignatura.data.id_aula).trigger('change');
                 $('#form-crear-o-editar select[name="id_nivel"]').val(asignatura.data.id_nivel).trigger('change');
                 $('#form-crear-o-editar select[name="id_coordinacion"]').val(asignatura.data.id_coordinacion).trigger('change');
+                $('#form-crear-o-editar select[name="id_curso"]').val(asignatura.data.id_curso).trigger('change');
 
                 const titleElement = document.getElementById('modal-formulario-titulo');
                 titleElement.innerHTML =

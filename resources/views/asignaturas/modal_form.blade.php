@@ -37,6 +37,17 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="curso" class="form-label">Curso</label>
+                        <select class="form-select select2" id="curso" name="id_curso" required>
+                            <option value="" disabled selected>Seleccione un curso</option>
+                            @foreach ($cursos as $curso)
+                                <option value="{{ $curso->id_curso }}">{{ $curso->curso }}</option>
+                            @endforeach
+                        </select>
+                        <div class="form-text">Solo se aplicará si el tipo de bloque es "curso"</div>
+                    </div>
+
+                    <div class="mb-3">
                         <label for="materia" class="form-label">Materia (Interna) <span class="text-danger">*</span></label>
                         <select class="form-select select2" id="materia" name="id_materia" required>
                             <option value="" disabled selected>Seleccione una materia</option>

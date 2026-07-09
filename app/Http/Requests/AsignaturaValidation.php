@@ -33,6 +33,7 @@ class AsignaturaValidation extends FormRequest
             'id_aula' => 'required|integer|exists:aulas,id_aula',
             'id_nivel' => 'required|integer|exists:niveles,id_nivel',
             'id_coordinacion' => 'nullable|integer|exists:coordinaciones,id_coordinacion',
+            'id_curso' => 'nullable|integer|exists:cursos,id_curso',
         ];
     }
 
@@ -77,6 +78,9 @@ class AsignaturaValidation extends FormRequest
 
             'id_coordinacion.integer'   => 'La coordinación seleccionada no es válida.',
             'id_coordinacion.exists'    => 'La coordinación seleccionada no existe en el sistema.',
+
+            'id_curso.integer'          => 'El curso seleccionado no es válido.',
+            'id_curso.exists'           => 'El curso seleccionado no existe en el sistema.',
         ];
     }
 
@@ -96,6 +100,7 @@ class AsignaturaValidation extends FormRequest
             'id_aula'           => 'aula',
             'id_nivel'          => 'nivel',
             'id_coordinacion'   => 'coordinación',
+            'id_curso'          => 'curso',
         ];
     }
 }

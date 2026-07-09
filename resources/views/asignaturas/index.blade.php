@@ -30,6 +30,7 @@
                 <th>Aula</th>
                 <th>Nivel</th>
                 <th>Coordinación</th>
+                <th>Curso</th>
                 <th>Estado</th>
                 <th>F. Registro</th>
                 <th>F. Actualización</th>

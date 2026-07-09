@@ -15,6 +15,17 @@ class ListaAsignatura extends Model
     const CREATED_AT = 'fecha_registro';
     const UPDATED_AT = 'fecha_actualizacion';
 
+    /** Relación muchos a muchos con estudiantes */
+    public function estudiantes()
+    {
+        return $this->belongsToMany(
+            Estudiante::class,
+            'detalles_listas_asignaturas',
+            'id_lista_asignatura',
+            'id_estudiante'
+        );
+    }
+
     /** Relación FK con asignaturas */
     public function asignatura()
     {
@@ -58,6 +69,6 @@ class ListaAsignatura extends Model
 
     public function get_lista_asignatura($id_lista_asignatura)
     {
-        return $this->with('asignatura', 'periodo', 'docente.persona', 'creado', 'modificado', 'eliminado')->findOrFail($id_lista_asignatura);
+        return $this->with('asignatura', 'periodo.gestion', 'docente.persona', 'estudiantes.persona.usuario', 'estudiantes.curso', 'creado', 'modificado', 'eliminado')->findOrFail($id_lista_asignatura);
     }
 }

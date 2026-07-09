@@ -15,6 +15,17 @@ class Estudiante extends Model
     const CREATED_AT = 'fecha_registro';
     const UPDATED_AT = 'fecha_actualizacion';
 
+    /** Relación muchos a muchos con listas_asignaturas */
+    public function listas_asignaturas()
+    {
+        return $this->belongsToMany(
+            ListaAsignatura::class,
+            'detalles_listas_asignaturas',
+            'id_estudiante',
+            'id_lista_asignatura'
+        );
+    }
+
     /** Relación FK con personas */
     public function persona()
     {
