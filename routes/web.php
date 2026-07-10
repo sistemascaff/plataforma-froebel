@@ -229,8 +229,9 @@ Route::controller(AsignaturaController::class)->group(function () {
 });
 
 Route::controller(ListaAsignaturaController::class)->group(function () {
-    Route::get('listas_asignaturas/{lista_asignatura}', 'view_details')->name('listas_asignaturas.detalles');
+    Route::get('listas_asignaturas/{lista_asignatura}', 'mostrar')->name('listas_asignaturas.mostrar');
 
+    Route::get('listas_asignaturas/{lista_asignatura}/detalles', 'view_details')->name('listas_asignaturas.detalles');
     Route::put('listas_asignaturas/{lista_asignatura}', 'update')->name('listas_asignaturas.update');
     Route::patch('listas_asignaturas/{lista_asignatura}/docente', 'actualizar_docente')->name('listas_asignaturas.actualizar_docente');
 });
