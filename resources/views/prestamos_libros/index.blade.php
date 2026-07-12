@@ -1,75 +1,85 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="text-center text-info fw-bold"><i class="fa-solid fa-duotone fa-books fa-rotate-270"></i> {{ $head_title }}
-    </h1>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 border-bottom pb-3">
+        <div>
+            <h1 class="h2 fw-bold mb-1 text-info">
+                <i class="fa-solid fa-duotone fa-books fa-rotate-270 me-2"></i>{{ $head_title }}
+            </h1>
+            <p class="text-muted mb-0">En esta sección se encuentran todos los préstamos de libros realizados en la
+                cooperativa del colegio.</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-success" href="{{ route('prestamos_libros.crear') }}">
+                <i class="fa-solid fa-duotone fa-plus me-1"></i> Crear préstamo
+            </a>
+            <a class="btn btn-info text-white" href="{{ route('prestamos_libros.reportes') }}">
+                <i class="fa-solid fa-duotone fa-chart-column me-1"></i> Reportes
+            </a>
+        </div>
+    </div>
 
-    <a class="btn btn-success mb-3" href="{{ route('prestamos_libros.crear') }}">
-        <i class="fa-solid fa-duotone fa-plus"></i> Crear préstamo de libros</a>
-    <a class="btn btn-info mb-3" href="{{ route('prestamos_libros.reportes') }}">
-        <i class="fa-solid fa-duotone fa-chart-column"></i> Reportes</a>
-
-    <h2 class="text-info fw-bold">Lista de préstamos de libros</h2>
-
-    <h5>En esta sección se encuentran todos los préstamos de libros realizados en la cooperativa del colegio.</h5>
-
-    <div class="card p-3 mb-3">
-        <div class="row">
+    <div class="card p-3 mb-4 shadow-sm">
+        <div class="row align-items-center mb-3">
             <div class="col-12">
-                <h4 class="text-dark-aquamarine fw-bold">ESTADÍSTICAS</h4>
+                <h5 class="fw-bold m-0 text-uppercase tracking-wider small text-muted">
+                    <i class="fa-solid fa-chart-simple me-2 text-info"></i>Estadísticas de Préstamos
+                </h5>
             </div>
+        </div>
 
-            <div class="col-md-6 col-lg-3 mb-3">
-                <div class="card info-card shadow-sm border-info">
-                    <div class="card-body d-flex align-items-center bg-info bg-opacity-10">
-                        <div class="icon-box bg-info bg-opacity-10 me-3">
-                            <i class="text-info fa-solid fa-duotone fa-books fa-rotate-270 fa-xl"></i>
+        <div class="row">
+            <div class="col-sm-6 col-lg-3 mb-3 mb-lg-0">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="p-3 rounded bg-info bg-opacity-10 text-info me-3">
+                            <i class="fa-solid fa-duotone fa-book-bookmark fa-2xl"></i>
                         </div>
                         <div>
-                            <h6 class="text-muted mb-1 small">Total</h6>
-                            <h3 id="cantidad-prestamos-total" class="fw-bold">0</h3>
+                            <span class="text-muted small d-block mb-1">Total Registrados</span>
+                            <h3 id="cantidad-prestamos-total" class="fw-bold m-0">0</h3>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-6 col-lg-3 mb-3">
-                <div class="card info-card shadow-sm border-success">
-                    <div class="card-body d-flex align-items-center bg-success bg-opacity-10">
-                        <div class="icon-box bg-success bg-opacity-10 me-3">
-                            <i class="text-success fa-solid fa-duotone fa-books fa-rotate-270 fa-xl"></i>
+            <div class="col-sm-6 col-lg-3 mb-3 mb-lg-0">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="p-3 rounded bg-success bg-opacity-10 text-success me-3">
+                            <i class="fa-solid fa-duotone fa-circle-check fa-2xl"></i>
                         </div>
                         <div>
-                            <h6 class="text-muted mb-1 small">Completados</h6>
-                            <h3 id="cantidad-prestamos-completados" class="fw-bold">0</h3>
+                            <span class="text-muted small d-block mb-1">Completados</span>
+                            <h3 id="cantidad-prestamos-completados" class="fw-bold m-0">0</h3>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-6 col-lg-3 mb-3">
-                <div class="card info-card shadow-sm border-primary">
-                    <div class="card-body d-flex align-items-center bg-primary bg-opacity-10">
-                        <div class="icon-box bg-primary bg-opacity-10 me-3">
-                            <i class="text-primary fa-solid fa-duotone fa-books fa-rotate-270 fa-xl"></i>
+            <div class="col-sm-6 col-lg-3 mb-3 mb-sm-0">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="p-3 rounded bg-warning bg-opacity-10 text-warning me-3">
+                            <i class="fa-solid fa-duotone fa-hourglass-half fa-2xl"></i>
                         </div>
                         <div>
-                            <h6 class="text-muted mb-1 small">Pendientes</h6>
-                            <h3 id="cantidad-prestamos-pendientes" class="fw-bold">0</h3>
+                            <span class="text-muted small d-block mb-1">Pendientes / Retraso</span>
+                            <h3 id="cantidad-prestamos-pendientes" class="fw-bold m-0">0</h3>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-6 col-lg-3 mb-3">
-                <div class="card info-card shadow-sm border-danger">
-                    <div class="card-body d-flex align-items-center bg-danger bg-opacity-10">
-                        <div class="icon-box bg-danger bg-opacity-10 me-3">
-                            <i class="text-danger fa-solid fa-duotone fa-books fa-rotate-270 fa-xl"></i>
+            <div class="col-sm-6 col-lg-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="p-3 rounded bg-danger bg-opacity-10 text-danger me-3">
+                            <i class="fa-solid fa-duotone fa-ban fa-2xl"></i>
                         </div>
                         <div>
-                            <h6 class="text-muted mb-1 small">Anulados</h6>
-                            <h3 id="cantidad-prestamos-anulados" class="fw-bold">0</h3>
+                            <span class="text-muted small d-block mb-1">Anulados</span>
+                            <h3 id="cantidad-prestamos-anulados" class="fw-bold m-0">0</h3>
                         </div>
                     </div>
                 </div>
@@ -77,38 +87,43 @@
         </div>
     </div>
 
-    <div class="card p-3 mb-3">
-        <p>Seleccione una opción para <i class="fa-solid fa-duotone fa-file-export"></i> exportar o <i
-                class="fa-solid fa-duotone fa-filter"></i> filtrar la tabla:</p>
-        <div id="dataTable-export-buttons-container"></div>
+    <div class="card p-4 shadow-sm mb-4">
+        <div
+            class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3 pb-2 border-bottom">
+            <div class="text-muted small">
+                <i class="fa-solid fa-duotone fa-filter-list me-1 text-info"></i> Herramientas de filtrado y exportación de
+                datos
+            </div>
+            <div id="dataTable-export-buttons-container" class="d-flex flex-wrap gap-1"></div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-striped align-middle w-100" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Lector</th>
+                        <th>Perfil</th>
+                        <th>Curso</th>
+                        <th>Celular</th>
+                        <th>Libros Prestados</th>
+                        <th>F. Devolución Obj.</th>
+                        <th>Estado de Entrega</th>
+                        <th>Estado Reg.</th>
+                        <th>F. Registro</th>
+                        <th>F. Actualización</th>
+                        <th>F. Eliminación</th>
+                        <th>Creado por</th>
+                        <th>Modificado por</th>
+                        <th>Eliminado por</th>
+                        <th>IP</th>
+                        <th>Dispositivo</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
     </div>
-
-    <table class="table table-bordered table-striped" id="dataTable">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Lector</th>
-                <th>Perfil</th>
-                <th>Curso</th>
-                <th>Celular</th>
-                <th>Libros</th>
-                <th>F. Devolución objetivo</th>
-                <th>Días de retraso</th>
-                <th>Estado</th>
-                <th>F. Registro</th>
-                <th>F. Actualización</th>
-                <th>F. Eliminación</th>
-                <th>Creado por</th>
-                <th>Modificado por</th>
-                <th>Eliminado por</th>
-                <th>Ip</th>
-                <th>Dispositivo</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-    </table>
-
-    <div class="mb-3"></div>
 @endsection
 
 @section('scripts')

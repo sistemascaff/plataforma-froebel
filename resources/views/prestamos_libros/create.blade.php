@@ -1,82 +1,100 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="text-center text-info fw-bold"><i class="fa-solid fa-duotone fa-books fa-rotate-270"></i> {{ $head_title }}
-    </h1>
-
-    <a class="btn btn-secondary mb-3" href="{{ route('prestamos_libros.index') }}">
-        <i class="fa-solid fa-duotone fa-arrow-left"></i> Volver</a>
-
-    <h2 class="text-info fw-bold">1. Selecciona la persona</h2>
-
-    <div>
-        <select class="form-select" aria-label="Seleccione una persona" id="persona" name="persona_id" required>
-        </select>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-info fw-bold mb-0">
+            <i class="fa-solid fa-duotone fa-books fa-rotate-270 me-2"></i>{{ $head_title }}
+        </h1>
+        <a class="btn btn-secondary" href="{{ route('prestamos_libros.index') }}">
+            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver
+        </a>
     </div>
 
-    <div class="mb-3"></div>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-user-graduate me-2"></i> 1. Datos del Prestatario</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label for="persona" class="form-label fw-bold">Selecciona la persona <span class="text-danger">*</span></label>
+                    <select class="form-select" aria-label="Seleccione una persona" id="persona" name="persona_id" required>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="celular" class="form-label fw-bold">Número de celular</label>
+                    <input type="text" class="form-control" id="celular" name="celular" placeholder="Ej. 77001122 (Opcional)">
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <h2 class="text-info fw-bold">2. Indica su número de celular</h2>
-    <input type="text" class="form-control" id="celular" name="celular"
-        placeholder="Número de celular (opcional)">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-book-open-reader me-2"></i> 2. Catálogo de Libros</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped w-100" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Categoria</th>
+                        <th>Código</th>
+                        <th>Título</th>
+                        <th>Autor</th>
+                        <th>Editorial</th>
+                        <th>Año</th>
+                        <th>Descripción</th>
+                        <th>Costo</th>
+                        <th>Adquisición</th>
+                        <th>Presentación</th>
+                        <th>Observación</th>
+                        <th>F. Ingreso Cooperativa</th>
+                        <th>Prestado a</th>
+                        <th>Cant. Préstamos</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
 
-    <h2 class="text-info fw-bold">2. Selecciona los libros</h2>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-list-check me-2"></i> 3. Resumen y Devolución</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label for="fecha_devolucion" class="form-label fw-bold">Fecha de Devolución <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" id="fecha_devolucion" name="fecha_devolucion" value="{{ date('Y-m-d', strtotime('+7 days')) }}" required>
+                </div>
+            </div>
 
-    <!-- Esta tabla es igual a la de libros.index pero sin los atributos de auditoría -->
-    <table class="table table-bordered table-striped" id="dataTable">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Categoria</th>
-                <th>Código</th>
-                <th>Título</th>
-                <th>Autor</th>
-                <th>Editorial</th>
-                <th>Año</th>
-                <th>Descripción</th>
-                <th>Costo</th>
-                <th>Adquisición</th>
-                <th>Presentación</th>
-                <th>Observación</th>
-                <th>F. Ingreso Cooperativa</th>
-                <th>Prestado a</th>
-                <th>Cant. Préstamos</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-    </table>
-
-    <div class="mb-3"></div>
-
-    <h2 class="text-info fw-bold">3. Indica la fecha de devolución</h2>
-
-    <input type="date" class="form-control" id="fecha_devolucion" name="fecha_devolucion"
-        value="{{ date('Y-m-d', strtotime('+7 days')) }}" required>
-
-    <div class="mb-3"></div>
-
-    <h2 class="text-info fw-bold">Detalles</h2>
-
-    <table class="table table-bordered table-striped mb-3" id="detalles">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th class="visually-hidden">Id</th>
-                <th>Código</th>
-                <th>Título</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-
-        </tbody>
-    </table>
-
-    <button type="button" class="btn btn-primary" id="btn-guardar"><i class="fa-solid fa-duotone fa-floppy-disk"></i>
-        Guardar</button>
-
-    <div class="mb-3"></div>
+            <h6 class="fw-bold text-secondary mb-3">Libros a Prestar</h6>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped mb-0" id="detalles">
+                    <thead>
+                        <tr>
+                            <th width="5%">#</th>
+                            <th class="visually-hidden">Id</th>
+                            <th width="15%">Código</th>
+                            <th>Título</th>
+                            <th width="10%">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer text-end">
+            <button type="button" class="btn btn-primary" id="btn-guardar">
+                <i class="fa-solid fa-duotone fa-floppy-disk me-1"></i> Guardar Préstamo
+            </button>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')

@@ -28,8 +28,8 @@
                 },
                 {
                     data: "persona.tipo_perfil",
-                    render: function(data, type, row) {
-                        return `<b class="text-info">${data}</b>`;
+                    render: function(data) {
+                        return `<span class="badge bg-secondary bg-opacity-10 text-muted">${data}</span>`;
                     }
                 },
                 {
@@ -44,45 +44,29 @@
                 {
                     data: "libros",
                     render: function(data, type, row) {
-                        if (!data || data.length === 0) {
-                            return "-";
-                        }
-
+                        if (!data || data.length === 0) return "-";
                         if (row.estado == 0) {
                             return data.map((libro, index) =>
-                                `<b class="text-info">${index + 1}.</b> 
-                                    <span class="fw-bold text-danger">(ANULADO)</span>  
-                                    ${libro.codigo} - ${libro.titulo}`
+                                `<small class="text-muted">${index + 1}.</small> <span class="fw-bold text-danger"><i class="fa-solid fa-circle-xmark me-1"></i>(ANULADO)</span> <code class="text-muted">${libro.codigo}</code> - ${libro.titulo}`
                             ).join("<br>");
                         }
-
-                        // SI EL PRÉSTAMO ESTÁ ACTIVO O CERRADO
                         return data.map((libro, index) => {
                             let estadoTexto = "";
                             let css = "";
-
-                            // Libro actualmente prestado
                             if (libro.estado == 2 && libro.pivot.fecha_retorno ===
                                 null) {
                                 estadoTexto = "(EN USO)";
-                                css = "text-primary";
-                            }
-                            // Libro devuelto
-                            else if (libro.pivot.fecha_retorno !== null) {
+                                css = "text-primary fw-bold";
+                            } else if (libro.pivot.fecha_retorno !== null) {
                                 const fecha = new Date(libro.pivot.fecha_retorno)
                                     .toLocaleString();
-                                estadoTexto = "(DEVUELTO EL " + fecha + ")";
-                                css = "text-success";
-                            }
-                            // Situación rara pero posible (estado disponible sin fecha de retorno)
-                            else {
+                                estadoTexto = `(DEVUELTO EL ${fecha})`;
+                                css = "text-success opacity-75";
+                            } else {
                                 estadoTexto = "(DISPONIBLE)";
-                                css = "text-secondary";
+                                css = "text-muted";
                             }
-
-                            return `<b class="text-info">${index + 1}.</b> 
-                    <span class="fw-bold ${css}">${estadoTexto}</span>  
-                    ${libro.codigo} - ${libro.titulo}`;
+                            return `<small class="text-muted">${index + 1}.</small> <span class="${css}">${estadoTexto}</span> <code class="text-dark-aquamarine">${libro.codigo}</code> - ${libro.titulo}`;
                         }).join("<br>");
                     }
                 },
@@ -101,59 +85,43 @@
                     // dias de retraso
                     data: "libros",
                     render: function(data, type, row) {
-                        if (!data || data.length === 0) {
-                            return "-";
-                        }
-
-                        if (row.estado == 0) {
-                            return 'N/A';
-                        }
+                        if (!data || data.length === 0) return "-";
+                        if (row.estado == 0) return '<span class="text-muted small">N/A</span>';
 
                         return data.map((libro, index) => {
-                            // Obtener las fechas
                             const fechaDevolucion = new Date(row.fecha_devolucion);
                             const fechaRetorno = libro.pivot.fecha_retorno;
-
                             let diasAtraso = 0;
                             let mensaje = "";
                             let clase = "";
 
                             if (!fechaRetorno) {
-                                // Libro NO devuelto - calcular desde hoy
                                 const hoy = new Date();
                                 const diferenciaMilisegundos = hoy - fechaDevolucion;
                                 diasAtraso = Math.floor(diferenciaMilisegundos / (1000 *
                                     60 * 60 * 24));
 
                                 if (diasAtraso > 0) {
-                                    mensaje = `${diasAtraso} y contando...`;
-                                    clase = "text-danger";
+                                    mensaje = `${diasAtraso} días retraso`;
+                                    clase = "text-danger fw-bold";
                                 } else if (diasAtraso === 0) {
                                     mensaje = "Vence hoy";
-                                    clase = "text-warning";
+                                    clase = "text-warning fw-bold";
                                 } else {
-                                    mensaje =
-                                        `${Math.abs(diasAtraso)} día(s) restantes`;
+                                    mensaje = `${Math.abs(diasAtraso)} día(s) rest.`;
                                     clase = "text-primary";
                                 }
                             } else {
-                                // Libro YA devuelto - calcular diferencia fija
                                 const fechaRetornoDate = new Date(fechaRetorno);
                                 const diferenciaMilisegundos = fechaRetornoDate -
                                     fechaDevolucion;
                                 diasAtraso = Math.floor(diferenciaMilisegundos / (1000 *
                                     60 * 60 * 24));
-
-                                if (diasAtraso > 0) {
-                                    mensaje = `${diasAtraso}`;
-                                    clase = "text-danger";
-                                } else {
-                                    mensaje = "A tiempo";
-                                    clase = "text-success";
-                                }
+                                mensaje = diasAtraso > 0 ?
+                                    `${diasAtraso} d. con retraso` : "A tiempo";
+                                clase = diasAtraso > 0 ? "text-danger" : "text-success";
                             }
-
-                            return `<b class="text-info">${index + 1}.</b> <b class="${clase}">${mensaje}</b>`;
+                            return `<small class="text-muted">${index + 1}.</small> <span class="${clase}">${mensaje}</span>`;
                         }).join("<br>");
                     }
                 },
@@ -221,6 +189,7 @@
                     data: null,
                     orderable: false,
                     searchable: false,
+                    className: 'text-center',
                     render: function(data, type, row) {
                         const url_detalles = "{{ route('prestamos_libros.detalles', ':id') }}"
                             .replace(':id', row.id_prestamo_libro);
@@ -229,18 +198,15 @@
                         const url_imprimir = "{{ route('prestamos_libros.imprimir', ':id') }}"
                             .replace(':id', row.id_prestamo_libro);
                         return `
-                            <div class="btn-group" role="group">
-                                <a class="btn btn-info btn-sm" href="${url_detalles}" target="_blank" rel="noopener noreferrer"
-                                    data-toggle="tooltip" title="Detalles">
-                                    <i class="fa-duotone fa-solid fa-eye"></i>
+                            <div class="btn-group shadow-sm" role="group">
+                                <a class="btn btn-outline-info btn-sm" href="${url_detalles}" target="_blank" rel="noopener noreferrer" data-bs-toggle="tooltip" title="Ver Detalles">
+                                    <i class="fa-solid fa-duotone fa-eye"></i>
                                 </a>
-                                <a class="btn btn-warning btn-sm" href="${url_editar}" target="_blank" rel="noopener noreferrer"
-                                    data-toggle="tooltip" title="Editar">
-                                    <i class="fa-duotone fa-solid fa-edit"></i>
+                                <a class="btn btn-outline-warning btn-sm" href="${url_editar}" target="_blank" rel="noopener noreferrer" data-bs-toggle="tooltip" title="Editar">
+                                    <i class="fa-solid fa-duotone fa-pen-to-square"></i>
                                 </a>
-                                <a class="btn btn-primary btn-sm" href="${url_imprimir}" target="_blank" rel="noopener noreferrer"
-                                    data-toggle="tooltip" title="Imprimir">
-                                    <i class="fa-duotone fa-solid fa-print"></i>
+                                <a class="btn btn-outline-primary btn-sm" href="${url_imprimir}" target="_blank" rel="noopener noreferrer" data-bs-toggle="tooltip" title="Imprimir Comprobante">
+                                    <i class="fa-solid fa-duotone fa-print"></i>
                                 </a>
                             </div>`;
                     }
@@ -248,16 +214,21 @@
             ],
             columnDefs: [{
                     targets: [1, 3],
-                    width: '350px',
+                    width: '200px'
                 },
                 {
                     targets: [5],
-                    width: '600px',
+                    width: '350px'
                 },
                 {
                     targets: [7],
-                    width: '185px',
+                    width: '150px'
                 },
+                /* Ocultamos las columnas técnicas (índices 9 al 16) para no saturar la pantalla */
+                {
+                    targets: [10, 11, 12, 13, 14, 15, 16],
+                    visible: false
+                }
             ],
             responsive: false,
             lengthChange: true,
@@ -265,7 +236,7 @@
             scrollX: true,
             colReorder: true,
             order: [],
-            pageLength: 10,
+            pageLength: 25,
             dom: 'Blfrtip',
             buttons: [{
                     extend: 'copy',
@@ -302,7 +273,8 @@
             const allData = dataTable.rows().data();
 
             // Total (compatibilizar .count() y .length)
-            const cantidadPrestamosTotal = (typeof allData.count === 'function') ? allData.count() : allData.length || 0;
+            const cantidadPrestamosTotal = (typeof allData.count === 'function') ? allData.count() : allData
+                .length || 0;
 
             let cantidadPrestamosCompletados = 0;
             let cantidadPrestamosPendientes = 0;

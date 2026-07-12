@@ -1,77 +1,82 @@
 @extends('layouts.public')
 
 @section('content')
-    <h1 class="text-center text-info fw-bold"><i class="fa-solid fa-duotone fa-book-open"></i> {{ $head_title }}</h1>
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2 border-bottom pb-3">
+        <div>
+            <h1 class="text-info fw-bold mb-1">
+                <i class="fa-solid fa-duotone fa-book-open me-2"></i>{{ $head_title }}
+            </h1>
+            <p class="text-muted mb-0">Consulta pública de títulos registrados en la biblioteca de la cooperativa.</p>
+        </div>
+    </div>
 
-    <h2 class="text-info fw-bold">Lista de libros</h2>
+    <div class="alert alert-info border-info border-start border-4 shadow-sm mb-4">
+        <h5 class="fw-bold text-info mb-2"><i class="fa-solid fa-duotone fa-circle-info me-2"></i> Disponibilidad de títulos
+        </h5>
+        <div class="d-flex flex-wrap gap-3 small fw-bold">
+            <div><span class="badge bg-success px-2 py-1 me-1">DISPONIBLE</span> El libro está libre para su préstamo.</div>
+            <div><span class="badge bg-primary px-2 py-1 me-1">EN USO</span> El libro está actualmente prestado a una
+                persona.</div>
+            <div><span class="badge bg-secondary px-2 py-1 me-1">ELIMINADO</span> El libro ha sido dado de baja del
+                inventario.</div>
+        </div>
+    </div>
 
-    <h5>En esta sección se encuentran todos los libros registrados en la biblioteca. Puede consultar su estado actual y otra información relevante.</h5>
-
-    <h5>LEYENDA DE <b>ESTADO</b>:</h5>
-
-    <p>
-        <span class="badge bg-success">DISPONIBLE</span>: El libro está disponible para su préstamo.<br>
-        <span class="badge bg-primary">EN USO</span>: El libro está actualmente prestado a una persona.<br>
-        <span class="badge bg-secondary">ELIMINADO</span>: El libro ha sido dado de baja del inventario.<br>
-    </p>
-
-    <div class="card p-3 mb-3">
-        <div class="row">
-            <div class="col-12">
-                <h4 class="text-dark-aquamarine fw-bold">Estadísticas de libros</h4>
-            </div>
-
-            <div class="col-md-6 col-lg-3 mb-3">
-                <div class="card info-card shadow-sm border-info">
-                    <div class="card-body d-flex align-items-center bg-info bg-opacity-10">
-                        <div class="icon-box bg-info bg-opacity-10 me-3">
-                            <i class="text-info fa-solid fa-duotone fa-book-open fa-xl"></i>
-                        </div>
-                        <div>
-                            <h6 class="text-muted mb-1 small">Total</h6>
-                            <h3 id="cantidad-libros-total" class="fw-bold">0</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3 mb-3">
-                <div class="card info-card shadow-sm border-success">
-                    <div class="card-body d-flex align-items-center bg-success bg-opacity-10">
-                        <div class="icon-box bg-success bg-opacity-10 me-3">
-                            <i class="text-success fa-solid fa-duotone fa-book-open fa-xl"></i>
-                        </div>
-                        <div>
-                            <h6 class="text-muted mb-1 small">Disponibles</h6>
-                            <h3 id="cantidad-libros-disponibles" class="fw-bold">0</h3>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-3 mb-3">
+                    <div class="card info-card shadow-sm border-info">
+                        <div class="card-body d-flex align-items-center bg-info bg-opacity-10">
+                            <div class="icon-box bg-info bg-opacity-10 me-3">
+                                <i class="text-info fa-solid fa-duotone fa-book-open fa-xl"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-muted mb-1 small">Total</h6>
+                                <h3 id="cantidad-libros-total" class="fw-bold">0</h3>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-md-6 col-lg-3 mb-3">
-                <div class="card info-card shadow-sm border-primary">
-                    <div class="card-body d-flex align-items-center bg-primary bg-opacity-10">
-                        <div class="icon-box bg-primary bg-opacity-10 me-3">
-                            <i class="text-primary fa-solid fa-duotone fa-book-open fa-xl"></i>
-                        </div>
-                        <div>
-                            <h6 class="text-muted mb-1 small">Prestados</h6>
-                            <h3 id="cantidad-libros-prestados" class="fw-bold">0</h3>
+                <div class="col-md-6 col-lg-3 mb-3">
+                    <div class="card info-card shadow-sm border-success">
+                        <div class="card-body d-flex align-items-center bg-success bg-opacity-10">
+                            <div class="icon-box bg-success bg-opacity-10 me-3">
+                                <i class="text-success fa-solid fa-duotone fa-book-open fa-xl"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-muted mb-1 small">Disponibles</h6>
+                                <h3 id="cantidad-libros-disponibles" class="fw-bold">0</h3>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-md-6 col-lg-3 mb-3">
-                <div class="card info-card shadow-sm border-secondary">
-                    <div class="card-body d-flex align-items-center bg-secondary bg-opacity-10">
-                        <div class="icon-box bg-secondary bg-opacity-10 me-3">
-                            <i class="text-secondary fa-solid fa-duotone fa-book-open fa-xl"></i>
+                <div class="col-md-6 col-lg-3 mb-3">
+                    <div class="card info-card shadow-sm border-primary">
+                        <div class="card-body d-flex align-items-center bg-primary bg-opacity-10">
+                            <div class="icon-box bg-primary bg-opacity-10 me-3">
+                                <i class="text-primary fa-solid fa-duotone fa-book-open fa-xl"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-muted mb-1 small">Prestados</h6>
+                                <h3 id="cantidad-libros-prestados" class="fw-bold">0</h3>
+                            </div>
                         </div>
-                        <div>
-                            <h6 class="text-muted mb-1 small">Bajas</h6>
-                            <h3 id="cantidad-libros-eliminados" class="fw-bold">0</h3>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3 mb-3">
+                    <div class="card info-card shadow-sm border-secondary">
+                        <div class="card-body d-flex align-items-center bg-secondary bg-opacity-10">
+                            <div class="icon-box bg-secondary bg-opacity-10 me-3">
+                                <i class="text-secondary fa-solid fa-duotone fa-book-open fa-xl"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-muted mb-1 small">Bajas</h6>
+                                <h3 id="cantidad-libros-eliminados" class="fw-bold">0</h3>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -79,141 +84,42 @@
         </div>
     </div>
 
-    <div class="card p-3 mb-3">
-        <p>Seleccione una opción para <i class="fa-solid fa-duotone fa-file-export"></i> exportar o <i
-                class="fa-solid fa-duotone fa-filter"></i> filtrar la tabla:</p>
-        <div id="dataTable-export-buttons-container"></div>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body d-flex flex-wrap align-items-center gap-2 py-3">
+            <p class="mb-0 text-muted fw-bold me-2">
+                <i class="fa-solid fa-duotone fa-file-export me-1"></i> Exportar o <i
+                    class="fa-solid fa-duotone fa-filter me-1"></i> Filtrar la tabla:
+            </p>
+            <div id="dataTable-export-buttons-container" class="flex-grow-1"></div>
+        </div>
     </div>
 
-    <table class="table table-bordered table-striped" id="dataTable">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Código</th>
-                <th>Título</th>
-                <th>Autor</th>
-                <th>Categoria</th>
-                <th>Editorial</th>
-                <th>Año</th>
-                <th>Presentación</th>
-                <th>Estado</th>
-            </tr>
-        </thead>
-    </table>
-
-    <div class="mb-3"></div>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-list-ol me-2"></i> Catálogo</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive p-3">
+                <table class="table table-bordered table-striped w-100 mb-0" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Código</th>
+                            <th>Título</th>
+                            <th>Autor</th>
+                            <th>Categoria</th>
+                            <th>Editorial</th>
+                            <th>Año</th>
+                            <th>Presentación</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
-    <script>
-        $(document).ready(function() {
-            $("#dataTable").DataTable({
-                processing: true,
-                ajax: {
-                    url: "{{ route('libros.public.listar') }}",
-                    type: "GET",
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    error: function(xhr, error, thrown) {
-                        console.error("Error al cargar los datos:", error);
-                    }
-                },
-                columns: [{
-                        data: null,
-                        render: function(data, type, row, meta) {
-                            return meta.row + 1;
-                        }
-                    },
-                    {
-                        data: "codigo",
-                        render: function(data, type, rowData, row) {
-                            if (rowData.estado == 1) {
-                                return `<span class="text-success fw-bold">${data}</span>`;
-                            } else if (rowData.estado == 0) {
-                                return `<span class="text-secondary fw-bold">${data}</span>`;
-                            } else if (rowData.estado == 2) {
-                                return `<span class="text-primary fw-bold">${data}</span>`;
-                            } else {
-                                return `<span class="text-warning fw-bold">${data}</span>`;
-                            }
-                        },
-                        createdCell: function(td, cellData, rowData, row, col) {
-                            if (rowData.estado == 1) {
-                                $(td).addClass('table-success border border-success'); // Disponible
-                            } else if (rowData.estado == 0) {
-                                $(td).addClass(
-                                    'table-secondary border border-secondary'); // Eliminado
-                            } else if (rowData.estado == 2) {
-                                $(td).addClass('table-primary border border-primary'); // En uso
-                            }
-                        }
-                    },
-                    {
-                        data: "titulo",
-                    },
-                    {
-                        data: "autor",
-                    },
-                    {
-                        data: "categoria",
-                    },
-                    {
-                        data: "editorial",
-                    },
-                    {
-                        data: "anio",
-                    },
-                    {
-                        data: "presentacion",
-                    },
-                    {
-                        data: "estado",
-                        render: function(data, type, row) {
-                            if (data == 1) {
-                                return '<span class="badge bg-success">DISPONIBLE</span>';
-                            } else if (data == 0) {
-                                return '<span class="badge bg-secondary">ELIMINADO</span>';
-                            } else if (data == 2) {
-                                return '<span class="badge bg-primary">EN USO</span>';
-                            } else {
-                                return '<span class="badge bg-warning">DESCONOCIDO</span>';
-                            }
-                        }
-                    },
-                ],
-                @include('components.datatables.datatables_global_properties')
-                @include('components.datatables.datatables_language_property')
-            }).buttons().container().appendTo('#dataTable-export-buttons-container');
-
-            function actualizarEstadisticas() {
-                const dataTable = $("#dataTable").DataTable();
-                const allData = dataTable.rows().data();
-
-                let cantidadLibrosTotal = allData.count();
-                let cantidadLibrosDisponibles = 0;
-                let cantidadLibrosPrestados = 0;
-                let cantidadLibrosEliminados = 0;
-
-                allData.each(function(libro) {
-                    if (libro.estado == 1) {
-                        cantidadLibrosDisponibles++;
-                    } else if (libro.estado == 2) {
-                        cantidadLibrosPrestados++;
-                    } else if (libro.estado == 0) {
-                        cantidadLibrosEliminados++;
-                    }
-                });
-
-                $('#cantidad-libros-total').text(cantidadLibrosTotal);
-                $('#cantidad-libros-disponibles').text(cantidadLibrosDisponibles);
-                $('#cantidad-libros-prestados').text(cantidadLibrosPrestados);
-                $('#cantidad-libros-eliminados').text(cantidadLibrosEliminados);
-            }
-
-            $('#dataTable').on('draw.dt', function() {
-                actualizarEstadisticas();
-            });
-        });
-    </script>
+    @include('libros.public_scripts')
 @endsection

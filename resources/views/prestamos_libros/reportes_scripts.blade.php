@@ -2,7 +2,38 @@
     // Esto inicializa DataTables en todas las tablas que tengan la CLASE .dataTable
     $(document).ready(function() {
         $(".dataTable").DataTable({
-            @include('components.datatables.datatables_global_properties')
+            responsive: true,
+            lengthChange: true,
+            autoWidth: true,
+            colReorder: true,
+            order: [],
+            pageLength: 10,
+            dom: 'Blfrtip',
+            buttons: [{
+                    extend: 'copy',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'csv',
+                    className: 'btn btn-success'
+                },
+                {
+                    extend: 'excel',
+                    className: 'btn btn-success'
+                },
+                {
+                    extend: 'pdf',
+                    className: 'btn btn-danger'
+                },
+                {
+                    extend: 'colvis',
+                    className: 'btn btn-info'
+                },
+                {
+                    extend: 'searchBuilder',
+                    className: 'btn btn-warning'
+                },
+            ],
             @include('components.datatables.datatables_language_property')
         });
     });
