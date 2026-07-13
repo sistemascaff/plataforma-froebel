@@ -261,7 +261,7 @@
             $('#form-crear-o-editar input[name="anio"]').val('{{ date('Y') }}');
             $('#form-crear-o-editar input[name="costo"]').val('');
             $('#descripcion').val('');
-            $('#form-crear-o-editar input[name="adquisicion"]').val(1);
+            $('#form-crear-o-editar select[name="adquisicion"]').val(1).trigger('change');
             $('#form-crear-o-editar input[name="fecha_ingreso_cooperativa"]').val(
             '{{ date('Y-m-d') }}');
             $('#observacion').val('');
@@ -288,7 +288,7 @@
                 $('#form-crear-o-editar input[name="anio"]').val(libro.data.anio);
                 $('#form-crear-o-editar input[name="costo"]').val(libro.data.costo);
                 $('#descripcion').val(libro.data.descripcion);
-                $('#form-crear-o-editar input[name="adquisicion"]').val(libro.data.adquisicion);
+                $('#form-crear-o-editar select[name="adquisicion"]').val(libro.data.adquisicion).trigger('change');
                 /* const fechaRaw = libro.data.fecha_ingreso_cooperativa;
                 const fechaFormateada = fechaRaw ? fechaRaw.split('T')[0] : '';
                 $('#form-crear-o-editar input[name="fecha_ingreso_cooperativa"]').val(

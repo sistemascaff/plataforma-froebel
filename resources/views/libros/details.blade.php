@@ -1,135 +1,160 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="text-center text-info fw-bold"><i class="fa-solid fa-duotone fa-book-open"></i> {{ $head_title }}
-    </h1>
-
-    <a class="btn btn-secondary mb-3" href="{{ route('libros.index') }}">
-        <i class="fa-solid fa-duotone fa-arrow-left"></i> Volver</a>
-
-    <label for="titulo">Título:</label>
-    <p class="form-control mb-3" id="titulo">
-        {{ $libro->titulo }}
-    </p>
-
-    <label for="codigo">Código:</label>
-    <p class="form-control mb-3" id="codigo">
-        {{ $libro->codigo }}
-    </p>
-
-    <label for="autor">Autor:</label>
-    <p class="form-control mb-3" id="autor">
-        {{ $libro->autor }}
-    </p>
-
-    <label for="categoria">Categoría:</label>
-    <p class="form-control mb-3" id="categoria">
-        {{ $libro->categoria }}
-    </p>
-
-    <label for="editorial">Editorial:</label>
-    <p class="form-control mb-3" id="editorial">
-        {{ $libro->editorial }}
-    </p>
-
-    <label for="presentacion">Presentación:</label>
-    <p class="form-control mb-3" id="presentacion">
-        {{ $libro->presentacion }}
-    </p>
-
-    <label for="anio">Año:</label>
-    <p class="form-control mb-3" id="anio">
-        {{ $libro->anio }}
-    </p>
-
-    <label for="costo">Costo:</label>
-    <p class="form-control mb-3" id="costo">
-        {{ $libro->costo }}
-    </p>
-
-    <label for="descripcion">Descripción:</label>
-    <p class="form-control mb-3" id="descripcion">
-        {{ $libro->descripcion ?? '-' }}
-    </p>
-
-    <label for="adquisicion">Adquisición:</label>
-    <p class="form-control mb-3" id="adquisicion">
-        {{ $libro->adquisicion ? 'COMPRA' : 'DONACIÓN' }}
-    </p>
-
-    <label for="fecha_ingreso_cooperativa">F. Ingreso Cooperativa:</label>
-    <p class="form-control mb-3" id="fecha_ingreso_cooperativa">
-        {{ date('d/m/Y', strtotime($libro->fecha_ingreso_cooperativa)) }}
-    </p>
-
-    <label for="observacion">Observación:</label>
-    <p class="form-control mb-3" id="observacion">
-        {{ $libro->observacion ?? '-' }}
-    </p>
-
-    @php
-        $estado = match ($libro->estado) {
-            0 => 'BAJA',
-            1 => 'DISPONIBLE',
-            2 => 'EN USO',
-            default => 'DESCONOCIDO',
-        };
-        $class = match ($libro->estado) {
-            0 => 'alert alert-secondary',
-            1 => 'alert alert-success',
-            2 => 'alert alert-primary',
-            default => 'alert alert-secondary',
-        };
-    @endphp
-
-    <div class="{{ $class }} fw-bold mb-3">
-        Estado: {{ $estado }}
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+        <h1 class="text-info fw-bold mb-0 me-auto">
+            <i class="fa-solid fa-duotone fa-book-open me-2"></i>{{ $head_title }}
+        </h1>
+        <a class="btn btn-secondary" href="{{ route('libros.index') }}">
+            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver al Inventario
+        </a>
     </div>
 
+    <div class="row g-4 mb-4">
+        <div class="col-lg-7">
+            <div class="card shadow-sm h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold text-info">
+                        <i class="fa-solid fa-duotone fa-heading me-2"></i> Datos Principales del Libro
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-book me-1"></i> Título Completo</p>
+                        <h3 class="fw-bold text-primary mb-0 text-break" id="titulo">{{ $libro->titulo }}</h3>
+                    </div>
 
-    <h2 class="text-info fw-bold">Historial de préstamos</h2>
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-feather-pointed me-1"></i> Autor</p>
+                            <p class="fs-5 mb-0" id="autor">{{ $libro->autor }}</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-tags me-1"></i> Categoría / Género</p>
+                            <p class="fs-5 mb-0" id="categoria">{{ $libro->categoria }}</p>
+                        </div>
+                    </div>
 
-    <table class="table table-bordered table-striped mb-3 dataTable" id="detalles">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Nro. Préstamo</th>
-                <th>Persona</th>
-                <th>F. Retorno</th>
-                <th>F. Devolución</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($libro->prestamos_libros as $prestamo)
-                <tr>
-                    <td>{{ $loop->index + 1 }}</td>
-                    <td>{{ $prestamo->pivot->id_prestamo_libro }}</td>
-                    <td>{{ trim('(' . $prestamo->persona->tipo_perfil . ') ' . $prestamo->persona->apellido_paterno . ' ' . $prestamo->persona->apellido_materno . ' ' . $prestamo->persona->nombres) }}
-                    </td>
-                    <td>
-                        @if (!$prestamo->estado)
-                            <b class="text-danger">Anulado</b>
-                        @else
-                            @if (!$prestamo->pivot->fecha_retorno)
-                                <b class="text-primary">En uso</b>
-                            @else
-                                {{ date('d/m/Y H:i:s', strtotime($prestamo->pivot->fecha_retorno)) }}
-                            @endif
-                        @endif
-                    </td>
-                    <td>{{ date('d/m/Y', strtotime($prestamo->fecha_devolucion)) }}</td>
-                    <td>
-                        <a class="btn btn-info"
-                            href="{{ route('prestamos_libros.detalles', $prestamo->pivot->id_prestamo_libro) }}">
-                            <i class="fa-solid fa-duotone fa-eye"></i></a>
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+                    <hr class="my-4 text-muted">
 
-    <div class="mb-3"></div>
+                    <div>
+                        <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-align-left me-1"></i> Descripción o Resumen</p>
+                        <p class="fs-6 mb-0 text-break text-muted text-opacity-75" id="descripcion">
+                            {{ $libro->descripcion ?: 'Sin descripción registrada en el sistema.' }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm h-100">
+                <div class="card-header">
+                    <h5 class="mb-0 fw-bold text-info">
+                        <i class="fa-solid fa-duotone fa-paste me-2"></i> Ficha Técnica e Inventario
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-barcode me-1"></i> Código Único</p>
+                            <p class="fs-5 fw-bold text-info mb-0" id="codigo">{{ $libro->codigo }}</p>
+                        </div>
+                        <div class="col-6">
+                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-calendar me-1"></i> Año Edición</p>
+                            <p class="fs-5 mb-0" id="anio">{{ $libro->anio }}</p>
+                        </div>
+                        <div class="col-6">
+                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-print me-1"></i> Editorial</p>
+                            <p class="fs-6 mb-0" id="editorial">{{ $libro->editorial }}</p>
+                        </div>
+                        <div class="col-6">
+                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-book-medical me-1"></i> Presentación</p>
+                            <p class="fs-6 mb-0" id="presentacion">{{ $libro->presentacion }}</p>
+                        </div>
+                        <div class="col-6">
+                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-hand-holding-dollar me-1"></i> Costo Unitario</p>
+                            <p class="fs-6 mb-0 text-success fw-bold" id="costo">{{ $libro->costo }}</p>
+                        </div>
+                        <div class="col-6">
+                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-boxes-packing me-1"></i> Adquisición</p>
+                            <p class="fs-6 mb-0" id="adquisicion">{{ $libro->adquisicion == 1 ? 'COMPRA' : 'DONACIÓN' }}</p>
+                        </div>
+                    </div>
+
+                    <hr class="my-3 text-muted">
+
+                    <div class="mb-3">
+                        <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-circle-exclamation me-1"></i> Observación Interna</p>
+                        <p class="fs-6 mb-0 text-warning" id="observacion">
+                            {{ $libro->observacion ?: 'Ninguna observación física sobre este ejemplar.' }}
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-calendar-check me-1"></i> Ingreso a Cooperativa</p>
+                        <p class="fs-6 mb-0 text-secondary" id="fecha_ingreso_cooperativa">
+                            {{ date('d/m/Y', strtotime($libro->fecha_ingreso_cooperativa)) }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0 fw-bold text-info">
+                <i class="fa-solid fa-duotone fa-clock-rotate-left me-2"></i> Historial de Préstamos de este Libro
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive p-3">
+                <table class="table table-bordered table-striped dataTable w-100 mb-0">
+                    <thead>
+                        <tr>
+                            <th width="5%" class="text-center">#</th>
+                            <th>Persona</th>
+                            <th>Curso</th>
+                            <th>Celular</th>
+                            <th>F. Préstamo</th>
+                            <th>F. Devolución Estipulada</th>
+                            <th>F. Retorno Real</th>
+                            <th>Estado Préstamo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($libro->prestamos_libros as $prestamo)
+                            <tr>
+                                <td class="fw-bold text-primary text-center align-middle">{{ $loop->iteration }}</td>
+                                <td class="align-middle">
+                                    {{ trim('(' . $prestamo->persona->tipo_perfil . ') ' . $prestamo->persona->apellido_paterno . ' ' . $prestamo->persona->apellido_materno . ' ' . $prestamo->persona->nombres) }}
+                                </td>
+                                <td class="align-middle">{{ $prestamo->curso ?: '-' }}</td>
+                                <td class="align-middle">{{ $prestamo->celular ?: '-' }}</td>
+                                <td class="align-middle">{{ date('d/m/Y H:i', strtotime($prestamo->fecha_registro)) }}</td>
+                                <td class="align-middle">{{ date('d/m/Y', strtotime($prestamo->fecha_devolucion)) }}</td>
+                                <td class="align-middle">
+                                    @if ($prestamo->pivot->fecha_retorno)
+                                        <span class="text-success fw-bold">{{ date('d/m/Y H:i', strtotime($prestamo->pivot->fecha_retorno)) }}</span>
+                                    @else
+                                        <span class="badge bg-danger">AÚN PRESTADO</span>
+                                    @endif
+                                </td>
+                                <td class="align-middle text-center">
+                                    @if ($prestamo->estado == 1)
+                                        <span class="badge bg-success">ACTIVO</span>
+                                    @else
+                                        <span class="badge bg-secondary">ANULADO</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
