@@ -54,33 +54,21 @@ class UsuarioController extends Controller
 
     public function view_index()
     {
-        if (!session('tiene_acceso')) {
-            return redirect()->route('main.index');
-        }
-
         return view('usuarios.index', [
             'headTitle' => 'GESTIÓN DE USUARIOS',
         ]);
     }
 
-    public function listarUsuarios()
+    public function listar()
     {
-        if (!session('tiene_acceso')) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $usuarios = (new Usuario())->getAllUsuarios();
         return response()->json([
             'data' => $usuarios
         ]);
     }
 
-    public function mostrarUsuario(Request $request)
+    public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso')) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $usuario = (new Usuario())->get_usuario($request->usuario);
         return response()->json([
             'data' => $usuario

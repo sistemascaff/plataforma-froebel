@@ -15,10 +15,6 @@ class PrestamoLibroController extends Controller
 {
     public function view_index()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
-            return redirect()->route('login');
-        }
-
         return view('prestamos_libros.index', [
             'head_title' => 'GESTIÓN DE PRÉSTAMOS DE LIBROS',
         ]);
@@ -26,10 +22,6 @@ class PrestamoLibroController extends Controller
 
     public function view_reportes(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
-            return redirect()->route('login');
-        }
-
         $fecha_inicio = $request->fecha_inicio ?? date('Y-m-d', strtotime("-3 months"));
         $fecha_fin    = $request->fecha_fin ?? date('Y-m-d');
 
@@ -50,10 +42,10 @@ class PrestamoLibroController extends Controller
             ->get();
 
         $libros_mas_prestados = DetallePrestamoLibro::select(
-                'libros.titulo', 
-                'libros.categoria', 
-                DB::raw('COUNT(detalles_prestamos_libros.id_libro) as total')
-            )
+            'libros.titulo',
+            'libros.categoria',
+            DB::raw('COUNT(detalles_prestamos_libros.id_libro) as total')
+        )
             ->join('prestamos_libros', 'prestamos_libros.id_prestamo_libro', '=', 'detalles_prestamos_libros.id_prestamo_libro')
             ->join('libros', 'libros.id_libro', '=', 'detalles_prestamos_libros.id_libro')
             ->whereBetween('prestamos_libros.fecha_registro', [$fecha_inicio, $fecha_fin])
@@ -94,7 +86,7 @@ class PrestamoLibroController extends Controller
             ->groupBy('persona')
             ->orderByDesc('total')
             ->get();
-        
+
         $prestamos_pendientes = (new PrestamoLibro())->get_prestamos_libros_pendientes();
 
         $prestamos_totales = (new PrestamoLibro())->get_prestamos_libros_totales_y_pendientes();
@@ -117,9 +109,6 @@ class PrestamoLibroController extends Controller
 
     public function view_reportes_imprimir(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
-            return redirect()->route('login');
-        }
         //Para evitar problemas de memoria y tiempo de ejecución al generar el reporte, se incrementan los límites.
         //Esto es necesario porque el reporte puede contener una gran cantidad de datos.
         //Se recomienda ajustar estos valores según las necesidades del servidor y la cantidad de datos a procesar.
@@ -146,10 +135,10 @@ class PrestamoLibroController extends Controller
             ->get();
 
         $libros_mas_prestados = DetallePrestamoLibro::select(
-                'libros.titulo', 
-                'libros.categoria', 
-                DB::raw('COUNT(detalles_prestamos_libros.id_libro) as total')
-            )
+            'libros.titulo',
+            'libros.categoria',
+            DB::raw('COUNT(detalles_prestamos_libros.id_libro) as total')
+        )
             ->join('prestamos_libros', 'prestamos_libros.id_prestamo_libro', '=', 'detalles_prestamos_libros.id_prestamo_libro')
             ->join('libros', 'libros.id_libro', '=', 'detalles_prestamos_libros.id_libro')
             ->whereBetween('prestamos_libros.fecha_registro', [$fecha_inicio, $fecha_fin])
@@ -191,15 +180,25 @@ class PrestamoLibroController extends Controller
             ->groupBy('persona')
             ->orderByDesc('total')
             ->get();
-        
+
         $prestamos_pendientes = (new PrestamoLibro())->get_prestamos_libros_pendientes();
 
         $prestamos_totales = (new PrestamoLibro())->get_prestamos_libros_totales_y_pendientes();
 
         $pdf = Pdf::loadView(
             'prestamos_libros.pdf_reporte_estadisticas_prestamos',
-            compact('fecha_inicio', 'fecha_fin', 'prestamos_libros', 'libros_mas_prestados', 'prestamos_por_categoria',
-            'prestamos_por_curso', 'prestamos_por_tipo_perfil', 'prestamos_por_persona', 'prestamos_pendientes', 'prestamos_totales')
+            compact(
+                'fecha_inicio',
+                'fecha_fin',
+                'prestamos_libros',
+                'libros_mas_prestados',
+                'prestamos_por_categoria',
+                'prestamos_por_curso',
+                'prestamos_por_tipo_perfil',
+                'prestamos_por_persona',
+                'prestamos_pendientes',
+                'prestamos_totales'
+            )
         );
 
         $pdf->setOption("isPhpEnabled", true);
@@ -211,10 +210,6 @@ class PrestamoLibroController extends Controller
 
     public function view_details($prestamo_libro)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
-            return redirect()->route('login');
-        }
-
         $prestamo_libro = (new PrestamoLibro())->get_prestamo_libro($prestamo_libro);
 
         return view('prestamos_libros.details', [
@@ -225,10 +220,6 @@ class PrestamoLibroController extends Controller
 
     public function view_create()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
-            return redirect()->route('login');
-        }
-
         return view('prestamos_libros.create', [
             'head_title' => 'CREAR PRÉSTAMO DE LIBRO',
         ]);
@@ -236,10 +227,6 @@ class PrestamoLibroController extends Controller
 
     public function view_update($prestamo_libro)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
-            return redirect()->route('login');
-        }
-
         $prestamo_libro = (new PrestamoLibro())->get_prestamo_libro($prestamo_libro);
 
         return view('prestamos_libros.update', [
@@ -250,10 +237,6 @@ class PrestamoLibroController extends Controller
 
     public function view_imprimir($prestamo_libro)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
-            return redirect()->route('login');
-        }
-
         ini_set('memory_limit', '512M');
         set_time_limit(300);
 
@@ -267,10 +250,6 @@ class PrestamoLibroController extends Controller
 
     public function listar()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $prestamos_libros = (new PrestamoLibro())->get_all_prestamos_libros();
 
         return response()->json([
@@ -280,10 +259,6 @@ class PrestamoLibroController extends Controller
 
     public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $prestamo_libro = (new PrestamoLibro())->get_prestamo_libro($request->prestamo_libro);
 
         return response()->json([
@@ -293,10 +268,6 @@ class PrestamoLibroController extends Controller
 
     public function create(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $request->validate([
             'id_persona'   => 'required|integer|exists:personas,id_persona',
             'celular' => 'nullable|string|max:15',
@@ -371,10 +342,6 @@ class PrestamoLibroController extends Controller
 
     public function update(Request $request, $id_prestamo_libro)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $request->validate([
             'id_persona'   => 'required|integer|exists:personas,id_persona',
             'celular' => 'nullable|string|max:15',
@@ -526,10 +493,6 @@ class PrestamoLibroController extends Controller
 
     public function delete($id_prestamo_libro)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         DB::beginTransaction();
         try {
 
@@ -577,10 +540,6 @@ class PrestamoLibroController extends Controller
 
     public function marcar_devolucion($id_prestamo_libro, $id_libro)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         DB::beginTransaction();
         try {
             $prestamo = (new PrestamoLibro())->get_prestamo_libro($id_prestamo_libro);

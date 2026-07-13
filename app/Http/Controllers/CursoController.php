@@ -13,10 +13,6 @@ class CursoController extends Controller
 {
     public function view_index()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('main.index');
-        }
-        
         $grados = (new Grado())->get_all_grados();
         $paralelos = (new Paralelo())->get_all_paralelos();
 
@@ -29,10 +25,6 @@ class CursoController extends Controller
 
     public function listar()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso',], 403);
-        }
-
         $cursos = (new Curso())->get_all_cursos();
         return response()->json([
             'data' => $cursos
@@ -41,10 +33,6 @@ class CursoController extends Controller
 
     public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $curso = (new Curso())->get_curso($request->curso);
         return response()->json([
             'data' => $curso
@@ -53,10 +41,6 @@ class CursoController extends Controller
 
     public function create(CursoValidation $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $curso = new Curso();
         $curso->curso = $request->curso;
         $curso->id_grado = $request->id_grado;
@@ -75,10 +59,6 @@ class CursoController extends Controller
 
     public function update(CursoValidation $request, $id_curso)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $curso = (new Curso())->get_curso($id_curso);
         $curso->curso = $request->curso;
         $curso->id_grado = $request->id_grado;
@@ -97,10 +77,6 @@ class CursoController extends Controller
 
     public function delete(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $request->validate([
             'id_curso' => ['required', 'numeric', 'integer']
         ]);

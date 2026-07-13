@@ -20,10 +20,6 @@ class AsignaturaController extends Controller
 {
     public function view_index()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('main.index');
-        }
-
         $materias = (new Materia())->get_all_materias();
         $areas = (new Area())->get_all_areas();
         $aulas = (new Aula())->get_all_aulas();
@@ -44,10 +40,6 @@ class AsignaturaController extends Controller
 
     public function view_details($asignatura)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('login');
-        }
-
         // IDs de periodos activos que YA tienen lista para esta asignatura
         $periodosConLista = ListaAsignatura::where('id_asignatura', $asignatura)
             ->pluck('id_periodo')
@@ -77,10 +69,6 @@ class AsignaturaController extends Controller
 
     public function listar()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso',], 403);
-        }
-
         $asignaturas = (new Asignatura())->get_all_asignaturas();
         return response()->json([
             'data' => $asignaturas
@@ -89,10 +77,6 @@ class AsignaturaController extends Controller
 
     public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $asignatura = (new Asignatura())->get_asignatura($request->asignatura);
         return response()->json([
             'data' => $asignatura
@@ -101,10 +85,6 @@ class AsignaturaController extends Controller
 
     public function create(AsignaturaValidation $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $asignatura = new Asignatura();
         $asignatura->asignatura = $request->asignatura;
         $asignatura->tipo_calificacion = $request->tipo_calificacion;
@@ -129,10 +109,6 @@ class AsignaturaController extends Controller
 
     public function update(AsignaturaValidation $request, $id_asignatura)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $asignatura = (new Asignatura())->get_asignatura($id_asignatura);
         $asignatura->asignatura = $request->asignatura;
         $asignatura->tipo_calificacion = $request->tipo_calificacion;
@@ -157,10 +133,6 @@ class AsignaturaController extends Controller
 
     public function delete(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $request->validate([
             'id_asignatura' => ['required', 'numeric', 'integer']
         ]);
@@ -182,10 +154,6 @@ class AsignaturaController extends Controller
 
     public function sync_horarios(Request $request, $asignatura)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $request->validate([
             'agregar' => ['sometimes', 'array'],
             'agregar.*.id_horario_asignatura' => ['required_with:agregar', 'integer', 'exists:horarios_asignaturas,id_horario_asignatura'],

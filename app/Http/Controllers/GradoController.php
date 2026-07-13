@@ -12,10 +12,6 @@ class GradoController extends Controller
 {
     public function view_index()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('main.index');
-        }
-        
         $niveles = (new Nivel())->get_all_niveles();
 
         return view('grados.index', [
@@ -24,11 +20,8 @@ class GradoController extends Controller
         ]);
     }
 
-    public function view_details($grado){
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('main.index');
-        }
-
+    public function view_details($grado)
+    {
         $grado = (new Grado())->get_grado($grado);
 
         return view('grados.details', [
@@ -39,10 +32,6 @@ class GradoController extends Controller
 
     public function listar()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso',], 403);
-        }
-
         $grados = (new Grado())->get_all_grados();
         return response()->json([
             'data' => $grados
@@ -51,10 +40,6 @@ class GradoController extends Controller
 
     public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $grado = (new Grado())->get_grado($request->grado);
         return response()->json([
             'data' => $grado
@@ -63,10 +48,6 @@ class GradoController extends Controller
 
     public function create(GradoValidation $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $grado = new Grado();
         $grado->grado = $request->grado;
         $grado->posicion_ordinal = $request->posicion_ordinal;
@@ -85,10 +66,6 @@ class GradoController extends Controller
 
     public function update(GradoValidation $request, $id_grado)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $grado = (new Grado())->get_grado($id_grado);
         $grado->grado = $request->grado;
         $grado->posicion_ordinal = $request->posicion_ordinal;
@@ -107,10 +84,6 @@ class GradoController extends Controller
 
     public function delete(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $request->validate([
             'id_grado' => ['required', 'numeric', 'integer']
         ]);

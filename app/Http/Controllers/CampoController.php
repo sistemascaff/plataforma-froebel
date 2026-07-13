@@ -11,10 +11,6 @@ class CampoController extends Controller
 {
     public function view_index()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('main.index');
-        }
-
         return view('campos.index', [
             'head_title' => 'GESTIÓN DE CAMPOS',
         ]);
@@ -22,10 +18,6 @@ class CampoController extends Controller
 
     public function view_details($campo)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('login');
-        }
-
         $campo = (new Campo())->get_campo($campo);
 
         return view('campos.details', [
@@ -36,10 +28,6 @@ class CampoController extends Controller
 
     public function listar()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso',], 403);
-        }
-
         $campos = (new Campo())->get_all_campos();
         return response()->json([
             'data' => $campos
@@ -48,10 +36,6 @@ class CampoController extends Controller
 
     public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $campo = (new Campo())->get_campo($request->campo);
         return response()->json([
             'data' => $campo
@@ -60,9 +44,6 @@ class CampoController extends Controller
 
     public function create(CampoValidation $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
 
         $campo = new Campo();
         $campo->campo = $request->campo;
@@ -81,10 +62,6 @@ class CampoController extends Controller
 
     public function update(CampoValidation $request, $id_campo)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $campo = (new Campo())->get_campo($id_campo);
         $campo->campo = $request->campo;
         $campo->posicion_ordinal = $request->posicion_ordinal;
@@ -102,10 +79,6 @@ class CampoController extends Controller
 
     public function delete(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $request->validate([
             'id_campo' => ['required', 'numeric', 'integer']
         ]);

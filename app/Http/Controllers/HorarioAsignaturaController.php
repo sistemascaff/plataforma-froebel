@@ -13,10 +13,6 @@ class HorarioAsignaturaController extends Controller
 {
     public function view_index()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('main.index');
-        }
-        
         $niveles = (new Nivel())->get_all_niveles();
         $gestiones = (new Gestion())->get_all_gestiones();
 
@@ -29,10 +25,6 @@ class HorarioAsignaturaController extends Controller
 
     public function view_details($horario_asignatura)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('login');
-        }
-
         $horario_asignatura = (new HorarioAsignatura())->get_horario_asignatura($horario_asignatura);
 
         return view('horarios_asignaturas.details', [
@@ -43,10 +35,6 @@ class HorarioAsignaturaController extends Controller
 
     public function listar()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso',], 403);
-        }
-
         $horarios_asignaturas = (new HorarioAsignatura())->get_all_horarios_asignaturas();
         return response()->json([
             'data' => $horarios_asignaturas
@@ -55,10 +43,6 @@ class HorarioAsignaturaController extends Controller
 
     public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $horario_asignatura = (new HorarioAsignatura())->get_horario_asignatura($request->horario_asignatura);
         return response()->json([
             'data' => $horario_asignatura
@@ -67,10 +51,6 @@ class HorarioAsignaturaController extends Controller
 
     public function create(HorarioAsignaturaValidation $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $horario_asignatura = new HorarioAsignatura();
         $horario_asignatura->denominacion = $request->denominacion;
         $horario_asignatura->hora_inicio = $request->hora_inicio;
@@ -91,10 +71,6 @@ class HorarioAsignaturaController extends Controller
 
     public function update(HorarioAsignaturaValidation $request, $id_horario_asignatura)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $horario_asignatura = (new HorarioAsignatura())->get_horario_asignatura($id_horario_asignatura);
         $horario_asignatura->denominacion = $request->denominacion;
         $horario_asignatura->hora_inicio = $request->hora_inicio;
@@ -115,10 +91,6 @@ class HorarioAsignaturaController extends Controller
 
     public function delete(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $request->validate([
             'id_horario_asignatura' => ['required', 'numeric', 'integer']
         ]);

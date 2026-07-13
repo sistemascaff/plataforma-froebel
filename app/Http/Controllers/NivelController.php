@@ -11,10 +11,6 @@ class NivelController extends Controller
 {
     public function view_index()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('main.index');
-        }
-
         return view('niveles.index', [
             'head_title' => 'GESTIÓN DE NIVELES',
         ]);
@@ -22,10 +18,6 @@ class NivelController extends Controller
 
     public function view_details($nivel)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('login');
-        }
-
         $nivel = (new Nivel())->get_nivel($nivel);
 
         return view('niveles.details', [
@@ -36,9 +28,6 @@ class NivelController extends Controller
 
     public function listar()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso',], 403);
-        }
 
         $niveles = (new Nivel())->get_all_niveles();
         return response()->json([
@@ -48,10 +37,6 @@ class NivelController extends Controller
 
     public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $nivel = (new Nivel())->get_nivel($request->nivel);
         return response()->json([
             'data' => $nivel
@@ -60,10 +45,6 @@ class NivelController extends Controller
 
     public function create(NivelValidation $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $nivel = new Nivel();
         $nivel->nivel = $request->nivel;
         $nivel->posicion_ordinal = $request->posicion_ordinal;
@@ -81,10 +62,6 @@ class NivelController extends Controller
 
     public function update(NivelValidation $request, $id_nivel)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $nivel = (new Nivel())->get_nivel($id_nivel);
         $nivel->nivel = $request->nivel;
         $nivel->posicion_ordinal = $request->posicion_ordinal;
@@ -102,10 +79,6 @@ class NivelController extends Controller
 
     public function delete(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $request->validate([
             'id_nivel' => ['required', 'numeric', 'integer']
         ]);

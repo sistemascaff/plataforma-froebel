@@ -12,10 +12,6 @@ class PeriodoController extends Controller
 {
     public function view_index()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('main.index');
-        }
-        
         $gestiones = (new Gestion())->get_all_gestiones();
 
         return view('periodos.index', [
@@ -26,10 +22,6 @@ class PeriodoController extends Controller
 
     public function listar()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso',], 403);
-        }
-
         $periodos = (new Periodo())->get_all_periodos();
         return response()->json([
             'data' => $periodos
@@ -38,10 +30,6 @@ class PeriodoController extends Controller
 
     public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $periodo = (new Periodo())->get_periodo($request->periodo);
         return response()->json([
             'data' => $periodo
@@ -50,10 +38,6 @@ class PeriodoController extends Controller
 
     public function create(PeriodoValidation $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $periodo = new Periodo();
         $periodo->periodo = $request->periodo;
         $periodo->posicion_ordinal = $request->posicion_ordinal;
@@ -72,10 +56,6 @@ class PeriodoController extends Controller
 
     public function update(PeriodoValidation $request, $id_periodo)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $periodo = (new Periodo())->get_periodo($id_periodo);
         $periodo->periodo = $request->periodo;
         $periodo->posicion_ordinal = $request->posicion_ordinal;
@@ -94,10 +74,6 @@ class PeriodoController extends Controller
 
     public function delete(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $request->validate([
             'id_periodo' => ['required', 'numeric', 'integer']
         ]);

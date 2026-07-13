@@ -12,10 +12,6 @@ class AreaController extends Controller
 {
     public function view_index()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('main.index');
-        }
-        
         $campos = (new Campo())->get_all_campos();
 
         return view('areas.index', [
@@ -26,10 +22,6 @@ class AreaController extends Controller
 
     public function view_details($area)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('login');
-        }
-
         $area = (new Area())->get_area($area);
 
         return view('areas.details', [
@@ -40,10 +32,6 @@ class AreaController extends Controller
 
     public function listar()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso',], 403);
-        }
-
         $areas = (new Area())->get_all_areas();
         return response()->json([
             'data' => $areas
@@ -52,10 +40,6 @@ class AreaController extends Controller
 
     public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $area = (new Area())->get_area($request->area);
         return response()->json([
             'data' => $area
@@ -64,10 +48,6 @@ class AreaController extends Controller
 
     public function create(AreaValidation $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $area = new Area();
         $area->area = $request->area;
         $area->abreviatura = $request->abreviatura;
@@ -87,10 +67,6 @@ class AreaController extends Controller
 
     public function update(AreaValidation $request, $id_area)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $area = (new Area())->get_area($id_area);
         $area->area = $request->area;
         $area->abreviatura = $request->abreviatura;
@@ -110,10 +86,6 @@ class AreaController extends Controller
 
     public function delete(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $request->validate([
             'id_area' => ['required', 'numeric', 'integer']
         ]);

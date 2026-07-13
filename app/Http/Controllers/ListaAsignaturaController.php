@@ -11,10 +11,6 @@ class ListaAsignaturaController extends Controller
 {
     public function view_details($id_lista_asignatura)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('login');
-        }
-
         // 1. Obtener la lista y cargar los estudiantes ordenados alfabéticamente
         $lista_asignatura = (new ListaAsignatura())->get_lista_asignatura($id_lista_asignatura);
 
@@ -164,10 +160,6 @@ class ListaAsignaturaController extends Controller
 
     public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $lista_asignatura = (new ListaAsignatura())->get_lista_asignatura($request->lista_asignatura);
 
         return response()->json([
@@ -177,10 +169,6 @@ class ListaAsignaturaController extends Controller
 
     public function update(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('login');
-        }
-
         // Permite que 'estudiantes' sea nullable por si envían la lista vacía (borraron a todos)
         $request->validate([
             'id_lista_asignatura' => 'required|exists:listas_asignaturas,id_lista_asignatura',
@@ -232,10 +220,6 @@ class ListaAsignaturaController extends Controller
 
     public function actualizar_docente(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $request->validate([
             'docente' => 'required|exists:docentes,id_docente',
         ]);

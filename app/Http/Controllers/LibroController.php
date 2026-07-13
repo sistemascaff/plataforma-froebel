@@ -11,10 +11,6 @@ class LibroController extends Controller
 {
     public function view_index()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
-            return redirect()->route('main.index');
-        }
-
         $codigo_iteracion = Libro::whereBetween('fecha_registro', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->count() + 1;
         $libro_insert_codigo = date('y') . str_pad($codigo_iteracion, 3, '0', STR_PAD_LEFT);
         $libro_titulos = Libro::select('titulo')->distinct()->orderBy('titulo')->get()->pluck('titulo')->toArray();
@@ -36,10 +32,6 @@ class LibroController extends Controller
 
     public function view_details($libro)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
-            return redirect()->route('login');
-        }
-
         $libro = (new Libro())->get_libro($libro);
 
         return view('libros.details', [
@@ -57,10 +49,6 @@ class LibroController extends Controller
 
     public function listar()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso',], 403);
-        }
-
         $libros = (new Libro())->get_all_libros();
         return response()->json([
             'data' => $libros
@@ -78,10 +66,6 @@ class LibroController extends Controller
 
     public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $libro = (new Libro())->get_libro($request->libro);
         return response()->json([
             'data' => $libro
@@ -90,10 +74,6 @@ class LibroController extends Controller
 
     public function create(LibroValidation $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $libro = new Libro();
         $libro->id_colegio = session('id_colegio');
         $libro->titulo = strtoupper($request->titulo);
@@ -120,12 +100,8 @@ class LibroController extends Controller
         ]);
     }
 
-    public function update(LibroValidation $request, $id_libro)
+    public function update(LibroValidation $request, int $id_libro)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $libro = (new Libro())->get_libro($id_libro);
         $libro->titulo = strtoupper($request->titulo);
         $libro->codigo = $request->codigo;
@@ -153,10 +129,6 @@ class LibroController extends Controller
 
     public function delete(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN', 'BIBLIOTECARIA'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $request->validate([
             'id_libro' => ['required', 'numeric', 'integer']
         ]);

@@ -12,10 +12,6 @@ class DimensionController extends Controller
 {
     public function view_index()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('main.index');
-        }
-        
         $gestiones = (new Gestion())->get_all_gestiones();
 
         return view('dimensiones.index', [
@@ -26,10 +22,6 @@ class DimensionController extends Controller
 
     public function listar()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso',], 403);
-        }
-
         $dimensiones = (new Dimension())->get_all_dimensiones();
         return response()->json([
             'data' => $dimensiones
@@ -38,10 +30,6 @@ class DimensionController extends Controller
 
     public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $dimension = (new Dimension())->get_dimension($request->dimension);
         return response()->json([
             'data' => $dimension
@@ -50,10 +38,6 @@ class DimensionController extends Controller
 
     public function create(DimensionValidation $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $dimension = new Dimension();
         $dimension->dimension = $request->dimension;
         $dimension->posicion_ordinal = $request->posicion_ordinal;
@@ -74,10 +58,6 @@ class DimensionController extends Controller
 
     public function update(DimensionValidation $request, $id_dimension)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $dimension = (new Dimension())->get_dimension($id_dimension);
         $dimension->dimension = $request->dimension;
         $dimension->posicion_ordinal = $request->posicion_ordinal;
@@ -98,10 +78,6 @@ class DimensionController extends Controller
 
     public function delete(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $request->validate([
             'id_dimension' => ['required', 'numeric', 'integer']
         ]);

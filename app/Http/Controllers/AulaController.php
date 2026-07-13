@@ -11,10 +11,6 @@ class AulaController extends Controller
 {
     public function view_index()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('main.index');
-        }
-
         return view('aulas.index', [
             'head_title' => 'GESTIÓN DE AULAS',
         ]);
@@ -22,10 +18,6 @@ class AulaController extends Controller
 
     public function listar()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso',], 403);
-        }
-
         $aulas = (new Aula())->get_all_aulas();
         return response()->json([
             'data' => $aulas
@@ -34,10 +26,6 @@ class AulaController extends Controller
 
     public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $aula = (new Aula())->get_aula($request->aula);
         return response()->json([
             'data' => $aula
@@ -46,10 +34,6 @@ class AulaController extends Controller
 
     public function create(AulaValidation $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $aula = new Aula();
         $aula->aula = $request->aula;
         $aula->creado_por = session('id_usuario');
@@ -66,10 +50,6 @@ class AulaController extends Controller
 
     public function update(AulaValidation $request, $id_aula)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $aula = (new Aula())->get_aula($id_aula);
         $aula->aula = $request->aula;
         $aula->modificado_por = session('id_usuario');
@@ -86,10 +66,6 @@ class AulaController extends Controller
 
     public function delete(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $request->validate([
             'id_aula' => ['required', 'numeric', 'integer']
         ]);

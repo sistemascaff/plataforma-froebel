@@ -15,10 +15,6 @@ class EstudianteController extends Controller
 {
     public function view_index()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('main.index');
-        }
-
         $cursos = (new Curso())->get_all_cursos();
 
         return view('estudiantes.index', [
@@ -29,10 +25,6 @@ class EstudianteController extends Controller
 
     public function view_details(int $id_estudiante)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('login');
-        }
-
         $estudiante = (new Estudiante())->get_estudiante($id_estudiante);
 
         return view('estudiantes.details', [
@@ -43,10 +35,6 @@ class EstudianteController extends Controller
 
     public function listar()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $estudiantes = (new Estudiante())->get_all_estudiantes();
 
         // Iterar sobre la colección para descifrar la contraseña
@@ -65,10 +53,6 @@ class EstudianteController extends Controller
 
     public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $estudiante = (new Estudiante())->get_estudiante($request->estudiante);
         $estudiante->persona->usuario->contrasenha_descifrada = helper_decrypt($estudiante->persona->usuario->contrasenha);
 
@@ -77,10 +61,6 @@ class EstudianteController extends Controller
 
     public function create(EstudianteValidation $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         if ($request->contrasenha !== $request->confirmar_contrasenha) {
             return response()->json([
                 'success' => false,
@@ -88,9 +68,8 @@ class EstudianteController extends Controller
             ], 400);
         }
 
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
-
             // 1. Crear la persona
             $persona = new Persona();
             $persona->id_colegio = session('id_colegio'); // o el que corresponda
@@ -167,13 +146,8 @@ class EstudianteController extends Controller
 
     public function update(EstudianteValidation $request, int $id_estudiante)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
-
             $estudiante = (new Estudiante())->get_estudiante($id_estudiante);
 
             // 1. Actualizar la persona vinculada
@@ -254,15 +228,12 @@ class EstudianteController extends Controller
 
     public function delete(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $request->validate([
             'id_estudiante' => ['required', 'numeric', 'integer']
         ]);
+        
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
 
             $estudiante = (new Estudiante())->get_estudiante($request->id_estudiante);
             $estudiante->estado = $estudiante->estado == '1' ? '0' : '1';

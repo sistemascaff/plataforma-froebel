@@ -12,10 +12,6 @@ class MateriaController extends Controller
 {
     public function view_index()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('main.index');
-        }
-        
         $campos = (new Campo())->get_all_campos();
 
         return view('materias.index', [
@@ -26,10 +22,6 @@ class MateriaController extends Controller
 
     public function view_details($materia)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('login');
-        }
-
         $materia = (new Materia())->get_materia($materia);
 
         return view('materias.details', [
@@ -40,10 +32,6 @@ class MateriaController extends Controller
 
     public function listar()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso',], 403);
-        }
-
         $materias = (new Materia())->get_all_materias();
         return response()->json([
             'data' => $materias
@@ -52,10 +40,6 @@ class MateriaController extends Controller
 
     public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $materia = (new Materia())->get_materia($request->materia);
         return response()->json([
             'data' => $materia
@@ -64,10 +48,6 @@ class MateriaController extends Controller
 
     public function create(MateriaValidation $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $materia = new Materia();
         $materia->materia = $request->materia;
         $materia->abreviatura = $request->abreviatura;
@@ -87,10 +67,6 @@ class MateriaController extends Controller
 
     public function update(MateriaValidation $request, $id_materia)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $materia = (new Materia())->get_materia($id_materia);
         $materia->materia = $request->materia;
         $materia->abreviatura = $request->abreviatura;
@@ -110,10 +86,6 @@ class MateriaController extends Controller
 
     public function delete(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $request->validate([
             'id_materia' => ['required', 'numeric', 'integer']
         ]);

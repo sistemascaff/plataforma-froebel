@@ -11,10 +11,6 @@ class CoordinacionController extends Controller
 {
     public function view_index()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('main.index');
-        }
-
         return view('coordinaciones.index', [
             'head_title' => 'GESTIÓN DE COORDINACIONES',
         ]);
@@ -22,10 +18,6 @@ class CoordinacionController extends Controller
 
     public function view_details($coordinacion)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('login');
-        }
-
         $coordinacion = (new Coordinacion())->get_coordinacion($coordinacion);
 
         return view('coordinaciones.details', [
@@ -36,10 +28,6 @@ class CoordinacionController extends Controller
 
     public function listar()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso',], 403);
-        }
-
         $coordinaciones = (new Coordinacion())->get_all_coordinaciones();
         return response()->json([
             'data' => $coordinaciones
@@ -48,10 +36,6 @@ class CoordinacionController extends Controller
 
     public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $coordinacion = (new Coordinacion())->get_coordinacion($request->coordinacion);
         return response()->json([
             'data' => $coordinacion
@@ -60,10 +44,6 @@ class CoordinacionController extends Controller
 
     public function create(CoordinacionValidation $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $coordinacion = new Coordinacion();
         $coordinacion->coordinacion = $request->coordinacion;
         $coordinacion->creado_por = session('id_usuario');
@@ -80,10 +60,6 @@ class CoordinacionController extends Controller
 
     public function update(CoordinacionValidation $request, $id_coordinacion)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $coordinacion = (new Coordinacion())->get_coordinacion($id_coordinacion);
         $coordinacion->coordinacion = $request->coordinacion;
         $coordinacion->modificado_por = session('id_usuario');
@@ -100,10 +76,6 @@ class CoordinacionController extends Controller
 
     public function delete(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $request->validate([
             'id_coordinacion' => ['required', 'numeric', 'integer']
         ]);

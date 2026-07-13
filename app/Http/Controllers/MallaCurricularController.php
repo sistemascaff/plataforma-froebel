@@ -14,11 +14,7 @@ use Illuminate\Http\Request;
 class MallaCurricularController extends Controller
 {
     public function view_index()
-    {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('main.index');
-        }
-        
+    {        
         $grados = (new Grado())->get_all_grados();
         $materias = (new Materia())->get_all_materias();
         $areas = (new Area())->get_all_areas();
@@ -35,10 +31,6 @@ class MallaCurricularController extends Controller
 
     public function view_details($malla_curricular)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('login');
-        }
-
         $malla_curricular = (new MallaCurricular())->get_malla_curricular($malla_curricular);
 
         return view('mallas_curriculares.details', [
@@ -49,10 +41,6 @@ class MallaCurricularController extends Controller
 
     public function listar()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso',], 403);
-        }
-
         $mallas_curriculares = (new MallaCurricular())->get_all_mallas_curriculares();
         return response()->json([
             'data' => $mallas_curriculares
@@ -61,10 +49,6 @@ class MallaCurricularController extends Controller
 
     public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $malla_curricular = (new MallaCurricular())->get_malla_curricular($request->malla_curricular);
         return response()->json([
             'data' => $malla_curricular
@@ -73,10 +57,6 @@ class MallaCurricularController extends Controller
 
     public function create(MallaCurricularValidation $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $malla_curricular = new MallaCurricular();
         $malla_curricular->id_grado = $request->id_grado;
         $malla_curricular->id_materia = $request->id_materia;
@@ -96,10 +76,6 @@ class MallaCurricularController extends Controller
 
     public function update(MallaCurricularValidation $request, $id_malla_curricular)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $malla_curricular = (new MallaCurricular())->get_malla_curricular($id_malla_curricular);
         $malla_curricular->id_grado = $request->id_grado;
         $malla_curricular->id_materia = $request->id_materia;
@@ -119,10 +95,6 @@ class MallaCurricularController extends Controller
 
     public function delete(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $request->validate([
             'id_malla_curricular' => ['required', 'numeric', 'integer']
         ]);

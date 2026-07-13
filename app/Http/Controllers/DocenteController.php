@@ -16,10 +16,6 @@ class DocenteController extends Controller
 {
     public function view_index()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('main.index');
-        }
-
         $niveles = (new Nivel())->get_all_niveles();
         $coordinaciones = (new Coordinacion())->get_all_coordinaciones();
 
@@ -32,10 +28,6 @@ class DocenteController extends Controller
 
     public function view_details($id_docente)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return redirect()->route('login');
-        }
-
         $docente = (new Docente())->get_docente($id_docente);
 
         return view('docentes.details', [
@@ -46,10 +38,6 @@ class DocenteController extends Controller
 
     public function listar()
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $docentes = (new Docente())->get_all_docentes();
 
         return response()->json(['data' => $docentes]);
@@ -57,10 +45,6 @@ class DocenteController extends Controller
 
     public function mostrar(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $docente = (new Docente())->get_docente($request->docente);
 
         return response()->json(['data' => $docente]);
@@ -68,10 +52,6 @@ class DocenteController extends Controller
 
     public function create(DocenteValidation $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         if ($request->contrasenha !== $request->confirmar_contrasenha) {
             return response()->json([
                 'success' => false,
@@ -79,9 +59,8 @@ class DocenteController extends Controller
             ], 400);
         }
 
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
-
             // 1. Crear la persona
             $persona = new Persona();
             $persona->id_colegio = session('id_colegio'); // o el que corresponda
@@ -162,13 +141,8 @@ class DocenteController extends Controller
 
     public function update(DocenteValidation $request, $id_docente)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
-
             $docente = (new Docente())->get_docente($id_docente);
 
             // 1. Actualizar la persona vinculada
@@ -253,16 +227,12 @@ class DocenteController extends Controller
 
     public function delete(Request $request)
     {
-        if (!session('tiene_acceso') || !in_array(session('tipo_perfil'), ['ADMIN'])) {
-            return response()->json(['success' => false, 'message' => 'No tiene acceso'], 403);
-        }
-
         $request->validate([
             'id_docente' => ['required', 'numeric', 'integer']
         ]);
+        
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
-
             $docente = (new Docente())->get_docente($request->id_docente);
             $docente->estado = $docente->estado == '1' ? '0' : '1';
             $docente->fecha_eliminacion = $docente->estado == '0' ? Carbon::now() : null;
