@@ -57,7 +57,7 @@ Route::middleware(['session.acceso'])->group(function () {
     // Panel y Cierre de sesión
     Route::controller(UsuarioController::class)->group(function () {
         Route::get('panel', 'view_dashboard')->name('dashboard');
-        Route::get('cerrar-sesion', 'cerrar_sesion')->name('logout');
+        Route::post('cerrar-sesion', 'cerrar_sesion')->name('logout');
     });
 
     // Formato del middleware que se usa para las rutas privadas: 'perfil:ADMIN,BIBLIOTECARIA' (separados por comas, sin espacios)
