@@ -58,8 +58,8 @@ class HorarioAsignaturaController extends Controller
         $horario_asignatura->id_gestion = $request->id_gestion;
         $horario_asignatura->id_nivel = $request->id_nivel;
         $horario_asignatura->creado_por = session('id_usuario');
-        $horario_asignatura->ip = session('ip');
-        $horario_asignatura->dispositivo = session('dispositivo');
+        $horario_asignatura->ip = $request->ip();
+        $horario_asignatura->dispositivo = $request->userAgent();
         $horario_asignatura->save();
 
         return response()->json([
@@ -78,8 +78,8 @@ class HorarioAsignaturaController extends Controller
         $horario_asignatura->id_gestion = $request->id_gestion;
         $horario_asignatura->id_nivel = $request->id_nivel;
         $horario_asignatura->modificado_por = session('id_usuario');
-        $horario_asignatura->ip = session('ip');
-        $horario_asignatura->dispositivo = session('dispositivo');
+        $horario_asignatura->ip = $request->ip();
+        $horario_asignatura->dispositivo = $request->userAgent();
         $horario_asignatura->save();
 
         return response()->json([
@@ -92,15 +92,15 @@ class HorarioAsignaturaController extends Controller
     public function delete(Request $request)
     {
         $request->validate([
-            'id_horario_asignatura' => ['required', 'numeric', 'integer']
+            'id_horario_asignatura' => ['required', 'numeric', 'integer', 'exists:horarios_asignaturas,id_horario_asignatura'],
         ]);
 
         $horario_asignatura = (new HorarioAsignatura())->get_horario_asignatura($request->id_horario_asignatura);
         $horario_asignatura->estado = $horario_asignatura->estado == '1' ? '0' : '1';
         $horario_asignatura->fecha_eliminacion = $horario_asignatura->estado == '0' ? Carbon::now() : null;
         $horario_asignatura->eliminado_por = $horario_asignatura->estado == '0' ? session('id_usuario') : null;
-        $horario_asignatura->ip = session('ip');
-        $horario_asignatura->dispositivo = session('dispositivo');
+        $horario_asignatura->ip = $request->ip();
+        $horario_asignatura->dispositivo = $request->userAgent();
         $horario_asignatura->save();
 
         return response()->json([

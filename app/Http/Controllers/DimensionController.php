@@ -45,8 +45,8 @@ class DimensionController extends Controller
         $dimension->tipo_calculo = $request->tipo_calculo;
         $dimension->id_gestion = $request->id_gestion;
         $dimension->creado_por = session('id_usuario');
-        $dimension->ip = session('ip');
-        $dimension->dispositivo = session('dispositivo');
+        $dimension->ip = $request->ip();
+        $dimension->dispositivo = $request->userAgent();
         $dimension->save();
 
         return response()->json([
@@ -65,8 +65,8 @@ class DimensionController extends Controller
         $dimension->tipo_calculo = $request->tipo_calculo;
         $dimension->id_gestion = $request->id_gestion;
         $dimension->modificado_por = session('id_usuario');
-        $dimension->ip = session('ip');
-        $dimension->dispositivo = session('dispositivo');
+        $dimension->ip = $request->ip();
+        $dimension->dispositivo = $request->userAgent();
         $dimension->save();
 
         return response()->json([
@@ -79,15 +79,15 @@ class DimensionController extends Controller
     public function delete(Request $request)
     {
         $request->validate([
-            'id_dimension' => ['required', 'numeric', 'integer']
+            'id_dimension' => ['required', 'numeric', 'integer', 'exists:dimensiones,id_dimension'],
         ]);
 
         $dimension = (new Dimension())->get_dimension($request->id_dimension);
         $dimension->estado = $dimension->estado == '1' ? '0' : '1';
         $dimension->fecha_eliminacion = $dimension->estado == '0' ? Carbon::now() : null;
         $dimension->eliminado_por = $dimension->estado == '0' ? session('id_usuario') : null;
-        $dimension->ip = session('ip');
-        $dimension->dispositivo = session('dispositivo');
+        $dimension->ip = $request->ip();
+        $dimension->dispositivo = $request->userAgent();
         $dimension->save();
 
         return response()->json([

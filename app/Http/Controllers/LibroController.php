@@ -89,8 +89,8 @@ class LibroController extends Controller
         $libro->adquisicion = $request->adquisicion;
         $libro->fecha_ingreso_cooperativa = $request->fecha_ingreso_cooperativa;
         $libro->creado_por = session('id_usuario');
-        $libro->ip = session('ip');
-        $libro->dispositivo = session('dispositivo');
+        $libro->ip = $request->ip();
+        $libro->dispositivo = $request->userAgent();
         $libro->save();
 
         return response()->json([
@@ -116,8 +116,8 @@ class LibroController extends Controller
         $libro->adquisicion = $request->adquisicion;
         $libro->fecha_ingreso_cooperativa = $request->fecha_ingreso_cooperativa;
         $libro->modificado_por = session('id_usuario');
-        $libro->ip = session('ip');
-        $libro->dispositivo = session('dispositivo');
+        $libro->ip = $request->ip();
+        $libro->dispositivo = $request->userAgent();
         $libro->save();
 
         return response()->json([
@@ -130,7 +130,7 @@ class LibroController extends Controller
     public function delete(Request $request)
     {
         $request->validate([
-            'id_libro' => ['required', 'numeric', 'integer']
+            'id_libro' => ['required', 'numeric', 'integer', 'exists:libros,id_libro'],
         ]);
 
         $libro = (new Libro())->get_libro($request->id_libro);
@@ -138,8 +138,8 @@ class LibroController extends Controller
             $libro->estado = $libro->estado == '1' ? '0' : '1';
             $libro->fecha_eliminacion = $libro->estado == '0' ? Carbon::now() : null;
             $libro->eliminado_por = $libro->estado == '0' ? session('id_usuario') : null;
-            $libro->ip = session('ip');
-            $libro->dispositivo = session('dispositivo');
+            $libro->ip = $request->ip();
+            $libro->dispositivo = $request->userAgent();
             $libro->save();
         } else {
             return response()->json([

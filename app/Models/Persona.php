@@ -27,6 +27,12 @@ class Persona extends Model
         return $this->hasOne(Estudiante::class, 'id_persona', 'id_persona');
     }
 
+    /** Relación uno a uno con docentes */
+    public function docente()
+    {
+        return $this->hasOne(Docente::class, 'id_persona', 'id_persona');
+    }
+
     /** Relación uno a uno con usuarios */
     public function usuario()
     {

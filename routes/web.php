@@ -66,7 +66,7 @@ Route::middleware(['session.acceso'])->group(function () {
     // Módulo de biblioteca
     Route::middleware(['perfil:ADMIN,BIBLIOTECARIA'])->group(function () {
         Route::controller(LibroController::class)->group(function () {
-            
+
             Route::get('libros', 'view_index')->name('libros.index');
             Route::get('libros/listar', 'listar')->name('libros.listar');
             Route::get('libros/{libro}', 'mostrar')->name('libros.mostrar');
@@ -100,6 +100,11 @@ Route::middleware(['session.acceso'])->group(function () {
     });
 
     Route::middleware(['perfil:ADMIN'])->group(function () {
+        Route::controller(UsuarioController::class)->group(function () {
+            Route::get('usuarios', 'view_index')->name('usuarios.index');
+            Route::get('usuarios/listar', 'listar')->name('usuarios.listar');
+            Route::patch('usuarios/{usuario}', 'delete')->name('usuarios.delete');
+        });
         Route::controller(PersonaController::class)->group(function () {
             Route::get('personas/listar', 'listar')->name('personas.listar');
             Route::get('personas/{persona}', 'mostrar')->name('personas.mostrar');

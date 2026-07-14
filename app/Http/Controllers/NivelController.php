@@ -49,8 +49,8 @@ class NivelController extends Controller
         $nivel->nivel = $request->nivel;
         $nivel->posicion_ordinal = $request->posicion_ordinal;
         $nivel->creado_por = session('id_usuario');
-        $nivel->ip = session('ip');
-        $nivel->dispositivo = session('dispositivo');
+        $nivel->ip = $request->ip();
+        $nivel->dispositivo = $request->userAgent();
         $nivel->save();
 
         return response()->json([
@@ -66,8 +66,8 @@ class NivelController extends Controller
         $nivel->nivel = $request->nivel;
         $nivel->posicion_ordinal = $request->posicion_ordinal;
         $nivel->modificado_por = session('id_usuario');
-        $nivel->ip = session('ip');
-        $nivel->dispositivo = session('dispositivo');
+        $nivel->ip = $request->ip();
+        $nivel->dispositivo = $request->userAgent();
         $nivel->save();
 
         return response()->json([
@@ -80,15 +80,15 @@ class NivelController extends Controller
     public function delete(Request $request)
     {
         $request->validate([
-            'id_nivel' => ['required', 'numeric', 'integer']
+            'id_nivel' => ['required', 'numeric', 'integer', 'exists:niveles,id_nivel'],
         ]);
 
         $nivel = (new Nivel())->get_nivel($request->id_nivel);
         $nivel->estado = $nivel->estado == '1' ? '0' : '1';
         $nivel->fecha_eliminacion = $nivel->estado == '0' ? Carbon::now() : null;
         $nivel->eliminado_por = $nivel->estado == '0' ? session('id_usuario') : null;
-        $nivel->ip = session('ip');
-        $nivel->dispositivo = session('dispositivo');
+        $nivel->ip = $request->ip();
+        $nivel->dispositivo = $request->userAgent();
         $nivel->save();
 
         return response()->json([

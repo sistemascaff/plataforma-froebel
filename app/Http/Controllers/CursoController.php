@@ -46,8 +46,8 @@ class CursoController extends Controller
         $curso->id_grado = $request->id_grado;
         $curso->id_paralelo = $request->id_paralelo;
         $curso->creado_por = session('id_usuario');
-        $curso->ip = session('ip');
-        $curso->dispositivo = session('dispositivo');
+        $curso->ip = $request->ip();
+        $curso->dispositivo = $request->userAgent();
         $curso->save();
 
         return response()->json([
@@ -64,8 +64,8 @@ class CursoController extends Controller
         $curso->id_grado = $request->id_grado;
         $curso->id_paralelo = $request->id_paralelo;
         $curso->modificado_por = session('id_usuario');
-        $curso->ip = session('ip');
-        $curso->dispositivo = session('dispositivo');
+        $curso->ip = $request->ip();
+        $curso->dispositivo = $request->userAgent();
         $curso->save();
 
         return response()->json([
@@ -78,15 +78,15 @@ class CursoController extends Controller
     public function delete(Request $request)
     {
         $request->validate([
-            'id_curso' => ['required', 'numeric', 'integer']
+            'id_curso' => ['required', 'numeric', 'integer', 'exists:cursos,id_curso']
         ]);
 
         $curso = (new Curso())->get_curso($request->id_curso);
         $curso->estado = $curso->estado == '1' ? '0' : '1';
         $curso->fecha_eliminacion = $curso->estado == '0' ? Carbon::now() : null;
         $curso->eliminado_por = $curso->estado == '0' ? session('id_usuario') : null;
-        $curso->ip = session('ip');
-        $curso->dispositivo = session('dispositivo');
+        $curso->ip = $request->ip();
+        $curso->dispositivo = $request->userAgent();
         $curso->save();
 
         return response()->json([

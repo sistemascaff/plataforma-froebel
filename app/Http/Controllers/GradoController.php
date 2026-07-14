@@ -53,8 +53,8 @@ class GradoController extends Controller
         $grado->posicion_ordinal = $request->posicion_ordinal;
         $grado->id_nivel = $request->id_nivel;
         $grado->creado_por = session('id_usuario');
-        $grado->ip = session('ip');
-        $grado->dispositivo = session('dispositivo');
+        $grado->ip = $request->ip();
+        $grado->dispositivo = $request->userAgent();
         $grado->save();
 
         return response()->json([
@@ -71,8 +71,8 @@ class GradoController extends Controller
         $grado->posicion_ordinal = $request->posicion_ordinal;
         $grado->id_nivel = $request->id_nivel;
         $grado->modificado_por = session('id_usuario');
-        $grado->ip = session('ip');
-        $grado->dispositivo = session('dispositivo');
+        $grado->ip = $request->ip();
+        $grado->dispositivo = $request->userAgent();
         $grado->save();
 
         return response()->json([
@@ -85,15 +85,15 @@ class GradoController extends Controller
     public function delete(Request $request)
     {
         $request->validate([
-            'id_grado' => ['required', 'numeric', 'integer']
+            'id_grado' => ['required', 'numeric', 'integer', 'exists:grados,id_grado']
         ]);
 
         $grado = (new Grado())->get_grado($request->id_grado);
         $grado->estado = $grado->estado == '1' ? '0' : '1';
         $grado->fecha_eliminacion = $grado->estado == '0' ? Carbon::now() : null;
         $grado->eliminado_por = $grado->estado == '0' ? session('id_usuario') : null;
-        $grado->ip = session('ip');
-        $grado->dispositivo = session('dispositivo');
+        $grado->ip = $request->ip();
+        $grado->dispositivo = $request->userAgent();
         $grado->save();
 
         return response()->json([

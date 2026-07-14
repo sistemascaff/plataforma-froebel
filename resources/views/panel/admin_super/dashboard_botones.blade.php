@@ -153,6 +153,15 @@
             </div>
         </a>
     </div>
+
+    <div class="col-6 col-md-4 col-lg-2 d-flex justify-content-center my-3">
+        <a class="btn btn-sq-lg btn-info" href="{{ route('usuarios.index') }}">
+            <div>
+                <i class="fa-solid fa-duotone fa-users fa-2xl"></i>
+                <br>Gestión de usuarios
+            </div>
+        </a>
+    </div>
 </div>
 
 <span class="h3 text-decoration-underline fw-bold">BIBLIOTECA</span>

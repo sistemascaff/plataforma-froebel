@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="{{ session('temaPreferido') ? session('temaPreferido') : 'dark' }}">
+<html lang="en" data-bs-theme="dark">
 
 <head>
     <meta charset="utf-8">
@@ -31,10 +31,10 @@
                                     <span class="input-group-text"><i class="fa-solid fa-duotone fa-user"></i></span>
                                     <input type="text" class="form-control" name="correo" required
                                         placeholder="Usuario"
-                                        value="{{ session('login_correo') ? session('login_correo') : '' }}"
-                                        autofocus>
+                                        value="{{ session('login_correo') ? session('login_correo') : '' }}" autofocus>
                                 </div>
                             </div>
+
                             <div class="input-group mb-3">
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fa-solid fa-duotone fa-key"></i></span>
@@ -46,13 +46,18 @@
                                     </button>
                                 </div>
                             </div>
+
                             <button type="submit" class="btn btn-primary btn-block">Acceder <i
                                     class="fa-solid fa-duotone fa-sign-in"></i></button>
                         </form>
 
+                        <button class="btn btn-light mt-2" id="toggle-theme">
+                            <i class="fa-chisel fa-regular fa-sun text-warning"></i>
+                        </button>
+
                         @if (session('mensaje'))
                             <br>
-                            <div class="alert alert-warning">
+                            <div class="alert alert-warning mt-2">
                                 <h5 class="font font-weight-bold"><i
                                         class="fa-solid fa-duotone fa-triangle-exclamation"></i> ¡ATENCIÓN!
                                 </h5>

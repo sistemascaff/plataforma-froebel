@@ -38,7 +38,7 @@ class AsignaturaController extends Controller
         ]);
     }
 
-    public function view_details($asignatura)
+    public function view_details(Request $request, $asignatura)
     {
         // IDs de periodos activos que YA tienen lista para esta asignatura
         $periodosConLista = ListaAsignatura::where('id_asignatura', $asignatura)
@@ -48,13 +48,13 @@ class AsignaturaController extends Controller
         // Periodos activos que AÚN NO tienen lista → crearlos
         Periodo::where('estado', 1)
             ->whereNotIn('id_periodo', $periodosConLista)
-            ->each(function ($periodo) use ($asignatura) {
+            ->each(function ($periodo) use ($asignatura, $request) {
                 $lista = new ListaAsignatura();
                 $lista->id_asignatura = $asignatura;
                 $lista->id_periodo    = $periodo->id_periodo;
                 $lista->creado_por    = session('id_usuario') ?? 0;
-                $lista->ip            = session('ip');
-                $lista->dispositivo   = session('dispositivo');
+                $lista->ip            = $request->ip();
+                $lista->dispositivo   = $request->userAgent();
                 $lista->save();
             });
 
@@ -96,8 +96,8 @@ class AsignaturaController extends Controller
         $asignatura->id_coordinacion = $request->id_coordinacion;
         $asignatura->id_curso = $request->tipo_bloque === 'curso' ? $request->id_curso : null;
         $asignatura->creado_por = session('id_usuario');
-        $asignatura->ip = session('ip');
-        $asignatura->dispositivo = session('dispositivo');
+        $asignatura->ip = $request->ip();
+        $asignatura->dispositivo = $request->userAgent();
         $asignatura->save();
 
         return response()->json([
@@ -120,8 +120,8 @@ class AsignaturaController extends Controller
         $asignatura->id_coordinacion = $request->id_coordinacion;
         $asignatura->id_curso = $request->tipo_bloque === 'curso' ? $request->id_curso : null;
         $asignatura->modificado_por = session('id_usuario');
-        $asignatura->ip = session('ip');
-        $asignatura->dispositivo = session('dispositivo');
+        $asignatura->ip = $request->ip();
+        $asignatura->dispositivo = $request->userAgent();
         $asignatura->save();
 
         return response()->json([
@@ -134,15 +134,15 @@ class AsignaturaController extends Controller
     public function delete(Request $request)
     {
         $request->validate([
-            'id_asignatura' => ['required', 'numeric', 'integer']
+            'id_asignatura' => ['required', 'numeric', 'integer', 'exists:asignaturas,id_asignatura'],
         ]);
 
         $asignatura = (new Asignatura())->get_asignatura($request->id_asignatura);
         $asignatura->estado = $asignatura->estado == '1' ? '0' : '1';
         $asignatura->fecha_eliminacion = $asignatura->estado == '0' ? Carbon::now() : null;
         $asignatura->eliminado_por = $asignatura->estado == '0' ? session('id_usuario') : null;
-        $asignatura->ip = session('ip');
-        $asignatura->dispositivo = session('dispositivo');
+        $asignatura->ip = $request->ip();
+        $asignatura->dispositivo = $request->userAgent();
         $asignatura->save();
 
         return response()->json([

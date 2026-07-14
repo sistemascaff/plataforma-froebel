@@ -24,44 +24,41 @@ class Usuario extends Authenticatable
     }
 
     /** Relación con atributo de auditoría */
-    public function creado(){
+    public function creado()
+    {
         return $this->belongsTo(Usuario::class, 'creado_por', 'id_usuario');
     }
 
     /** Relación con atributo de auditoría */
-    public function modificado(){
+    public function modificado()
+    {
         return $this->belongsTo(Usuario::class, 'modificado_por', 'id_usuario');
     }
 
     /** Relación con atributo de auditoría */
-    public function eliminado(){
+    public function eliminado()
+    {
         return $this->belongsTo(Usuario::class, 'eliminado_por', 'id_usuario');
     }
 
     public function get_all_usuarios()
     {
-        return $this::with('persona','creado', 'modificado', 'eliminado')->get();
+        return $this::with('persona.docente', 'persona.estudiante', 'creado', 'modificado', 'eliminado')->get();
     }
-    
+
     public function get_usuario($id_usuario)
     {
-        return $this::with('persona','creado', 'modificado', 'eliminado')->findOrFail($id_usuario);
+        return $this::with('persona', 'creado', 'modificado', 'eliminado')->findOrFail($id_usuario);
     }
 
     public function get_usuario_desde_persona($id_persona)
     {
-        return $this::with('persona','creado', 'modificado', 'eliminado')->where('id_persona', $id_persona)->first();
+        return $this::with('persona', 'creado', 'modificado', 'eliminado')->where('id_persona', $id_persona)->first();
     }
 
     /**Función utilizada para verificar y crear la sesión del Usuario.*/
     public function login($correo)
     {
-        return $this::with('persona','creado', 'modificado', 'eliminado')->where('correo', $correo)->first();
-    }
-
-    /**Función para destruir y cerrar la sesión.*/
-    public function logout()
-    {
-        session()->flush();
+        return $this::with('persona', 'creado', 'modificado', 'eliminado')->where('correo', $correo)->first();
     }
 }

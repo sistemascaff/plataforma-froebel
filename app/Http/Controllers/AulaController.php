@@ -37,8 +37,8 @@ class AulaController extends Controller
         $aula = new Aula();
         $aula->aula = $request->aula;
         $aula->creado_por = session('id_usuario');
-        $aula->ip = session('ip');
-        $aula->dispositivo = session('dispositivo');
+        $aula->ip = $request->ip();
+        $aula->dispositivo = $request->userAgent();
         $aula->save();
 
         return response()->json([
@@ -53,8 +53,8 @@ class AulaController extends Controller
         $aula = (new Aula())->get_aula($id_aula);
         $aula->aula = $request->aula;
         $aula->modificado_por = session('id_usuario');
-        $aula->ip = session('ip');
-        $aula->dispositivo = session('dispositivo');
+        $aula->ip = $request->ip();
+        $aula->dispositivo = $request->userAgent();
         $aula->save();
 
         return response()->json([
@@ -67,15 +67,15 @@ class AulaController extends Controller
     public function delete(Request $request)
     {
         $request->validate([
-            'id_aula' => ['required', 'numeric', 'integer']
+            'id_aula' => ['required', 'numeric', 'integer', 'exists:aulas,id_aula'],
         ]);
 
         $aula = (new Aula())->get_aula($request->id_aula);
         $aula->estado = $aula->estado == '1' ? '0' : '1';
         $aula->fecha_eliminacion = $aula->estado == '0' ? Carbon::now() : null;
         $aula->eliminado_por = $aula->estado == '0' ? session('id_usuario') : null;
-        $aula->ip = session('ip');
-        $aula->dispositivo = session('dispositivo');
+        $aula->ip = $request->ip();
+        $aula->dispositivo = $request->userAgent();
         $aula->save();
 
         return response()->json([

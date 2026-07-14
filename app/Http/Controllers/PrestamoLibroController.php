@@ -308,8 +308,8 @@ class PrestamoLibroController extends Controller
             $prestamo_libro->celular = $celular;
             $prestamo_libro->fecha_devolucion = $request->fecha_devolucion;
             $prestamo_libro->creado_por = session('id_usuario');
-            $prestamo_libro->ip = session('ip');
-            $prestamo_libro->dispositivo = session('dispositivo');
+            $prestamo_libro->ip = $request->ip();
+            $prestamo_libro->dispositivo = $request->userAgent();
             $prestamo_libro->save();
 
             foreach ($request->detalles as $detalle) {
@@ -428,8 +428,8 @@ class PrestamoLibroController extends Controller
             $prestamo->celular = $celular;
             $prestamo->fecha_devolucion = $request->fecha_devolucion;
             $prestamo->modificado_por = session('id_usuario');
-            $prestamo->ip = session('ip');
-            $prestamo->dispositivo = session('dispositivo');
+            $prestamo->ip = $request->ip();
+            $prestamo->dispositivo = $request->userAgent();
             $prestamo->save();
 
             // 4. ELIMINAR SOLO LOS LIBROS ANTERIORES SIN RETORNO
@@ -491,8 +491,12 @@ class PrestamoLibroController extends Controller
     }
 
 
-    public function delete($id_prestamo_libro)
+    public function delete(Request $request, $id_prestamo_libro)
     {
+        $request->validate([
+            'id_prestamo_libro' => 'required|integer|exists:prestamos_libros,id_prestamo_libro'
+        ]);
+
         DB::beginTransaction();
         try {
 
@@ -538,8 +542,13 @@ class PrestamoLibroController extends Controller
         }
     }
 
-    public function marcar_devolucion($id_prestamo_libro, $id_libro)
+    public function marcar_devolucion(Request $request, $id_prestamo_libro, $id_libro)
     {
+        $request->validate([
+            'id_prestamo_libro' => 'required|integer|exists:prestamos_libros,id_prestamo_libro',
+            'id_libro' => 'required|integer|exists:libros,id_libro'
+        ]);
+        
         DB::beginTransaction();
         try {
             $prestamo = (new PrestamoLibro())->get_prestamo_libro($id_prestamo_libro);

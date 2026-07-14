@@ -43,8 +43,8 @@ class PeriodoController extends Controller
         $periodo->posicion_ordinal = $request->posicion_ordinal;
         $periodo->id_gestion = $request->id_gestion;
         $periodo->creado_por = session('id_usuario');
-        $periodo->ip = session('ip');
-        $periodo->dispositivo = session('dispositivo');
+        $periodo->ip = $request->ip();
+        $periodo->dispositivo = $request->userAgent();
         $periodo->save();
 
         return response()->json([
@@ -61,8 +61,8 @@ class PeriodoController extends Controller
         $periodo->posicion_ordinal = $request->posicion_ordinal;
         $periodo->id_gestion = $request->id_gestion;
         $periodo->modificado_por = session('id_usuario');
-        $periodo->ip = session('ip');
-        $periodo->dispositivo = session('dispositivo');
+        $periodo->ip = $request->ip();
+        $periodo->dispositivo = $request->userAgent();
         $periodo->save();
 
         return response()->json([
@@ -75,15 +75,15 @@ class PeriodoController extends Controller
     public function delete(Request $request)
     {
         $request->validate([
-            'id_periodo' => ['required', 'numeric', 'integer']
+            'id_periodo' => ['required', 'numeric', 'integer', 'exists:periodos,id_periodo'],
         ]);
 
         $periodo = (new Periodo())->get_periodo($request->id_periodo);
         $periodo->estado = $periodo->estado == '1' ? '0' : '1';
         $periodo->fecha_eliminacion = $periodo->estado == '0' ? Carbon::now() : null;
         $periodo->eliminado_por = $periodo->estado == '0' ? session('id_usuario') : null;
-        $periodo->ip = session('ip');
-        $periodo->dispositivo = session('dispositivo');
+        $periodo->ip = $request->ip();
+        $periodo->dispositivo = $request->userAgent();
         $periodo->save();
 
         return response()->json([

@@ -11,6 +11,7 @@ use App\Models\Nivel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class DocenteController extends Controller
 {
@@ -84,8 +85,8 @@ class DocenteController extends Controller
                 $persona->tipo_perfil = 'DOCENTE';
             }
             $persona->creado_por = session('id_usuario');
-            $persona->ip = session('ip');
-            $persona->dispositivo = session('dispositivo');
+            $persona->ip = $request->ip();
+            $persona->dispositivo = $request->userAgent();
             $persona->save();
 
             // 2. Crear el docente vinculado a la persona
@@ -97,8 +98,8 @@ class DocenteController extends Controller
             $docente->grado_estudios = $request->grado_estudios;
             $docente->domicilio = $request->domicilio;
             $docente->creado_por = session('id_usuario');
-            $docente->ip = session('ip');
-            $docente->dispositivo = session('dispositivo');
+            $docente->ip = $request->ip();
+            $docente->dispositivo = $request->userAgent();
             $docente->save();
 
             // 3. Crear el usuario vinculado a la persona
@@ -119,8 +120,8 @@ class DocenteController extends Controller
             }
 
             $usuario->creado_por = session('id_usuario');
-            $usuario->ip = session('ip');
-            $usuario->dispositivo = session('dispositivo');
+            $usuario->ip = $request->ip();
+            $usuario->dispositivo = $request->userAgent();
             $usuario->save();
 
             DB::commit();
@@ -167,8 +168,8 @@ class DocenteController extends Controller
                 $persona->tipo_perfil = 'DOCENTE';
             }
             $persona->modificado_por           = session('id_usuario');
-            $persona->ip                       = session('ip');
-            $persona->dispositivo              = session('dispositivo');
+            $persona->ip                       = $request->ip();
+            $persona->dispositivo              = $request->userAgent();
             $persona->save();
 
             // 2. Actualizar el docente
@@ -178,8 +179,8 @@ class DocenteController extends Controller
             $docente->grado_estudios  = $request->grado_estudios;
             $docente->domicilio       = $request->domicilio;
             $docente->modificado_por  = session('id_usuario');
-            $docente->ip              = session('ip');
-            $docente->dispositivo     = session('dispositivo');
+            $docente->ip              = $request->ip();
+            $docente->dispositivo     = $request->userAgent();
             $docente->save();
 
             // 3. Actualizar el usuario vinculado
@@ -205,8 +206,8 @@ class DocenteController extends Controller
             }
 
             $usuario->modificado_por = session('id_usuario');
-            $usuario->ip = session('ip');
-            $usuario->dispositivo = session('dispositivo');
+            $usuario->ip = $request->ip();
+            $usuario->dispositivo = $request->userAgent();
             $usuario->save();
 
             DB::commit();
@@ -228,44 +229,51 @@ class DocenteController extends Controller
     public function delete(Request $request)
     {
         $request->validate([
-            'id_docente' => ['required', 'numeric', 'integer']
+            'id_docente' => ['required', 'numeric', 'integer', 'exists:docentes,id_docente'],
         ]);
-        
+
         DB::beginTransaction();
         try {
             $docente = (new Docente())->get_docente($request->id_docente);
-            $docente->estado = $docente->estado == '1' ? '0' : '1';
-            $docente->fecha_eliminacion = $docente->estado == '0' ? Carbon::now() : null;
-            $docente->eliminado_por = $docente->estado == '0' ? session('id_usuario') : null;
-            $docente->ip = session('ip');
-            $docente->dispositivo = session('dispositivo');
+
+            $nuevoEstado = $docente->estado == '1' ? '0' : '1';
+            $seArchiva   = $nuevoEstado === '0';
+
+            $docente->estado = $nuevoEstado;
+            $docente->fecha_eliminacion = $seArchiva ? Carbon::now() : null;
+            $docente->eliminado_por = $seArchiva ? session('id_usuario') : null;
+            $docente->ip = $request->ip();
+            $docente->dispositivo = $request->userAgent();
             $docente->save();
 
             $persona = (new Persona())->get_persona($docente->id_persona);
-            $persona->estado = $docente->estado == '1' ? '0' : '1';
-            $persona->fecha_eliminacion = $persona->estado == '0' ? Carbon::now() : null;
-            $persona->eliminado_por = $persona->estado == '0' ? session('id_usuario') : null;
-            $persona->ip = session('ip');
-            $persona->dispositivo = session('dispositivo');
+            $persona->estado = $nuevoEstado;
+            $persona->fecha_eliminacion = $seArchiva ? Carbon::now() : null;
+            $persona->eliminado_por = $seArchiva ? session('id_usuario') : null;
+            $persona->ip = $request->ip();
+            $persona->dispositivo = $request->userAgent();
             $persona->save();
 
             $usuario = (new Usuario())->get_usuario_desde_persona($persona->id_persona);
-            $usuario->estado            = $docente->estado == '1' ? '0' : '1';
+            $usuario->estado = $nuevoEstado;
             // Si el docente se archiva, el usuario pierde acceso; si se restaura, recupera acceso
-            $usuario->tiene_acceso = $usuario->estado == '1' ? '0' : '1';
-            $usuario->fecha_eliminacion = $usuario->estado == '0' ? Carbon::now() : null;
-            $usuario->eliminado_por = $usuario->estado == '0' ? session('id_usuario') : null;
-            $usuario->ip = session('ip');
-            $usuario->dispositivo = session('dispositivo');
+            $usuario->tiene_acceso = $seArchiva ? '0' : '1';
+            $usuario->fecha_eliminacion = $seArchiva ? Carbon::now() : null;
+            $usuario->eliminado_por = $seArchiva ? session('id_usuario') : null;
+            $usuario->ip = $request->ip();
+            $usuario->dispositivo = $request->userAgent();
             $usuario->save();
 
             DB::commit();
 
+            // Limpiar la caché del usuario independientemente de si se archivó o desarchivó, ya que su estado ha cambiado y queremos asegurarnos de que la próxima vez que se verifique el acceso, se obtenga la información más reciente.
+            Cache::forget('acceso_usuario_' . $usuario->id_usuario);
+
             return response()->json([
                 'success' => true,
-                'message' => $docente->estado == '1'
-                    ? 'El docente fue restaurado con éxito.'
-                    : 'El docente fue archivado con éxito.',
+                'message' => $seArchiva
+                    ? 'El docente fue archivado con éxito.'
+                    : 'El docente fue restaurado con éxito.',
                 'docente' => $docente,
             ]);
         } catch (\Exception $e) {

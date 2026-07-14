@@ -54,8 +54,8 @@ class MateriaController extends Controller
         $materia->posicion_ordinal = $request->posicion_ordinal;
         $materia->id_campo = $request->id_campo;
         $materia->creado_por = session('id_usuario');
-        $materia->ip = session('ip');
-        $materia->dispositivo = session('dispositivo');
+        $materia->ip = $request->ip();
+        $materia->dispositivo = $request->userAgent();
         $materia->save();
 
         return response()->json([
@@ -73,8 +73,8 @@ class MateriaController extends Controller
         $materia->posicion_ordinal = $request->posicion_ordinal;
         $materia->id_campo = $request->id_campo;
         $materia->modificado_por = session('id_usuario');
-        $materia->ip = session('ip');
-        $materia->dispositivo = session('dispositivo');
+        $materia->ip = $request->ip();
+        $materia->dispositivo = $request->userAgent();
         $materia->save();
 
         return response()->json([
@@ -87,15 +87,15 @@ class MateriaController extends Controller
     public function delete(Request $request)
     {
         $request->validate([
-            'id_materia' => ['required', 'numeric', 'integer']
+            'id_materia' => ['required', 'numeric', 'integer', 'exists:materias,id_materia'],
         ]);
 
         $materia = (new Materia())->get_materia($request->id_materia);
         $materia->estado = $materia->estado == '1' ? '0' : '1';
         $materia->fecha_eliminacion = $materia->estado == '0' ? Carbon::now() : null;
         $materia->eliminado_por = $materia->estado == '0' ? session('id_usuario') : null;
-        $materia->ip = session('ip');
-        $materia->dispositivo = session('dispositivo');
+        $materia->ip = $request->ip();
+        $materia->dispositivo = $request->userAgent();
         $materia->save();
 
         return response()->json([

@@ -49,8 +49,8 @@ class CampoController extends Controller
         $campo->campo = $request->campo;
         $campo->posicion_ordinal = $request->posicion_ordinal;
         $campo->creado_por = session('id_usuario');
-        $campo->ip = session('ip');
-        $campo->dispositivo = session('dispositivo');
+        $campo->ip = $request->ip();
+        $campo->dispositivo = $request->userAgent();
         $campo->save();
 
         return response()->json([
@@ -66,8 +66,8 @@ class CampoController extends Controller
         $campo->campo = $request->campo;
         $campo->posicion_ordinal = $request->posicion_ordinal;
         $campo->modificado_por = session('id_usuario');
-        $campo->ip = session('ip');
-        $campo->dispositivo = session('dispositivo');
+        $campo->ip = $request->ip();
+        $campo->dispositivo = $request->userAgent();
         $campo->save();
 
         return response()->json([
@@ -80,15 +80,15 @@ class CampoController extends Controller
     public function delete(Request $request)
     {
         $request->validate([
-            'id_campo' => ['required', 'numeric', 'integer']
+            'id_campo' => ['required', 'numeric', 'integer', 'exists:campos,id_campo'],
         ]);
 
         $campo = (new Campo())->get_campo($request->id_campo);
         $campo->estado = $campo->estado == '1' ? '0' : '1';
         $campo->fecha_eliminacion = $campo->estado == '0' ? Carbon::now() : null;
         $campo->eliminado_por = $campo->estado == '0' ? session('id_usuario') : null;
-        $campo->ip = session('ip');
-        $campo->dispositivo = session('dispositivo');
+        $campo->ip = $request->ip();
+        $campo->dispositivo = $request->userAgent();
         $campo->save();
 
         return response()->json([

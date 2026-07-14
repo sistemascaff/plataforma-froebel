@@ -47,8 +47,8 @@ class CoordinacionController extends Controller
         $coordinacion = new Coordinacion();
         $coordinacion->coordinacion = $request->coordinacion;
         $coordinacion->creado_por = session('id_usuario');
-        $coordinacion->ip = session('ip');
-        $coordinacion->dispositivo = session('dispositivo');
+        $coordinacion->ip = $request->ip();
+        $coordinacion->dispositivo = $request->userAgent();
         $coordinacion->save();
 
         return response()->json([
@@ -63,8 +63,8 @@ class CoordinacionController extends Controller
         $coordinacion = (new Coordinacion())->get_coordinacion($id_coordinacion);
         $coordinacion->coordinacion = $request->coordinacion;
         $coordinacion->modificado_por = session('id_usuario');
-        $coordinacion->ip = session('ip');
-        $coordinacion->dispositivo = session('dispositivo');
+        $coordinacion->ip = $request->ip();
+        $coordinacion->dispositivo = $request->userAgent();
         $coordinacion->save();
 
         return response()->json([
@@ -77,15 +77,15 @@ class CoordinacionController extends Controller
     public function delete(Request $request)
     {
         $request->validate([
-            'id_coordinacion' => ['required', 'numeric', 'integer']
+            'id_coordinacion' => ['required', 'numeric', 'integer', 'exists:coordinaciones,id_coordinacion'],
         ]);
 
         $coordinacion = (new Coordinacion())->get_coordinacion($request->id_coordinacion);
         $coordinacion->estado = $coordinacion->estado == '1' ? '0' : '1';
         $coordinacion->fecha_eliminacion = $coordinacion->estado == '0' ? Carbon::now() : null;
         $coordinacion->eliminado_por = $coordinacion->estado == '0' ? session('id_usuario') : null;
-        $coordinacion->ip = session('ip');
-        $coordinacion->dispositivo = session('dispositivo');
+        $coordinacion->ip = $request->ip();
+        $coordinacion->dispositivo = $request->userAgent();
         $coordinacion->save();
 
         return response()->json([

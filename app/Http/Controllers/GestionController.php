@@ -47,8 +47,8 @@ class GestionController extends Controller
         $gestion = new Gestion();
         $gestion->anio = $request->anio;
         $gestion->creado_por = session('id_usuario');
-        $gestion->ip = session('ip');
-        $gestion->dispositivo = session('dispositivo');
+        $gestion->ip = $request->ip();
+        $gestion->dispositivo = $request->userAgent();
         $gestion->save();
 
         return response()->json([
@@ -63,8 +63,8 @@ class GestionController extends Controller
         $gestion = (new Gestion())->get_gestion($id_gestion);
         $gestion->anio = $request->anio;
         $gestion->modificado_por = session('id_usuario');
-        $gestion->ip = session('ip');
-        $gestion->dispositivo = session('dispositivo');
+        $gestion->ip = $request->ip();
+        $gestion->dispositivo = $request->userAgent();
         $gestion->save();
 
         return response()->json([
@@ -77,15 +77,15 @@ class GestionController extends Controller
     public function delete(Request $request)
     {
         $request->validate([
-            'id_gestion' => ['required', 'numeric', 'integer']
+            'id_gestion' => ['required', 'numeric', 'integer', 'exists:gestiones,id_gestion'],
         ]);
 
         $gestion = (new Gestion())->get_gestion($request->id_gestion);
         $gestion->estado = $gestion->estado == '1' ? '0' : '1';
         $gestion->fecha_eliminacion = $gestion->estado == '0' ? Carbon::now() : null;
         $gestion->eliminado_por = $gestion->estado == '0' ? session('id_usuario') : null;
-        $gestion->ip = session('ip');
-        $gestion->dispositivo = session('dispositivo');
+        $gestion->ip = $request->ip();
+        $gestion->dispositivo = $request->userAgent();
         $gestion->save();
 
         return response()->json([
