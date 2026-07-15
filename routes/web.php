@@ -105,6 +105,7 @@ Route::middleware(['session.acceso'])->group(function () {
             Route::get('usuarios/listar', 'listar')->name('usuarios.listar');
             Route::patch('usuarios/{usuario}', 'delete')->name('usuarios.delete');
         });
+
         Route::controller(PersonaController::class)->group(function () {
             Route::get('personas/listar', 'listar')->name('personas.listar');
             Route::get('personas/{persona}', 'mostrar')->name('personas.mostrar');
@@ -177,6 +178,8 @@ Route::middleware(['session.acceso'])->group(function () {
             Route::post('cursos', 'create')->name('cursos.create');
             Route::put('cursos/{curso}', 'update')->name('cursos.update');
             Route::patch('cursos/{curso}', 'delete')->name('cursos.delete');
+
+            Route::get('cursos/{curso}/detalles', 'view_details')->name('cursos.detalles');
         });
 
         Route::controller(CampoController::class)->group(function () {

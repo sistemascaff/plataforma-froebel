@@ -19,23 +19,35 @@ class CursoController extends Controller
         return view('cursos.index', [
             'head_title' => 'GESTIÓN DE CURSOS',
             'grados' => $grados,
-            'paralelos' => $paralelos
+            'paralelos' => $paralelos,
+        ]);
+    }
+
+    public function view_details(int $curso)
+    {
+        $curso = (new Curso())->get_curso($curso);
+
+        return view('cursos.details', [
+            'head_title' => 'CURSO: '.$curso->curso,
+            'curso' => $curso,
         ]);
     }
 
     public function listar()
     {
         $cursos = (new Curso())->get_all_cursos();
+
         return response()->json([
-            'data' => $cursos
+            'data' => $cursos,
         ]);
     }
 
     public function mostrar(Request $request)
     {
         $curso = (new Curso())->get_curso($request->curso);
+
         return response()->json([
-            'data' => $curso
+            'data' => $curso,
         ]);
     }
 
@@ -53,11 +65,11 @@ class CursoController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Curso creado correctamente',
-            'curso' => $curso
+            'curso' => $curso,
         ]);
     }
 
-    public function update(CursoValidation $request, $id_curso)
+    public function update(CursoValidation $request, int $id_curso)
     {
         $curso = (new Curso())->get_curso($id_curso);
         $curso->curso = $request->curso;
@@ -71,14 +83,14 @@ class CursoController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Curso actualizado correctamente',
-            'curso' => $curso
+            'curso' => $curso,
         ]);
     }
 
     public function delete(Request $request)
     {
         $request->validate([
-            'id_curso' => ['required', 'numeric', 'integer', 'exists:cursos,id_curso']
+            'id_curso' => ['required', 'numeric', 'integer', 'exists:cursos,id_curso'],
         ]);
 
         $curso = (new Curso())->get_curso($request->id_curso);
@@ -92,7 +104,7 @@ class CursoController extends Controller
         return response()->json([
             'success' => true,
             'message' => $curso->estado == '1' ? 'El curso fue restaurado con éxito.' : 'El curso fue archivado con éxito.',
-            'curso' => $curso
+            'curso' => $curso,
         ]);
     }
 }

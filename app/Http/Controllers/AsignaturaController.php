@@ -38,7 +38,7 @@ class AsignaturaController extends Controller
         ]);
     }
 
-    public function view_details(Request $request, $asignatura)
+    public function view_details(Request $request, int $asignatura)
     {
         // IDs de periodos activos que YA tienen lista para esta asignatura
         $periodosConLista = ListaAsignatura::where('id_asignatura', $asignatura)
@@ -51,10 +51,10 @@ class AsignaturaController extends Controller
             ->each(function ($periodo) use ($asignatura, $request) {
                 $lista = new ListaAsignatura();
                 $lista->id_asignatura = $asignatura;
-                $lista->id_periodo    = $periodo->id_periodo;
-                $lista->creado_por    = session('id_usuario') ?? 0;
-                $lista->ip            = $request->ip();
-                $lista->dispositivo   = $request->userAgent();
+                $lista->id_periodo = $periodo->id_periodo;
+                $lista->creado_por = session('id_usuario') ?? 0;
+                $lista->ip = $request->ip();
+                $lista->dispositivo = $request->userAgent();
                 $lista->save();
             });
 
@@ -62,7 +62,7 @@ class AsignaturaController extends Controller
         $asignatura = (new Asignatura())->get_asignatura($asignatura);
 
         return view('asignaturas.details', [
-            'head_title' => 'ASIGNATURA: ' . $asignatura->asignatura,
+            'head_title' => 'ASIGNATURA: '.$asignatura->asignatura,
             'asignatura' => $asignatura,
         ]);
     }
@@ -70,16 +70,18 @@ class AsignaturaController extends Controller
     public function listar()
     {
         $asignaturas = (new Asignatura())->get_all_asignaturas();
+
         return response()->json([
-            'data' => $asignaturas
+            'data' => $asignaturas,
         ]);
     }
 
     public function mostrar(Request $request)
     {
         $asignatura = (new Asignatura())->get_asignatura($request->asignatura);
+
         return response()->json([
-            'data' => $asignatura
+            'data' => $asignatura,
         ]);
     }
 
@@ -103,11 +105,11 @@ class AsignaturaController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Asignatura creada correctamente',
-            'asignatura' => $asignatura
+            'asignatura' => $asignatura,
         ]);
     }
 
-    public function update(AsignaturaValidation $request, $id_asignatura)
+    public function update(AsignaturaValidation $request, int $id_asignatura)
     {
         $asignatura = (new Asignatura())->get_asignatura($id_asignatura);
         $asignatura->asignatura = $request->asignatura;
@@ -127,7 +129,7 @@ class AsignaturaController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Asignatura actualizada correctamente',
-            'asignatura' => $asignatura
+            'asignatura' => $asignatura,
         ]);
     }
 
@@ -148,11 +150,11 @@ class AsignaturaController extends Controller
         return response()->json([
             'success' => true,
             'message' => $asignatura->estado == '1' ? 'La asignatura fue restaurada con éxito.' : 'La asignatura fue archivada con éxito.',
-            'asignatura' => $asignatura
+            'asignatura' => $asignatura,
         ]);
     }
 
-    public function sync_horarios(Request $request, $asignatura)
+    public function sync_horarios(Request $request, int $asignatura)
     {
         $request->validate([
             'agregar' => ['sometimes', 'array'],
@@ -166,7 +168,7 @@ class AsignaturaController extends Controller
 
         $asignatura = (new Asignatura())->get_asignatura($asignatura);
 
-        $agregar  = $request->input('agregar', []);
+        $agregar = $request->input('agregar', []);
         $eliminar = $request->input('eliminar', []);
 
         DB::beginTransaction();
@@ -183,7 +185,7 @@ class AsignaturaController extends Controller
                     ->where('horarios_asignaturas.id_horario_asignatura', $item['id_horario_asignatura'])
                     ->exists();
 
-                if (!$existe) {
+                if (! $existe) {
                     $asignatura->horarios_asignaturas()->attach($item['id_horario_asignatura'], [
                         'dia_semana' => $item['dia_semana'],
                     ]);
@@ -193,12 +195,13 @@ class AsignaturaController extends Controller
             DB::commit();
 
             return response()->json([
-                'success'    => true,
-                'message'    => 'Horarios actualizados correctamente.',
+                'success' => true,
+                'message' => 'Horarios actualizados correctamente.',
                 'asignatura' => $asignatura->load('horarios_asignaturas'),
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),

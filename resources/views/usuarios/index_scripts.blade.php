@@ -38,6 +38,9 @@
                     }
                 },
                 {
+                    data: "persona.tipo_perfil"
+                },
+                {
                     data: "url_foto_perfil",
                     orderable: false,
                     searchable: false,
@@ -86,9 +89,6 @@
                 },
                 {
                     data: "persona.telefono"
-                },
-                {
-                    data: "persona.tipo_perfil"
                 },
                 {
                     data: "correo"
@@ -181,34 +181,8 @@
                     orderable: false,
                     searchable: false,
                     render: function(data, type, row) {
-                        let url_detalles = '';
-                        const TIPO_PERFIL = row.persona.tipo_perfil || 'DESCONOCIDO';
-
-                        if (TIPO_PERFIL === 'DOCENTE') {
-                            url_detalles = "{{ route('docentes.detalles', ':id') }}".replace(
-                                ':id', row.persona.docente.id_docente);
-                        } else if (TIPO_PERFIL === 'ESTUDIANTE') {
-                            url_detalles = "{{ route('estudiantes.detalles', ':id') }}".replace(
-                                ':id', row.persona.estudiante.id_estudiante);
-                        }
-
-                        if (url_detalles !== '') {
-                            return `
-                            <div class="btn-group" role="group">
-                                <a class="btn btn-info btn-sm" href="${url_detalles}" target="_blank" rel="noopener noreferrer"
-                                    data-toggle="tooltip" title="Detalles">
-                                    <i class="fa-duotone fa-solid fa-eye"></i>
-                                </a>
-                                <button type="button" class="btn btn-${row.estado == 1 ? 'danger' : 'success'} btn-sm btn-cambiar-estado"
-                                        data-id="${row.id_usuario}" data-estado="${row.estado}"
-                                        data-nombre="${row.persona.apellido_paterno} ${row.persona.apellido_materno} ${row.persona.nombres}"
-                                        data-tipo-perfil="${TIPO_PERFIL}"
-                                        data-toggle="tooltip" title="${row.estado == 1 ? 'Archivar' : 'Activar'}">
-                                    <i class="fa-duotone fa-solid fa-toggle-${row.estado == 1 ? 'off' : 'on'}"></i>
-                                </button>
-                            </div>`;
-                        } else {
-                            return `
+                        const TIPO_PERFIL = row.persona.tipoPerfil;
+                        return `
                             <div class="btn-group" role="group">
                                 <button type="button" class="btn btn-${row.estado == 1 ? 'danger' : 'success'} btn-sm btn-cambiar-estado"
                                         data-id="${row.id_usuario}" data-estado="${row.estado}"
@@ -218,7 +192,6 @@
                                     <i class="fa-duotone fa-solid fa-toggle-${row.estado == 1 ? 'off' : 'on'}"></i>
                                 </button>
                             </div>`;
-                        }
                     }
                 }
             ],

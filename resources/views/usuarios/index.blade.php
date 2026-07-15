@@ -4,7 +4,7 @@
     <h1 class="text-center text-info fw-bold"><i class="fa-solid fa-duotone fa-users"></i> {{ $head_title }}</h1>
 
     <h2 class="text-info fw-bold">Lista de usuarios</h2>
-    
+    <p>Nota: Se omite a aquellos cuyo tipo de perfil es igual a "DOCENTE" y "ESTUDIANTE" porque ya existen vistas dedicadas a dichos perfiles.</p>
     <div class="card p-3 mb-3">
         <p>Seleccione una opción para <i class="fa-solid fa-duotone fa-file-export"></i> exportar o <i
                 class="fa-solid fa-duotone fa-filter"></i> filtrar la tabla:</p>
@@ -15,6 +15,7 @@
         <thead>
             <tr>
                 <th>#</th>
+                <th>Tipo de perfil</th>
                 <th>Foto de perfil</th>
                 <th>Ap. paterno</th>
                 <th>Ap. materno</th>
@@ -27,7 +28,6 @@
                 <th>Idioma</th>
                 <th>Celular</th>
                 <th>Teléfono</th>
-                <th>Tipo de perfil</th>
                 <th>Correo</th>
                 <th>Tiene acceso</th>
                 <th>Última conexión</th>

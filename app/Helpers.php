@@ -1,66 +1,67 @@
 <?php
-if (!function_exists('helper_titulo_pagina')) {
+
+if (! function_exists('helper_titulo_pagina')) {
     function helper_titulo_pagina()
     {
-        return "CAFF";
+        return 'CAFF';
     }
 }
 
-if (!function_exists('helper_version_app')) {
+if (! function_exists('helper_version_app')) {
     function helper_version_app()
     {
-        return "0.3";
+        return '0.3';
     }
 }
 
-if (!function_exists('helper_encrypt')) {
+if (! function_exists('helper_encrypt')) {
     function helper_encrypt(string $string)
     {
         $key = config('app.llave_cifrado');
-        
+
         if (empty($key)) {
-            return $string; 
+            return $string;
         }
 
         $result = '';
-        
+
         for ($i = 0; $i < strlen($string); $i++) {
             $char = substr($string, $i, 1);
             $keychar = substr($key, $i % strlen($key), 1);
-            
+
             $valor_ascii = (ord($char) + ord($keychar)) % 256;
             $result .= chr($valor_ascii);
         }
-        
+
         return base64_encode($result);
     }
 }
 
-if (!function_exists('helper_decrypt')) {
+if (! function_exists('helper_decrypt')) {
     function helper_decrypt(string $string)
     {
         $key = config('app.llave_cifrado');
-        
+
         if (empty($key)) {
-            return $string; 
+            return $string;
         }
 
         $result = '';
         $string = base64_decode($string);
-        
+
         for ($i = 0; $i < strlen($string); $i++) {
             $char = substr($string, $i, 1);
             $keychar = substr($key, $i % strlen($key), 1);
-            
+
             $valor_ascii = (ord($char) - ord($keychar) + 256) % 256;
             $result .= chr($valor_ascii);
         }
-        
+
         return mb_convert_encoding($result, 'UTF-8', 'UTF-8');
     }
 }
 
-if (!function_exists('helper_tipo_perfil_a_font_awesome_icono')) {
+if (! function_exists('helper_tipo_perfil_a_font_awesome_icono')) {
     function helper_tipo_perfil_a_font_awesome_icono(string $tipo_perfil)
     {
         $font_awesome_icon = match ($tipo_perfil) {
@@ -76,10 +77,10 @@ if (!function_exists('helper_tipo_perfil_a_font_awesome_icono')) {
     }
 }
 
-if (!function_exists('helper_abreviar_curso')) {
+if (! function_exists('helper_abreviar_curso')) {
     function helper_abreviar_curso(string $cadena)
     {
-        if (!$cadena) {
+        if (! $cadena) {
             return '';
         }
 
@@ -133,17 +134,18 @@ if (!function_exists('helper_abreviar_curso')) {
     }
 }
 
-if (!function_exists('helper_recortar_texto')) {
+if (! function_exists('helper_recortar_texto')) {
     function helper_recortar_texto(string $texto, int $longitudMaxima)
     {
         if (strlen($texto) > $longitudMaxima) {
             return substr($texto, 0, $longitudMaxima - 3) . '...';
         }
+
         return $texto;
     }
 }
 
-if (!function_exists('helper_dia_semana_a_nombre')) {
+if (! function_exists('helper_dia_semana_a_nombre')) {
     function helper_dia_semana_a_nombre(int $dia_semana)
     {
         $dias = [

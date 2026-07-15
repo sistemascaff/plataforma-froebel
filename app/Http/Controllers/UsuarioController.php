@@ -47,6 +47,7 @@ class UsuarioController extends Controller
 
     public function listar()
     {
+        // Se omite los usuarios cuyas personas tengan el tipo_perfil "DOCENTE" y "ESTUDIANTE"
         $usuarios = (new Usuario())->get_all_usuarios();
 
         return response()->json([

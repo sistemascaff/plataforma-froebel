@@ -10,10 +10,21 @@ class Curso extends Model
     use HasFactory;
 
     protected $table = 'cursos';
+
     protected $primaryKey = 'id_curso';
 
     const CREATED_AT = 'fecha_registro';
+
     const UPDATED_AT = 'fecha_actualizacion';
+
+    /** Relación uno a muchos con estudiantes */
+    public function estudiantes()
+    {
+        return $this->hasMany(Estudiante::class, 'id_curso', 'id_curso')->where('estado', 1)
+            ->whereHas('persona', function ($query) {
+                $query->where('estado', 1);
+            });
+    }
 
     /** Relación FK con grados */
     public function grado()
@@ -51,8 +62,8 @@ class Curso extends Model
             ->orderBy('id_grado', 'ASC')->orderBy('id_paralelo', 'ASC')->get();
     }
 
-    public function get_curso($id_curso)
+    public function get_curso(int $id_curso)
     {
-        return $this->with('grado', 'paralelo', 'creado', 'modificado', 'eliminado')->findOrFail($id_curso);
+        return $this->with('grado', 'paralelo', 'estudiantes.persona.usuario', 'creado', 'modificado', 'eliminado')->findOrFail($id_curso);
     }
 }

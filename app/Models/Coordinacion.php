@@ -15,6 +15,12 @@ class Coordinacion extends Model
     const CREATED_AT = 'fecha_registro';
     const UPDATED_AT = 'fecha_actualizacion';
 
+    /** Relación uno a muchos con asignaturas */
+    public function asignaturas()
+    {
+        return $this->hasMany(Asignatura::class, 'id_coordinacion', 'id_coordinacion');
+    }
+
     /** Relación con atributo de auditoría */
     public function creado()
     {
@@ -40,6 +46,6 @@ class Coordinacion extends Model
 
     public function get_coordinacion($id_coordinacion)
     {
-        return $this::with('creado', 'modificado', 'eliminado')->findOrFail($id_coordinacion);
+        return $this::with('asignaturas', 'creado', 'modificado', 'eliminado')->findOrFail($id_coordinacion);
     }
 }

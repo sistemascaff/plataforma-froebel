@@ -22,6 +22,12 @@ class Nivel extends Model
         ->orderBy('posicion_ordinal', 'ASC');
     }
 
+    /** Relación uno a muchos con asignaturas */
+    public function asignaturas()
+    {
+        return $this->hasMany(Asignatura::class, 'id_nivel', 'id_nivel');
+    }
+
     /** Relación con atributo de auditoría */
     public function creado()
     {
@@ -42,11 +48,11 @@ class Nivel extends Model
 
     public function get_all_niveles()
     {
-        return $this::with('grados', 'creado', 'modificado', 'eliminado')->orderBy('posicion_ordinal', 'ASC')->get();
+        return $this::with('grados', 'asignaturas', 'creado', 'modificado', 'eliminado')->orderBy('posicion_ordinal', 'ASC')->get();
     }
 
     public function get_nivel($id_nivel)
     {
-        return $this::with('grados', 'creado', 'modificado', 'eliminado')->findOrFail($id_nivel);
+        return $this::with('grados', 'asignaturas', 'creado', 'modificado', 'eliminado')->findOrFail($id_nivel);
     }
 }

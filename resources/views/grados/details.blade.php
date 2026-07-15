@@ -1,72 +1,83 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="text-center text-info fw-bold"><i class="fa-solid fa-duotone fa-object-group"></i> {{ $head_title }}
-    </h1>
-
-    <a class="btn btn-secondary mb-3" href="{{ route('grados.index') }}">
-        <i class="fa-solid fa-duotone fa-arrow-left"></i> Volver</a>
-
-    <label for="grado">Grado:</label>
-    <p class="form-control mb-3" id="grado">
-        {{ $grado->grado }}
-    </p>
-
-    <label for="posicion_ordinal">Posición ordinal:</label>
-    <p class="form-control mb-3" id="posicion_ordinal">
-        {{ $grado->posicion_ordinal }}
-    </p>
-
-    <label for="nivel">Nivel:</label>
-    <p class="form-control mb-3" id="nivel">
-        {{ $grado->nivel->nivel }}
-    </p>
-
-    @php
-        $estado = match ($grado->estado) {
-            0 => 'ARCHIVADO',
-            1 => 'ACTIVO',
-            default => 'DESCONOCIDO',
-        };
-        $class = match ($grado->estado) {
-            0 => 'alert alert-secondary',
-            1 => 'alert alert-success',
-            default => 'alert alert-secondary',
-        };
-    @endphp
-
-    <div class="{{ $class }} fw-bold mb-3">
-        Estado: {{ $estado }}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-info fw-bold mb-0">
+            <i class="fa-solid fa-duotone fa-object-group"></i> {{ $head_title }}
+        </h1>
+        <a class="btn btn-secondary" href="{{ route('grados.index') }}">
+            <i class="fa-solid fa-duotone fa-arrow-left"></i> Volver
+        </a>
     </div>
 
-    <h2 class="text-info fw-bold">Malla curricular</h2>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold"><i class="fa-solid fa-circle-info"></i> Detalles del Grado</h5>
+            @php
+                $badgeClass = match ($grado->estado) {
+                    0 => 'bg-secondary',
+                    1 => 'bg-success',
+                    default => 'bg-secondary',
+                };
+                $estadoText = match ($grado->estado) {
+                    0 => 'ARCHIVADO',
+                    1 => 'ACTIVO',
+                    default => 'DESCONOCIDO',
+                };
+            @endphp
+            <span class="badge {{ $badgeClass }} fs-6">{{ $estadoText }}</span>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <span class="text-muted d-block fw-bold mb-1">Grado</span>
+                    <div class="fs-5">{{ $grado->grado }}</div>
+                </div>
+                <div class="col-md-4">
+                    <span class="text-muted d-block fw-bold mb-1">Posición Ordinal</span>
+                    <div class="fs-5">{{ $grado->posicion_ordinal }}</div>
+                </div>
+                <div class="col-md-4">
+                    <span class="text-muted d-block fw-bold mb-1">Nivel</span>
+                    <div class="fs-5">{{ $grado->nivel->nivel }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <table class="table table-bordered table-striped mb-3 dataTable" id="areas">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Materia</th>
-                <th>M. Abreviatura</th>
-                <th>Area</th>
-                <th>A. Abreviatura</th>
-                <th>Gestión</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($grado->mallas_curriculares as $malla_curricular)
-                <tr>
-                    <td>{{ $loop->index + 1 }}</td>
-                    <td>{{ $malla_curricular->materia->materia }}</td>
-                    <td>{{ $malla_curricular->materia->abreviatura }}</td>
-                    <td>{{ $malla_curricular->area->area }}</td>
-                    <td>{{ $malla_curricular->area->abreviatura }}</td>
-                    <td>{{ $malla_curricular->gestion->anio }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <div class="mb-3"></div>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0 fw-bold"><i class="fa-solid fa-book-open"></i> Malla Curricular</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped dataTable w-100" id="areas">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Materia</th>
+                            <th>M. Abreviatura</th>
+                            <th>Area</th>
+                            <th>A. Abreviatura</th>
+                            <th>Gestión</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($grado->mallas_curriculares as $malla_curricular)
+                            <tr>
+                                <td>{{ $loop->index + 1 }}</td>
+                                <td>{{ $malla_curricular->materia->materia }}</td>
+                                <td>{{ $malla_curricular->materia->abreviatura }}</td>
+                                <td>{{ $malla_curricular->area->area }}</td>
+                                <td>{{ $malla_curricular->area->abreviatura }}</td>
+                                <td>{{ $malla_curricular->gestion->anio }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')

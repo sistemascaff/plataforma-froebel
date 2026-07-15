@@ -1,26 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="text-center text-info fw-bold"><i class="fa-solid fa-duotone fa-object-group"></i> {{ $head_title }}
-    </h1>
-
-    <a class="btn btn-secondary mb-3" href="{{ route('areas.index') }}">
-        <i class="fa-solid fa-duotone fa-arrow-left"></i> Volver</a>
-
-    <label for="area">Área:</label>
-    <p class="form-control mb-3" id="area">
-        {{ $area->area }}
-    </p>
-
-    <label for="abreviatura">Abreviatura:</label>
-    <p class="form-control mb-3" id="abreviatura">
-        {{ $area->abreviatura }}
-    </p>
-
-    <label for="posicion_ordinal">Posición ordinal:</label>
-    <p class="form-control mb-3" id="posicion_ordinal">
-        {{ $area->posicion_ordinal }}
-    </p>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-info fw-bold mb-0">
+            <i class="fa-solid fa-duotone fa-object-group"></i> {{ $head_title }}
+        </h1>
+        <a class="btn btn-secondary" href="{{ route('areas.index') }}">
+            <i class="fa-solid fa-duotone fa-arrow-left"></i> Volver
+        </a>
+    </div>
 
     @php
         $estado = match ($area->estado) {
@@ -28,45 +16,78 @@
             1 => 'ACTIVO',
             default => 'DESCONOCIDO',
         };
-        $class = match ($area->estado) {
-            0 => 'alert alert-secondary',
-            1 => 'alert alert-success',
-            default => 'alert alert-secondary',
+        $badgeClass = match ($area->estado) {
+            0 => 'bg-secondary',
+            1 => 'bg-success',
+            default => 'bg-secondary',
         };
     @endphp
 
-    <div class="{{ $class }} fw-bold mb-3">
-        Estado: {{ $estado }}
+    <div class="card shadow-sm mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold"><i class="fa-solid fa-duotone fa-circle-info me-2"></i>Información del Área SIE</h5>
+            <span class="badge {{ $badgeClass }} fs-6">{{ $estado }}</span>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label class="text-muted small text-uppercase">Área Oficial</label>
+                    <p class="fs-5 fw-semibold mb-0">{{ $area->area }}</p>
+                </div>
+                <div class="col-md-3">
+                    <label class="text-muted small text-uppercase">Abreviatura</label>
+                    <p class="fs-5 fw-semibold mb-0">{{ $area->abreviatura }}</p>
+                </div>
+                <div class="col-md-3">
+                    <label class="text-muted small text-uppercase">Posición Ordinal</label>
+                    <p class="fs-5 fw-semibold mb-0">{{ $area->posicion_ordinal }}</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <h2 class="text-info fw-bold mt-3">Mallas curriculares del área</h2>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-sitemap me-2"></i>Mallas Curriculares del
+                Área</h5>
+        </div>
+        <div class="card-body">
 
-    <p class="text-info">Cuando existen más de un registro por grado, se promedian las dos o más materias involucradas entre sí.</p>
+            <div class="alert border-info bg-info bg-opacity-10 text-info d-flex align-items-center mb-4 shadow-sm"
+                role="alert">
+                <i class="fa-solid fa-circle-info me-2 fs-5"></i>
+                <div>
+                    Cuando existen más de un registro por grado, se promedian las dos o más materias involucradas entre sí.
+                </div>
+            </div>
 
-    <table class="table table-bordered table-striped mb-3 dataTable" id="detalles">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Grado</th>
-                <th>P. Ordinal de grado</th>
-                <th>Materia</th>
-                <th>Gestión</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($area->mallas_curriculares as $malla_curricular)
-                <tr>
-                    <td>{{ $loop->index + 1 }}</td>
-                    <td>{{ $malla_curricular->grado->grado }}</td>
-                    <td>{{ $malla_curricular->grado->posicion_ordinal }}</td>
-                    <td>{{ $malla_curricular->materia->abreviatura }} - {{ $malla_curricular->materia->materia }}</td>
-                    <td>{{ $malla_curricular->gestion->anio }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <div class="mb-3"></div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped dataTable w-100" id="detalles">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Grado</th>
+                            <th>P. Ordinal de grado</th>
+                            <th>Materia Interna</th>
+                            <th>Gestión</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($area->mallas_curriculares as $malla_curricular)
+                            <tr>
+                                <td>{{ $loop->index + 1 }}</td>
+                                <td>{{ $malla_curricular->grado->grado }}</td>
+                                <td>{{ $malla_curricular->grado->posicion_ordinal }}</td>
+                                <td>{{ $malla_curricular->materia->abreviatura }} -
+                                    {{ $malla_curricular->materia->materia }}</td>
+                                <td>{{ $malla_curricular->gestion->anio }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')

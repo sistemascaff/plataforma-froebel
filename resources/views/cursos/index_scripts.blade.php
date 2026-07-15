@@ -92,8 +92,13 @@
                     orderable: false,
                     searchable: false,
                     render: function(data, type, row) {
+                        const url_detalles = "{{ route('cursos.detalles', ':id') }}"
+                            .replace(':id', row.id_curso);
                         return `
                             <div class="btn-group" role="group" aria-label="Acciones">
+                                <a class="btn btn-info btn-sm" href="${url_detalles}" data-toggle="tooltip" title="Detalles">
+                                    <i class="fa-duotone fa-solid fa-eye"></i>
+                                </a>
                                 <button type="button" class="btn btn-warning btn-sm btn-editar" 
                                     data-id="${row.id_curso}" data-toggle="tooltip" title="Editar">
                                     <i class="fa-duotone fa-solid fa-edit"></i>
@@ -130,7 +135,8 @@
                 $('#form-crear-o-editar input[name="id_curso"]').val(curso.data.id_curso);
                 $('#form-crear-o-editar input[name="curso"]').val(curso.data.curso);
                 $('#form-crear-o-editar select[name="id_grado"]').val(curso.data.id_grado);
-                $('#form-crear-o-editar select[name="id_paralelo"]').val(curso.data.id_paralelo);
+                $('#form-crear-o-editar select[name="id_paralelo"]').val(curso.data
+                    .id_paralelo);
 
                 const titleElement = document.getElementById('modal-formulario-titulo');
                 titleElement.innerHTML =

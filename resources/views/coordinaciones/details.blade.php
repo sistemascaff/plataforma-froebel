@@ -1,35 +1,75 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="text-center text-info fw-bold"><i class="fa-solid fa-duotone fa-stairs"></i> {{ $head_title }}
-    </h1>
-
-    <a class="btn btn-secondary mb-3" href="{{ route('niveles.index') }}">
-        <i class="fa-solid fa-duotone fa-arrow-left"></i> Volver</a>
-
-    <label for="coordinacion">Coordinación:</label>
-    <p class="form-control mb-3" id="coordinacion">
-        {{ $coordinacion->coordinacion }}
-    </p>
-
-    @php
-        $estado = match ($coordinacion->estado) {
-            0 => 'ARCHIVADO',
-            1 => 'ACTIVO',
-            default => 'DESCONOCIDO',
-        };
-        $class = match ($coordinacion->estado) {
-            0 => 'alert alert-secondary',
-            1 => 'alert alert-success',
-            default => 'alert alert-secondary',
-        };
-    @endphp
-
-    <div class="{{ $class }} fw-bold mb-3">
-        Estado: {{ $estado }}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-info fw-bold mb-0">
+            <i class="fa-solid fa-duotone fa-sitemap"></i> {{ $head_title }}
+        </h1>
+        <a class="btn btn-secondary" href="{{ route('coordinaciones.index') }}">
+            <i class="fa-solid fa-duotone fa-arrow-left"></i> Volver
+        </a>
     </div>
 
-    <div class="mb-3"></div>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold"><i class="fa-solid fa-circle-info"></i> Información de la Coordinación</h5>
+            @php
+                $badgeClass = match ($coordinacion->estado) {
+                    0 => 'bg-secondary',
+                    1 => 'bg-success',
+                    default => 'bg-secondary',
+                };
+                $estadoText = match ($coordinacion->estado) {
+                    0 => 'ARCHIVADO',
+                    1 => 'ACTIVO',
+                    default => 'DESCONOCIDO',
+                };
+            @endphp
+            <span class="badge {{ $badgeClass }} fs-6">{{ $estadoText }}</span>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-12">
+                    <span class="text-muted d-block fw-bold mb-1">Coordinación</span>
+                    <div class="fs-5">{{ $coordinacion->coordinacion }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0 fw-bold"><i class="fa-solid fa-book-open-reader"></i> Asignaturas</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped dataTable w-100" id="asignaturas">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Asignatura</th>
+                            <th>Tipo de Calificación</th>
+                            <th>Tipo de Bloque</th>
+                            <th>Curso</th>
+                            <th>Aula</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($coordinacion->asignaturas as $asignatura)
+                            <tr>
+                                <td>{{ $loop->index + 1 }}</td>
+                                <td>{{ $asignatura->asignatura }}</td>
+                                <td>{{ strtoupper($asignatura->tipo_calificacion) }}</td>
+                                <td>{{ strtoupper($asignatura->tipo_bloque) }}</td>
+                                <td>{{ $asignatura->curso ? $asignatura->curso->curso : 'N/A' }}</td>
+                                <td>{{ $asignatura->aula ? $asignatura->aula->aula : 'N/A' }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')

@@ -43,7 +43,12 @@ class Usuario extends Authenticatable
 
     public function get_all_usuarios()
     {
-        return $this::with('persona.docente', 'persona.estudiante', 'creado', 'modificado', 'eliminado')->get();
+        // Se omite los usuarios cuyas personas tengan el tipo_perfil "DOCENTE" y "ESTUDIANTE"
+        return $this::with('persona', 'creado', 'modificado', 'eliminado')
+            ->whereHas('persona', function ($query) {
+                $query->whereNotIn('tipo_perfil', ['DOCENTE', 'ESTUDIANTE']);
+            })
+            ->get();
     }
 
     public function get_usuario($id_usuario)
