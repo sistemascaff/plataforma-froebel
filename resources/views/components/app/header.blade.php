@@ -6,33 +6,12 @@
                     class="fa-duotone fa-solid {{ helper_tipo_perfil_a_font_awesome_icono(session('tipo_perfil')) }} fa-lg"></i>
                 {{ session('correo') }}
             </div>
-            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                <ul class="nav nav-pills">
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->is('panel') ? 'active' : '' }}" aria-current="page"
-                            href="{{ route('dashboard') }}"><i class="fa-solid fa-duotone fa-dashboard"></i>
-                            Panel</a>
-                    </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->is('estudiantes*') ? 'active' : '' }}" aria-current="page"
-                            href="{{ route('estudiantes.index') }}"><i class="fa-solid fa-duotone fa-user-graduate"></i>
-                            Estudiantes</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->is('asignaturas*') ? 'active' : '' }}" aria-current="page"
-                            href="{{ route('asignaturas.index') }}"><i class="fa-solid fa-duotone fa-book-open-reader"></i>
-                            Asignaturas</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->is('prestamos_libros*') ? 'active' : '' }}" aria-current="page"
-                            href="{{ route('prestamos_libros.index') }}"><i class="fa-solid fa-duotone fa-books fa-rotate-270"></i>
-                            Préstamos de libros</a>
-                    </li>
-                </ul>
-            </ul>
+            @if (session('tipo_perfil') === 'ADMIN')
+                @include('panel.admin_super.dashboard_header')
+            @elseif (session('tipo_perfil') === 'BIBLIOTECARIA')
+                @include('panel.biblioteca.dashboard_header')
+            @endif
 
             <button class="btn btn-light me-2" id="toggle-theme" data-toggle="tooltip" title="Cambiar tema">
                 <i class="fa-solid fa-sun text-warning"></i>
@@ -54,10 +33,6 @@
                                 class="fa-solid fa-duotone fa-house"></i>
                             Index</a></li>
                     <li>
-                        {{-- <li><a class="dropdown-item {{ request()->is('parametros') ? 'active' : '' }}"
-                            href="{{ route('parametros.index') }}"><i class="fa-solid fa-duotone fa-sliders"></i>
-                            Parámetros</a></li>
-                    <li> --}}
                         <hr class="dropdown-divider">
                     </li>
                     </li>
