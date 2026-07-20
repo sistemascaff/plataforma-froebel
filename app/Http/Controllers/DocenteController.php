@@ -76,6 +76,7 @@ class DocenteController extends Controller
             $persona->idioma = $request->idioma ?? 'ESPAÑOL';
             $persona->celular = $request->celular;
             $persona->telefono = $request->telefono ?? '0';
+
             // Se prioriza el tipo de perfil de subdirector si tiene nivel asignado, coordinador si tiene coordinación asignada y sino se establece como docente
             if ($request->id_nivel) {
                 $persona->tipo_perfil = 'SUBDIRECTOR';
@@ -159,6 +160,7 @@ class DocenteController extends Controller
             $persona->idioma                   = $request->idioma ?? 'ESPAÑOL';
             $persona->celular                  = $request->celular;
             $persona->telefono                 = $request->telefono ?? '0';
+
             // Se prioriza el tipo de perfil de subdirector si tiene nivel asignado, coordinador si tiene coordinación asignada y sino se establece como docente
             if ($request->id_nivel) {
                 $persona->tipo_perfil = 'SUBDIRECTOR';
@@ -167,6 +169,7 @@ class DocenteController extends Controller
             } else {
                 $persona->tipo_perfil = 'DOCENTE';
             }
+            
             $persona->modificado_por           = session('id_usuario');
             $persona->ip                       = $request->ip();
             $persona->dispositivo              = $request->userAgent();

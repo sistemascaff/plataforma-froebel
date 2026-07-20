@@ -9,7 +9,15 @@ class PersonaController extends Controller
 {
     public function listar()
     {
-        $personas = (new Persona())->get_all_personas();
+        $personas = (new Persona())->get_personal();
+        return response()->json([
+            'data' => $personas
+        ]);
+    }
+
+    public function listar_biblioteca()
+    {
+        $personas = (new Persona())->get_all_personas_biblioteca();
         return response()->json([
             'data' => $personas
         ]);

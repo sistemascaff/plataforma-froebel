@@ -11,7 +11,7 @@
 
         function recargarPersonasSelect(idSeleccionado = null) {
             $.ajax({
-                url: "{{ route('personas.listar') }}",
+                url: "{{ route('personas.listar.biblioteca') }}",
                 type: "GET",
                 dataType: "json",
                 success: function(response) {

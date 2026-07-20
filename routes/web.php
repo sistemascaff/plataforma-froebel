@@ -97,6 +97,10 @@ Route::middleware(['session.acceso'])->group(function () {
             // Operaciones de detalles de préstamos
             Route::post('prestamos_libros/{prestamo_libro}/marcar/{libro}', 'marcar_devolucion')->name('prestamos_libros.marcar');
         });
+
+        Route::controller(PersonaController::class)->group(function () {
+            Route::get('personas/listar_biblioteca', 'listar_biblioteca')->name('personas.listar.biblioteca');
+        });
     });
 
     Route::middleware(['perfil:ADMIN'])->group(function () {

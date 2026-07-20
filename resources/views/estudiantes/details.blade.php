@@ -56,8 +56,7 @@
                     </li>
 
                     @if (session('tipo_perfil') === 'ADMIN')
-                        <li
-                            class="list-group-item flex-column align-items-start border-warning border-start border-4">
+                        <li class="list-group-item flex-column align-items-start border-warning border-start border-4">
                             <div class="d-flex justify-content-between w-100 mb-1">
                                 <span class="text-muted">Contraseña:</span>
                                 <span
@@ -169,5 +168,51 @@
                 </div>
             </div>
         </div>
+
+        <div class="col-12 col-lg-12">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold text-info">
+                        <i class="fa-solid fa-duotone fa-book-open-reader me-2"></i>
+                        Asignaturas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped dataTable" id="asignaturas">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Asignatura</th>
+                                    <th>Gestión</th>
+                                    <th>Periodo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($estudiante->listas_asignaturas as $lista_asignatura)
+                                    <tr>
+                                        <td>{{ $loop->index + 1 }}</td>
+                                        <td>{{ $lista_asignatura->asignatura->asignatura }}</td>
+                                        <td>{{ $lista_asignatura->periodo->gestion->anio }}</td>
+                                        <td>{{ $lista_asignatura->periodo->periodo }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        $(document).ready(function() {
+            $(".dataTable").DataTable({
+                @include('components.datatables.datatables_global_properties')
+                @include('components.datatables.datatables_language_property')
+            });
+        });
+    </script>
 @endsection

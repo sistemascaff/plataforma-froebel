@@ -74,7 +74,14 @@ class Persona extends Model
         );
     }
 
-    public function get_all_personas()
+    public function get_personal()
+    {
+        return $this::with('usuario', 'creado', 'modificado', 'eliminado')
+            ->whereNotIn('tipo_perfil', ['DOCENTE', 'ESTUDIANTE'])
+            ->get();
+    }
+
+    public function get_all_personas_biblioteca()
     {
         return $this::query()
             ->select('personas.*')
@@ -94,7 +101,7 @@ class Persona extends Model
             ->withCount([
                 // Cantidad total de libros prestados (todos los detalles)
                 'prestamosDetalles as cantidad_total_prestamos',
-                
+
                 // Cantidad de libros que debe (fecha_retorno NULL)
                 'prestamosDetalles as cantidad_libros_debe' => function ($query) {
                     $query->whereNull('fecha_retorno');
@@ -115,7 +122,6 @@ class Persona extends Model
 
             ->get();
     }
-
 
     public function get_persona($id_persona)
     {

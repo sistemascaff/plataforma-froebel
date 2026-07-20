@@ -81,16 +81,19 @@ class GestionController extends Controller
         ]);
 
         $gestion = (new Gestion())->get_gestion($request->id_gestion);
-        $gestion->estado = $gestion->estado == '1' ? '0' : '1';
-        $gestion->fecha_eliminacion = $gestion->estado == '0' ? Carbon::now() : null;
-        $gestion->eliminado_por = $gestion->estado == '0' ? session('id_usuario') : null;
+
+        $nuevoEstado = $gestion->estado == '1' ? '0' : '1';
+
+        $gestion->estado = $nuevoEstado;
+        $gestion->fecha_eliminacion = $nuevoEstado == '0' ? Carbon::now() : null;
+        $gestion->eliminado_por = $nuevoEstado == '0' ? session('id_usuario') : null;
         $gestion->ip = $request->ip();
         $gestion->dispositivo = $request->userAgent();
         $gestion->save();
 
         return response()->json([
             'success' => true,
-            'message' => $gestion->estado == '1' ? 'La gestión fue restaurada con éxito.' : 'La gestión fue archivada con éxito.',
+            'message' => $nuevoEstado == '1' ? 'La gestión fue restaurada con éxito.' : 'La gestión fue archivada con éxito.',
             'gestion' => $gestion
         ]);
     }

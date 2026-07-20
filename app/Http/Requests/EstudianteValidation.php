@@ -37,7 +37,8 @@ class EstudianteValidation extends FormRequest
         $correoUnico = $isUpdate && $id_persona
             ? Rule::unique('usuarios', 'correo')
             ->where('estado', 1)
-            ->ignore(Usuario::where('id_persona', $id_persona)->value('id_usuario'),
+            ->ignore(
+                Usuario::where('id_persona', $id_persona)->value('id_usuario'),
                 'id_usuario'
             )
             : Rule::unique('usuarios', 'correo')->where('estado', 1);
@@ -74,7 +75,7 @@ class EstudianteValidation extends FormRequest
             'confirmar_contrasenha'     => $isUpdate
                 ? ['nullable', 'string', 'same:contrasenha']
                 : ['required', 'string', 'same:contrasenha'],
-            'foto_perfil'               => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'foto_perfil'               => ['nullable', 'image', 'mimes:jpg,png', 'max:2048'],
         ];
     }
 
@@ -125,7 +126,7 @@ class EstudianteValidation extends FormRequest
             'confirmar_contrasenha.required'    => 'La confirmación de contraseña es obligatoria.',
             'confirmar_contrasenha.same'        => 'Las contraseñas no coinciden.',
             'foto_perfil.image'                 => 'El archivo debe ser una imagen.',
-            'foto_perfil.mimes'                 => 'La imagen debe ser de tipo JPG, JPEG, PNG o WEBP.',
+            'foto_perfil.mimes'                 => 'La imagen debe ser de tipo JPG o PNG.',
             'foto_perfil.max'                   => 'La imagen no puede superar los 2 MB.',
         ];
     }
