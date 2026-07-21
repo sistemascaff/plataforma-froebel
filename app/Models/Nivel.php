@@ -48,11 +48,11 @@ class Nivel extends Model
 
     public function get_all_niveles()
     {
-        return $this::with('grados', 'asignaturas', 'creado', 'modificado', 'eliminado')->orderBy('posicion_ordinal', 'ASC')->get();
+        return $this::with('grados', 'asignaturas', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->orderBy('posicion_ordinal', 'ASC')->get();
     }
 
     public function get_nivel($id_nivel)
     {
-        return $this::with('grados', 'asignaturas', 'creado', 'modificado', 'eliminado')->findOrFail($id_nivel);
+        return $this::with('grados', 'asignaturas', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_nivel);
     }
 }

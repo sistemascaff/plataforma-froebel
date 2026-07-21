@@ -41,11 +41,11 @@ class Paralelo extends Model
 
     public function get_all_paralelos()
     {
-        return $this::with('cursos', 'creado', 'modificado', 'eliminado')->get();
+        return $this::with('cursos', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->get();
     }
 
     public function get_paralelo($id_paralelo)
     {
-        return $this::with('cursos', 'creado', 'modificado', 'eliminado')->findOrFail($id_paralelo);
+        return $this::with('cursos', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_paralelo);
     }
 }

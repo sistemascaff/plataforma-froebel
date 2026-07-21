@@ -41,11 +41,11 @@ class Coordinacion extends Model
 
     public function get_all_coordinaciones()
     {
-        return $this::with('creado', 'modificado', 'eliminado')->orderBy('coordinacion', 'ASC')->get();
+        return $this::with('creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->orderBy('coordinacion', 'ASC')->get();
     }
 
     public function get_coordinacion($id_coordinacion)
     {
-        return $this::with('asignaturas', 'creado', 'modificado', 'eliminado')->findOrFail($id_coordinacion);
+        return $this::with('asignaturas', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_coordinacion);
     }
 }

@@ -47,11 +47,11 @@ class Area extends Model
 
     public function get_all_areas()
     {
-        return $this::with('campo', 'creado', 'modificado', 'eliminado')->orderBy('posicion_ordinal', 'ASC')->get();
+        return $this::with('campo', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->orderBy('posicion_ordinal', 'ASC')->get();
     }
 
     public function get_area($id_area)
     {
-        return $this::with('mallas_curriculares.grado', 'mallas_curriculares.materia', 'mallas_curriculares.gestion', 'campo', 'creado', 'modificado', 'eliminado')->findOrFail($id_area);
+        return $this::with('mallas_curriculares.grado', 'mallas_curriculares.materia', 'mallas_curriculares.gestion', 'campo', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_area);
     }
 }

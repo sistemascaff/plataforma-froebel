@@ -41,11 +41,11 @@ class EstudianteLicencia extends Model
 
     public function get_all_estudiantes_licencias()
     {
-        return $this::with('estudiante.persona.usuario', 'estudiante.curso', 'creado', 'modificado', 'eliminado')->orderBy('id_estudiante_licencia', 'DESC')->get();
+        return $this::with('estudiante.persona.usuario', 'estudiante.curso', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->orderBy('id_estudiante_licencia', 'DESC')->get();
     }
 
     public function get_estudiante_licencia($id_estudiante_licencia)
     {
-        return $this::with('estudiante.persona.usuario', 'estudiante.curso', 'creado', 'modificado', 'eliminado')->findOrFail($id_estudiante_licencia);
+        return $this::with('estudiante.persona.usuario', 'estudiante.curso', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_estudiante_licencia);
     }
 }

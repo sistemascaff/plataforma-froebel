@@ -61,14 +61,14 @@ class Gestion extends Model
 
     public function get_all_gestiones()
     {
-        return $this->with('periodos', 'dimensiones', 'creado', 'modificado', 'eliminado')
+        return $this->with('periodos', 'dimensiones', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')
             ->orderBy('anio', 'desc')
             ->get();
     }
 
     public function get_gestion($id_gestion)
     {
-        return $this->with('mallas_curriculares.grado', 'mallas_curriculares.materia', 'mallas_curriculares.area', 'horarios_asignaturas.nivel', 'periodos', 'dimensiones', 'creado', 'modificado', 'eliminado')
+        return $this->with('mallas_curriculares.grado', 'mallas_curriculares.materia', 'mallas_curriculares.area', 'horarios_asignaturas.nivel', 'periodos', 'dimensiones', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')
             ->findOrFail($id_gestion);
     }
 }

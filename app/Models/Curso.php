@@ -58,12 +58,12 @@ class Curso extends Model
 
     public function get_all_cursos()
     {
-        return $this->with('grado', 'paralelo', 'creado', 'modificado', 'eliminado')
+        return $this->with('grado', 'paralelo', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')
             ->orderBy('id_grado', 'ASC')->orderBy('id_paralelo', 'ASC')->get();
     }
 
     public function get_curso(int $id_curso)
     {
-        return $this->with('grado', 'paralelo', 'estudiantes.persona.usuario', 'creado', 'modificado', 'eliminado')->findOrFail($id_curso);
+        return $this->with('grado', 'paralelo', 'estudiantes.persona.usuario', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_curso);
     }
 }

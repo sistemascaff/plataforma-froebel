@@ -59,7 +59,7 @@ class MallaCurricular extends Model
 
     public function get_all_mallas_curriculares()
     {
-        return $this::with('grado', 'materia', 'area', 'gestion', 'creado', 'modificado', 'eliminado')
+        return $this::with('grado', 'materia', 'area', 'gestion', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')
         ->orderBy('id_gestion', 'DESC')
         ->orderBy('id_grado', 'ASC')
         ->orderBy('id_materia', 'ASC')
@@ -68,6 +68,6 @@ class MallaCurricular extends Model
 
     public function get_malla_curricular($id_malla_curricular)
     {
-        return $this::with('grado', 'materia', 'area', 'gestion', 'creado', 'modificado', 'eliminado')->findOrFail($id_malla_curricular);
+        return $this::with('grado', 'materia', 'area', 'gestion', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_malla_curricular);
     }
 }

@@ -59,7 +59,7 @@ class Docente extends Model
 
     public function get_all_docentes()
     {
-        return $this::with('persona.usuario', 'nivel', 'coordinacion', 'creado', 'modificado', 'eliminado')
+        return $this::with('persona.usuario', 'nivel', 'coordinacion', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')
             ->join('personas', 'docentes.id_persona', '=', 'personas.id_persona')
             ->orderBy('personas.apellido_paterno')
             ->orderBy('personas.apellido_materno')
@@ -70,6 +70,6 @@ class Docente extends Model
 
     public function get_docente($id_docente)
     {
-        return $this::with('listas_asignaturas.asignatura', 'listas_asignaturas.periodo.gestion', 'persona.usuario', 'nivel', 'coordinacion', 'creado', 'modificado', 'eliminado')->findOrFail($id_docente);
+        return $this::with('listas_asignaturas.asignatura', 'listas_asignaturas.periodo.gestion', 'persona.usuario', 'nivel', 'coordinacion', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_docente);
     }
 }

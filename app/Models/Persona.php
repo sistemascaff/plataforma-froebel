@@ -76,7 +76,7 @@ class Persona extends Model
 
     public function get_personal()
     {
-        return $this::with('usuario', 'creado', 'modificado', 'eliminado')
+        return $this::with('usuario', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')
             ->whereNotIn('tipo_perfil', ['DOCENTE', 'ESTUDIANTE'])
             ->get();
     }
@@ -93,9 +93,9 @@ class Persona extends Model
             ->with(
                 'usuario',
                 'estudiante.curso',
-                'creado',
-                'modificado',
-                'eliminado'
+                'creado:id_usuario,correo',
+                'modificado:id_usuario,correo',
+                'eliminado:id_usuario,correo'
             )
 
             ->withCount([
@@ -128,9 +128,9 @@ class Persona extends Model
         return Persona::with(
             'usuario',
             'estudiante.curso',
-            'creado',
-            'modificado',
-            'eliminado'
+            'creado:id_usuario,correo',
+            'modificado:id_usuario,correo',
+            'eliminado:id_usuario,correo'
         )
             ->withCount([
                 'prestamosDetalles as cantidad_total_prestamos',

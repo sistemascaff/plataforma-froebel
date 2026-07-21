@@ -59,9 +59,9 @@ class PrestamoLibro extends Model
             },
             'libros.prestado',
             'persona',
-            'creado',
-            'modificado',
-            'eliminado'
+            'creado:id_usuario,correo',
+            'modificado:id_usuario,correo',
+            'eliminado:id_usuario,correo'
         ])
             ->orderBy('id_prestamo_libro', 'DESC')
             ->get();
@@ -76,9 +76,9 @@ class PrestamoLibro extends Model
             },
             'libros.prestado',
             'persona',
-            'creado',
-            'modificado',
-            'eliminado'
+            'creado:id_usuario,correo',
+            'modificado:id_usuario,correo',
+            'eliminado:id_usuario,correo'
         ])
             ->findOrFail($id_libro);
     }

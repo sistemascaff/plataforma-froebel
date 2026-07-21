@@ -47,11 +47,11 @@ class Materia extends Model
 
     public function get_all_materias()
     {
-        return $this::with('campo', 'creado', 'modificado', 'eliminado')->orderBy('posicion_ordinal', 'ASC')->get();
+        return $this::with('campo', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->orderBy('posicion_ordinal', 'ASC')->get();
     }
 
     public function get_materia($id_materia)
     {
-        return $this::with('mallas_curriculares.grado', 'mallas_curriculares.area', 'mallas_curriculares.gestion', 'campo', 'creado', 'modificado', 'eliminado')->findOrFail($id_materia);
+        return $this::with('mallas_curriculares.grado', 'mallas_curriculares.area', 'mallas_curriculares.gestion', 'campo', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_materia);
     }
 }

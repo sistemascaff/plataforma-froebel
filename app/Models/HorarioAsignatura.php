@@ -60,7 +60,7 @@ class HorarioAsignatura extends Model
     public function get_all_horarios_asignaturas()
     {
         /* Se realiza un join para ordenar por año de gestión, luego por nivel y finalmente por hora de inicio. */
-        return $this::with('gestion', 'nivel', 'creado', 'modificado', 'eliminado')
+        return $this::with('gestion', 'nivel', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')
             ->join('gestiones', 'horarios_asignaturas.id_gestion', '=', 'gestiones.id_gestion')
             ->join('niveles', 'horarios_asignaturas.id_nivel', '=', 'niveles.id_nivel')
             ->orderBy('gestiones.anio', 'DESC')
@@ -72,6 +72,6 @@ class HorarioAsignatura extends Model
 
     public function get_horario_asignatura($id_horario_asignatura)
     {
-        return $this::with('asignaturas', 'gestion', 'nivel', 'creado', 'modificado', 'eliminado')->findOrFail($id_horario_asignatura);
+        return $this::with('asignaturas', 'gestion', 'nivel', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_horario_asignatura);
     }
 }

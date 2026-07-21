@@ -33,9 +33,9 @@ class PrestamoLibroController extends Controller
             },
             'libros.prestado',
             'persona',
-            'creado',
-            'modificado',
-            'eliminado'
+            'creado:id_usuario,correo',
+            'modificado:id_usuario,correo',
+            'eliminado:id_usuario,correo'
         ])
             ->orderBy('id_prestamo_libro', 'DESC')
             ->whereBetween('fecha_registro', [$fecha_inicio, $fecha_fin])
@@ -126,9 +126,9 @@ class PrestamoLibroController extends Controller
             },
             'libros.prestado',
             'persona',
-            'creado',
-            'modificado',
-            'eliminado'
+            'creado:id_usuario,correo',
+            'modificado:id_usuario,correo',
+            'eliminado:id_usuario,correo'
         ])
             ->orderBy('id_prestamo_libro', 'ASC')
             ->whereBetween('fecha_registro', [$fecha_inicio, $fecha_fin])

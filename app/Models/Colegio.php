@@ -32,11 +32,11 @@ class Colegio extends Model
     
     public function get_all_colegios()
     {
-        return Colegio::with('creado', 'modificado', 'eliminado')->orderBy('id_colegio','ASC')->get();
+        return Colegio::with('creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->orderBy('id_colegio','ASC')->get();
     }
     
     public function get_colegio($id_colegio)
     {
-        return Colegio::with('creado', 'modificado', 'eliminado')->findOrFail($id_colegio);
+        return Colegio::with('creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_colegio);
     }
 }

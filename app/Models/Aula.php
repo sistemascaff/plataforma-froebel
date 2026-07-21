@@ -35,14 +35,14 @@ class Aula extends Model
 
     public function get_all_aulas()
     {
-        return $this->with('creado', 'modificado', 'eliminado')
+        return $this->with('creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')
             ->orderBy('aula', 'asc')
             ->get();
     }
 
     public function get_aula($id_aula)
     {
-        return $this->with('creado', 'modificado', 'eliminado')
+        return $this->with('creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')
             ->findOrFail($id_aula);
     }
 }

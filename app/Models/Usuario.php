@@ -44,7 +44,7 @@ class Usuario extends Authenticatable
     public function get_all_usuarios()
     {
         // Se omite los usuarios cuyas personas tengan el tipo_perfil "DOCENTE" y "ESTUDIANTE"
-        return $this::with('persona', 'creado', 'modificado', 'eliminado')
+        return $this::with('persona', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')
             ->whereHas('persona', function ($query) {
                 $query->whereNotIn('tipo_perfil', ['DOCENTE', 'ESTUDIANTE']);
             })
@@ -53,17 +53,17 @@ class Usuario extends Authenticatable
 
     public function get_usuario($id_usuario)
     {
-        return $this::with('persona', 'creado', 'modificado', 'eliminado')->findOrFail($id_usuario);
+        return $this::with('persona', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_usuario);
     }
 
     public function get_usuario_desde_persona($id_persona)
     {
-        return $this::with('persona', 'creado', 'modificado', 'eliminado')->where('id_persona', $id_persona)->first();
+        return $this::with('persona', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->where('id_persona', $id_persona)->first();
     }
 
     /**Función utilizada para verificar y crear la sesión del Usuario.*/
     public function login($correo)
     {
-        return $this::with('persona', 'creado', 'modificado', 'eliminado')->where('correo', $correo)->first();
+        return $this::with('persona', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->where('correo', $correo)->first();
     }
 }

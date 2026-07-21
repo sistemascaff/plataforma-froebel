@@ -49,11 +49,11 @@ class Campo extends Model
 
     public function get_all_campos()
     {
-        return $this::with('areas', 'materias', 'creado', 'modificado', 'eliminado')->orderBy('posicion_ordinal', 'ASC')->get();
+        return $this::with('areas', 'materias', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->orderBy('posicion_ordinal', 'ASC')->get();
     }
 
     public function get_campo($id_campo)
     {
-        return $this::with('areas', 'materias', 'creado', 'modificado', 'eliminado')->findOrFail($id_campo);
+        return $this::with('areas', 'materias', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_campo);
     }
 }

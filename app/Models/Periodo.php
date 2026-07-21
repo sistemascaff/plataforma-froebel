@@ -41,7 +41,7 @@ class Periodo extends Model
 
     public function get_all_periodos()
     {
-        return $this->with('gestion', 'creado', 'modificado', 'eliminado')
+        return $this->with('gestion', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')
             ->join('gestiones', 'periodos.id_gestion', '=', 'gestiones.id_gestion')
             ->orderBy('gestiones.anio', 'desc')
             ->orderBy('periodos.posicion_ordinal', 'asc')
@@ -51,6 +51,6 @@ class Periodo extends Model
 
     public function get_periodo($id_periodo)
     {
-        return $this->with('gestion', 'creado', 'modificado', 'eliminado')->findOrFail($id_periodo);
+        return $this->with('gestion', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_periodo);
     }
 }

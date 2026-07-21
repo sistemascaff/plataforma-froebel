@@ -90,11 +90,11 @@ class Asignatura extends Model
 
     public function get_all_asignaturas()
     {
-        return $this::with('materia', 'area', 'aula', 'nivel', 'curso', 'coordinacion', 'creado', 'modificado', 'eliminado')->orderBy('asignatura', 'ASC')->get();
+        return $this::with('materia', 'area', 'aula', 'nivel', 'curso', 'coordinacion', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->orderBy('asignatura', 'ASC')->get();
     }
 
     public function get_asignatura($id_asignatura)
     {
-        return $this::with('horarios_asignaturas.gestion', 'listas_asignaturas.periodo.gestion', 'listas_asignaturas.docente.persona', 'materia', 'area', 'aula', 'nivel', 'curso', 'coordinacion', 'creado', 'modificado', 'eliminado')->findOrFail($id_asignatura);
+        return $this::with('horarios_asignaturas.gestion', 'listas_asignaturas.periodo.gestion', 'listas_asignaturas.docente.persona', 'materia', 'area', 'aula', 'nivel', 'curso', 'coordinacion', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_asignatura);
     }
 }

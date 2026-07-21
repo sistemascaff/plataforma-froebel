@@ -64,11 +64,11 @@ class ListaAsignatura extends Model
 
     public function get_all_listas_asignaturas()
     {
-        return $this->with('asignatura', 'periodo', 'docente.persona', 'creado', 'modificado', 'eliminado')->get();
+        return $this->with('asignatura', 'periodo', 'docente.persona', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->get();
     }
 
     public function get_lista_asignatura($id_lista_asignatura)
     {
-        return $this->with('asignatura', 'periodo.gestion', 'docente.persona', 'estudiantes.persona.usuario', 'estudiantes.curso', 'creado', 'modificado', 'eliminado')->findOrFail($id_lista_asignatura);
+        return $this->with('asignatura', 'periodo.gestion', 'docente.persona', 'estudiantes.persona.usuario', 'estudiantes.curso', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_lista_asignatura);
     }
 }

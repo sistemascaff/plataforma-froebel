@@ -41,7 +41,7 @@ class Dimension extends Model
 
     public function get_all_dimensiones()
     {
-        return $this->with('gestion', 'creado', 'modificado', 'eliminado')
+        return $this->with('gestion', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')
             ->join('gestiones', 'dimensiones.id_gestion', '=', 'gestiones.id_gestion')
             ->orderBy('gestiones.anio', 'desc')
             ->orderBy('dimensiones.posicion_ordinal', 'asc')
@@ -51,6 +51,6 @@ class Dimension extends Model
 
     public function get_dimension($id_dimension)
     {
-        return $this->with('gestion', 'creado', 'modificado', 'eliminado')->findOrFail($id_dimension);
+        return $this->with('gestion', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_dimension);
     }
 }
