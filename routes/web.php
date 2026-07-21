@@ -9,6 +9,7 @@ use App\Http\Controllers\CursoController;
 use App\Http\Controllers\DimensionController;
 use App\Http\Controllers\DocenteController;
 use App\Http\Controllers\EstudianteController;
+use App\Http\Controllers\EstudianteLicenciaController;
 use App\Http\Controllers\GestionController;
 use App\Http\Controllers\GradoController;
 use App\Http\Controllers\HorarioAsignaturaController;
@@ -292,6 +293,15 @@ Route::middleware(['session.acceso'])->group(function () {
             Route::patch('estudiantes/{estudiante}', 'delete')->name('estudiantes.delete');
 
             Route::get('estudiantes/{estudiante}/detalles', 'view_details')->name('estudiantes.detalles');
+        });
+
+        Route::controller(EstudianteLicenciaController::class)->group(function () {
+            Route::get('estudiantes_licencias', 'view_index')->name('estudiantes_licencias.index');
+            Route::get('estudiantes_licencias/listar', 'listar')->name('estudiantes_licencias.listar');
+            Route::get('estudiantes_licencias/{estudiante_licencia}', 'mostrar')->name('estudiantes_licencias.mostrar');
+            Route::post('estudiantes_licencias', 'create')->name('estudiantes_licencias.create');
+            Route::put('estudiantes_licencias/{estudiante_licencia}', 'update')->name('estudiantes_licencias.update');
+            Route::patch('estudiantes_licencias/{estudiante_licencia}', 'delete')->name('estudiantes_licencias.delete');
         });
     });
 });
