@@ -159,7 +159,7 @@
                     render: function(data, type, row) {
                         return `
                             <div class="btn-group" role="group">
-                                <button class="btn btn-sm btn-warning btn-editar">
+                                <button class="btn btn-sm btn-warning btn-editar" data-id="${row.id_estudiante_licencia}">
                                     <i class="fa-solid fa-duotone fa-pen-to-square"></i>
                                 </button>
                                 <button class="btn btn-sm btn-danger btn-eliminar" data-id="${row.id_estudiante_licencia}">
@@ -268,7 +268,7 @@
         });
 
         $(document).on('click', '.btn-eliminar', function() {
-            const id = $(this).data('id');
+            let id = $(this).data('id');
             Swal.fire({
                 theme: localStorage.getItem('theme') || 'dark',
                 title: '¿Estás seguro?',
@@ -286,9 +286,6 @@
                         type: 'PATCH',
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        data: {
-                            id_estudiante_licencia: id
                         },
                         success: function(response) {
                             $('#dataTable').DataTable().ajax.reload();
