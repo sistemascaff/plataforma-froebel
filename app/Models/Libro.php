@@ -58,8 +58,19 @@ class Libro extends Model
 
     public function get_all_libros()
     {
-        return $this::with('prestamos_libros.persona', /*'colegio',*/ 'prestado.estudiante.curso', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')
-            ->withCount('prestamos_libros')   // ← agrega la cantidad de préstamos
+        return $this::with([
+            'prestamos_libros:id_prestamo_libro,id_persona,curso,celular,fecha_devolucion,estado',
+            'prestamos_libros.persona:id_persona,apellido_paterno,apellido_materno,nombres,celular,telefono,tipo_perfil,estado',
+            /*'colegio',*/
+            'prestado:id_persona,apellido_paterno,apellido_materno,nombres,celular,telefono,tipo_perfil,estado',
+            'prestado.estudiante:id_persona,id_curso,estado',
+            'prestado.estudiante.curso:id_curso,curso,estado',
+
+            'creado:id_usuario,correo',
+            'modificado:id_usuario,correo',
+            'eliminado:id_usuario,correo'
+        ])
+            ->withCount('prestamos_libros')   // agrega la cantidad de préstamos
             ->orderBy('categoria', 'ASC')
             ->orderBy('codigo', 'ASC')
             ->get();
@@ -67,7 +78,18 @@ class Libro extends Model
 
     public function get_libro($id_libro)
     {
-        return $this::with('prestamos_libros.persona', /*'colegio',*/ 'prestado.estudiante.curso', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_libro);
+        return $this::with([
+            'prestamos_libros:id_prestamo_libro,id_persona,curso,celular,fecha_devolucion,estado',
+            'prestamos_libros.persona:id_persona,apellido_paterno,apellido_materno,nombres,celular,telefono,tipo_perfil,estado',
+            /*'colegio',*/
+            'prestado:id_persona,apellido_paterno,apellido_materno,nombres,celular,telefono,tipo_perfil,estado',
+            'prestado.estudiante:id_persona,id_curso,estado',
+            'prestado.estudiante.curso:id_curso,curso,estado',
+
+            'creado:id_usuario,correo',
+            'modificado:id_usuario,correo',
+            'eliminado:id_usuario,correo'
+        ])->findOrFail($id_libro);
     }
 
     public function get_all_libros_public()

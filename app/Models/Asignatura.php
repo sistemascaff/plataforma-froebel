@@ -90,11 +90,43 @@ class Asignatura extends Model
 
     public function get_all_asignaturas()
     {
-        return $this::with('materia', 'area', 'aula', 'nivel', 'curso', 'coordinacion', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->orderBy('asignatura', 'ASC')->get();
+        return $this::with([
+            'materia:id_materia,materia',
+            'area:id_area,area',
+            'aula:id_aula,aula',
+            'nivel:id_nivel,nivel',
+            'curso:id_curso,curso',
+            'coordinacion:id_coordinacion,coordinacion',
+
+            'creado:id_usuario,correo',
+            'modificado:id_usuario,correo',
+            'eliminado:id_usuario,correo'
+        ])->orderBy('asignatura', 'ASC')->get();
     }
 
     public function get_asignatura($id_asignatura)
     {
-        return $this::with('horarios_asignaturas.gestion', 'listas_asignaturas.periodo.gestion', 'listas_asignaturas.docente.persona', 'materia', 'area', 'aula', 'nivel', 'curso', 'coordinacion', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_asignatura);
+        return $this::with([
+            'horarios_asignaturas:id_horario_asignatura,id_nivel,id_gestion,denominacion,hora_inicio,hora_fin,estado',
+            'horarios_asignaturas.gestion:id_gestion,anio,estado',
+
+            'listas_asignaturas:id_lista_asignatura,id_asignatura,id_periodo,id_docente,estado',
+            'listas_asignaturas.periodo:id_periodo,id_gestion,periodo,posicion_ordinal,estado',
+            'listas_asignaturas.periodo.gestion:id_gestion,anio,estado',
+            'listas_asignaturas.docente:id_docente,id_persona,id_nivel,id_coordinacion,especialidad,grado_estudios,domicilio,estado',
+            /* en este caso por practicidad y sobretodo confidencialidad de información sensible solo es esencial cargar el nombre completo del docente. */
+            'listas_asignaturas.docente.persona:id_persona,id_colegio,apellido_paterno,apellido_materno,nombres,estado',
+
+            'materia:id_materia,id_campo,materia,abreviatura,posicion_ordinal,estado',
+            'area:id_area,id_campo,area,abreviatura,posicion_ordinal,estado',
+            'aula:id_aula,aula,estado',
+            'nivel:id_nivel,nivel,posicion_ordinal,estado',
+            'curso:id_curso,id_grado,id_paralelo,curso,estado',
+            'coordinacion:id_coordinacion,coordinacion,estado',
+
+            'creado:id_usuario,correo',
+            'modificado:id_usuario,correo',
+            'eliminado:id_usuario,correo'
+        ])->findOrFail($id_asignatura);
     }
 }

@@ -61,14 +61,32 @@ class Gestion extends Model
 
     public function get_all_gestiones()
     {
-        return $this->with('periodos', 'dimensiones', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')
-            ->orderBy('anio', 'desc')
-            ->get();
+        return $this->with([
+            'periodos:id_periodo,id_gestion,periodo,posicion_ordinal,estado',
+            'dimensiones:id_dimension,id_gestion,dimension,posicion_ordinal,puntaje_maximo,tipo_calculo,estado',
+
+            'creado:id_usuario,correo',
+            'modificado:id_usuario,correo',
+            'eliminado:id_usuario,correo'
+        ])->orderBy('anio', 'DESC')->get();
     }
 
     public function get_gestion($id_gestion)
     {
-        return $this->with('mallas_curriculares.grado', 'mallas_curriculares.materia', 'mallas_curriculares.area', 'horarios_asignaturas.nivel', 'periodos', 'dimensiones', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')
-            ->findOrFail($id_gestion);
+        return $this->with([
+            'mallas_curriculares:id_malla_curricular,id_grado,id_materia,id_area,id_gestion,estado',
+            'mallas_curriculares.grado:id_grado,id_nivel,grado,posicion_ordinal,estado',
+            'mallas_curriculares.materia:id_materia,id_campo,materia,abreviatura,posicion_ordinal,estado',
+            'mallas_curriculares.area:id_area,id_campo,area,abreviatura,posicion_ordinal,estado',
+
+            'horarios_asignaturas:id_horario_asignatura,id_nivel,id_gestion,denominacion,hora_inicio,hora_fin,estado',
+            'horarios_asignaturas.nivel:id_nivel,nivel,posicion_ordinal,estado',
+            'periodos:id_periodo,id_gestion,periodo,posicion_ordinal,estado',
+            'dimensiones:id_dimension,id_gestion,dimension,posicion_ordinal,puntaje_maximo,tipo_calculo,estado',
+
+            'creado:id_usuario,correo',
+            'modificado:id_usuario,correo',
+            'eliminado:id_usuario,correo'
+        ])->findOrFail($id_gestion);
     }
 }

@@ -25,7 +25,7 @@
 
     <div class="row g-4 mb-4">
         <div class="col-12 col-lg-4">
-            <div class="card shadow-sm border-0 mb-4">
+            <div class="card shadow-sm mb-4">
                 <div class="card-body text-center pt-4">
                     <img class="rounded-circle img-thumbnail shadow-sm mb-3"
                         style="width: 160px; height: 160px; object-fit: cover;" alt="Foto de perfil"
@@ -45,7 +45,7 @@
                 </div>
             </div>
 
-            <div class="card shadow-sm border-0">
+            <div class="card shadow-sm">
                 <div class="card-header bg-info fw-bold">
                     <i class="fa-solid fa-key me-2"></i> Datos de Acceso
                 </div>
@@ -84,15 +84,24 @@
         </div>
 
         <div class="col-12 col-lg-8">
-            <div class="card shadow-sm border-0 mb-4">
+            <div class="card shadow-sm mb-4">
                 <div class="card-header border-bottom-0 pt-4 pb-0">
                     <h5 class="text-info fw-bold"><i class="fa-solid fa-address-card me-2"></i> Información Personal</h5>
                 </div>
                 <div class="card-body">
                     <div class="row border-bottom pb-2 mb-2">
-                        <div class="col-sm-4 text-muted">Nombre completo:</div>
+                        <div class="col-sm-4 text-muted">Apellido paterno:</div>
+                        <div class="col-sm-8 fw-bold">{{ $estudiante->persona->apellido_paterno }}
+                        </div>
+                    </div>
+                    <div class="row border-bottom pb-2 mb-2">
+                        <div class="col-sm-4 text-muted">Apellido materno:</div>
+                        <div class="col-sm-8 fw-bold">{{ $estudiante->persona->apellido_materno }}
+                        </div>
+                    </div>
+                    <div class="row border-bottom pb-2 mb-2">
+                        <div class="col-sm-4 text-muted">Nombre/s:</div>
                         <div class="col-sm-8 fw-bold">{{ $estudiante->persona->nombres }}
-                            {{ $estudiante->persona->apellido_paterno }} {{ $estudiante->persona->apellido_materno }}
                         </div>
                     </div>
                     <div class="row border-bottom pb-2 mb-2">
@@ -118,7 +127,7 @@
                 </div>
             </div>
 
-            <div class="card shadow-sm border-0 mb-4">
+            <div class="card shadow-sm mb-4">
                 <div class="card-header border-bottom-0 pt-4 pb-0">
                     <h5 class="text-info fw-bold"><i class="fa-solid fa-school me-2"></i> Datos Académicos y Nacimiento</h5>
                 </div>
@@ -147,7 +156,7 @@
                 </div>
             </div>
 
-            <div class="card shadow-sm border-0 mb-4 border-start border-danger border-4">
+            <div class="card shadow-sm mb-4 border-start border-danger border-4">
                 <div class="card-header border-bottom-0 pt-4 pb-0">
                     <h5 class="text-danger fw-bold"><i class="fa-solid fa-notes-medical me-2"></i> Información de Salud</h5>
                 </div>
@@ -182,10 +191,13 @@
                         <table class="table table-bordered table-striped dataTable" id="asignaturas">
                             <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>Asignatura</th>
-                                    <th>Gestión</th>
-                                    <th>Periodo</th>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Asignatura</th>
+                                    <th scope="col">Tipo de Calificación</th>
+                                    <th scope="col">Tipo de Bloque</th>
+                                    <th scope="col">Docente</th>
+                                    <th scope="col">Gestión</th>
+                                    <th scope="col">Periodo</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -193,6 +205,36 @@
                                     <tr>
                                         <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ $lista_asignatura->asignatura->asignatura }}</td>
+                                        <td>
+                                            <span class="badge bg-info text-dark">
+                                                @php
+                                                    $icono =
+                                                        $lista_asignatura->asignatura->tipo_calificacion ===
+                                                        'cualitativa'
+                                                            ? '<i class="fa-solid fa-comments"></i>'
+                                                            : '<i class="fa-solid fa-chart-column"></i>';
+                                                @endphp
+                                                {!! $icono !!}
+                                                {{ strtoupper($lista_asignatura->asignatura->tipo_calificacion) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span
+                                                class="badge {{ $lista_asignatura->asignatura->tipo_bloque === 'curso' ? 'bg-primary' : 'bg-danger' }}">
+                                                {{ strtoupper($lista_asignatura->asignatura->tipo_bloque) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @php
+                                                $p = $lista_asignatura->docente?->persona;
+                                                $nombre_completo = $p
+                                                    ? trim(
+                                                        "{$p->apellido_paterno} {$p->apellido_materno} {$p->nombres}",
+                                                    )
+                                                    : '';
+                                            @endphp
+                                            {{ $nombre_completo }}
+                                        </td>
                                         <td>{{ $lista_asignatura->periodo->gestion->anio }}</td>
                                         <td>{{ $lista_asignatura->periodo->periodo }}</td>
                                     </tr>

@@ -60,6 +60,7 @@ class Estudiante extends Model
         return $this::with(
             'persona.usuario',
             'curso',
+
             'creado:id_usuario,correo',
             'modificado:id_usuario,correo',
             'eliminado:id_usuario,correo'
@@ -69,10 +70,19 @@ class Estudiante extends Model
     public function get_estudiante($id_estudiante)
     {
         return $this::with(
-            'persona.usuario',
-            'curso',
-            'listas_asignaturas.asignatura',
-            'listas_asignaturas.periodo.gestion',
+            'persona:id_persona,id_colegio,apellido_paterno,apellido_materno,nombres,documento_identificacion,documento_complemento,documento_expedido,fecha_nacimiento,sexo,idioma,celular,telefono,tipo_perfil,estado',
+            'persona.usuario:id_usuario,id_persona,correo,contrasenha,url_foto_perfil,codigo_recuperacion,tiene_acceso,ultima_conexion,ultimo_dispositivo,ultima_ip,estado',
+
+            'curso:id_curso,id_grado,id_paralelo,curso,estado',
+            
+            'listas_asignaturas:id_lista_asignatura,id_asignatura,id_periodo,id_docente,estado',
+            'listas_asignaturas.asignatura:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',
+            'listas_asignaturas.periodo:id_periodo,id_gestion,periodo,posicion_ordinal,estado',
+            'listas_asignaturas.periodo.gestion:id_gestion,anio,estado',
+            // para la vista de detalles del estudiante se omite información sensible del docente
+            'listas_asignaturas.docente:id_docente,id_persona,id_nivel,id_coordinacion,estado',
+            'listas_asignaturas.docente.persona:id_persona,id_colegio,apellido_paterno,apellido_materno,nombres',
+
             'creado:id_usuario,correo',
             'modificado:id_usuario,correo',
             'eliminado:id_usuario,correo'

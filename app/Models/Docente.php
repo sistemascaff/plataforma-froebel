@@ -59,7 +59,17 @@ class Docente extends Model
 
     public function get_all_docentes()
     {
-        return $this::with('persona.usuario', 'nivel', 'coordinacion', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')
+        return $this::with([
+            'persona:id_persona,id_colegio,apellido_paterno,apellido_materno,nombres,documento_identificacion,documento_complemento,documento_expedido,fecha_nacimiento,sexo,idioma,celular,telefono,tipo_perfil,estado',
+            'persona.usuario:id_usuario,id_persona,correo,url_foto_perfil,tiene_acceso,ultima_conexion,ultimo_dispositivo,ultima_ip,estado',
+
+            'nivel:id_nivel,nivel,posicion_ordinal,estado',
+            'coordinacion:id_coordinacion,coordinacion,estado',
+
+            'creado:id_usuario,correo',
+            'modificado:id_usuario,correo',
+            'eliminado:id_usuario,correo'
+        ])
             ->join('personas', 'docentes.id_persona', '=', 'personas.id_persona')
             ->orderBy('personas.apellido_paterno')
             ->orderBy('personas.apellido_materno')
@@ -70,6 +80,21 @@ class Docente extends Model
 
     public function get_docente($id_docente)
     {
-        return $this::with('listas_asignaturas.asignatura', 'listas_asignaturas.periodo.gestion', 'persona.usuario', 'nivel', 'coordinacion', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_docente);
+        return $this::with([
+            'listas_asignaturas:id_lista_asignatura,id_asignatura,id_periodo,id_docente,estado',
+            'listas_asignaturas.asignatura:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',
+            'listas_asignaturas.periodo:id_periodo,id_gestion,periodo,posicion_ordinal,estado',
+            'listas_asignaturas.periodo.gestion:id_gestion,anio,estado',
+
+            'persona:id_persona,id_colegio,apellido_paterno,apellido_materno,nombres,documento_identificacion,documento_complemento,documento_expedido,fecha_nacimiento,sexo,idioma,celular,telefono,tipo_perfil,estado',
+            'persona.usuario:id_usuario,id_persona,correo,contrasenha,url_foto_perfil,codigo_recuperacion,tiene_acceso,ultima_conexion,ultimo_dispositivo,ultima_ip,estado',
+
+            'nivel:id_nivel,nivel,posicion_ordinal,estado',
+            'coordinacion:id_coordinacion,coordinacion,estado',
+
+            'creado:id_usuario,correo',
+            'modificado:id_usuario,correo',
+            'eliminado:id_usuario,correo'
+        ])->findOrFail($id_docente);
     }
 }

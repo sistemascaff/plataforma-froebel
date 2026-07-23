@@ -25,7 +25,7 @@
 
     <div class="row g-4 mb-4">
         <div class="col-12 col-lg-4">
-            <div class="card shadow-sm border-0 mb-4">
+            <div class="card shadow-sm mb-4">
                 <div class="card-body text-center pt-4">
                     <img class="rounded-circle img-thumbnail shadow-sm mb-3"
                         style="width: 160px; height: 160px; object-fit: cover;" alt="Foto de perfil"
@@ -45,7 +45,7 @@
                 </div>
             </div>
 
-            <div class="card shadow-sm border-0">
+            <div class="card shadow-sm">
                 <div class="card-header bg-info fw-bold">
                     <i class="fa-solid fa-key me-2"></i> Datos de Acceso
                 </div>
@@ -56,8 +56,7 @@
                     </li>
 
                     @if (session('tipo_perfil') === 'ADMIN')
-                        <li
-                            class="list-group-item flex-column align-items-start border-warning border-start border-4">
+                        <li class="list-group-item flex-column align-items-start border-warning border-start border-4">
                             <div class="d-flex justify-content-between w-100 mb-1">
                                 <span class="text-muted">Contraseña:</span>
                                 <span
@@ -85,15 +84,22 @@
         </div>
 
         <div class="col-12 col-lg-8">
-            <div class="card shadow-sm border-0 mb-4">
+            <div class="card shadow-sm mb-4">
                 <div class="card-header border-bottom-0 pt-4 pb-0">
                     <h5 class="text-info fw-bold"><i class="fa-solid fa-address-card me-2"></i> Información Personal</h5>
                 </div>
                 <div class="card-body">
                     <div class="row border-bottom pb-2 mb-2">
-                        <div class="col-sm-4 text-muted">Nombre completo:</div>
-                        <div class="col-sm-8 fw-bold">{{ $docente->persona->nombres }}
-                            {{ $docente->persona->apellido_paterno }} {{ $docente->persona->apellido_materno }}</div>
+                        <div class="col-sm-4 text-muted">Apellido paterno:</div>
+                        <div class="col-sm-8 fw-bold">{{ $docente->persona->apellido_paterno }}</div>
+                    </div>
+                    <div class="row border-bottom pb-2 mb-2">
+                        <div class="col-sm-4 text-muted">Apellido materno:</div>
+                        <div class="col-sm-8 fw-bold">{{ $docente->persona->apellido_materno }}</div>
+                    </div>
+                    <div class="row border-bottom pb-2 mb-2">
+                        <div class="col-sm-4 text-muted">Nombre/s:</div>
+                        <div class="col-sm-8 fw-bold">{{ $docente->persona->nombres }}</div>
                     </div>
                     <div class="row border-bottom pb-2 mb-2">
                         <div class="col-sm-4 text-muted">Fecha de nacimiento:</div>
@@ -118,7 +124,7 @@
                 </div>
             </div>
 
-            <div class="card shadow-sm border-0">
+            <div class="card shadow-sm">
                 <div class="card-header border-bottom-0 pt-4 pb-0">
                     <h5 class="text-info fw-bold"><i class="fa-solid fa-graduation-cap me-2"></i> Información Académica</h5>
                 </div>
@@ -148,18 +154,20 @@
         </div>
     </div>
 
-    <div class="card shadow-sm border-0 mb-5">
+    <div class="card shadow-sm mb-5">
         <div class="card-header pt-4 pb-2 border-bottom">
             <h5 class="text-info fw-bold mb-0"><i class="fa-solid fa-book-open me-2"></i> Listas de asignaturas asignadas
             </h5>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover table-striped mb-0 dataTable" id="materias">
+                <table class="table table-hover table-bordered table-striped mb-0 dataTable" id="materias">
                     <thead>
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Asignatura</th>
+                            <th scope="col">Tipo de Calificación</th>
+                            <th scope="col">Tipo de Bloque</th>
                             <th scope="col">Periodo</th>
                             <th scope="col">Gestión</th>
                             <th scope="col">Acciones</th>
@@ -170,8 +178,28 @@
                             <tr>
                                 <td class="fw-bold">{{ $loop->index + 1 }}</td>
                                 <td>{{ $lista_asignatura->asignatura->asignatura }}</td>
-                                <td><span
-                                        class="badge bg-light text-dark border">{{ $lista_asignatura->periodo->periodo }}</span>
+                                <td>
+                                    <span class="badge bg-info text-dark">
+                                        @php
+                                            $icono =
+                                                $lista_asignatura->asignatura->tipo_calificacion === 'cualitativa'
+                                                    ? '<i class="fa-solid fa-comments"></i>'
+                                                    : '<i class="fa-solid fa-chart-column"></i>';
+                                        @endphp
+                                        {!! $icono !!}
+                                        {{ strtoupper($lista_asignatura->asignatura->tipo_calificacion) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span
+                                        class="badge {{ $lista_asignatura->asignatura->tipo_bloque === 'curso' ? 'bg-primary' : 'bg-danger' }}">
+                                        {{ strtoupper($lista_asignatura->asignatura->tipo_bloque) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">
+                                        {{ $lista_asignatura->periodo->periodo }}
+                                    </span>
                                 </td>
                                 <td>{{ $lista_asignatura->periodo->gestion->anio }}</td>
                                 <td>

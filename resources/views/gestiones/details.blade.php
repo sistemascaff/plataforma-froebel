@@ -53,6 +53,7 @@
                             <th>#</th>
                             <th>Periodo</th>
                             <th>Posición ordinal</th>
+                            <th>Estado</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -61,6 +62,21 @@
                                 <td>{{ $loop->index + 1 }}</td>
                                 <td>{{ $periodo->periodo }}</td>
                                 <td>{{ $periodo->posicion_ordinal }}</td>
+                                <td>
+                                    @php
+                                        $periodoEstado = match ($periodo->estado) {
+                                            0 => 'ARCHIVADO',
+                                            1 => 'ACTIVO',
+                                            default => 'DESCONOCIDO',
+                                        };
+                                        $periodoBadgeClass = match ($periodo->estado) {
+                                            0 => 'bg-secondary',
+                                            1 => 'bg-success',
+                                            default => 'bg-secondary',
+                                        };
+                                    @endphp
+                                    <span class="badge {{ $periodoBadgeClass }}">{{ $periodoEstado }}</span>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>

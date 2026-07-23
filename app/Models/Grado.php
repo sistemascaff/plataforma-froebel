@@ -25,15 +25,15 @@ class Grado extends Model
     public function cursos()
     {
         return $this->hasMany(Curso::class, 'id_grado', 'id_grado')
-        ->orderBy('curso', 'asc');
+            ->orderBy('curso', 'asc');
     }
 
     /** Relación uno a muchos con mallas_curriculares */
     public function mallas_curriculares()
     {
         return $this->hasMany(MallaCurricular::class, 'id_grado', 'id_grado')
-        ->orderBy('id_gestion', 'DESC')
-        ->orderBy('id_materia', 'ASC');
+            ->orderBy('id_gestion', 'DESC')
+            ->orderBy('id_materia', 'ASC');
     }
 
     /** Relación con atributo de auditoría */
@@ -56,12 +56,33 @@ class Grado extends Model
 
     public function get_all_grados()
     {
-        return $this::with('nivel', 'cursos', 'mallas_curriculares.materia', 'mallas_curriculares.area', 'mallas_curriculares.gestion', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')
-            ->orderBy('id_nivel', 'ASC')->orderBy('posicion_ordinal', 'ASC')->get();
+        return $this::with([
+            'nivel:id_nivel,nivel,posicion_ordinal,estado',
+            'cursos:id_curso,id_grado,id_paralelo,curso,estado',
+            'mallas_curriculares:id_malla_curricular,id_grado,id_materia,id_area,id_gestion,estado',
+            'mallas_curriculares.materia:id_materia,id_campo,materia,abreviatura,posicion_ordinal,estado',
+            'mallas_curriculares.area:id_area,id_campo,area,abreviatura,posicion_ordinal,estado',
+            'mallas_curriculares.gestion:id_gestion,anio,estado',
+
+            'creado:id_usuario,correo',
+            'modificado:id_usuario,correo',
+            'eliminado:id_usuario,correo'
+        ])->orderBy('id_nivel', 'ASC')->orderBy('posicion_ordinal', 'ASC')->get();
     }
 
     public function get_grado($id_grado)
     {
-        return $this::with('nivel', 'cursos', 'mallas_curriculares.materia', 'mallas_curriculares.area', 'mallas_curriculares.gestion', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_grado);
+        return $this::with([
+            'nivel:id_nivel,nivel,posicion_ordinal,estado',
+            'cursos:id_curso,id_grado,id_paralelo,curso,estado',
+            'mallas_curriculares:id_malla_curricular,id_grado,id_materia,id_area,id_gestion,estado',
+            'mallas_curriculares.materia:id_materia,id_campo,materia,abreviatura,posicion_ordinal,estado',
+            'mallas_curriculares.area:id_area,id_campo,area,abreviatura,posicion_ordinal,estado',
+            'mallas_curriculares.gestion:id_gestion,anio,estado',
+
+            'creado:id_usuario,correo',
+            'modificado:id_usuario,correo',
+            'eliminado:id_usuario,correo'
+        ])->findOrFail($id_grado);
     }
 }

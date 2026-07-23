@@ -59,15 +59,33 @@ class MallaCurricular extends Model
 
     public function get_all_mallas_curriculares()
     {
-        return $this::with('grado', 'materia', 'area', 'gestion', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')
-        ->orderBy('id_gestion', 'DESC')
-        ->orderBy('id_grado', 'ASC')
-        ->orderBy('id_materia', 'ASC')
-        ->get();
+        return $this::with([
+            'grado:id_grado,id_nivel,grado,posicion_ordinal,estado',
+            'materia:id_materia,id_campo,materia,abreviatura,posicion_ordinal,estado',
+            'area:id_area,id_campo,area,abreviatura,posicion_ordinal,estado',
+            'gestion:id_gestion,anio,estado',
+
+            'creado:id_usuario,correo',
+            'modificado:id_usuario,correo',
+            'eliminado:id_usuario,correo'
+        ])
+            ->orderBy('id_gestion', 'DESC')
+            ->orderBy('id_grado', 'ASC')
+            ->orderBy('id_materia', 'ASC')
+            ->get();
     }
 
     public function get_malla_curricular($id_malla_curricular)
     {
-        return $this::with('grado', 'materia', 'area', 'gestion', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_malla_curricular);
+        return $this::with([
+            'grado:id_grado,id_nivel,grado,posicion_ordinal,estado',
+            'materia:id_materia,id_campo,materia,abreviatura,posicion_ordinal,estado',
+            'area:id_area,id_campo,area,abreviatura,posicion_ordinal,estado',
+            'gestion:id_gestion,anio,estado',
+
+            'creado:id_usuario,correo',
+            'modificado:id_usuario,correo',
+            'eliminado:id_usuario,correo'
+        ])->findOrFail($id_malla_curricular);
     }
 }

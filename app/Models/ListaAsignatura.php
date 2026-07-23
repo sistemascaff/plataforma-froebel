@@ -62,13 +62,36 @@ class ListaAsignatura extends Model
         return $this->belongsTo(Usuario::class, 'eliminado_por', 'id_usuario');
     }
 
+    /* Método aún no utilizado. */
     public function get_all_listas_asignaturas()
     {
-        return $this->with('asignatura', 'periodo', 'docente.persona', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->get();
+        return $this->with([
+            'asignatura',
+            'periodo',
+            'docente.persona',
+
+            'creado:id_usuario,correo',
+            'modificado:id_usuario,correo',
+            'eliminado:id_usuario,correo'
+        ])->get();
     }
 
     public function get_lista_asignatura($id_lista_asignatura)
     {
-        return $this->with('asignatura', 'periodo.gestion', 'docente.persona', 'estudiantes.persona.usuario', 'estudiantes.curso', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')->findOrFail($id_lista_asignatura);
+        return $this->with([
+            'asignatura:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',
+            'periodo:id_periodo,id_gestion,periodo,posicion_ordinal,estado',
+            'periodo.gestion:id_gestion,anio,estado',
+            'docente:id_docente,id_persona,estado',
+            'docente.persona:id_persona,apellido_paterno,apellido_materno,nombres,estado',
+            'estudiantes:id_estudiante,id_persona,id_curso,estado',
+            'estudiantes.persona:id_persona,apellido_paterno,apellido_materno,nombres,estado',
+            'estudiantes.persona.usuario:id_usuario,id_persona,correo,contrasenha,url_foto_perfil,estado',
+            'estudiantes.curso:id_curso,curso,estado',
+
+            'creado:id_usuario,correo',
+            'modificado:id_usuario,correo',
+            'eliminado:id_usuario,correo'
+        ])->findOrFail($id_lista_asignatura);
     }
 }
