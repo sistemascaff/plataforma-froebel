@@ -37,6 +37,19 @@
                     }
                 },
                 {
+                    data: "responsables",
+                    render: function(data, type, row) {
+                        if (!data || data.length === 0) {
+                            return "-";
+                        }
+
+                        return data.map((responsable, index) =>{
+                            const nombreCompleto = `${responsable.persona.apellido_paterno} ${responsable.persona.apellido_materno} ${responsable.persona.nombres}`;
+                            return `<b class="text-info">${index + 1}.</b> ${nombreCompleto}`;
+                        }).join("<br>");
+                    }
+                },
+                {
                     data: "estado",
                     render: function(data, type, row) {
                         if (data == 1) {

@@ -25,6 +25,7 @@
                 <th>Nivel</th>
                 <th>P. Ordinal</th>
                 <th>Grados</th>
+                <th>Responsables</th>
                 <th>Estado</th>
                 <th>F. Registro</th>
                 <th>F. Actualización</th>

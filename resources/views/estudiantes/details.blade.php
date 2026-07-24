@@ -34,20 +34,20 @@
                     <h4 class="fw-bold text-dark mb-1">
                         {{ $estudiante->persona->nombres }} {{ $estudiante->persona->apellido_paterno }}
                     </h4>
-                    <p class="text-muted mb-3"><i class="fa-solid fa-id-badge me-1"></i> CI:
+                    <p class="text-muted mb-3"><i class="fa-solid fa-duotone fa-id-badge me-1"></i> CI:
                         {{ $estudiante->persona->documento_identificacion }}
                         {{ $estudiante->persona->documento_complemento ? '- ' . $estudiante->persona->documento_complemento : '' }}
                         {{ $estudiante->persona->documento_expedido }}</p>
 
                     <span class="badge {{ $badgeClass }} fs-6 px-3 py-2 rounded-pill mb-3">
-                        <i class="fa-solid fa-circle-user me-1"></i> {{ $estado }}
+                        <i class="fa-solid fa-duotone fa-circle-user me-1"></i> {{ $estado }}
                     </span>
                 </div>
             </div>
 
             <div class="card shadow-sm">
                 <div class="card-header bg-info fw-bold">
-                    <i class="fa-solid fa-key me-2"></i> Datos de Acceso
+                    <i class="fa-solid fa-duotone fa-key me-2"></i> Datos de Acceso
                 </div>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -62,7 +62,8 @@
                                 <span
                                     class="fw-bold text-muted">{{ helper_decrypt($estudiante->persona->usuario->contrasenha) }}</span>
                             </div>
-                            <small class="text-warning-emphasis"><i class="fa-solid fa-circle-info"></i> Visible solo para
+                            <small class="text-warning-emphasis"><i class="fa-solid fa-duotone fa-circle-info"></i> Visible
+                                solo para
                                 ADMIN</small>
                         </li>
                     @endif
@@ -86,7 +87,8 @@
         <div class="col-12 col-lg-8">
             <div class="card shadow-sm mb-4">
                 <div class="card-header border-bottom-0 pt-4 pb-0">
-                    <h5 class="text-info fw-bold"><i class="fa-solid fa-address-card me-2"></i> Información Personal</h5>
+                    <h5 class="text-info fw-bold"><i class="fa-solid fa-duotone fa-address-card me-2"></i> Información
+                        Personal</h5>
                 </div>
                 <div class="card-body">
                     <div class="row border-bottom pb-2 mb-2">
@@ -129,7 +131,8 @@
 
             <div class="card shadow-sm mb-4">
                 <div class="card-header border-bottom-0 pt-4 pb-0">
-                    <h5 class="text-info fw-bold"><i class="fa-solid fa-school me-2"></i> Datos Académicos y Nacimiento</h5>
+                    <h5 class="text-info fw-bold"><i class="fa-solid fa-duotone fa-school me-2"></i> Datos Académicos y
+                        Nacimiento</h5>
                 </div>
                 <div class="card-body">
                     <div class="row border-bottom pb-2 mb-2 bg-light rounded p-2">
@@ -158,7 +161,8 @@
 
             <div class="card shadow-sm mb-4 border-start border-danger border-4">
                 <div class="card-header border-bottom-0 pt-4 pb-0">
-                    <h5 class="text-danger fw-bold"><i class="fa-solid fa-notes-medical me-2"></i> Información de Salud</h5>
+                    <h5 class="text-danger fw-bold"><i class="fa-solid fa-duotone fa-notes-medical me-2"></i> Información de
+                        Salud</h5>
                 </div>
                 <div class="card-body">
                     <div class="row border-bottom pb-2 mb-2">
@@ -211,11 +215,11 @@
                                                     $icono =
                                                         $lista_asignatura->asignatura->tipo_calificacion ===
                                                         'cualitativa'
-                                                            ? '<i class="fa-solid fa-comments"></i>'
-                                                            : '<i class="fa-solid fa-chart-column"></i>';
+                                                            ? 'fa-comments'
+                                                            : 'fa-chart-column';
                                                 @endphp
-                                                {!! $icono !!}
-                                                {{ strtoupper($lista_asignatura->asignatura->tipo_calificacion) }}
+                                                <i
+                                                    class="fa-solid fa-duotone {{ $icono }} me-1"></i>{{ strtoupper($lista_asignatura->asignatura->tipo_calificacion) }}
                                             </span>
                                         </td>
                                         <td>

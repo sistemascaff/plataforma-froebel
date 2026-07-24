@@ -32,13 +32,15 @@
                 {
                     data: "tipo_calificacion",
                     render: function(data, type, row) {
-                        return data.toUpperCase();
+                        const i = data === 'cualitativa' ? 'fa-comments' : 'fa-chart-column';
+                        return `<span class="badge bg-info text-dark"><i class="fa-solid fa-duotone ${i} me-1"></i>${data.toUpperCase()}</span>`;
                     }
                 },
                 {
                     data: "tipo_bloque",
                     render: function(data, type, row) {
-                        return data.toUpperCase();
+                        const bg = data === 'curso' ? 'bg-primary' : 'bg-danger';
+                        return `<span class="badge ${bg}">${data.toUpperCase()}</span>`;
                     }
                 },
                 {

@@ -28,6 +28,12 @@ class Nivel extends Model
         return $this->hasMany(Asignatura::class, 'id_nivel', 'id_nivel');
     }
 
+    /** Relación uno a muchos con docentes */
+    public function responsables()
+    {
+        return $this->hasMany(Docente::class, 'id_nivel', 'id_nivel');
+    }
+
     /** Relación con atributo de auditoría */
     public function creado()
     {
@@ -51,6 +57,8 @@ class Nivel extends Model
         return $this::with([
             'grados',
             'asignaturas',
+            'responsables:id_docente,id_persona,id_nivel,estado',
+            'responsables.persona:id_persona,apellido_paterno,apellido_materno,nombres,estado',
 
             'creado:id_usuario,correo',
             'modificado:id_usuario,correo',

@@ -20,7 +20,6 @@
                 <th>#</th>
                 <th>Coordinación</th>
                 <th>Responsables</th>
-                <th>Asignaturas</th>
                 <th>Estado</th>
                 <th>F. Registro</th>
                 <th>F. Actualización</th>

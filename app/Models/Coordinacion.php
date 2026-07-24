@@ -21,6 +21,12 @@ class Coordinacion extends Model
         return $this->hasMany(Asignatura::class, 'id_coordinacion', 'id_coordinacion');
     }
 
+    /** Relación uno a muchos con docentes */
+    public function responsables()
+    {
+        return $this->hasMany(Docente::class, 'id_coordinacion', 'id_coordinacion');
+    }
+
     /** Relación con atributo de auditoría */
     public function creado()
     {
@@ -42,6 +48,9 @@ class Coordinacion extends Model
     public function get_all_coordinaciones()
     {
         return $this::with([
+            'responsables:id_docente,id_persona,id_coordinacion,estado',
+            'responsables.persona:id_persona,apellido_paterno,apellido_materno,nombres,estado',
+
             'creado:id_usuario,correo',
             'modificado:id_usuario,correo',
             'eliminado:id_usuario,correo'
@@ -52,6 +61,7 @@ class Coordinacion extends Model
     {
         return $this::with([
             'asignaturas:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',
+
             'creado:id_usuario,correo',
             'modificado:id_usuario,correo',
             'eliminado:id_usuario,correo'

@@ -87,8 +87,24 @@
                             <tr>
                                 <td>{{ $loop->index + 1 }}</td>
                                 <td>{{ $asignatura->asignatura }}</td>
-                                <td>{{ strtoupper($asignatura->tipo_calificacion) }}</td>
-                                <td>{{ strtoupper($asignatura->tipo_bloque) }}</td>
+                                <td>
+                                    <span class="badge bg-info text-dark">
+                                        @php
+                                            $icono =
+                                                $asignatura->tipo_calificacion === 'cualitativa'
+                                                    ? 'fa-comments'
+                                                    : 'fa-chart-column';
+                                        @endphp
+                                        <i
+                                            class="fa-solid fa-duotone {{ $icono }} me-1"></i>{{ strtoupper($asignatura->tipo_calificacion) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span
+                                        class="badge {{ $asignatura->tipo_bloque === 'curso' ? 'bg-primary' : 'bg-danger' }}">
+                                        {{ strtoupper($asignatura->tipo_bloque) }}
+                                    </span>
+                                </td>
                                 <td>{{ $asignatura->curso ? $asignatura->curso->curso : 'N/A' }}</td>
                                 <td>{{ $asignatura->aula ? $asignatura->aula->aula : 'N/A' }}</td>
                             </tr>
