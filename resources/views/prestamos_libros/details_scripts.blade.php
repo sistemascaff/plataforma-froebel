@@ -5,7 +5,7 @@
         $(document).on('click', '.btn-marcar', function() {
             const $btn = $(this);
             const idLibro = $btn.data('id');
-            const accion = $btn.hasClass('btn-success') ? 'devolver' : 'pendiente';
+            const accion = $btn.hasClass('btn-success') ? 'devuelto' : 'pendiente';
 
             Swal.fire({
                 theme: localStorage.getItem('theme') || 'light',

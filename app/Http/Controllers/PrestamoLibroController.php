@@ -544,11 +544,17 @@ class PrestamoLibroController extends Controller
 
     public function marcar_devolucion(Request $request, $id_prestamo_libro, $id_libro)
     {
-        $request->validate([
-            'id_prestamo_libro' => 'required|integer|exists:prestamos_libros,id_prestamo_libro',
-            'id_libro' => 'required|integer|exists:libros,id_libro'
+        $request->merge([
+            'prestamo_libro' => $id_prestamo_libro,
+            'libro' => $id_libro
         ]);
-        
+
+        /** Solo modificar la validación acorde a los parámetros esperados */
+        $request->validate([
+            'prestamo_libro' => 'required|integer|exists:prestamos_libros,id_prestamo_libro',
+            'libro' => 'required|integer|exists:libros,id_libro'
+        ]);
+
         DB::beginTransaction();
         try {
             $prestamo = (new PrestamoLibro())->get_prestamo_libro($id_prestamo_libro);
