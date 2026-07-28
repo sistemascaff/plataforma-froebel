@@ -73,7 +73,7 @@ class EstudianteController extends Controller
         try {
             // 1. Crear la persona
             $persona = new Persona();
-            $persona->id_colegio = session('id_colegio'); // o el que corresponda
+            $persona->id_colegio = Auth::user()->persona?->id_colegio; // o el que corresponda
             $persona->apellido_paterno = strtoupper($request->apellido_paterno);
             $persona->apellido_materno = strtoupper($request->apellido_materno);
             $persona->nombres = strtoupper($request->nombres);
@@ -86,7 +86,7 @@ class EstudianteController extends Controller
             $persona->celular = $request->celular;
             $persona->telefono = $request->telefono ?? '0';
             $persona->tipo_perfil = 'ESTUDIANTE';
-            $persona->creado_por = session('id_usuario');
+            $persona->creado_por = auth()->id();
             $persona->ip = $request->ip();
             $persona->dispositivo = $request->userAgent();
             $persona->save();
@@ -102,7 +102,7 @@ class EstudianteController extends Controller
             $estudiante->salud_tipo_sangre = $request->salud_tipo_sangre;
             $estudiante->salud_alergias = $request->salud_alergias;
             $estudiante->salud_datos = $request->salud_datos;
-            $estudiante->creado_por = session('id_usuario');
+            $estudiante->creado_por = auth()->id();
             $estudiante->ip = $request->ip();
             $estudiante->dispositivo = $request->userAgent();
             $estudiante->save();
@@ -124,7 +124,7 @@ class EstudianteController extends Controller
                 $usuario->url_foto_perfil = 'public/img/user.png';
             }
 
-            $usuario->creado_por = session('id_usuario');
+            $usuario->creado_por = auth()->id();
             $usuario->ip = $request->ip();
             $usuario->dispositivo = $request->userAgent();
             $usuario->save();
@@ -165,7 +165,7 @@ class EstudianteController extends Controller
             $persona->celular                  = $request->celular;
             $persona->telefono                 = $request->telefono ?? '0';
             $persona->tipo_perfil = 'ESTUDIANTE';
-            $persona->modificado_por           = session('id_usuario');
+            $persona->modificado_por           = auth()->id();
             $persona->ip                       = $request->ip();
             $persona->dispositivo              = $request->userAgent();
             $persona->save();
@@ -179,7 +179,7 @@ class EstudianteController extends Controller
             $estudiante->salud_tipo_sangre = $request->salud_tipo_sangre;
             $estudiante->salud_alergias = $request->salud_alergias;
             $estudiante->salud_datos = $request->salud_datos;
-            $estudiante->modificado_por  = session('id_usuario');
+            $estudiante->modificado_por  = auth()->id();
             $estudiante->ip              = $request->ip();
             $estudiante->dispositivo     = $request->userAgent();
             $estudiante->save();
@@ -206,7 +206,7 @@ class EstudianteController extends Controller
                 $usuario->url_foto_perfil = 'public/storage/fotos_perfil/estudiantes/' . $nombreArchivo;
             }
 
-            $usuario->modificado_por = session('id_usuario');
+            $usuario->modificado_por = auth()->id();
             $usuario->ip = $request->ip();
             $usuario->dispositivo = $request->userAgent();
             $usuario->save();
@@ -242,7 +242,7 @@ class EstudianteController extends Controller
 
             $estudiante->estado = $nuevoEstado;
             $estudiante->fecha_eliminacion = $seArchiva ? Carbon::now() : null;
-            $estudiante->eliminado_por = $seArchiva ? session('id_usuario') : null;
+            $estudiante->eliminado_por = $seArchiva ? auth()->id() : null;
             $estudiante->ip = $request->ip();
             $estudiante->dispositivo = $request->userAgent();
             $estudiante->save();
@@ -250,7 +250,7 @@ class EstudianteController extends Controller
             $persona = (new Persona())->get_persona($estudiante->id_persona);
             $persona->estado = $nuevoEstado;
             $persona->fecha_eliminacion = $seArchiva ? Carbon::now() : null;
-            $persona->eliminado_por = $seArchiva ? session('id_usuario') : null;
+            $persona->eliminado_por = $seArchiva ? auth()->id() : null;
             $persona->ip = $request->ip();
             $persona->dispositivo = $request->userAgent();
             $persona->save();
@@ -260,7 +260,7 @@ class EstudianteController extends Controller
             // Si el estudiante se archiva, el usuario pierde acceso; si se restaura, recupera acceso
             $usuario->tiene_acceso = $seArchiva ? '0' : '1';
             $usuario->fecha_eliminacion = $seArchiva ? Carbon::now() : null;
-            $usuario->eliminado_por = $seArchiva ? session('id_usuario') : null;
+            $usuario->eliminado_por = $seArchiva ? auth()->id() : null;
             $usuario->ip = $request->ip();
             $usuario->dispositivo = $request->userAgent();
             $usuario->save();

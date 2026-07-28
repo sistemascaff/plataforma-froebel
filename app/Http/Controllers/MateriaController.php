@@ -53,7 +53,7 @@ class MateriaController extends Controller
         $materia->abreviatura = $request->abreviatura;
         $materia->posicion_ordinal = $request->posicion_ordinal;
         $materia->id_campo = $request->id_campo;
-        $materia->creado_por = session('id_usuario');
+        $materia->creado_por = auth()->id();
         $materia->ip = $request->ip();
         $materia->dispositivo = $request->userAgent();
         $materia->save();
@@ -72,7 +72,7 @@ class MateriaController extends Controller
         $materia->abreviatura = $request->abreviatura;
         $materia->posicion_ordinal = $request->posicion_ordinal;
         $materia->id_campo = $request->id_campo;
-        $materia->modificado_por = session('id_usuario');
+        $materia->modificado_por = auth()->id();
         $materia->ip = $request->ip();
         $materia->dispositivo = $request->userAgent();
         $materia->save();
@@ -93,7 +93,7 @@ class MateriaController extends Controller
         $materia = (new Materia())->get_materia($request->id_materia);
         $materia->estado = $materia->estado == '1' ? '0' : '1';
         $materia->fecha_eliminacion = $materia->estado == '0' ? Carbon::now() : null;
-        $materia->eliminado_por = $materia->estado == '0' ? session('id_usuario') : null;
+        $materia->eliminado_por = $materia->estado == '0' ? auth()->id() : null;
         $materia->ip = $request->ip();
         $materia->dispositivo = $request->userAgent();
         $materia->save();

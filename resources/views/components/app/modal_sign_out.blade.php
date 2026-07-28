@@ -9,7 +9,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body fw-bold">
-                <span class="text-info">{{ session('correo') }}</span>, ¿Desea cerrar sesión?
+                <span class="text-info">{{ Auth::user()->correo }}</span>, ¿Desea cerrar sesión?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">

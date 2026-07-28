@@ -52,7 +52,7 @@ class GradoController extends Controller
         $grado->grado = $request->grado;
         $grado->posicion_ordinal = $request->posicion_ordinal;
         $grado->id_nivel = $request->id_nivel;
-        $grado->creado_por = session('id_usuario');
+        $grado->creado_por = auth()->id();
         $grado->ip = $request->ip();
         $grado->dispositivo = $request->userAgent();
         $grado->save();
@@ -70,7 +70,7 @@ class GradoController extends Controller
         $grado->grado = $request->grado;
         $grado->posicion_ordinal = $request->posicion_ordinal;
         $grado->id_nivel = $request->id_nivel;
-        $grado->modificado_por = session('id_usuario');
+        $grado->modificado_por = auth()->id();
         $grado->ip = $request->ip();
         $grado->dispositivo = $request->userAgent();
         $grado->save();
@@ -91,7 +91,7 @@ class GradoController extends Controller
         $grado = (new Grado())->get_grado($request->id_grado);
         $grado->estado = $grado->estado == '1' ? '0' : '1';
         $grado->fecha_eliminacion = $grado->estado == '0' ? Carbon::now() : null;
-        $grado->eliminado_por = $grado->estado == '0' ? session('id_usuario') : null;
+        $grado->eliminado_por = $grado->estado == '0' ? auth()->id() : null;
         $grado->ip = $request->ip();
         $grado->dispositivo = $request->userAgent();
         $grado->save();

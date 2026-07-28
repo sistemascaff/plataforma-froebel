@@ -75,7 +75,7 @@ class LibroController extends Controller
     public function create(LibroValidation $request)
     {
         $libro = new Libro();
-        $libro->id_colegio = session('id_colegio');
+        $libro->id_colegio = Auth::user()->persona?->id_colegio;
         $libro->titulo = strtoupper($request->titulo);
         $libro->codigo = $request->codigo;
         $libro->autor = strtoupper($request->autor);
@@ -88,7 +88,7 @@ class LibroController extends Controller
         $libro->descripcion = $request->descripcion;
         $libro->adquisicion = $request->adquisicion;
         $libro->fecha_ingreso_cooperativa = $request->fecha_ingreso_cooperativa;
-        $libro->creado_por = session('id_usuario');
+        $libro->creado_por = auth()->id();
         $libro->ip = $request->ip();
         $libro->dispositivo = $request->userAgent();
         $libro->save();
@@ -115,7 +115,7 @@ class LibroController extends Controller
         $libro->descripcion = $request->descripcion;
         $libro->adquisicion = $request->adquisicion;
         $libro->fecha_ingreso_cooperativa = $request->fecha_ingreso_cooperativa;
-        $libro->modificado_por = session('id_usuario');
+        $libro->modificado_por = auth()->id();
         $libro->ip = $request->ip();
         $libro->dispositivo = $request->userAgent();
         $libro->save();
@@ -137,7 +137,7 @@ class LibroController extends Controller
         if ($libro->estado != '2') {
             $libro->estado = $libro->estado == '1' ? '0' : '1';
             $libro->fecha_eliminacion = $libro->estado == '0' ? Carbon::now() : null;
-            $libro->eliminado_por = $libro->estado == '0' ? session('id_usuario') : null;
+            $libro->eliminado_por = $libro->estado == '0' ? auth()->id() : null;
             $libro->ip = $request->ip();
             $libro->dispositivo = $request->userAgent();
             $libro->save();

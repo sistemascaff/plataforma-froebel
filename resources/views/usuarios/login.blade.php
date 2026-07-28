@@ -47,6 +47,13 @@
                                 </div>
                             </div>
 
+                            <div class="form-check mb-3 text-start">
+                                <input class="form-check-input" type="checkbox" name="remember" id="remember">
+                                <label class="form-check-label text-muted" for="remember">
+                                    Mantener sesión iniciada
+                                </label>
+                            </div>
+
                             <button type="submit" class="btn btn-primary btn-block">Acceder <i
                                     class="fa-solid fa-duotone fa-sign-in"></i></button>
                         </form>

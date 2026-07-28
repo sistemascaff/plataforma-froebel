@@ -226,7 +226,7 @@ class ListaAsignaturaController extends Controller
 
         $lista_asignatura = (new ListaAsignatura())->get_lista_asignatura($request->lista_asignatura);
         $lista_asignatura->id_docente = $request->docente;
-        $lista_asignatura->modificado_por = session('id_usuario');
+        $lista_asignatura->modificado_por = auth()->id();
         $lista_asignatura->ip = $request->ip();
         $lista_asignatura->dispositivo = $request->userAgent();
         $lista_asignatura->save();

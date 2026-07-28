@@ -62,7 +62,7 @@ class MallaCurricularController extends Controller
         $malla_curricular->id_materia = $request->id_materia;
         $malla_curricular->id_area = $request->id_area;
         $malla_curricular->id_gestion = $request->id_gestion;
-        $malla_curricular->creado_por = session('id_usuario');
+        $malla_curricular->creado_por = auth()->id();
         $malla_curricular->ip = $request->ip();
         $malla_curricular->dispositivo = $request->userAgent();
         $malla_curricular->save();
@@ -81,7 +81,7 @@ class MallaCurricularController extends Controller
         $malla_curricular->id_materia = $request->id_materia;
         $malla_curricular->id_area = $request->id_area;
         $malla_curricular->id_gestion = $request->id_gestion;
-        $malla_curricular->modificado_por = session('id_usuario');
+        $malla_curricular->modificado_por = auth()->id();
         $malla_curricular->ip = $request->ip();
         $malla_curricular->dispositivo = $request->userAgent();
         $malla_curricular->save();
@@ -102,7 +102,7 @@ class MallaCurricularController extends Controller
         $malla_curricular = (new MallaCurricular())->get_malla_curricular($request->id_malla_curricular);
         $malla_curricular->estado = $malla_curricular->estado == '1' ? '0' : '1';
         $malla_curricular->fecha_eliminacion = $malla_curricular->estado == '0' ? Carbon::now() : null;
-        $malla_curricular->eliminado_por = $malla_curricular->estado == '0' ? session('id_usuario') : null;
+        $malla_curricular->eliminado_por = $malla_curricular->estado == '0' ? auth()->id() : null;
         $malla_curricular->ip = $request->ip();
         $malla_curricular->dispositivo = $request->userAgent();
         $malla_curricular->save();

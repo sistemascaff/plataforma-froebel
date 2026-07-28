@@ -4,7 +4,7 @@
             <div class="me-2">
                 <i
                     class="fa-duotone fa-solid {{ helper_tipo_perfil_a_font_awesome_icono(session('tipo_perfil')) }} fa-lg"></i>
-                {{ session('correo') }}
+                {{ Auth::user()->correo }}
             </div>
 
             @if (session('tipo_perfil') === 'ADMIN')
@@ -25,7 +25,7 @@
                 <ul class="dropdown-menu text-small" style="">
                     <li><a class="dropdown-item" href="#"><i
                                 class="fa-solid fa-duotone {{ helper_tipo_perfil_a_font_awesome_icono(session('tipo_perfil')) }}"></i>
-                            {{ session('correo') }}</a></li>
+                            {{ Auth::user()->correo }}</a></li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>

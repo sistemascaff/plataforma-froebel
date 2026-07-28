@@ -307,7 +307,7 @@ class PrestamoLibroController extends Controller
             $prestamo_libro->curso = $curso ? $curso : 'N/A';
             $prestamo_libro->celular = $celular;
             $prestamo_libro->fecha_devolucion = $request->fecha_devolucion;
-            $prestamo_libro->creado_por = session('id_usuario');
+            $prestamo_libro->creado_por = auth()->id();
             $prestamo_libro->ip = $request->ip();
             $prestamo_libro->dispositivo = $request->userAgent();
             $prestamo_libro->save();
@@ -427,7 +427,7 @@ class PrestamoLibroController extends Controller
             $prestamo->curso = $curso;
             $prestamo->celular = $celular;
             $prestamo->fecha_devolucion = $request->fecha_devolucion;
-            $prestamo->modificado_por = session('id_usuario');
+            $prestamo->modificado_por = auth()->id();
             $prestamo->ip = $request->ip();
             $prestamo->dispositivo = $request->userAgent();
             $prestamo->save();
@@ -526,7 +526,7 @@ class PrestamoLibroController extends Controller
 
             // Marcar préstamo como ANULADO
             $prestamo->estado = 0;
-            $prestamo->modificado_por = session('id_usuario');
+            $prestamo->modificado_por = auth()->id();
             $prestamo->fecha_actualizacion = now();
             $prestamo->save();
 

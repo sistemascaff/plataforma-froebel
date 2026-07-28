@@ -7,23 +7,29 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Auth;
 
 class CheckSessionAccess
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // 1. Validación inicial rápida: Si la sesión misma ya no tiene los datos, lo echamos.
-        if (!session('tiene_acceso') || !session('id_usuario')) {
-            return $this->rechazarAcceso($request, 'No tiene acceso o su sesión ha expirado.');
+        // 1. Verificamos si NO está autenticado nativamente
+        if (!Auth::check()) {
+            return $this->rechazarAcceso($request, 'Su sesión ha expirado. Por favor, inicie sesión nuevamente.');
         }
 
-        $idUsuario = session('id_usuario');
+        // 2. Si está autenticado, verificamos rápidamente si su acceso fue bloqueado
+        if (Auth::user()->tiene_acceso == 0) {
+            Auth::logout();
+            return $this->rechazarAcceso($request, 'No tiene acceso al sistema.');
+        }
 
-        // 2. Estrategia de Caché: "Recuerda" el estado del usuario por 24 horas (86400 segundos)
-        // Si el caché existe, ni siquiera toca la base de datos. Si no existe, ejecuta la función.
+        $idUsuario = Auth::id();
+
+        // 3. Estrategia de Caché: "Recuerda" el estado del usuario en BD por 24 horas (86400 segundos)
         $estadoUsuario = Cache::remember('acceso_usuario_' . $idUsuario, 86400, function () use ($idUsuario) {
 
-            // Esta consulta SOLO se ejecuta si el caché expiró o si un Administrador lo borró
+            // Esta consulta SOLO se ejecuta si el caché expiró o si un Administrador lo borró (ej. al cambiarle el rol)
             $usuario = Usuario::with('persona')->find($idUsuario);
 
             // Escenario A: El usuario ya no existe, está inactivo o le quitaron el acceso
@@ -38,18 +44,20 @@ class CheckSessionAccess
             ];
         });
 
-        // 3. Evaluamos lo que nos devolvió el caché
+        // 4. Evaluamos lo que nos devolvió el caché
         if (!$estadoUsuario['valido']) {
-            session()->flush(); // Destruimos su sesión en el navegador
+            Auth::logout(); // Destruimos sesión nativa
+            session()->flush(); // Limpiamos cualquier rastro manual por seguridad
             return $this->rechazarAcceso($request, $estadoUsuario['motivo']);
         }
 
-        // 4. Verificamos si su rol cambió en caliente (ej. de DOCENTE a ADMIN)
-        if (session('tipo_perfil') !== $estadoUsuario['tipo_perfil']) {
+        // 5. Mantenemos sincronizada la variable manual 'tipo_perfil'
+        // Esto es útil mientras terminas de migrar tus demás Middlewares (CheckPerfilAccess) al modelo nativo
+        if (!session()->has('tipo_perfil') || session('tipo_perfil') !== $estadoUsuario['tipo_perfil']) {
             session(['tipo_perfil' => $estadoUsuario['tipo_perfil']]);
         }
 
-        // Si todo está perfecto, continúa
+        // Si todo está perfecto, continúa la petición
         return $next($request);
     }
 
@@ -66,7 +74,7 @@ class CheckSessionAccess
         }
 
         return redirect()->route('login')->with([
-            'mensaje' => $mensaje . ' Por favor, inicie sesión nuevamente.'
+            'mensaje' => $mensaje
         ]);
     }
 }

@@ -42,7 +42,7 @@ class PeriodoController extends Controller
         $periodo->periodo = $request->periodo;
         $periodo->posicion_ordinal = $request->posicion_ordinal;
         $periodo->id_gestion = $request->id_gestion;
-        $periodo->creado_por = session('id_usuario');
+        $periodo->creado_por = auth()->id();
         $periodo->ip = $request->ip();
         $periodo->dispositivo = $request->userAgent();
         $periodo->save();
@@ -60,7 +60,7 @@ class PeriodoController extends Controller
         $periodo->periodo = $request->periodo;
         $periodo->posicion_ordinal = $request->posicion_ordinal;
         $periodo->id_gestion = $request->id_gestion;
-        $periodo->modificado_por = session('id_usuario');
+        $periodo->modificado_por = auth()->id();
         $periodo->ip = $request->ip();
         $periodo->dispositivo = $request->userAgent();
         $periodo->save();
@@ -81,7 +81,7 @@ class PeriodoController extends Controller
         $periodo = (new Periodo())->get_periodo($request->id_periodo);
         $periodo->estado = $periodo->estado == '1' ? '0' : '1';
         $periodo->fecha_eliminacion = $periodo->estado == '0' ? Carbon::now() : null;
-        $periodo->eliminado_por = $periodo->estado == '0' ? session('id_usuario') : null;
+        $periodo->eliminado_por = $periodo->estado == '0' ? auth()->id() : null;
         $periodo->ip = $request->ip();
         $periodo->dispositivo = $request->userAgent();
         $periodo->save();

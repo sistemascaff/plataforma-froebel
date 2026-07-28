@@ -23,9 +23,9 @@
         </div>
     </main>
 
-    @if (session('tiene_acceso'))
+    @auth
         @include('components.app.modal_sign_out')
-    @endif
+    @endauth
 
     @include('components.public.footer')
 

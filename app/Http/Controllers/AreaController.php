@@ -53,7 +53,7 @@ class AreaController extends Controller
         $area->abreviatura = $request->abreviatura;
         $area->posicion_ordinal = $request->posicion_ordinal;
         $area->id_campo = $request->id_campo;
-        $area->creado_por = session('id_usuario');
+        $area->creado_por = auth()->id();
         $area->ip = $request->ip();
         $area->dispositivo = $request->userAgent();
         $area->save();
@@ -72,7 +72,7 @@ class AreaController extends Controller
         $area->abreviatura = $request->abreviatura;
         $area->posicion_ordinal = $request->posicion_ordinal;
         $area->id_campo = $request->id_campo;
-        $area->modificado_por = session('id_usuario');
+        $area->modificado_por = auth()->id();
         $area->ip = $request->ip();
         $area->dispositivo = $request->userAgent();
         $area->save();
@@ -93,7 +93,7 @@ class AreaController extends Controller
         $area = (new Area())->get_area($request->id_area);
         $area->estado = $area->estado == '1' ? '0' : '1';
         $area->fecha_eliminacion = $area->estado == '0' ? Carbon::now() : null;
-        $area->eliminado_por = $area->estado == '0' ? session('id_usuario') : null;
+        $area->eliminado_por = $area->estado == '0' ? auth()->id() : null;
         $area->ip = $request->ip();
         $area->dispositivo = $request->userAgent();
         $area->save();

@@ -38,7 +38,7 @@ class EstudianteLicenciaController extends Controller
         $licencia->fecha_fin = $request->fecha_fin;
         $licencia->evidencia = $request->evidencia;
 
-        $licencia->creado_por = session('id_usuario');
+        $licencia->creado_por = auth()->id();
         $licencia->ip = $request->ip();
         $licencia->dispositivo    = $request->userAgent();
         $licencia->save();
@@ -60,7 +60,7 @@ class EstudianteLicenciaController extends Controller
         $licencia->fecha_fin     = $request->fecha_fin;
         $licencia->evidencia     = $request->evidencia;
 
-        $licencia->modificado_por      = session('id_usuario');
+        $licencia->modificado_por      = auth()->id();
         $licencia->ip                  = $request->ip();
         $licencia->dispositivo         = $request->userAgent();
         $licencia->save();
@@ -89,7 +89,7 @@ class EstudianteLicenciaController extends Controller
         }
 
         $licencia->estado            = 0;
-        $licencia->eliminado_por     = session('id_usuario');
+        $licencia->eliminado_por     = auth()->id();
         $licencia->fecha_eliminacion = now();
         $licencia->ip                = $request->ip();
         $licencia->dispositivo       = $request->userAgent();

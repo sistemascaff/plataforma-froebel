@@ -88,7 +88,7 @@
 
     <p class="align-middle border border-info rounded p-1 font-weight-bold">Fecha de creación: <span
             class="text-info align-middle">{{ date('d/m/Y H:i:s') }}</span>, generado por: <span
-            class="text-info align-middle">{{ session('correo') }}</span></p>
+            class="text-info align-middle">{{ Auth::user()->correo }}</span></p>
 
     <p class="subtitulo bg-info text-white p-1 text-center rounded align-middle">CANTIDAD TOTAL DE LIBROS PRESTADOS:
         {{ $libros_mas_prestados->sum('total') }}</p>

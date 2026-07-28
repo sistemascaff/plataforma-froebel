@@ -48,7 +48,7 @@ class CampoController extends Controller
         $campo = new Campo();
         $campo->campo = $request->campo;
         $campo->posicion_ordinal = $request->posicion_ordinal;
-        $campo->creado_por = session('id_usuario');
+        $campo->creado_por = auth()->id();
         $campo->ip = $request->ip();
         $campo->dispositivo = $request->userAgent();
         $campo->save();
@@ -65,7 +65,7 @@ class CampoController extends Controller
         $campo = (new Campo())->get_campo($id_campo);
         $campo->campo = $request->campo;
         $campo->posicion_ordinal = $request->posicion_ordinal;
-        $campo->modificado_por = session('id_usuario');
+        $campo->modificado_por = auth()->id();
         $campo->ip = $request->ip();
         $campo->dispositivo = $request->userAgent();
         $campo->save();
@@ -86,7 +86,7 @@ class CampoController extends Controller
         $campo = (new Campo())->get_campo($request->id_campo);
         $campo->estado = $campo->estado == '1' ? '0' : '1';
         $campo->fecha_eliminacion = $campo->estado == '0' ? Carbon::now() : null;
-        $campo->eliminado_por = $campo->estado == '0' ? session('id_usuario') : null;
+        $campo->eliminado_por = $campo->estado == '0' ? auth()->id() : null;
         $campo->ip = $request->ip();
         $campo->dispositivo = $request->userAgent();
         $campo->save();

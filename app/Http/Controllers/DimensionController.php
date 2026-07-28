@@ -44,7 +44,7 @@ class DimensionController extends Controller
         $dimension->puntaje_maximo = $request->puntaje_maximo;
         $dimension->tipo_calculo = $request->tipo_calculo;
         $dimension->id_gestion = $request->id_gestion;
-        $dimension->creado_por = session('id_usuario');
+        $dimension->creado_por = auth()->id();
         $dimension->ip = $request->ip();
         $dimension->dispositivo = $request->userAgent();
         $dimension->save();
@@ -64,7 +64,7 @@ class DimensionController extends Controller
         $dimension->puntaje_maximo = $request->puntaje_maximo;
         $dimension->tipo_calculo = $request->tipo_calculo;
         $dimension->id_gestion = $request->id_gestion;
-        $dimension->modificado_por = session('id_usuario');
+        $dimension->modificado_por = auth()->id();
         $dimension->ip = $request->ip();
         $dimension->dispositivo = $request->userAgent();
         $dimension->save();
@@ -85,7 +85,7 @@ class DimensionController extends Controller
         $dimension = (new Dimension())->get_dimension($request->id_dimension);
         $dimension->estado = $dimension->estado == '1' ? '0' : '1';
         $dimension->fecha_eliminacion = $dimension->estado == '0' ? Carbon::now() : null;
-        $dimension->eliminado_por = $dimension->estado == '0' ? session('id_usuario') : null;
+        $dimension->eliminado_por = $dimension->estado == '0' ? auth()->id() : null;
         $dimension->ip = $request->ip();
         $dimension->dispositivo = $request->userAgent();
         $dimension->save();

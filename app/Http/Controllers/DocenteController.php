@@ -64,7 +64,7 @@ class DocenteController extends Controller
         try {
             // 1. Crear la persona
             $persona = new Persona();
-            $persona->id_colegio = session('id_colegio'); // o el que corresponda
+            $persona->id_colegio = Auth::user()->persona?->id_colegio; // o el que corresponda
             $persona->apellido_paterno = strtoupper($request->apellido_paterno);
             $persona->apellido_materno = strtoupper($request->apellido_materno);
             $persona->nombres = strtoupper($request->nombres);
@@ -85,7 +85,7 @@ class DocenteController extends Controller
             } else {
                 $persona->tipo_perfil = 'DOCENTE';
             }
-            $persona->creado_por = session('id_usuario');
+            $persona->creado_por = auth()->id();
             $persona->ip = $request->ip();
             $persona->dispositivo = $request->userAgent();
             $persona->save();
@@ -98,7 +98,7 @@ class DocenteController extends Controller
             $docente->especialidad = strtoupper($request->especialidad ?? '');
             $docente->grado_estudios = $request->grado_estudios;
             $docente->domicilio = $request->domicilio;
-            $docente->creado_por = session('id_usuario');
+            $docente->creado_por = auth()->id();
             $docente->ip = $request->ip();
             $docente->dispositivo = $request->userAgent();
             $docente->save();
@@ -120,7 +120,7 @@ class DocenteController extends Controller
                 $usuario->url_foto_perfil = 'public/img/user.png';
             }
 
-            $usuario->creado_por = session('id_usuario');
+            $usuario->creado_por = auth()->id();
             $usuario->ip = $request->ip();
             $usuario->dispositivo = $request->userAgent();
             $usuario->save();
@@ -170,7 +170,7 @@ class DocenteController extends Controller
                 $persona->tipo_perfil = 'DOCENTE';
             }
             
-            $persona->modificado_por           = session('id_usuario');
+            $persona->modificado_por           = auth()->id();
             $persona->ip                       = $request->ip();
             $persona->dispositivo              = $request->userAgent();
             $persona->save();
@@ -181,7 +181,7 @@ class DocenteController extends Controller
             $docente->especialidad    = strtoupper($request->especialidad ?? '');
             $docente->grado_estudios  = $request->grado_estudios;
             $docente->domicilio       = $request->domicilio;
-            $docente->modificado_por  = session('id_usuario');
+            $docente->modificado_por  = auth()->id();
             $docente->ip              = $request->ip();
             $docente->dispositivo     = $request->userAgent();
             $docente->save();
@@ -208,7 +208,7 @@ class DocenteController extends Controller
                 $usuario->url_foto_perfil = 'public/storage/fotos_perfil/docentes/' . $nombreArchivo;
             }
 
-            $usuario->modificado_por = session('id_usuario');
+            $usuario->modificado_por = auth()->id();
             $usuario->ip = $request->ip();
             $usuario->dispositivo = $request->userAgent();
             $usuario->save();
@@ -244,7 +244,7 @@ class DocenteController extends Controller
 
             $docente->estado = $nuevoEstado;
             $docente->fecha_eliminacion = $seArchiva ? Carbon::now() : null;
-            $docente->eliminado_por = $seArchiva ? session('id_usuario') : null;
+            $docente->eliminado_por = $seArchiva ? auth()->id() : null;
             $docente->ip = $request->ip();
             $docente->dispositivo = $request->userAgent();
             $docente->save();
@@ -252,7 +252,7 @@ class DocenteController extends Controller
             $persona = (new Persona())->get_persona($docente->id_persona);
             $persona->estado = $nuevoEstado;
             $persona->fecha_eliminacion = $seArchiva ? Carbon::now() : null;
-            $persona->eliminado_por = $seArchiva ? session('id_usuario') : null;
+            $persona->eliminado_por = $seArchiva ? auth()->id() : null;
             $persona->ip = $request->ip();
             $persona->dispositivo = $request->userAgent();
             $persona->save();
@@ -262,7 +262,7 @@ class DocenteController extends Controller
             // Si el docente se archiva, el usuario pierde acceso; si se restaura, recupera acceso
             $usuario->tiene_acceso = $seArchiva ? '0' : '1';
             $usuario->fecha_eliminacion = $seArchiva ? Carbon::now() : null;
-            $usuario->eliminado_por = $seArchiva ? session('id_usuario') : null;
+            $usuario->eliminado_por = $seArchiva ? auth()->id() : null;
             $usuario->ip = $request->ip();
             $usuario->dispositivo = $request->userAgent();
             $usuario->save();

@@ -48,7 +48,7 @@ class NivelController extends Controller
         $nivel = new Nivel();
         $nivel->nivel = $request->nivel;
         $nivel->posicion_ordinal = $request->posicion_ordinal;
-        $nivel->creado_por = session('id_usuario');
+        $nivel->creado_por = auth()->id();
         $nivel->ip = $request->ip();
         $nivel->dispositivo = $request->userAgent();
         $nivel->save();
@@ -65,7 +65,7 @@ class NivelController extends Controller
         $nivel = (new Nivel())->get_nivel($id_nivel);
         $nivel->nivel = $request->nivel;
         $nivel->posicion_ordinal = $request->posicion_ordinal;
-        $nivel->modificado_por = session('id_usuario');
+        $nivel->modificado_por = auth()->id();
         $nivel->ip = $request->ip();
         $nivel->dispositivo = $request->userAgent();
         $nivel->save();
@@ -86,7 +86,7 @@ class NivelController extends Controller
         $nivel = (new Nivel())->get_nivel($request->id_nivel);
         $nivel->estado = $nivel->estado == '1' ? '0' : '1';
         $nivel->fecha_eliminacion = $nivel->estado == '0' ? Carbon::now() : null;
-        $nivel->eliminado_por = $nivel->estado == '0' ? session('id_usuario') : null;
+        $nivel->eliminado_por = $nivel->estado == '0' ? auth()->id() : null;
         $nivel->ip = $request->ip();
         $nivel->dispositivo = $request->userAgent();
         $nivel->save();

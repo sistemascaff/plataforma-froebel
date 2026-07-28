@@ -9,7 +9,7 @@
     <h2 class="text-center"><i class="fa-solid fa-duotone fa-door-open mx-2"></i>Bienvenido,
         <span class="text-info fw-bold">
             <i class="fa-solid fa-duotone {{ helper_tipo_perfil_a_font_awesome_icono(session('tipo_perfil')) }}"></i>
-            {{ session('correo') }}
+            {{ Auth::user()->correo }}
         </span>
     </h2>
 
@@ -19,7 +19,7 @@
         </div>
 
         <div class="card-body">
-            @if (session('id_usuario') == 1 && session('tipo_perfil') == 'ADMIN')
+            @if (Auth::id() == 1 && session('tipo_perfil') == 'ADMIN')
                 @include('panel.admin_super.dashboard_botones')
             @else
                 <!-- Editar posteriormente -->

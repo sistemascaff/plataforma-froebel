@@ -36,7 +36,7 @@ class AulaController extends Controller
     {
         $aula = new Aula();
         $aula->aula = $request->aula;
-        $aula->creado_por = session('id_usuario');
+        $aula->creado_por = auth()->id();
         $aula->ip = $request->ip();
         $aula->dispositivo = $request->userAgent();
         $aula->save();
@@ -52,7 +52,7 @@ class AulaController extends Controller
     {
         $aula = (new Aula())->get_aula($id_aula);
         $aula->aula = $request->aula;
-        $aula->modificado_por = session('id_usuario');
+        $aula->modificado_por = auth()->id();
         $aula->ip = $request->ip();
         $aula->dispositivo = $request->userAgent();
         $aula->save();
@@ -73,7 +73,7 @@ class AulaController extends Controller
         $aula = (new Aula())->get_aula($request->id_aula);
         $aula->estado = $aula->estado == '1' ? '0' : '1';
         $aula->fecha_eliminacion = $aula->estado == '0' ? Carbon::now() : null;
-        $aula->eliminado_por = $aula->estado == '0' ? session('id_usuario') : null;
+        $aula->eliminado_por = $aula->estado == '0' ? auth()->id() : null;
         $aula->ip = $request->ip();
         $aula->dispositivo = $request->userAgent();
         $aula->save();

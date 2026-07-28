@@ -57,7 +57,7 @@ class CursoController extends Controller
         $curso->curso = $request->curso;
         $curso->id_grado = $request->id_grado;
         $curso->id_paralelo = $request->id_paralelo;
-        $curso->creado_por = session('id_usuario');
+        $curso->creado_por = auth()->id();
         $curso->ip = $request->ip();
         $curso->dispositivo = $request->userAgent();
         $curso->save();
@@ -75,7 +75,7 @@ class CursoController extends Controller
         $curso->curso = $request->curso;
         $curso->id_grado = $request->id_grado;
         $curso->id_paralelo = $request->id_paralelo;
-        $curso->modificado_por = session('id_usuario');
+        $curso->modificado_por = auth()->id();
         $curso->ip = $request->ip();
         $curso->dispositivo = $request->userAgent();
         $curso->save();
@@ -96,7 +96,7 @@ class CursoController extends Controller
         $curso = (new Curso())->get_curso($request->id_curso);
         $curso->estado = $curso->estado == '1' ? '0' : '1';
         $curso->fecha_eliminacion = $curso->estado == '0' ? Carbon::now() : null;
-        $curso->eliminado_por = $curso->estado == '0' ? session('id_usuario') : null;
+        $curso->eliminado_por = $curso->estado == '0' ? auth()->id() : null;
         $curso->ip = $request->ip();
         $curso->dispositivo = $request->userAgent();
         $curso->save();

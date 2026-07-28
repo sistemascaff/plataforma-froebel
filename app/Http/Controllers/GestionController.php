@@ -46,7 +46,7 @@ class GestionController extends Controller
     {
         $gestion = new Gestion();
         $gestion->anio = $request->anio;
-        $gestion->creado_por = session('id_usuario');
+        $gestion->creado_por = auth()->id();
         $gestion->ip = $request->ip();
         $gestion->dispositivo = $request->userAgent();
         $gestion->save();
@@ -62,7 +62,7 @@ class GestionController extends Controller
     {
         $gestion = (new Gestion())->get_gestion($id_gestion);
         $gestion->anio = $request->anio;
-        $gestion->modificado_por = session('id_usuario');
+        $gestion->modificado_por = auth()->id();
         $gestion->ip = $request->ip();
         $gestion->dispositivo = $request->userAgent();
         $gestion->save();
@@ -86,7 +86,7 @@ class GestionController extends Controller
 
         $gestion->estado = $nuevoEstado;
         $gestion->fecha_eliminacion = $nuevoEstado == '0' ? Carbon::now() : null;
-        $gestion->eliminado_por = $nuevoEstado == '0' ? session('id_usuario') : null;
+        $gestion->eliminado_por = $nuevoEstado == '0' ? auth()->id() : null;
         $gestion->ip = $request->ip();
         $gestion->dispositivo = $request->userAgent();
         $gestion->save();

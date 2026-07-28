@@ -74,6 +74,12 @@ class Persona extends Model
         );
     }
 
+    // Accessor de Laravel para mostrar el nombre completo en orden nombres - apellidos.
+    public function getNombreCompletoAttribute()
+    {
+        return trim("{$this->nombres} {$this->apellido_paterno} {$this->apellido_materno}");
+    }
+
     public function get_personal()
     {
         return $this::with('usuario', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')

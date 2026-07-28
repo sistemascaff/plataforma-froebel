@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Auth;
 
 class UsuarioController extends Controller
 {
@@ -83,7 +84,7 @@ class UsuarioController extends Controller
             $usuario->estado = $nuevoEstado;
             $usuario->tiene_acceso = $nuevoEstado; // si "tiene_acceso" debe reflejar el estado
             $usuario->fecha_eliminacion = $seArchiva ? Carbon::now() : null;
-            $usuario->eliminado_por = $seArchiva ? session('id_usuario') : null;
+            $usuario->eliminado_por = $seArchiva ? auth()->id() : null;
             $usuario->ip = $request->ip();
             $usuario->dispositivo = $request->userAgent();
             $usuario->save();
@@ -91,7 +92,7 @@ class UsuarioController extends Controller
             $persona = (new Persona())->get_persona($usuario->id_persona);
             $persona->estado = $nuevoEstado;
             $persona->fecha_eliminacion = $seArchiva ? Carbon::now() : null;
-            $persona->eliminado_por = $seArchiva ? session('id_usuario') : null;
+            $persona->eliminado_por = $seArchiva ? auth()->id() : null;
             $persona->ip = $request->ip();
             $persona->dispositivo = $request->userAgent();
             $persona->save();
@@ -100,7 +101,7 @@ class UsuarioController extends Controller
                 $docente = $persona->docente;
                 $docente->estado = $nuevoEstado;
                 $docente->fecha_eliminacion = $seArchiva ? Carbon::now() : null;
-                $docente->eliminado_por = $seArchiva ? session('id_usuario') : null;
+                $docente->eliminado_por = $seArchiva ? auth()->id() : null;
                 $docente->ip = $request->ip();
                 $docente->dispositivo = $request->userAgent();
                 $docente->save();
@@ -108,7 +109,7 @@ class UsuarioController extends Controller
                 $estudiante = $persona->estudiante;
                 $estudiante->estado = $nuevoEstado;
                 $estudiante->fecha_eliminacion = $seArchiva ? Carbon::now() : null;
-                $estudiante->eliminado_por = $seArchiva ? session('id_usuario') : null;
+                $estudiante->eliminado_por = $seArchiva ? auth()->id() : null;
                 $estudiante->ip = $request->ip();
                 $estudiante->dispositivo = $request->userAgent();
                 $estudiante->save();
@@ -164,16 +165,14 @@ class UsuarioController extends Controller
             ]);
         }
 
-        //Si el usuario y la contraseña son correctos, se crea la sesión y se redirige al panel de administración.
+        // Le pasamos el objeto del usuario y un booleano (true si marcó el checkbox de "Recuérdame")
+        $recordar = $request->boolean('remember');
+        Auth::login($usuario, $recordar);
+        // ----------------------------
+
+        //Si el usuario y la contraseña son correctos, se crea la sesión manual.
         session([
-            'tiene_acceso' => true,
-            'id_usuario' => $usuario->id_usuario,
-            'correo' => $usuario->correo,
-            'id_colegio' => $usuario->persona?->id_colegio,
             'tipo_perfil' => $usuario->persona?->tipo_perfil,
-            'nombres' => $usuario->persona?->nombres,
-            'apellido_paterno' => $usuario->persona?->apellido_paterno,
-            'apellido_materno' => $usuario->persona?->apellido_materno,
         ]);
 
         //Actualizar datos de la última conexión
@@ -188,7 +187,9 @@ class UsuarioController extends Controller
 
     public function cerrar_sesion()
     {
-        session()->flush();
-        return redirect()->route('main.index');
+        Auth::logout(); // Mata la sesión nativa y la cookie de "recuérdame"
+        session()->flush(); // Mata la sesión manual
+
+        return redirect()->route('login');
     }
 }

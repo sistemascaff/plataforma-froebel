@@ -52,7 +52,7 @@ class AsignaturaController extends Controller
                 $lista = new ListaAsignatura();
                 $lista->id_asignatura = $asignatura;
                 $lista->id_periodo = $periodo->id_periodo;
-                $lista->creado_por = session('id_usuario') ?? 0;
+                $lista->creado_por = auth()->id() ?? 0;
                 $lista->ip = $request->ip();
                 $lista->dispositivo = $request->userAgent();
                 $lista->save();
@@ -97,7 +97,7 @@ class AsignaturaController extends Controller
         $asignatura->id_nivel = $request->id_nivel;
         $asignatura->id_coordinacion = $request->id_coordinacion;
         $asignatura->id_curso = $request->tipo_bloque === 'curso' ? $request->id_curso : null;
-        $asignatura->creado_por = session('id_usuario');
+        $asignatura->creado_por = auth()->id();
         $asignatura->ip = $request->ip();
         $asignatura->dispositivo = $request->userAgent();
         $asignatura->save();
@@ -121,7 +121,7 @@ class AsignaturaController extends Controller
         $asignatura->id_nivel = $request->id_nivel;
         $asignatura->id_coordinacion = $request->id_coordinacion;
         $asignatura->id_curso = $request->tipo_bloque === 'curso' ? $request->id_curso : null;
-        $asignatura->modificado_por = session('id_usuario');
+        $asignatura->modificado_por = auth()->id();
         $asignatura->ip = $request->ip();
         $asignatura->dispositivo = $request->userAgent();
         $asignatura->save();
@@ -142,7 +142,7 @@ class AsignaturaController extends Controller
         $asignatura = (new Asignatura())->get_asignatura($request->id_asignatura);
         $asignatura->estado = $asignatura->estado == '1' ? '0' : '1';
         $asignatura->fecha_eliminacion = $asignatura->estado == '0' ? Carbon::now() : null;
-        $asignatura->eliminado_por = $asignatura->estado == '0' ? session('id_usuario') : null;
+        $asignatura->eliminado_por = $asignatura->estado == '0' ? auth()->id() : null;
         $asignatura->ip = $request->ip();
         $asignatura->dispositivo = $request->userAgent();
         $asignatura->save();
