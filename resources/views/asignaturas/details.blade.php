@@ -26,7 +26,8 @@
     <div class="card shadow-sm mb-4">
         <div class="card-header p-4 d-flex justify-content-between align-items-center">
             <h4 class="fw-bold text-primary">{{ $asignatura->asignatura }}</h4>
-            <span class="badge {{ $badgeClass }} px-3 py-2 fs-6 shadow-sm"><i class="fa-duotone fa-circle-check me-1"></i> {{ $estado }}</span>
+            <span class="badge {{ $badgeClass }} px-3 py-2 fs-6 shadow-sm"><i class="fa-duotone fa-circle-check me-1"></i>
+                {{ $estado }}</span>
         </div>
         <div class="card-body">
             <div class="row g-4 mt-1">
@@ -36,7 +37,8 @@
                     </h6>
                     <div class="row mb-2">
                         <div class="col-sm-5 fw-bold text-muted">Materia:</div>
-                        <div class="col-sm-7">{{ $asignatura->materia->abreviatura }} - {{ $asignatura->materia->materia }}</div>
+                        <div class="col-sm-7">{{ $asignatura->materia->abreviatura }} - {{ $asignatura->materia->materia }}
+                        </div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-sm-5 fw-bold text-muted">Área:</div>
@@ -44,14 +46,27 @@
                     </div>
                     <div class="row mb-2">
                         <div class="col-sm-5 fw-bold text-muted">Tipo Calificación:</div>
-                        <div class="col-sm-7">{{ strtoupper($asignatura->tipo_calificacion) }}</div>
+                        @php
+                            $icono =
+                                $asignatura->tipo_calificacion === 'cualitativa' ? 'fa-comments' : 'fa-chart-column';
+                        @endphp
+                        <div class="col-sm-7">
+                            <span class="badge bg-info text-dark">
+                                <i
+                                    class="fa-solid fa-duotone {{ $icono }} me-1"></i>{{ strtoupper($asignatura->tipo_calificacion) }}
+                            </span>
+                        </div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-sm-5 fw-bold text-muted">Tipo Bloque:</div>
-                        <div class="col-sm-7">{{ strtoupper($asignatura->tipo_bloque) }}</div>
+                        <div class="col-sm-7">
+                            <span class="badge {{ $asignatura->tipo_bloque === 'curso' ? 'bg-primary' : 'bg-danger' }}">
+                                {{ strtoupper($asignatura->tipo_bloque) }}
+                            </span>
+                        </div>
                     </div>
                 </div>
-                
+
                 <div class="col-md-6">
                     <h6 class="text-muted fw-bold mb-3 border-bottom pb-2">
                         <i class="fa-duotone fa-sitemap me-1"></i> Ubicación y Estructura
@@ -92,14 +107,16 @@
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed rounded" type="button" data-bs-toggle="collapse"
                             data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                            <b class="text-secondary"><i class="fa-duotone fa-calendar-plus me-1"></i> ASIGNAR NUEVO HORARIO DISPONIBLE</b>
+                            <b class="text-secondary"><i class="fa-duotone fa-calendar-plus me-1"></i> ASIGNAR NUEVO HORARIO
+                                DISPONIBLE</b>
                         </button>
                     </h2>
                     <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#bootstrap-acordeon">
                         <div class="accordion-body border border-top-0 rounded-bottom">
                             <div class="row">
                                 <div class="col-md-4 mb-3">
-                                    <label for="dia_semana" class="form-label fw-bold">Día de la semana <span class="text-danger">*</span></label>
+                                    <label for="dia_semana" class="form-label fw-bold">Día de la semana <span
+                                            class="text-danger">*</span></label>
                                     <select class="form-select" id="dia_semana" name="dia_semana" required>
                                         <option value="" disabled selected>Selecciona un día...</option>
                                         <option value="1">LUNES</option>
@@ -111,10 +128,12 @@
                                     </select>
                                 </div>
                                 <div class="col-md-8 mb-3">
-                                    <label for="horario" class="form-label fw-bold">Horario <span class="text-danger">*</span></label>
+                                    <label for="horario" class="form-label fw-bold">Horario <span
+                                            class="text-danger">*</span></label>
                                     <select class="form-select" id="horario" name="horario" required>
                                     </select>
-                                    <div class="form-text text-muted small"><i class="fa-duotone fa-info-circle"></i> Se omiten los horarios de otros niveles, inactivos o de receso/recreo.</div>
+                                    <div class="form-text text-muted small"><i class="fa-duotone fa-info-circle"></i> Se
+                                        omiten los horarios de otros niveles, inactivos o de receso/recreo.</div>
                                 </div>
                             </div>
                             <div class="text-end">
@@ -177,12 +196,14 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group" role="group">
-                                        <a class="btn btn-info btn-sm" href="{{ route('listas_asignaturas.detalles', $lista_asignatura->id_lista_asignatura) }}" data-bs-toggle="tooltip" title="Detalles de la lista">
+                                        <a class="btn btn-info btn-sm"
+                                            href="{{ route('listas_asignaturas.detalles', $lista_asignatura->id_lista_asignatura) }}"
+                                            data-bs-toggle="tooltip" title="Detalles de la lista">
                                             <i class="fa-duotone fa-solid fa-eye"></i>
                                         </a>
                                         <button type="button" class="btn btn-warning btn-sm btn-editar-docente"
                                             data-id-docente="{{ $lista_asignatura->id_docente }}"
-                                            data-id-lista="{{ $lista_asignatura->id_lista_asignatura }}" 
+                                            data-id-lista="{{ $lista_asignatura->id_lista_asignatura }}"
                                             data-bs-toggle="tooltip" title="Editar docente">
                                             <i class="fa-duotone fa-solid fa-edit"></i>
                                         </button>

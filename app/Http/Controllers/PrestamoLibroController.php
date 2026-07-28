@@ -549,7 +549,6 @@ class PrestamoLibroController extends Controller
             'libro' => $id_libro
         ]);
 
-        /** Solo modificar la validación acorde a los parámetros esperados */
         $request->validate([
             'prestamo_libro' => 'required|integer|exists:prestamos_libros,id_prestamo_libro',
             'libro' => 'required|integer|exists:libros,id_libro'

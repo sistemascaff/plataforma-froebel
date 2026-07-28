@@ -36,8 +36,25 @@
                 </div>
                 <div class="col-md-4">
                     <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-calendar me-1"></i> Gestión y Periodo:</p>
-                    <p class="mb-0 fs-6">{{ $lista_asignatura->periodo->gestion->anio }} -
-                        {{ $lista_asignatura->periodo->periodo }}</p>
+                    <p class="mb-0 fs-6">
+                        {{ $lista_asignatura->periodo->gestion->anio }} - {{ $lista_asignatura->periodo->periodo }}
+                        @php
+                            $periodoEstado = $lista_asignatura->periodo->estado;
+
+                            $periodoEstadoClass = match ($periodoEstado) {
+                                1 => 'bg-success',
+                                0 => 'bg-danger',
+                                default => 'bg-secondary',
+                            };
+
+                            $periodoEstadoTexto = match ($periodoEstado) {
+                                1 => 'ACTIVO',
+                                0 => 'INACTIVO',
+                                default => 'DESCONOCIDO',
+                            };
+                        @endphp
+                        <span class="badge {{ $periodoEstadoClass }}">{{ $periodoEstadoTexto }}</span>
+                    </p>
                 </div>
                 <div class="col-md-4">
                     <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-chalkboard-user me-1"></i> Docente Asignado:
@@ -85,17 +102,20 @@
             <h5 class="card-title mb-0 fw-bold text-info">
                 <i class="fa-solid fa-users-class me-2"></i> Estudiantes Inscritos
             </h5>
-
-            @if ($lista_asignatura->asignatura->tipo_bloque === 'mixto')
-                <div class="d-flex gap-2">
+            <div class="d-flex gap-2">
+                <a class="btn btn-success shadow-sm" href="{{ route('dashboard') /* Reemplazar ruta después*/ }}">
+                    <i class="fa-solid fa-duotone fa-plus me-1"></i>Crear asistencia
+                </a>
+                @if ($lista_asignatura->asignatura->tipo_bloque === 'mixto')
                     <button type="button" class="btn btn-warning shadow-sm" id="btn-toggle-edicion">
-                        <i class="fa-solid fa-duotone fa-edit me-1"></i> Editar Lista
+                        <i class="fa-solid fa-duotone fa-edit me-1"></i>Editar Lista
                     </button>
                     <button type="button" class="btn btn-primary shadow-sm" id="btn-guardar-estudiantes" disabled>
-                        <i class="fa-solid fa-duotone fa-floppy-disk me-1"></i> Guardar Cambios
+                        <i class="fa-solid fa-duotone fa-floppy-disk me-1"></i>Guardar Cambios
                     </button>
-                </div>
-            @endif
+                @endif
+            </div>
+
         </div>
         <div class="card-body">
             <div class="table-responsive">
