@@ -26,13 +26,15 @@ class UsuarioController extends Controller
 
     public function view_dashboard()
     {
-        if (session('tipo_perfil') === 'ADMIN') {
+        $tipo_perfil = Auth::user()->persona?->tipo_perfil;
+
+        if ($tipo_perfil === 'ADMIN') {
             return view('panel.admin_super.dashboard', [
-                'head_title' => 'PANEL DE ' . session('tipo_perfil'),
+                'head_title' => 'PANEL DE ' . $tipo_perfil,
             ]);
-        } else if (session('tipo_perfil') === 'BIBLIOTECARIA') {
+        } else if ($tipo_perfil === 'BIBLIOTECARIA') {
             return view('panel.biblioteca.dashboard', [
-                'head_title' => 'PANEL DE ' . session('tipo_perfil'),
+                'head_title' => 'PANEL DE ' . $tipo_perfil,
             ]);
         } else {
             return redirect()->route('main.index');
@@ -148,6 +150,7 @@ class UsuarioController extends Controller
                 'mensaje' => "El usuario con el correo {$request->correo} no existe.",
                 'login_correo' => $request->correo,
                 'login_contrasenha' => $request->contrasenha,
+                'login_remember' => $request->boolean('remember'),
             ]);
         }
         if ($usuario->tiene_acceso == '0') {
@@ -155,6 +158,7 @@ class UsuarioController extends Controller
                 'mensaje' => "El usuario con el correo {$request->correo} no tiene acceso al sistema.",
                 'login_correo' => $request->correo,
                 'login_contrasenha' => $request->contrasenha,
+                'login_remember' => $request->boolean('remember'),
             ]);
         }
         if ($request->contrasenha != helper_decrypt($usuario->contrasenha)) {
@@ -162,6 +166,7 @@ class UsuarioController extends Controller
                 'mensaje' => 'Contraseña incorrecta.',
                 'login_correo' => $request->correo,
                 'login_contrasenha' => $request->contrasenha,
+                'login_remember' => $request->boolean('remember'),
             ]);
         }
 
@@ -169,11 +174,6 @@ class UsuarioController extends Controller
         $recordar = $request->boolean('remember');
         Auth::login($usuario, $recordar);
         // ----------------------------
-
-        //Si el usuario y la contraseña son correctos, se crea la sesión manual.
-        session([
-            'tipo_perfil' => $usuario->persona?->tipo_perfil,
-        ]);
 
         //Actualizar datos de la última conexión
         $usuario->timestamps = false;

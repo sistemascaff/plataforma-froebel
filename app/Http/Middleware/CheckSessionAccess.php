@@ -15,13 +15,13 @@ class CheckSessionAccess
     {
         // 1. Verificamos si NO está autenticado nativamente
         if (!Auth::check()) {
-            return $this->rechazarAcceso($request, 'Su sesión ha expirado. Por favor, inicie sesión nuevamente.');
+            return $this->rechazarAcceso($request, 'Su sesión ha expirado. Por favor, inicie sesión nuevamente.', 401);
         }
 
         // 2. Si está autenticado, verificamos rápidamente si su acceso fue bloqueado
         if (Auth::user()->tiene_acceso == 0) {
             Auth::logout();
-            return $this->rechazarAcceso($request, 'No tiene acceso al sistema.');
+            return $this->rechazarAcceso($request, 'No tiene acceso al sistema.', 403);
         }
 
         $idUsuario = Auth::id();
@@ -48,13 +48,7 @@ class CheckSessionAccess
         if (!$estadoUsuario['valido']) {
             Auth::logout(); // Destruimos sesión nativa
             session()->flush(); // Limpiamos cualquier rastro manual por seguridad
-            return $this->rechazarAcceso($request, $estadoUsuario['motivo']);
-        }
-
-        // 5. Mantenemos sincronizada la variable manual 'tipo_perfil'
-        // Esto es útil mientras terminas de migrar tus demás Middlewares (CheckPerfilAccess) al modelo nativo
-        if (!session()->has('tipo_perfil') || session('tipo_perfil') !== $estadoUsuario['tipo_perfil']) {
-            session(['tipo_perfil' => $estadoUsuario['tipo_perfil']]);
+            return $this->rechazarAcceso($request, $estadoUsuario['motivo'], 403);
         }
 
         // Si todo está perfecto, continúa la petición
@@ -64,17 +58,17 @@ class CheckSessionAccess
     /**
      * Función auxiliar para manejar las respuestas de rechazo limpiamente
      */
-    private function rechazarAcceso(Request $request, $mensaje): Response
+    private function rechazarAcceso(Request $request, $mensaje, $codigoError = 403): Response
     {
+        // Si es AJAX, devolvemos el JSON con el código correspondiente
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => false,
                 'message' => $mensaje
-            ], 403);
+            ], $codigoError);
         }
 
-        return redirect()->route('login')->with([
-            'mensaje' => $mensaje
-        ]);
+        // Si es web, lanzamos el abort, lo que mostrará la vista 401.blade.php o 403.blade.php
+        abort($codigoError, $mensaje);
     }
 }

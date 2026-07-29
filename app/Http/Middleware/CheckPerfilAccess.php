@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckPerfilAccess
@@ -15,7 +16,7 @@ class CheckPerfilAccess
     public function handle(Request $request, Closure $next, ...$perfiles): Response
     {
         // 1. Obtenemos el perfil actual del usuario en sesión
-        $perfilActual = session('tipo_perfil');
+        $perfilActual = Auth::user()->persona?->tipo_perfil;
 
         // 2. Verificamos si el perfil actual existe dentro del arreglo de permitidos
         if (!in_array($perfilActual, $perfiles)) {
@@ -30,7 +31,10 @@ class CheckPerfilAccess
 
             // 4. Si es una petición web normal, redirigimos de forma segura
             // Puedes usar abort(403) para mostrar una pantalla de error, o redirigir al panel
-            return redirect()->route('dashboard');
+            // return redirect()->route('dashboard');
+            
+            // 4. Si es una petición web normal, lanzamos el error 403 (esto renderiza errors/403.blade.php)
+            abort(403, 'Acceso denegado. Tu perfil (' . $perfilActual . ') no tiene permisos para realizar esta acción.');
         }
 
         // Si el perfil coincide, la petición continúa

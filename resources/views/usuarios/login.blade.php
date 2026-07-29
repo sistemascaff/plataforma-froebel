@@ -48,7 +48,8 @@
                             </div>
 
                             <div class="form-check mb-3 text-start">
-                                <input class="form-check-input" type="checkbox" name="remember" id="remember">
+                                <input class="form-check-input" type="checkbox" name="remember" id="remember"
+                                    {{ session('login_remember') ? 'checked' : '' }}>
                                 <label class="form-check-label text-muted" for="remember">
                                     Mantener sesión iniciada
                                 </label>

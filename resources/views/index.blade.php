@@ -15,8 +15,8 @@
 
         @auth
             Bienvenido, <i
-                class="fa-solid fa-duotone {{ helper_tipo_perfil_a_font_awesome_icono(session('tipo_perfil')) }}"></i>
-            <b>[{{ session('tipo_perfil') }}]
+                class="fa-solid fa-duotone {{ helper_tipo_perfil_a_font_awesome_icono(Auth::user()->persona?->tipo_perfil) }}"></i>
+            <b>[{{ Auth::user()->persona?->tipo_perfil }}]
                 {{ Auth::user()->persona?->nombre_completo }}</b>.
             <br>
 

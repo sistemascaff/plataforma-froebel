@@ -3,13 +3,13 @@
         <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start fw-bold">
             <div class="me-2">
                 <i
-                    class="fa-duotone fa-solid {{ helper_tipo_perfil_a_font_awesome_icono(session('tipo_perfil')) }} fa-lg"></i>
+                    class="fa-duotone fa-solid {{ helper_tipo_perfil_a_font_awesome_icono(Auth::user()->persona?->tipo_perfil) }} fa-lg"></i>
                 {{ Auth::user()->correo }}
             </div>
 
-            @if (session('tipo_perfil') === 'ADMIN')
+            @if (Auth::user()->persona?->tipo_perfil === 'ADMIN')
                 @include('panel.admin_super.dashboard_header')
-            @elseif (session('tipo_perfil') === 'BIBLIOTECARIA')
+            @elseif (Auth::user()->persona?->tipo_perfil === 'BIBLIOTECARIA')
                 @include('panel.biblioteca.dashboard_header')
             @endif
 
@@ -24,7 +24,7 @@
                         alt="mdo" width="32" height="32" class="rounded-circle"> </a>
                 <ul class="dropdown-menu text-small" style="">
                     <li><a class="dropdown-item" href="#"><i
-                                class="fa-solid fa-duotone {{ helper_tipo_perfil_a_font_awesome_icono(session('tipo_perfil')) }}"></i>
+                                class="fa-solid fa-duotone {{ helper_tipo_perfil_a_font_awesome_icono(Auth::user()->persona?->tipo_perfil) }}"></i>
                             {{ Auth::user()->correo }}</a></li>
                     <li>
                         <hr class="dropdown-divider">
