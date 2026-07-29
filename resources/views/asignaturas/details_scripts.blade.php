@@ -223,7 +223,7 @@
                     });
                     $('#modal-formulario').modal('hide');
                     btn.prop('disabled', false)
-                        .html('<i class="fa-solid fa-duotone fa-save"></i> Guardar');
+                        .html('<i class="fa-solid fa-duotone fa-save me-1"></i>Guardar');
 
                     // Se obtiene el nuevo docente desde la respuesta y se actualiza la tabla
                     const nuevoDocente = response.nuevoDocente;
@@ -270,7 +270,7 @@
                 },
                 complete: function() {
                     btn.prop('disabled', false)
-                        .html('<i class="fa-solid fa-duotone fa-save"></i> Guardar');
+                        .html('<i class="fa-solid fa-duotone fa-save me-1"></i>Guardar');
                 }
             });
         });

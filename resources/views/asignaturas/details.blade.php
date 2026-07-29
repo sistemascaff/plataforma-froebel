@@ -3,10 +3,10 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="text-info fw-bold mb-0">
-            <i class="fa-solid fa-duotone fa-book-open-reader me-2"></i> {{ $head_title ?? 'Detalles de la Asignatura' }}
+            <i class="fa-solid fa-duotone fa-book-open-reader me-2"></i>{{ $head_title ?? 'Detalles de la Asignatura' }}
         </h1>
         <a class="btn btn-secondary shadow-sm" href="{{ route('asignaturas.index') }}">
-            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver
+            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i>Volver
         </a>
     </div>
 
@@ -52,8 +52,8 @@
                         @endphp
                         <div class="col-sm-7">
                             <span class="badge bg-info text-dark">
-                                <i
-                                    class="fa-solid fa-duotone {{ $icono }} me-1"></i>{{ strtoupper($asignatura->tipo_calificacion) }}
+                                <i class="fa-solid fa-duotone {{ $icono }} me-1"></i>
+                                {{ strtoupper($asignatura->tipo_calificacion) }}
                             </span>
                         </div>
                     </div>
@@ -98,7 +98,7 @@
                 <i class="fa-duotone fa-calendar-clock me-2"></i> Horarios de la Asignatura
             </h4>
             <button type="button" class="btn btn-primary" id="btn-guardar-horarios">
-                <i class="fa-solid fa-duotone fa-floppy-disk me-1"></i> Guardar cambios
+                <i class="fa-solid fa-duotone fa-floppy-disk me-1"></i>Guardar cambios
             </button>
         </div>
         <div class="card-body">
@@ -138,7 +138,7 @@
                             </div>
                             <div class="text-end">
                                 <button type="button" class="btn btn-success" id="btn-agregar-horario">
-                                    <i class="fa-solid fa-duotone fa-plus me-1"></i> Agregar a la lista
+                                    <i class="fa-solid fa-duotone fa-plus me-1"></i>Agregar a la lista
                                 </button>
                             </div>
                         </div>

@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="text-center text-info fw-bold"><i class="fa-solid fa-duotone fa-object-group"></i> {{ $head_title }}</h1>
+    <h1 class="text-center text-info fw-bold"><i class="fa-solid fa-duotone fa-object-group me-1"></i>{{ $head_title }}</h1>
 
     <button type="button" class="btn btn-success mb-3 btn-crear" data-bs-toggle="modal" data-bs-target="#modal-formulario">
-        <i class="fa-solid fa-duotone fa-plus"></i> Crear área</button>
+        <i class="fa-solid fa-duotone fa-plus me-1"></i>Crear área</button>
 
     <h2 class="text-info fw-bold">Lista de áreas (SIE)</h2>
 

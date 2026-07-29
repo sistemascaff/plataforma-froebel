@@ -3,10 +3,10 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="text-info fw-bold mb-0">
-            <i class="fa-solid fa-duotone fa-user-graduate me-2"></i> {{ $head_title ?? 'Detalles del Estudiante' }}
+            <i class="fa-solid fa-duotone fa-user-graduate me-2"></i>{{ $head_title ?? 'Detalles del Estudiante' }}
         </h1>
         <a class="btn btn-outline-secondary shadow-sm" href="{{ route('estudiantes.index') }}">
-            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver
+            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i>Volver
         </a>
     </div>
 
@@ -34,20 +34,20 @@
                     <h4 class="fw-bold text-dark mb-1">
                         {{ $estudiante->persona->nombres }} {{ $estudiante->persona->apellido_paterno }}
                     </h4>
-                    <p class="text-muted mb-3"><i class="fa-solid fa-duotone fa-id-badge me-1"></i> CI:
+                    <p class="text-muted mb-3"><i class="fa-solid fa-duotone fa-id-badge me-1"></i>CI:
                         {{ $estudiante->persona->documento_identificacion }}
                         {{ $estudiante->persona->documento_complemento ? '- ' . $estudiante->persona->documento_complemento : '' }}
                         {{ $estudiante->persona->documento_expedido }}</p>
 
                     <span class="badge {{ $badgeClass }} fs-6 px-3 py-2 rounded-pill mb-3">
-                        <i class="fa-solid fa-duotone fa-circle-user me-1"></i> {{ $estado }}
+                        <i class="fa-solid fa-duotone fa-circle-user me-1"></i>{{ $estado }}
                     </span>
                 </div>
             </div>
 
             <div class="card shadow-sm">
                 <div class="card-header bg-info fw-bold">
-                    <i class="fa-solid fa-duotone fa-key me-2"></i> Datos de Acceso
+                    <i class="fa-solid fa-duotone fa-key me-2"></i>Datos de Acceso
                 </div>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -218,8 +218,8 @@
                                                             ? 'fa-comments'
                                                             : 'fa-chart-column';
                                                 @endphp
-                                                <i
-                                                    class="fa-solid fa-duotone {{ $icono }} me-1"></i>{{ strtoupper($lista_asignatura->asignatura->tipo_calificacion) }}
+                                                <i class="fa-solid fa-duotone {{ $icono }} me-1"></i>
+                                                {{ strtoupper($lista_asignatura->asignatura->tipo_calificacion) }}
                                             </span>
                                         </td>
                                         <td>

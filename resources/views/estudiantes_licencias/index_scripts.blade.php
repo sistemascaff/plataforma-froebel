@@ -262,7 +262,7 @@
                 },
                 complete: function() {
                     btn.prop('disabled', false).html(
-                        '<i class="fa-solid fa-duotone fa-save"></i> Guardar');
+                        '<i class="fa-solid fa-duotone fa-save me-1"></i>Guardar');
                 }
             });
         });

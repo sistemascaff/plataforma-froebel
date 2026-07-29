@@ -24,6 +24,7 @@
                 <th>Curso</th>
                 <th>Grado</th>
                 <th>Paralelo</th>
+                <th>Cant. Estudiantes</th>
                 <th>Estado</th>
                 <th>F. Registro</th>
                 <th>F. Actualización</th>

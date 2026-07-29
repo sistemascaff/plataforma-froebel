@@ -3,10 +3,10 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="text-info fw-bold mb-0">
-            <i class="fa-solid fa-duotone fa-object-group"></i> {{ $head_title }}
+            <i class="fa-solid fa-duotone fa-object-group me-1"></i>{{ $head_title }}
         </h1>
         <a class="btn btn-secondary" href="{{ route('areas.index') }}">
-            <i class="fa-solid fa-duotone fa-arrow-left"></i> Volver
+            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i>Volver
         </a>
     </div>
 

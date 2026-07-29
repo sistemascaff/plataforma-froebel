@@ -340,7 +340,7 @@
                         libro_insert_codigo++;
                     }
                     btn.prop('disabled', false);
-                    btn.html('<i class="fa-solid fa-duotone fa-save"></i> Guardar');
+                    btn.html('<i class="fa-solid fa-duotone fa-save me-1"></i>Guardar');
                 },
                 error: function(xhr) {
                     let respuesta = {};
@@ -373,7 +373,7 @@
                         icon: 'error'
                     });
                     btn.prop('disabled', false);
-                    btn.html('<i class="fa-solid fa-duotone fa-save"></i> Guardar');
+                    btn.html('<i class="fa-solid fa-duotone fa-save me-1"></i>Guardar');
                 }
             });
         });

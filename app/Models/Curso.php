@@ -65,8 +65,7 @@ class Curso extends Model
             'creado:id_usuario,correo',
             'modificado:id_usuario,correo',
             'eliminado:id_usuario,correo'
-        ])
-            ->orderBy('id_grado', 'ASC')->orderBy('id_paralelo', 'ASC')->get();
+        ])->withCount('estudiantes')->orderBy('id_grado', 'ASC')->orderBy('id_paralelo', 'ASC')->get();
     }
 
     public function get_curso(int $id_curso)
