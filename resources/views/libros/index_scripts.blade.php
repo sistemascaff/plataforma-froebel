@@ -96,7 +96,7 @@
                         const curso = abreviar ? ` (${abreviar})` : '';
 
                         const prestado_a = row.prestado ?
-                            `${row.prestado.tipo_perfil} ${curso} - ${row.prestado.apellido_paterno} ${row.prestado.apellido_materno} ${row.prestado.nombres}` :
+                            `${row.prestado.tipo_perfil} ${curso} - ${row.prestado.apellidos_nombres}` :
                             '-';
 
                         return `<b class="text-info">${prestado_a.trim()}</b>`;

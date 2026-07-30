@@ -255,9 +255,7 @@
 
     const prestamosLabels = {!! json_encode(
         $prestamos_totales->map(function ($p) {
-            return trim(
-                '(' . $p->tipo_perfil . ') ' . $p->apellido_paterno . ' ' . $p->apellido_materno . ' ' . $p->nombres,
-            );
+            return "({$p->persona->tipo_perfil}) {$p->persona->apellidos_nombres}";
         }),
     ) !!}.slice(0, MAX_BARRAS_CHART);
     const prestamosTotalesData = {!! json_encode($prestamos_totales->pluck('total_libros')) !!}.slice(0, MAX_BARRAS_CHART);

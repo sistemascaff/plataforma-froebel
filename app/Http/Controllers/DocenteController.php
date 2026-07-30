@@ -10,6 +10,7 @@ use App\Models\Usuario;
 use App\Models\Nivel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 
@@ -32,7 +33,7 @@ class DocenteController extends Controller
         $docente = (new Docente())->get_docente($id_docente);
 
         return view('docentes.details', [
-            'head_title' => 'DOCENTE: ' . trim($docente->persona->apellido_paterno . ' ' . $docente->persona->apellido_materno . ' ' . $docente->persona->nombres),
+            'head_title' => "DOCENTE: {$docente->persona->nombres_apellidos}",
             'docente'    => $docente,
         ]);
     }

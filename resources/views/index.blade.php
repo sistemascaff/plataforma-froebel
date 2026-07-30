@@ -15,7 +15,7 @@
         @auth
             Bienvenido, <i
                 class="fa-solid fa-duotone {{ helper_tipo_perfil_a_font_awesome_icono(Auth::user()->persona?->tipo_perfil) }} me-1"></i><b>[{{ Auth::user()->persona?->tipo_perfil }}]
-                {{ Auth::user()->persona?->nombre_completo }}</b>.
+                {{ Auth::user()->persona?->nombres_apellidos }}</b>.
             <br>
 
             Te encuentras en el index público, ¿necesitas dirigirte a tu panel? <a href="{{ route('dashboard') }}"

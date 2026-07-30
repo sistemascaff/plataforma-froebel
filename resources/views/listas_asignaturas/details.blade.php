@@ -61,7 +61,7 @@
                     </p>
                     <p class="mb-0 fs-6">
                         @if ($lista_asignatura->docente)
-                            {{ trim($lista_asignatura->docente->persona->apellido_paterno . ' ' . $lista_asignatura->docente->persona->nombres) }}
+                            {{ $lista_asignatura->docente->persona->nombres_apellidos }}
                         @else
                             <span class="text-danger"><i class="fa-duotone fa-triangle-exclamation"></i> Sin asignar</span>
                         @endif
@@ -140,14 +140,14 @@
                                         alt="Foto" style="width:35px; height:35px; object-fit:cover;">
                                 </td>
                                 <td class="align-middle fw-bold">
-                                    {{ trim($estudiante->persona->apellido_paterno . ' ' . $estudiante->persona->apellido_materno . ' ' . $estudiante->persona->nombres) }}
+                                    {{ $estudiante->persona->apellidos_nombres }}
                                 </td>
                                 <td class="align-middle">{{ $estudiante->persona->usuario->correo }}</td>
                                 <td class="align-middle">{{ $estudiante->curso->curso }}</td>
                                 <td class="text-center align-middle">
                                     <div class="d-flex gap-1 justify-content-center align-items-center">
                                         <button type="button" class="btn btn-outline-secondary btn-sm btn-copiar-nombre"
-                                            data-nombre="{{ trim($estudiante->persona->apellido_paterno . ' ' . $estudiante->persona->apellido_materno . ' ' . $estudiante->persona->nombres) }}"
+                                            data-nombre="{{ $estudiante->persona->apellidos_nombres }}"
                                             data-bs-toggle="tooltip" title="Copiar nombre completo">
                                             <i class="fa-duotone fa-user-tag"></i>
                                         </button>

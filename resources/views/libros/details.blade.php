@@ -128,7 +128,7 @@
                             <tr>
                                 <td class="fw-bold text-primary text-center align-middle">{{ $loop->iteration }}</td>
                                 <td class="align-middle">
-                                    {{ trim('(' . $prestamo->persona->tipo_perfil . ') ' . $prestamo->persona->apellido_paterno . ' ' . $prestamo->persona->apellido_materno . ' ' . $prestamo->persona->nombres) }}
+                                    {{ "({$prestamo->persona->tipo_perfil}) {$prestamo->persona->apellidos_nombres}" }}
                                 </td>
                                 <td class="align-middle">{{ $prestamo->curso ?: '-' }}</td>
                                 <td class="align-middle">{{ $prestamo->celular ?: '-' }}</td>

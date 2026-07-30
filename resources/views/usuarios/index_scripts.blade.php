@@ -181,12 +181,12 @@
                     orderable: false,
                     searchable: false,
                     render: function(data, type, row) {
-                        const TIPO_PERFIL = row.persona.tipoPerfil;
+                        const TIPO_PERFIL = row.persona.tipo_perfil;
                         return `
                             <div class="btn-group" role="group">
                                 <button type="button" class="btn btn-${row.estado == 1 ? 'danger' : 'success'} btn-sm btn-cambiar-estado"
                                         data-id="${row.id_usuario}" data-estado="${row.estado}"
-                                        data-nombre="${row.persona.apellido_paterno} ${row.persona.apellido_materno} ${row.persona.nombres}"
+                                        data-nombre="${row.persona.nombres_apellidos}"
                                         data-tipo-perfil="${TIPO_PERFIL}"
                                         data-toggle="tooltip" title="${row.estado == 1 ? 'Archivar' : 'Activar'}">
                                     <i class="fa-duotone fa-solid fa-toggle-${row.estado == 1 ? 'off' : 'on'}"></i>

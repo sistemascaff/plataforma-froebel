@@ -192,7 +192,7 @@
                                 <td>{{ $lista_asignatura->periodo->periodo }}</td>
                                 <td>{{ $lista_asignatura->periodo->gestion->anio }}</td>
                                 <td class="fw-bold text-muted">
-                                    {{ trim($lista_asignatura->docente?->persona->apellido_paterno . ' ' . $lista_asignatura->docente?->persona->apellido_materno . ' ' . $lista_asignatura->docente?->persona->nombres) }}
+                                    {{ $lista_asignatura->docente?->persona->nombres_apellidos }}
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group" role="group">

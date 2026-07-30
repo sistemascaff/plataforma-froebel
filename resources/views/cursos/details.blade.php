@@ -80,7 +80,7 @@
                                             alt="Foto" style="width:35px; height:35px; object-fit:cover;">
                                     </td>
                                     <td class="align-middle fw-bold">
-                                        {{ trim($estudiante->persona->apellido_paterno . ' ' . $estudiante->persona->apellido_materno . ' ' . $estudiante->persona->nombres) }}
+                                        {{ $estudiante->persona->apellidos_nombres }}
                                     </td>
                                     <td class="align-middle">{{ $estudiante->persona->documento_identificacion }}
                                         {{ $estudiante->persona->documento_expedido }}</td>
@@ -107,7 +107,7 @@
 
                                             <button type="button"
                                                 class="btn btn-outline-secondary btn-sm btn-copiar-nombre"
-                                                data-nombre="{{ trim($estudiante->persona->apellido_paterno . ' ' . $estudiante->persona->apellido_materno . ' ' . $estudiante->persona->nombres) }}"
+                                                data-nombre="{{ $estudiante->persona->apellidos_nombres }}"
                                                 data-bs-toggle="tooltip" title="Copiar nombre completo">
                                                 <i class="fa-duotone fa-user-tag"></i>
                                             </button>

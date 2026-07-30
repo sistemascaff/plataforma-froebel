@@ -210,7 +210,7 @@
                                 </button>
                                 <button type="button" class="btn btn-${row.estado == 1 ? 'danger' : 'success'} btn-sm btn-cambiar-estado"
                                         data-id="${row.id_estudiante}" data-estado="${row.estado}"
-                                        data-nombre="${row.persona.apellido_paterno} ${row.persona.apellido_materno} ${row.persona.nombres}"
+                                        data-nombre="${row.persona.apellidos_nombres}"
                                         data-toggle="tooltip" title="${row.estado == 1 ? 'Archivar' : 'Activar'}">
                                     <i class="fa-duotone fa-solid fa-toggle-${row.estado == 1 ? 'off' : 'on'}"></i>
                                 </button>

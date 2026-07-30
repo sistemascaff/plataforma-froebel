@@ -116,9 +116,7 @@
                         $.each(response.data, function(i, est) {
                             if (est.estado == '0') return; // Omitir inactivos
 
-                            let nombre =
-                                `${est.persona.apellido_paterno} ${est.persona.apellido_materno} ${est.persona.nombres}`
-                                .trim();
+                            let nombre = est.persona.apellidos_nombres;
                             let correo = est.persona.usuario.correo;
                             let curso = est.curso ? est.curso.curso : 'Sin Curso';
                             let foto = est.persona.usuario.url_foto_perfil ? URL_BASE +

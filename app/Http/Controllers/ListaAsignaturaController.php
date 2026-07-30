@@ -53,8 +53,7 @@ class ListaAsignaturaController extends Controller
                 if ($inactivosAEliminar->isNotEmpty()) {
                     foreach ($inactivosAEliminar as $detalle) {
                         $persona = $detalle->estudiante->persona;
-                        $nombreCompleto = trim($persona->apellido_paterno . ' ' . $persona->apellido_materno . ' ' . $persona->nombres);
-                        $cambios[] = "<p class='text-danger mb-2'><i class='fa-solid fa-user-minus me-2'></i> Se ha retirado de la lista al estudiante <b>{$nombreCompleto}</b> (Retirado/Inactivo).</p>";
+                        $cambios[] = "<p class='text-danger mb-2'><i class='fa-solid fa-user-minus me-2'></i> Se ha retirado de la lista al estudiante <b>{$persona->apellidos_nombres}</b> (Retirado/Inactivo).</p>";
                     }
 
                     DetalleListaAsignatura::whereIn('id_estudiante', $inactivosAEliminar->pluck('id_estudiante'))
@@ -74,8 +73,7 @@ class ListaAsignaturaController extends Controller
                     foreach ($ajenosAEliminar as $detalle) {
                         $persona = $detalle->estudiante->persona;
                         $cursoErroneo = $detalle->estudiante->curso->curso ?? 'Otro curso';
-                        $nombreCompleto = trim($persona->apellido_paterno . ' ' . $persona->apellido_materno . ' ' . $persona->nombres);
-                        $cambios[] = "<p class='text-danger mb-2'><i class='fa-solid fa-user-slash me-2'></i> Se ha retirado a <b>{$nombreCompleto}</b> porque pertenece a <b>{$cursoErroneo}</b> y la asignatura ahora es exclusiva de otro curso.</p>";
+                        $cambios[] = "<p class='text-danger mb-2'><i class='fa-solid fa-user-slash me-2'></i> Se ha retirado a <b>{$persona->apellidos_nombres}</b> porque pertenece a <b>{$cursoErroneo}</b> y la asignatura ahora es exclusiva de otro curso.</p>";
                     }
 
                     DetalleListaAsignatura::whereIn('id_estudiante', $ajenosAEliminar->pluck('id_estudiante'))
@@ -99,8 +97,7 @@ class ListaAsignaturaController extends Controller
                     $nuevosDetalles = [];
                     foreach ($estudiantesFaltantes as $estudiante) {
                         $persona = $estudiante->persona;
-                        $nombreCompleto = trim($persona->apellido_paterno . ' ' . $persona->apellido_materno . ' ' . $persona->nombres);
-                        $cambios[] = "<p class='text-success mb-2'><i class='fa-solid fa-user-plus me-2'></i> Se ha incorporado a la lista al estudiante <b>{$nombreCompleto}</b>.</p>";
+                        $cambios[] = "<p class='text-success mb-2'><i class='fa-solid fa-user-plus me-2'></i> Se ha incorporado a la lista al estudiante <b>{$persona->apellidos_nombres}</b>.</p>";
 
                         $nuevosDetalles[] = [
                             'id_lista_asignatura' => $id_lista_asignatura,
@@ -125,8 +122,7 @@ class ListaAsignaturaController extends Controller
                 if ($detallesAEliminar->isNotEmpty()) {
                     foreach ($detallesAEliminar as $detalle) {
                         $persona = $detalle->estudiante->persona;
-                        $nombreCompleto = trim($persona->apellido_paterno . ' ' . $persona->apellido_materno . ' ' . $persona->nombres);
-                        $cambios[] = "<p class='text-danger mb-2'><i class='fa-solid fa-user-minus me-2'></i> Se ha retirado automáticamente de la lista mixta al estudiante <b>{$nombreCompleto}</b> (Retirado/Inactivo).</p>";
+                        $cambios[] = "<p class='text-danger mb-2'><i class='fa-solid fa-user-minus me-2'></i> Se ha retirado automáticamente de la lista mixta al estudiante <b>{$persona->apellidos_nombres}</b> (Retirado/Inactivo).</p>";
                     }
 
                     DetalleListaAsignatura::whereIn('id_estudiante', $detallesAEliminar->pluck('id_estudiante'))

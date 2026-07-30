@@ -15,6 +15,8 @@ class Persona extends Model
     const CREATED_AT = 'fecha_registro';
     const UPDATED_AT = 'fecha_actualizacion';
 
+    protected $appends = ['nombres_apellidos', 'apellidos_nombres'];
+    
     /** Relación FK con colegios */
     public function colegio()
     {
@@ -75,9 +77,14 @@ class Persona extends Model
     }
 
     // Accessor de Laravel para mostrar el nombre completo en orden nombres - apellidos.
-    public function getNombreCompletoAttribute()
+    public function getNombresApellidosAttribute()
     {
         return trim("{$this->nombres} {$this->apellido_paterno} {$this->apellido_materno}");
+    }
+
+    public function getApellidosNombresAttribute()
+    {
+        return trim("{$this->apellido_paterno} {$this->apellido_materno} {$this->nombres}");
     }
 
     public function get_personal()

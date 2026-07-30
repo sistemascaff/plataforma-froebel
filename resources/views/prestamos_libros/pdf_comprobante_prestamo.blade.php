@@ -77,7 +77,7 @@
                             <div class="border border-dark">
                                 Lector/Leser: <span
                                     class="text-info">{{ helper_abreviar_curso($prestamo_libro->curso) }}</span><br>
-                                {{ trim($prestamo_libro->persona->apellido_paterno . ' ' . $prestamo_libro->persona->apellido_materno . ' ' . $prestamo_libro->persona->nombres) }}<br>
+                                {{ $prestamo_libro->persona->apellidos_nombres }}<br>
 
                             </div>
                         </td>
@@ -128,7 +128,7 @@
                     @endif
                     <tr style="border-style: hidden;">
                         <td style="text-align: left;">Lector/Leser: <span
-                                style="font-weight: normal;">{{ trim('(' . $prestamo_libro->persona->tipo_perfil . ') ' . $prestamo_libro->persona->apellido_paterno . ' ' . $prestamo_libro->persona->apellido_materno . ' ' . $prestamo_libro->persona->nombres) }}</span>
+                                style="font-weight: normal;">{{ "({$prestamo_libro->persona->tipo_perfil}) {$prestamo_libro->persona->apellidos_nombres}" }}</span>
                         </td>
                         <td style="text-align: left;border-style: hidden; border-right: 1px dotted black;">
                             Celular/Handynummer: <span

@@ -9,6 +9,7 @@ use App\Models\Persona;
 use App\Models\Usuario;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 
@@ -29,7 +30,7 @@ class EstudianteController extends Controller
         $estudiante = (new Estudiante())->get_estudiante($id_estudiante);
 
         return view('estudiantes.details', [
-            'head_title' => 'ESTUDIANTE: ' . trim($estudiante->persona->apellido_paterno . ' ' . $estudiante->persona->apellido_materno . ' ' . $estudiante->persona->nombres),
+            'head_title' => "ESTUDIANTE: {$estudiante->persona->apellidos_nombres}",
             'estudiante'    => $estudiante,
         ]);
     }

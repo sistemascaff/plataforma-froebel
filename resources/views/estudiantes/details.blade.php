@@ -31,8 +31,8 @@
                         style="width: 160px; height: 160px; object-fit: cover;" alt="Foto de perfil"
                         src="{{ URL::to('/') }}/{{ $estudiante->persona->usuario->url_foto_perfil }}">
 
-                    <h4 class="fw-bold text-dark mb-1">
-                        {{ $estudiante->persona->nombres }} {{ $estudiante->persona->apellido_paterno }}
+                    <h4 class="fw-bold mb-1">
+                        {{ $estudiante->persona->apellidos_nombres }}
                     </h4>
                     <p class="text-muted mb-3"><i class="fa-solid fa-duotone fa-id-badge me-1"></i>CI:
                         {{ $estudiante->persona->documento_identificacion }}
@@ -229,15 +229,7 @@
                                             </span>
                                         </td>
                                         <td>
-                                            @php
-                                                $p = $lista_asignatura->docente?->persona;
-                                                $nombre_completo = $p
-                                                    ? trim(
-                                                        "{$p->apellido_paterno} {$p->apellido_materno} {$p->nombres}",
-                                                    )
-                                                    : '';
-                                            @endphp
-                                            {{ $nombre_completo }}
+                                            {{ $lista_asignatura->docente?->persona->nombres_apellidos }}
                                         </td>
                                         <td>{{ $lista_asignatura->periodo->gestion->anio }}</td>
                                         <td>{{ $lista_asignatura->periodo->periodo }}</td>

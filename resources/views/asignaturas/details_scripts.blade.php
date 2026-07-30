@@ -157,12 +157,9 @@
 
                     $.each(response.data, function(i, docente) {
                         if (docente.estado != 1) return;
-
-                        let fila =
-                            `${docente.persona.apellido_paterno} ${docente.persona.apellido_materno} ${docente.persona.nombres}`
-                            .trim();
+                        
                         $select.append(
-                            `<option value="${docente.id_docente}">${fila}</option>`);
+                            `<option value="${docente.id_docente}">${docente.persona.nombres_apellidos}</option>`);
                     });
                 }
             });
@@ -227,9 +224,6 @@
 
                     // Se obtiene el nuevo docente desde la respuesta y se actualiza la tabla
                     const nuevoDocente = response.nuevoDocente;
-                    const nombreCompleto =
-                        `${nuevoDocente.persona.apellido_paterno} ${nuevoDocente.persona.apellido_materno} ${nuevoDocente.persona.nombres}`
-                        .trim();
 
                     // 1. Encontrar el botón de edición específico de esta fila usando el data-id-lista
                     const botonEdicion = $(
@@ -239,7 +233,7 @@
                     const fila = botonEdicion.closest('tr');
 
                     // 3. Actualizar el texto de la celda del docente (es la 4ta columna, índice 3)
-                    fila.find('td:eq(3)').text(nombreCompleto);
+                    fila.find('td:eq(3)').text(nuevoDocente.persona.nombres_apellidos);
 
                     // 4. Mantenimiento crucial: Actualizar el atributo data-id-docente del botón
                     // Esto asegura que si el usuario vuelve a hacer clic en "Editar" sin recargar la página, 

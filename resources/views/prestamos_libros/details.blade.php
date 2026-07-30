@@ -46,7 +46,7 @@
                 <div class="col-md-5">
                     <p class="text-muted mb-1 fw-bold"><i class="fa-solid fa-user-graduate me-1"></i> Prestatario</p>
                     <p class="fs-5 mb-0 text-break" id="persona">
-                        {{ trim('(' . $prestamo_libro->persona->tipo_perfil . ') ' . $prestamo_libro->persona->apellido_paterno . ' ' . $prestamo_libro->persona->apellido_materno . ' ' . $prestamo_libro->persona->nombres) }}
+                        {{ "({$prestamo_libro->persona->tipo_perfil}) {$prestamo_libro->persona->apellidos_nombres}" }}
                     </p>
                 </div>
                 <div class="col-md-3">

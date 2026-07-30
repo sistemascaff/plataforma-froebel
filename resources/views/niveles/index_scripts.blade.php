@@ -44,8 +44,7 @@
                         }
 
                         return data.map((responsable, index) =>{
-                            const nombreCompleto = `${responsable.persona.apellido_paterno} ${responsable.persona.apellido_materno} ${responsable.persona.nombres}`;
-                            return `<b class="text-info">${index + 1}.</b> ${nombreCompleto}`;
+                            return `<b class="text-info">${index + 1}.</b> ${responsable.persona.nombres_apellidos}`;
                         }).join("<br>");
                     }
                 },

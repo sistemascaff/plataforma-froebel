@@ -34,13 +34,6 @@
                             ` - ${persona.estudiante.curso.curso}` :
                             '';
 
-                        let nombre_completo = [persona.apellido_paterno, persona
-                                .apellido_materno, persona.nombres
-                            ]
-                            .filter(Boolean)
-                            .join(' ');
-
-
                         // Información de préstamos
                         let datos_libros = persona.cantidad_total_prestamos > 0 ?
                             ` - Total ${persona.cantidad_total_prestamos}, debe ${persona.cantidad_libros_debe}` :
@@ -50,7 +43,7 @@
                         let correo = persona.usuario?.correo || 'sin correo';
 
                         let fila =
-                            `(${persona.tipo_perfil}${curso}) ${nombre_completo} - ${correo}${datos_libros}`
+                            `(${persona.tipo_perfil}${curso}) ${persona.apellidos_nombres} - ${correo}${datos_libros}`
                             .trim();
 
                         $select.append(
@@ -171,7 +164,7 @@
                         const curso = abreviar ? ` (${abreviar})` : '';
 
                         const prestado_a = row.prestado ?
-                            `${row.prestado.tipo_perfil} ${curso} - ${row.prestado.apellido_paterno} ${row.prestado.apellido_materno} ${row.prestado.nombres}` :
+                            `${row.prestado.tipo_perfil} ${curso} - ${row.prestado.apellidos_nombres}` :
                             '-';
 
                         return `<b class="text-info">${prestado_a.trim()}</b>`;

@@ -21,9 +21,7 @@
                 {
                     data: "persona",
                     render: function(data, type, row) {
-                        persona = data.apellido_paterno + ' ' + data.apellido_materno + ' ' +
-                            data.nombres;
-                        return `<b class="text-info">${persona.trim()}</b>`;
+                        return `<b class="text-info">${data.apellidos_nombres}</b>`;
                     }
                 },
                 {

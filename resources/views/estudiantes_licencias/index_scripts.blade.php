@@ -22,15 +22,7 @@
                         // Omitir estudiantes inactivos
                         if (estudiante.estado == '0') return;
 
-                        let nombre_completo = [
-                                estudiante.persona.apellido_paterno,
-                                estudiante.persona.apellido_materno,
-                                estudiante.persona.nombres
-                            ]
-                            .filter(Boolean)
-                            .join(' ');
-
-                        let fila = `(${estudiante.curso.curso}) ${nombre_completo}`;
+                        let fila = `(${estudiante.curso.curso}) ${estudiante.persona.apellidos_nombres}`;
 
                         $select.append(
                             `<option value="${estudiante.id_estudiante}">${fila}</option>`
@@ -63,7 +55,7 @@
                 {
                     data: null,
                     render: function(data, type, row) {
-                        return `${row.estudiante.persona.apellido_paterno} ${row.estudiante.persona.apellido_materno} ${row.estudiante.persona.nombres}`;
+                        return `${row.estudiante.persona.apellidos_nombres}`;
                     }
                 },
                 {

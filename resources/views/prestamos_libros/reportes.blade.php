@@ -125,7 +125,7 @@
                                     <td class="align-middle">{{ $libro->autor }}</td>
                                     <td class="align-middle">{{ $libro->editorial }}</td>
                                     <td class="align-middle">
-                                        {{ trim('(' . $prestamo_libro->persona->tipo_perfil . ') ' . $prestamo_libro->persona->apellido_paterno . ' ' . $prestamo_libro->persona->apellido_materno . ' ' . $prestamo_libro->persona->nombres) }}
+                                        {{ "({$prestamo_libro->persona->tipo_perfil}) {$prestamo_libro->persona->apellidos_nombres}" }}
                                     </td>
                                     <td class="align-middle">{{ $prestamo_libro->curso }}</td>
                                     <td class="align-middle">
@@ -371,7 +371,7 @@
                             <tr>
                                 <td class="align-middle text-center fw-bold">{{ $loop->iteration }}</td>
                                 <td class="align-middle">
-                                    {{ trim('(' . $prestamo_pendiente->tipo_perfil . ') ' . $prestamo_pendiente->apellido_paterno . ' ' . $prestamo_pendiente->apellido_materno . ' ' . $prestamo_pendiente->nombres) }}
+                                    {{ "({$prestamo_pendiente->persona->tipo_perfil}) {$prestamo_pendiente->persona->apellidos_nombres}" }}
                                 </td>
                                 <td class="align-middle">{{ $prestamo_pendiente->curso }}</td>
                                 <td class="align-middle">{{ $prestamo_pendiente->celular }}</td>
@@ -453,7 +453,7 @@
                             <tr>
                                 <td class="text-center fw-bold align-middle">{{ $loop->iteration }}</td>
                                 <td class="align-middle">
-                                    {{ trim('(' . $prestamo_total->tipo_perfil . ') ' . $prestamo_total->apellido_paterno . ' ' . $prestamo_total->apellido_materno . ' ' . $prestamo_total->nombres) }}
+                                    {{ "({$prestamo_total->persona->tipo_perfil}) {$prestamo_total->persona->apellidos_nombres}" }}
                                 </td>
                                 <td class="align-middle">{{ $prestamo_total->curso }}</td>
                                 <td class="align-middle">{{ $prestamo_total->celular }}</td>

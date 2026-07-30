@@ -67,7 +67,8 @@ class UsuarioController extends Controller
         $usuario = (new Usuario())->get_usuario($request->id_usuario);
 
         $tipo_perfil = $usuario->persona?->tipo_perfil;
-        $nombreCompleto = trim("{$usuario->persona?->apellido_paterno} {$usuario->persona?->apellido_materno} {$usuario->persona?->nombres}");
+
+        $nombreCompleto = $usuario->persona?->nombres_apellidos;
 
         // Se valida que el usuario no sea de tipo ADMIN antes de permitir archivar o desarchivar
         if ($tipo_perfil === 'ADMIN') {

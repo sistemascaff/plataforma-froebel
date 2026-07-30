@@ -85,27 +85,26 @@ class PrestamoLibro extends Model
 
     public function get_prestamos_libros_pendientes()
     {
-        $personas = $this::select(
-            'personas.id_persona',
-            'personas.tipo_perfil',
-            'personas.apellido_paterno',
-            'personas.apellido_materno',
-            'personas.nombres',
+        $prestamos = $this::select(
+            'prestamos_libros.id_persona',
             'prestamos_libros.curso',
             'prestamos_libros.celular',
             DB::raw('COUNT(detalles_prestamos_libros.id_libro) AS cantidad_adeudados')
         )
-            ->join('personas', 'personas.id_persona', '=', 'prestamos_libros.id_persona')
+            // Eager loading de la relación Persona seleccionando las columnas necesarias para los accesores
+            ->with(['persona' => function ($q) {
+                $q->select('id_persona', 'tipo_perfil', 'apellido_paterno', 'apellido_materno', 'nombres');
+            }])
             ->join('detalles_prestamos_libros', 'detalles_prestamos_libros.id_prestamo_libro', '=', 'prestamos_libros.id_prestamo_libro')
             ->join('libros', 'libros.id_libro', '=', 'detalles_prestamos_libros.id_libro')
             ->whereNull('detalles_prestamos_libros.fecha_retorno')
             ->where('prestamos_libros.estado', 1)
-            ->groupBy('personas.id_persona')
+            ->groupBy('prestamos_libros.id_persona', 'prestamos_libros.curso', 'prestamos_libros.celular')
             ->orderBy('cantidad_adeudados', 'DESC')
             ->get();
 
-        // Añadir los libros pendientes con fechas y días de retraso
-        foreach ($personas as $p) {
+        // Añadir los detalles de los libros pendientes
+        foreach ($prestamos as $p) {
             $p->detalles = DB::table('detalles_prestamos_libros')
                 ->join('prestamos_libros', 'prestamos_libros.id_prestamo_libro', '=', 'detalles_prestamos_libros.id_prestamo_libro')
                 ->join('libros', 'libros.id_libro', '=', 'detalles_prestamos_libros.id_libro')
@@ -123,17 +122,13 @@ class PrestamoLibro extends Model
                 ->get();
         }
 
-        return $personas;
+        return $prestamos;
     }
 
     public function get_prestamos_libros_totales_y_pendientes()
     {
         return $this::select(
-            'personas.id_persona',
-            'personas.tipo_perfil',
-            'personas.apellido_paterno',
-            'personas.apellido_materno',
-            'personas.nombres',
+            'prestamos_libros.id_persona',
             'prestamos_libros.curso',
             'prestamos_libros.celular',
             DB::raw('COUNT(detalles_prestamos_libros.id_libro) AS total_libros'),
@@ -144,12 +139,17 @@ class PrestamoLibro extends Model
                 END
             ) AS libros_debe')
         )
-            ->join('personas', 'personas.id_persona', '=', 'prestamos_libros.id_persona')
+            // Eager loading de la relación Persona seleccionando las columnas necesarias para los accesores
+            ->with(['persona' => function ($q) {
+                $q->select('id_persona', 'tipo_perfil', 'apellido_paterno', 'apellido_materno', 'nombres');
+            }])
+            // Filtra solo personas activas (reemplaza el join con personas)
+            ->whereHas('persona', function ($q) {
+                $q->where('estado', 1);
+            })
             ->join('detalles_prestamos_libros', 'detalles_prestamos_libros.id_prestamo_libro', '=', 'prestamos_libros.id_prestamo_libro')
-            // Solo personas y préstamos activos
-            ->where('personas.estado', 1)
             ->where('prestamos_libros.estado', 1)
-            ->groupBy('personas.id_persona')
+            ->groupBy('prestamos_libros.id_persona', 'prestamos_libros.curso', 'prestamos_libros.celular')
             ->orderBy('total_libros', 'DESC')
             ->limit(100)
             ->get();
