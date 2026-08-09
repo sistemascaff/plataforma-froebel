@@ -167,7 +167,7 @@
                             <tr>
                                 <td class="text-center align-middle">{{ $loop->index + 1 }}</td>
                                 <td class="text-center align-middle">
-                                    <img class="rounded shadow-sm"
+                                    <img class="rounded shadow-sm zoomable-image"
                                         src="{{ optional($detalle->estudiante->persona->usuario)->url_foto_perfil ? URL::to('/') . '/' . $detalle->estudiante->persona->usuario->url_foto_perfil : URL::to('/') . '/public/img/user.png' }}"
                                         alt="Foto" style="width:35px; height:35px; object-fit:cover;">
                                 </td>
@@ -239,6 +239,8 @@
             </div>
         </div>
     </div>
+
+    @include('components.app.img_modal')
 @endsection
 
 @section('scripts')

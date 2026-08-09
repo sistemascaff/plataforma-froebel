@@ -135,7 +135,7 @@
                             <tr id="fila-{{ $estudiante->id_estudiante }}">
                                 <td class="text-center"></td>
                                 <td class="text-center">
-                                    <img class="rounded shadow-sm"
+                                    <img class="rounded shadow-sm zoomable-image"
                                         src="{{ $estudiante->persona->usuario->url_foto_perfil ? URL::to('/') . '/' . $estudiante->persona->usuario->url_foto_perfil : URL::to('/') . '/public/img/user.png' }}"
                                         alt="Foto" style="width:35px; height:35px; object-fit:cover;">
                                 </td>
@@ -205,6 +205,8 @@
             </div>
         </div>
     @endif
+
+    @include('components.app.img_modal')
 @endsection
 
 @section('scripts')

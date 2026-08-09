@@ -126,7 +126,6 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
                         class="fa-solid fa-duotone fa-close me-1"></i>Cerrar</button>
                 <button type="submit" id="btn-guardar" form="form-crear-o-editar" class="btn btn-primary">
-                    <i class="fa-solid fa-duotone fa-save"></i>
                     <i class="fa-solid fa-duotone fa-save me-1"></i>Guardar
                 </button>
             </div>

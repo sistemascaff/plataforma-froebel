@@ -63,6 +63,7 @@
     <div class="mb-3"></div>
 
     @include('estudiantes.modal_form')
+    @include('components.app.img_modal')
 @endsection
 
 @section('scripts')

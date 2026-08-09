@@ -63,3 +63,13 @@
 .text-justify {
   text-align: justify !important;
 }
+
+.zoomable-image {
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, filter 0.2s ease-in-out;
+}
+
+.zoomable-image:hover {
+    transform: scale(1.1);
+    filter: brightness(0.85);
+}

@@ -55,6 +55,7 @@
     <div class="mb-3"></div>
 
     @include('docentes.modal_form')
+    @include('components.app.img_modal')
 @endsection
 
 @section('scripts')

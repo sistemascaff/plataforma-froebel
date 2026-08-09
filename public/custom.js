@@ -2,7 +2,7 @@
 window.Helpers = window.Helpers || {};
 
 // Agregar el helper al objeto global
-window.Helpers.abreviarCurso = function(cadena) {
+window.Helpers.abreviarCurso = function (cadena) {
     if (!cadena) {
         return '';
     }
@@ -56,6 +56,7 @@ window.Helpers.abreviarCurso = function(cadena) {
     return curso + nivel + paralelo;
 };
 
+// ─── TEMAS ─────────────────────────────────────────
 $(document).ready(function () {
     // Obtener elementos
     const toggleButton = document.getElementById('toggle-theme');
@@ -105,4 +106,22 @@ $(document).ready(function () {
 
     // Cargar el tema al iniciar
     loadTheme();
+});
+
+// ─── VISUALIZADOR DE IMÁGENES GLOBAL ─────────────────────────────────────────
+$(document).on('click', '.zoomable-image', function () {
+    // 1. Obtener la ruta de la imagen que se acaba de hacer clic
+    const imgSrc = $(this).attr('src');
+
+    // 2. Asignar esa ruta a la etiqueta <img> dentro del modal
+    $('#modal-image-preview').attr('src', imgSrc);
+
+    // 3. Instanciar y mostrar el modal usando la API de Bootstrap 5
+    const imageViewer = new bootstrap.Modal(document.getElementById('image-viewer-modal'));
+    imageViewer.show();
+});
+
+// Limpiar la imagen cuando el modal se cierra para evitar parpadeos visuales la próxima vez
+$('#image-viewer-modal').on('hidden.bs.modal', function () {
+    $('#modal-image-preview').attr('src', '');
 });

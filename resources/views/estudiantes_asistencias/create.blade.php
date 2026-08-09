@@ -66,7 +66,7 @@
 
     <form id="form-asistencia">
         <input type="hidden" name="id_lista_asignatura" value="{{ $lista_asignatura->id_lista_asignatura }}">
-        
+
         <div class="card shadow-sm mb-4">
             <div class="card-header p-3 d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0 text-info">
@@ -76,16 +76,19 @@
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-calendar-days me-1"></i> Fecha de la clase:
+                        <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-calendar-days me-1"></i> Fecha de la
+                            clase:
                         </p>
-                        <input type="date" class="form-control" name="fecha" id="fecha" min="{{ date('Y-02-01') }}" max="{{ date('Y-m-d') }}" value="{{ date('Y-m-d') }}" required>
+                        <input type="date" class="form-control" name="fecha" id="fecha"
+                            min="{{ date('Y-02-01') }}" max="{{ date('Y-m-d') }}" value="{{ date('Y-m-d') }}" required>
                     </div>
                     <div class="col-md-4">
                         <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-clock me-1"></i> Horario de la clase:</p>
                         <select class="form-select" name="id_horario" id="id_horario_asignatura" required>
                             @foreach ($horarios as $horario)
                                 <option value="{{ $horario->id_horario_asignatura }}">
-                                    {{ helper_dia_semana_a_nombre($horario->pivot->dia_semana) }} {{ $horario->denominacion }}
+                                    {{ helper_dia_semana_a_nombre($horario->pivot->dia_semana) }}
+                                    {{ $horario->denominacion }}
                                     ({{ date('H:i', strtotime($horario->hora_inicio)) }} -
                                     {{ date('H:i', strtotime($horario->hora_fin)) }})
                                 </option>
@@ -98,7 +101,8 @@
 
         @if ($lista_asignatura->estudiantes->isEmpty())
             <div class="alert alert-warning shadow-sm" role="alert">
-                <i class="fa-duotone fa-triangle-exclamation me-2"></i> Aún no hay estudiantes inscritos en esta asignatura y período.
+                <i class="fa-duotone fa-triangle-exclamation me-2"></i> Aún no hay estudiantes inscritos en esta asignatura
+                y período.
             </div>
         @else
             <div class="card shadow-sm mb-4">
@@ -124,12 +128,14 @@
                                     @php
                                         // Verificación segura utilizando isset para evitar errores
                                         $tieneLicencia = isset($estudiantes_licencias[$estudiante->id_estudiante]);
-                                        $licencia = $tieneLicencia ? $estudiantes_licencias[$estudiante->id_estudiante]->first() : null;
+                                        $licencia = $tieneLicencia
+                                            ? $estudiantes_licencias[$estudiante->id_estudiante]->first()
+                                            : null;
                                     @endphp
                                     <tr>
                                         <td class="text-center align-middle">{{ $loop->index + 1 }}</td>
                                         <td class="text-center align-middle">
-                                            <img class="rounded shadow-sm"
+                                            <img class="rounded shadow-sm zoomable-image"
                                                 src="{{ $estudiante->persona->usuario->url_foto_perfil ? URL::to('/') . '/' . $estudiante->persona->usuario->url_foto_perfil : URL::to('/') . '/public/img/user.png' }}"
                                                 alt="Foto" style="width:35px; height:35px; object-fit:cover;">
                                         </td>
@@ -152,14 +158,19 @@
                                             @endif
                                         </td>
                                         <td class="text-center align-middle">
-                                            <input type="hidden" name="estudiantes[{{ $index }}][id_estudiante]" value="{{ $estudiante->id_estudiante }}">
-                                            
+                                            <input type="hidden" name="estudiantes[{{ $index }}][id_estudiante]"
+                                                value="{{ $estudiante->id_estudiante }}">
+
                                             @if ($tieneLicencia)
                                                 <span class="badge bg-info tipo">Licencia</span>
-                                                <input type="hidden" name="estudiantes[{{ $index }}][id_estudiante_licencia]" value="{{ $licencia->id_estudiante_licencia }}">
-                                                <input type="hidden" name="estudiantes[{{ $index }}][tipo]" value="L">
+                                                <input type="hidden"
+                                                    name="estudiantes[{{ $index }}][id_estudiante_licencia]"
+                                                    value="{{ $licencia->id_estudiante_licencia }}">
+                                                <input type="hidden" name="estudiantes[{{ $index }}][tipo]"
+                                                    value="L">
                                             @else
-                                                <span class="badge bg-success tipo" id="badge_tipo_{{ $index }}">Presente</span>
+                                                <span class="badge bg-success tipo"
+                                                    id="badge_tipo_{{ $index }}">Presente</span>
                                             @endif
                                         </td>
                                         <td class="text-center align-middle">
@@ -167,14 +178,30 @@
                                                 <span class="text-muted">No se puede modificar</span>
                                             @else
                                                 <div class="btn-group shadow-sm" role="group">
-                                                    <input type="radio" class="btn-check radio-asistencia" name="estudiantes[{{ $index }}][tipo]" id="presente_{{ $index }}" value="P" required checked data-index="{{ $index }}">
-                                                    <label class="btn btn-outline-success" for="presente_{{ $index }}" title="Marcar como presente"><i class="fa fa-solid fa-duotone fa-check-circle"></i></label>
+                                                    <input type="radio" class="btn-check radio-asistencia"
+                                                        name="estudiantes[{{ $index }}][tipo]"
+                                                        id="presente_{{ $index }}" value="P" required checked
+                                                        data-index="{{ $index }}">
+                                                    <label class="btn btn-outline-success"
+                                                        for="presente_{{ $index }}"
+                                                        title="Marcar como presente"><i
+                                                            class="fa fa-solid fa-duotone fa-check-circle"></i></label>
 
-                                                    <input type="radio" class="btn-check radio-asistencia" name="estudiantes[{{ $index }}][tipo]" id="atraso_{{ $index }}" value="A" required data-index="{{ $index }}">
-                                                    <label class="btn btn-outline-warning" for="atraso_{{ $index }}" title="Marcar como atraso"><i class="fa fa-solid fa-duotone fa-hourglass-half"></i></label>
+                                                    <input type="radio" class="btn-check radio-asistencia"
+                                                        name="estudiantes[{{ $index }}][tipo]"
+                                                        id="atraso_{{ $index }}" value="A" required
+                                                        data-index="{{ $index }}">
+                                                    <label class="btn btn-outline-warning"
+                                                        for="atraso_{{ $index }}" title="Marcar como atraso"><i
+                                                            class="fa fa-solid fa-duotone fa-hourglass-half"></i></label>
 
-                                                    <input type="radio" class="btn-check radio-asistencia" name="estudiantes[{{ $index }}][tipo]" id="falta_{{ $index }}" value="F" required data-index="{{ $index }}">
-                                                    <label class="btn btn-outline-danger" for="falta_{{ $index }}" title="Marcar como falta"><i class="fa fa-solid fa-duotone fa-times-circle"></i></label>
+                                                    <input type="radio" class="btn-check radio-asistencia"
+                                                        name="estudiantes[{{ $index }}][tipo]"
+                                                        id="falta_{{ $index }}" value="F" required
+                                                        data-index="{{ $index }}">
+                                                    <label class="btn btn-outline-danger" for="falta_{{ $index }}"
+                                                        title="Marcar como falta"><i
+                                                            class="fa fa-solid fa-duotone fa-times-circle"></i></label>
                                                 </div>
                                             @endif
                                         </td>
@@ -191,7 +218,9 @@
                 </div>
             </div>
         @endif
-    </form> @endsection
+    </form>
+    @include('components.app.img_modal')
+@endsection
 
 @section('scripts')
     <style>

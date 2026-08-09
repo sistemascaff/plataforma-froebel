@@ -50,7 +50,7 @@ class AsignaturaController extends Controller
                 ->toArray();
 
             // Se protege la operación para que no falle si la asignatura no existe
-            if ($periodosConLista) {
+            if ($periodosConLista !== null) {
                 // Periodos activos que AÚN NO tienen lista → crearlos
                 Periodo::where('estado', 1)
                     ->whereNotIn('id_periodo', $periodosConLista)
@@ -66,13 +66,13 @@ class AsignaturaController extends Controller
             }
         }
 
+
         // Se carga DESPUÉS de generar las listas para que el eager loading las incluya todas
         $asignatura = (new Asignatura())->get_asignatura($asignatura);
 
         return view('asignaturas.details', [
             'head_title' => 'ASIGNATURA: ' . $asignatura->asignatura,
             'asignatura' => $asignatura,
-            'tipo_perfil' => $tipo_perfil,
         ]);
     }
 

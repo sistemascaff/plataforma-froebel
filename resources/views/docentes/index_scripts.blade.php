@@ -45,7 +45,7 @@
                         const src = (data && data !== '') ?
                             URL_BASE + '/' + data :
                             URL_BASE + '/public/img/user.png';
-                        return `<img class="rounded" src="${src}" alt="Foto" style="width:40px; height:40px; object-fit:cover;">`;
+                        return `<img class="rounded zoomable-image" src="${src}" alt="Foto" style="width:40px; height:40px; object-fit:cover;">`;
                     }
                 },
                 {
