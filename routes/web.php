@@ -8,6 +8,7 @@ use App\Http\Controllers\CoordinacionController;
 use App\Http\Controllers\CursoController;
 use App\Http\Controllers\DimensionController;
 use App\Http\Controllers\DocenteController;
+use App\Http\Controllers\EstudianteAsistenciaController;
 use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\EstudianteLicenciaController;
 use App\Http\Controllers\GestionController;
@@ -302,6 +303,16 @@ Route::middleware(['session.acceso'])->group(function () {
             Route::post('estudiantes_licencias', 'create')->name('estudiantes_licencias.create');
             Route::put('estudiantes_licencias/{estudiante_licencia}', 'update')->name('estudiantes_licencias.update');
             Route::patch('estudiantes_licencias/{estudiante_licencia}', 'delete')->name('estudiantes_licencias.delete');
+        });
+
+        Route::controller(EstudianteAsistenciaController::class)->group(function () {
+            Route::get('estudiantes_asistencias', 'view_index')->name('estudiantes_asistencias.index');
+            Route::get('estudiantes_asistencias/listar', 'listar')->name('estudiantes_asistencias.listar');
+            Route::get('estudiantes_asistencias/crear/lista_asignatura/{lista_asignatura}', 'view_create')->name('estudiantes_asistencias.crear');
+            Route::get('estudiantes_asistencias/{estudiante_asistencia}', 'mostrar')->name('estudiantes_asistencias.mostrar');
+            Route::post('estudiantes_asistencias', 'create')->name('estudiantes_asistencias.create');
+            //Route::put('estudiantes_asistencias/{estudiante_asistencia}', 'update')->name('estudiantes_asistencias.update');
+            Route::get('estudiantes_asistencias/{estudiante_asistencia}/detalles', 'view_details')->name('estudiantes_asistencias.detalles');
         });
     });
 });

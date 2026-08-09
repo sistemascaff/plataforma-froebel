@@ -36,6 +36,10 @@ class UsuarioController extends Controller
             return view('panel.biblioteca.dashboard', [
                 'head_title' => 'PANEL DE ' . $tipo_perfil,
             ]);
+        } else if ($tipo_perfil === 'DOCENTE' || $tipo_perfil === 'COORDINADOR' || $tipo_perfil === 'SUBDIRECTOR') {
+            return view('panel.docente.dashboard', [
+                'head_title' => 'PANEL DE ' . $tipo_perfil,
+            ]);
         } else {
             return redirect()->route('main.index');
         }

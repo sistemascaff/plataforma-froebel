@@ -131,6 +131,15 @@
             </div>
         </a>
     </div>
+
+    <div class="col-6 col-md-4 col-lg-2 d-flex justify-content-center my-3">
+        <a class="btn btn-sq-lg btn-info" href="{{ route('estudiantes_asistencias.index') }}">
+            <div>
+                <i class="fa-solid fa-duotone fa-clipboard-list-check fa-2xl"></i>
+                <br>Gestión de asistencias de estudiantes
+            </div>
+        </a>
+    </div>
 </div>
 
 <span class="h3 text-decoration-underline fw-bold">PERFILES</span>

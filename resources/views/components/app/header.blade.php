@@ -11,6 +11,10 @@
                 @include('panel.admin_super.dashboard_header')
             @elseif (Auth::user()->persona?->tipo_perfil === 'BIBLIOTECARIA')
                 @include('panel.biblioteca.dashboard_header')
+            @elseif (Auth::user()->persona?->tipo_perfil === 'DOCENTE' ||
+                    Auth::user()->persona?->tipo_perfil === 'COORDINADOR' ||
+                    Auth::user()->persona?->tipo_perfil === 'SUBDIRECTOR')
+                @include('panel.docente.dashboard_header')
             @endif
 
             <button class="btn btn-light me-2" id="toggle-theme" data-toggle="tooltip" title="Cambiar tema">

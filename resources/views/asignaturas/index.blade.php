@@ -2,7 +2,7 @@
 
 @section('content')
     <h1 class="text-center text-info fw-bold">
-        <i class="fa-solid fa-duotone fa-star me-1"></i>{{ $head_title }}
+        <i class="fa-solid fa-duotone fa-book-reader me-1"></i>{{ $head_title }}
     </h1>
 
     <button type="button" class="btn btn-success mb-3 btn-crear" data-bs-toggle="modal" data-bs-target="#modal-formulario">

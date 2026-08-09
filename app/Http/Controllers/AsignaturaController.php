@@ -14,6 +14,7 @@ use App\Models\Nivel;
 use App\Models\Periodo;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AsignaturaController extends Controller
@@ -40,30 +41,50 @@ class AsignaturaController extends Controller
 
     public function view_details(Request $request, int $asignatura)
     {
-        // IDs de periodos activos que YA tienen lista para esta asignatura
-        $periodosConLista = ListaAsignatura::where('id_asignatura', $asignatura)
-            ->pluck('id_periodo')
-            ->toArray();
+        $tipo_perfil = Auth::user()->persona?->tipo_perfil;
 
-        // Periodos activos que AÚN NO tienen lista → crearlos
-        Periodo::where('estado', 1)
-            ->whereNotIn('id_periodo', $periodosConLista)
-            ->each(function ($periodo) use ($asignatura, $request) {
-                $lista = new ListaAsignatura();
-                $lista->id_asignatura = $asignatura;
-                $lista->id_periodo = $periodo->id_periodo;
-                $lista->creado_por = auth()->id() ?? 0;
-                $lista->ip = $request->ip();
-                $lista->dispositivo = $request->userAgent();
-                $lista->save();
-            });
+        if ($tipo_perfil === 'ADMIN' || $tipo_perfil === 'COORDINADOR' || $tipo_perfil === 'SUBDIRECTOR') {
+            // IDs de periodos activos que YA tienen lista para esta asignatura
+            $periodosConLista = ListaAsignatura::where('id_asignatura', $asignatura)
+                ->pluck('id_periodo')
+                ->toArray();
+
+            // Se protege la operación para que no falle si la asignatura no existe
+            if ($periodosConLista) {
+                // Periodos activos que AÚN NO tienen lista → crearlos
+                Periodo::where('estado', 1)
+                    ->whereNotIn('id_periodo', $periodosConLista)
+                    ->each(function ($periodo) use ($asignatura, $request) {
+                        $lista = new ListaAsignatura();
+                        $lista->id_asignatura = $asignatura;
+                        $lista->id_periodo = $periodo->id_periodo;
+                        $lista->creado_por = auth()->id() ?? 0;
+                        $lista->ip = $request->ip();
+                        $lista->dispositivo = $request->userAgent();
+                        $lista->save();
+                    });
+            }
+        }
 
         // Se carga DESPUÉS de generar las listas para que el eager loading las incluya todas
         $asignatura = (new Asignatura())->get_asignatura($asignatura);
 
         return view('asignaturas.details', [
-            'head_title' => 'ASIGNATURA: '.$asignatura->asignatura,
+            'head_title' => 'ASIGNATURA: ' . $asignatura->asignatura,
             'asignatura' => $asignatura,
+            'tipo_perfil' => $tipo_perfil,
+        ]);
+    }
+
+    public function view_docente()
+    {
+        $id_docente = Auth::user()->persona?->docente->id_docente;
+
+        $asignaturas = (new Asignatura())->get_docente_asignaturas($id_docente);
+
+        return view('asignaturas.docente', [
+            'head_title' => 'MIS ASIGNATURAS',
+            'asignaturas' => $asignaturas,
         ]);
     }
 

@@ -26,8 +26,8 @@
             </h4>
 
             <p class="mb-0 fs-5">
-                Deseamos que hoy tengas un día lleno de magia y momentos inolvidables, tan maravillosos y fascinantes
-                como las historias de los libros que cuidas. ¡Disfrútalo al máximo! 📚✨
+                Muchas gracias por tu dedicación y aporte a nuestra institución y sobretodo a la educación. ¡Que
+                hoy tengas un día lleno de alegría, amor y momentos inolvidables! 🎉🎂🎁
             </p>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
@@ -39,11 +39,11 @@
         </div>
 
         <div class="card-body">
-            @include('panel.biblioteca.dashboard_botones')
+            @include('panel.docente.dashboard_botones')
         </div>
     </div>
 @endsection
 
 @section('scripts')
-    @include('panel.biblioteca.dashboard_scripts')
+    @include('panel.docente.dashboard_scripts')
 @endsection

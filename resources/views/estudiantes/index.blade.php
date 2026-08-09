@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="text-center text-info fw-bold"><i class="fa-solid fa-duotone fa-chalkboard-user"></i> {{ $head_title }}</h1>
+    <h1 class="text-center text-info fw-bold"><i class="fa-solid fa-duotone fa-user-graduate"></i> {{ $head_title }}</h1>
 
     <button type="button" class="btn btn-success mb-3 btn-crear" data-bs-toggle="modal" data-bs-target="#modal-formulario">
         <i class="fa-solid fa-duotone fa-plus"></i> Crear estudiante</button>

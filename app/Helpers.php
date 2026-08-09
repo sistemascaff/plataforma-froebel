@@ -68,6 +68,8 @@ if (! function_exists('helper_tipo_perfil_a_font_awesome_icono')) {
             'ADMIN' => 'fa-user-shield',
             'BIBLIOTECARIA' => 'fa-book-open',
             'DOCENTE' => 'fa-chalkboard-teacher',
+            'SUBDIRECTOR' => 'fa-chalkboard-user',
+            'COORDINADOR' => 'fa-chalkboard-user',
             'TUTOR' => 'fa-people-roof', //nota: aquí se refiere tanto a socio o padre de familia o tutor*
             'ESTUDIANTE' => 'fa-user-graduate',
             default => 'fa-circle-question'
@@ -149,13 +151,13 @@ if (! function_exists('helper_dia_semana_a_nombre')) {
     function helper_dia_semana_a_nombre(int $dia_semana)
     {
         $dias = [
+            0 => 'DOMINGO',
             1 => 'LUNES',
             2 => 'MARTES',
             3 => 'MIÉRCOLES',
             4 => 'JUEVES',
             5 => 'VIERNES',
             6 => 'SÁBADO',
-            7 => 'DOMINGO',
         ];
 
         return $dias[$dia_semana] ?? 'Desconocido';
