@@ -44,6 +44,12 @@ class ListaAsignatura extends Model
         return $this->belongsTo(Docente::class, 'id_docente', 'id_docente');
     }
 
+    /** Relación con asistencias de estudiantes */
+    public function estudiantes_asistencias()
+    {
+        return $this->hasMany(EstudianteAsistencia::class, 'id_lista_asignatura', 'id_lista_asignatura');
+    }
+
     /** Relación con atributo de auditoría */
     public function creado()
     {
@@ -80,14 +86,47 @@ class ListaAsignatura extends Model
     {
         return $this->with([
             'asignatura:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',
+
             'periodo:id_periodo,id_gestion,periodo,posicion_ordinal,estado',
             'periodo.gestion:id_gestion,anio,estado',
+
             'docente:id_docente,id_persona,estado',
             'docente.persona:id_persona,apellido_paterno,apellido_materno,nombres,estado',
+
             'estudiantes:id_estudiante,id_persona,id_curso,estado',
             'estudiantes.persona:id_persona,apellido_paterno,apellido_materno,nombres,estado',
-            'estudiantes.persona.usuario:id_usuario,id_persona,correo,contrasenha,url_foto_perfil,estado',
+            'estudiantes.persona.usuario:id_usuario,id_persona,correo,url_foto_perfil,estado',
             'estudiantes.curso:id_curso,curso,estado',
+
+            // Carga de la relación con los conteos desglosados
+            'estudiantes_asistencias' => function ($query) {
+                $query->with('horario_asignatura:id_horario_asignatura,id_nivel,id_gestion,denominacion,hora_inicio,hora_fin,estado') // Mantenemos la carga del horario
+                    ->withCount([
+                        // 1. Total de estudiantes registrados (sin filtros)
+                        'detalles_estudiantes_asistencias',
+
+                        // 2. Conteo de Presentes (P)
+                        'detalles_estudiantes_asistencias as presentes_count' => function ($q) {
+                            $q->where('tipo', 'P');
+                        },
+
+                        // 3. Conteo de Atrasos (A)
+                        'detalles_estudiantes_asistencias as atrasos_count' => function ($q) {
+                            $q->where('tipo', 'A');
+                        },
+
+                        // 4. Conteo de Faltas (F)
+                        'detalles_estudiantes_asistencias as faltas_count' => function ($q) {
+                            $q->where('tipo', 'F');
+                        },
+
+                        // 5. Conteo de Licencias (L)
+                        'detalles_estudiantes_asistencias as licencias_count' => function ($q) {
+                            $q->where('tipo', 'L');
+                        }
+                    ])
+                    ->orderBy('fecha', 'DESC'); // Ordenar del más reciente al más antiguo
+            },
 
             'creado:id_usuario,correo',
             'modificado:id_usuario,correo',

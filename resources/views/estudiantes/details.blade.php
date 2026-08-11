@@ -27,7 +27,7 @@
         <div class="col-12 col-lg-4">
             <div class="card shadow-sm mb-4">
                 <div class="card-body text-center pt-4">
-                    <img class="rounded-circle img-thumbnail shadow-sm mb-3"
+                    <img class="rounded-circle img-thumbnail shadow-sm mb-3 zoomable-image"
                         style="width: 160px; height: 160px; object-fit: cover;" alt="Foto de perfil"
                         src="{{ URL::to('/') }}/{{ $estudiante->persona->usuario->url_foto_perfil }}">
 
@@ -242,6 +242,8 @@
             </div>
         </div>
     </div>
+
+    @include('components.app.img_modal')
 @endsection
 
 @section('scripts')

@@ -26,6 +26,12 @@
             ]
         });
 
+        // ─── Inicializar DataTable de asistencias ────────────────────────────────
+        $("#asistencias").DataTable({
+            @include('components.datatables.datatables_global_properties')
+            @include('components.datatables.datatables_language_property')
+        });
+
         // Auto-enumerar la primera columna (#)
         dtEstudiantes.on('order.dt search.dt draw.dt', function() {
             dtEstudiantes.column(0, {

@@ -102,20 +102,16 @@
             <h5 class="card-title mb-0 fw-bold text-info">
                 <i class="fa-solid fa-users-class me-2"></i> Estudiantes Inscritos
             </h5>
-            <div class="d-flex gap-2">
-                <a class="btn btn-success shadow-sm" href="{{ route('estudiantes_asistencias.crear', $lista_asignatura->id_lista_asignatura) }}">
-                    <i class="fa-solid fa-duotone fa-plus me-1"></i>Crear asistencia
-                </a>
-                @if ($lista_asignatura->asignatura->tipo_bloque === 'mixto')
+            @if ($lista_asignatura->asignatura->tipo_bloque === 'mixto')
+                <div class="d-flex gap-2">
                     <button type="button" class="btn btn-warning shadow-sm" id="btn-toggle-edicion">
                         <i class="fa-solid fa-duotone fa-edit me-1"></i>Editar Lista
                     </button>
                     <button type="button" class="btn btn-primary shadow-sm" id="btn-guardar-estudiantes" disabled>
                         <i class="fa-solid fa-duotone fa-floppy-disk me-1"></i>Guardar Cambios
                     </button>
-                @endif
-            </div>
-
+                </div>
+            @endif
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -171,6 +167,112 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header p-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <h5 class="card-title mb-0 fw-bold text-info">
+                <i class="fa-solid fa-clipboard-list-check me-2"></i> Asistencias Registradas
+            </h5>
+            <div class="d-flex gap-2">
+                <a class="btn btn-success shadow-sm"
+                    href="{{ route('estudiantes_asistencias.crear', $lista_asignatura->id_lista_asignatura) }}">
+                    <i class="fa-solid fa-duotone fa-plus me-1"></i>Crear asistencia
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered table-striped dataTable w-100" id="asistencias">
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="width: 5%;">#</th>
+                                <th style="width: 5%;">Fecha</th>
+                                <th>Horario</th>
+                                <th>Registrados</th>
+                                <th>Presentes</th>
+                                <th>Atrasos</th>
+                                <th>Faltas</th>
+                                <th>Licencias</th>
+                                <th>Estado</th>
+                                <th class="text-center" style="width: 10%;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($lista_asignatura->estudiantes_asistencias as $estudiante_asistencia)
+                                @php
+                                    $estudianteAsistenciaEstado = $estudiante_asistencia->estado;
+
+                                    $estudianteAsistenciaEstadoClass = match ($estudianteAsistenciaEstado) {
+                                        1 => 'bg-success',
+                                        0 => 'bg-danger',
+                                        default => 'bg-secondary',
+                                    };
+
+                                    $estudianteAsistenciaEstadoTexto = match ($estudianteAsistenciaEstado) {
+                                        1 => 'ACTIVO',
+                                        0 => 'INACTIVO',
+                                        default => 'DESCONOCIDO',
+                                    };
+                                @endphp
+                                <tr>
+                                    <td class="text-center">{{ $loop->index + 1 }}</td>
+                                    <td>{{ date('d/m/Y', strtotime($estudiante_asistencia->fecha)) }}</td>
+                                    <td>
+                                        {{-- helper_dia_semana_a_nombre(date('w', strtotime($estudiante_asistencia->fecha))) --}}
+                                        {{ "{$estudiante_asistencia->horario_asignatura->denominacion} ({$estudiante_asistencia->horario_asignatura->hora_inicio} - {$estudiante_asistencia->horario_asignatura->hora_fin})" }}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">
+                                            {{ $estudiante_asistencia->detalles_estudiantes_asistencias_count }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">
+                                            {{ $estudiante_asistencia->presentes_count }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span
+                                            class="{{ $estudiante_asistencia->atrasos_count > 0 ? 'badge bg-warning text-dark' : 'text-muted' }}">
+                                            {{ $estudiante_asistencia->atrasos_count }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span
+                                            class="{{ $estudiante_asistencia->faltas_count > 0 ? 'badge bg-danger' : 'text-muted' }}">
+                                            {{ $estudiante_asistencia->faltas_count }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span
+                                            class="{{ $estudiante_asistencia->licencias_count > 0 ? 'badge bg-info' : 'text-muted' }}">
+                                            {{ $estudiante_asistencia->licencias_count }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge {{ $estudianteAsistenciaEstadoClass }}">
+                                            {{ $estudianteAsistenciaEstadoTexto }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a class="btn btn-info btn-sm"
+                                                href="{{ route('estudiantes_asistencias.detalles', $estudiante_asistencia->id_estudiante_asistencia) }}"
+                                                target="_blank" rel="noopener noreferrer" data-toggle="tooltip"
+                                                title="Detalles">
+                                                <i class="fa-duotone fa-solid fa-eye"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
