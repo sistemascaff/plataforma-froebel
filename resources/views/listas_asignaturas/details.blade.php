@@ -266,6 +266,12 @@
                                                 title="Detalles">
                                                 <i class="fa-duotone fa-solid fa-eye"></i>
                                             </a>
+                                            <a class="btn btn-warning btn-sm"
+                                                href="{{ route('estudiantes_asistencias.editar', $estudiante_asistencia->id_estudiante_asistencia) }}"
+                                                target="_blank" rel="noopener noreferrer" data-toggle="tooltip"
+                                                title="Editar">
+                                                <i class="fa-duotone fa-solid fa-edit"></i>
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>

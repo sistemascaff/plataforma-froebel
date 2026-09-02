@@ -108,7 +108,8 @@ class EstudianteAsistencia extends Model
     {
         return $this->with([
             'detalles_estudiantes_asistencias.estudiante:id_estudiante,id_persona,id_curso,estado',
-            'detalles_estudiantes_asistencias.estudiante.persona:id_persona,id_colegio,apellido_paterno,apellido_materno,nombres,tipo_perfil',
+            'detalles_estudiantes_asistencias.estudiante.persona:id_persona,id_colegio,apellido_paterno,apellido_materno,nombres,tipo_perfil,estado',
+            'detalles_estudiantes_asistencias.estudiante.persona.usuario:id_usuario,id_persona,url_foto_perfil,estado',
             'detalles_estudiantes_asistencias.estudiante.curso:id_curso,id_grado,id_paralelo,curso,estado',
             'detalles_estudiantes_asistencias.estudiante_licencia:id_estudiante_licencia,id_estudiante,tipo,justificacion,fecha_inicio,fecha_fin,estado',
 

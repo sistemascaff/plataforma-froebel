@@ -7,20 +7,22 @@
                 const index = this.dataset.index;
                 const badge = document.getElementById('badge_tipo_' + index);
 
-                if (this.value === 'P') {
-                    badge.className = 'badge bg-success tipo';
-                    badge.textContent = 'Presente';
-                } else if (this.value === 'A') {
-                    badge.className = 'badge bg-warning tipo';
-                    badge.textContent = 'Atraso';
-                } else if (this.value === 'F') {
-                    badge.className = 'badge bg-danger tipo';
-                    badge.textContent = 'Falta';
+                if (badge) {
+                    if (this.value === 'P') {
+                        badge.className = 'badge bg-success tipo';
+                        badge.textContent = 'Presente';
+                    } else if (this.value === 'A') {
+                        badge.className = 'badge bg-warning tipo';
+                        badge.textContent = 'Atraso';
+                    } else if (this.value === 'F') {
+                        badge.className = 'badge bg-danger tipo';
+                        badge.textContent = 'Falta';
+                    }
                 }
             });
         });
 
-        // --- 2. Lógica AJAX y SweetAlert2 para el Envío del Formulario ---
+        // --- 2. Lógica AJAX y SweetAlert2 para la Actualización del Formulario ---
         const formAsistencia = document.getElementById('form-asistencia');
 
         if (formAsistencia) {
@@ -31,14 +33,21 @@
                 const btnSubmit = document.getElementById('btn-guardar');
                 const originalText = btnSubmit.innerHTML;
                 btnSubmit.disabled = true;
-                btnSubmit.innerHTML = 'Guardando... <i class="fas fa-spinner fa-spin"></i>';
+                btnSubmit.innerHTML = 'Actualizando... <i class="fas fa-spinner fa-spin"></i>';
 
                 // Recolectar automáticamente todos los datos del formulario 
                 const formData = new FormData(formAsistencia);
 
+                // Agregamos el método PUT spoofing para Laravel
+                formData.append('_method', 'PUT');
+
+                // Endpoint dinámico para la actualización
+                const updateUrl =
+                    "{{ route('estudiantes_asistencias.update', $estudiante_asistencia->id_estudiante_asistencia) }}";
+
                 // Solicitud AJAX asíncrona
-                fetch("{{ route('estudiantes_asistencias.create') }}", {
-                        method: 'POST',
+                fetch(updateUrl, {
+                        method: 'POST', // Enviamos via POST con _method = PUT
                         body: formData,
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
@@ -52,22 +61,23 @@
                     })))
                     .then(res => {
                         if (res.status === 200 && res.body.success) {
-                            // Éxito
+                            // Éxito al actualizar
                             Swal.fire({
                                 theme: localStorage.getItem('theme') || 'dark',
                                 icon: 'success',
-                                title: '¡Asistencia Registrada!',
+                                title: '¡Asistencia Actualizada!',
                                 text: res.body.message,
                                 showConfirmButton: false,
                                 timer: 2000
                             }).then(() => {
                                 const idAsistencia = res.body.data.id_estudiante_asistencia;
-                                // Redirección utilizando helper URL de Laravel
+                                // Redirección a los detalles de la asistencia
                                 window.location.href =
-                                    `{{ route('estudiantes_asistencias.detalles', ['estudiante_asistencia' => ':id']) }}`.replace(':id', idAsistencia);
+                                    `{{ route('estudiantes_asistencias.detalles', ['estudiante_asistencia' => ':id']) }}`
+                                    .replace(':id', idAsistencia);
                             });
                         } else {
-                            // Errores de Validación o Duplicidad (Ej: ya se tomó lista ese día)
+                            // Errores de Validación o Duplicidad
                             let errorMessage = res.body.message ||
                                 'Verifica los datos e intenta nuevamente.';
 
@@ -79,12 +89,12 @@
                             Swal.fire({
                                 theme: localStorage.getItem('theme') || 'dark',
                                 icon: 'warning',
-                                title: 'No se pudo guardar',
+                                title: 'No se pudo actualizar',
                                 html: errorMessage,
                                 confirmButtonColor: '#3085d6'
                             });
 
-                            // Restaurar el botón para que puedan intentar de nuevo
+                            // Restaurar el botón
                             btnSubmit.disabled = false;
                             btnSubmit.innerHTML = originalText;
                         }

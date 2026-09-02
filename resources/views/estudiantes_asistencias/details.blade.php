@@ -5,10 +5,18 @@
         <h1 class="text-info fw-bold mb-0">
             <i class="fa-solid fa-duotone fa-clipboard-user me-2"></i> {{ $head_title }}
         </h1>
-        <a class="btn btn-secondary shadow-sm"
-            href="{{ route('listas_asignaturas.detalles', $estudiante_asistencia->id_lista_asignatura) }}">
-            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver a la Lista
-        </a>
+
+        <div class="d-flex gap-2">
+            <a class="btn btn-warning shadow-sm"
+                href="{{ route('estudiantes_asistencias.editar', $estudiante_asistencia->id_estudiante_asistencia) }}">
+                <i class="fa-solid fa-duotone fa-pen-to-square me-1"></i> Editar Asistencia
+            </a>
+
+            <a class="btn btn-secondary shadow-sm"
+                href="{{ route('listas_asignaturas.detalles', $estudiante_asistencia->id_lista_asignatura) }}">
+                <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver a la Lista
+            </a>
+        </div>
     </div>
 
     <div class="card shadow-sm mb-4">
@@ -168,7 +176,7 @@
                                 <td class="text-center align-middle">{{ $loop->index + 1 }}</td>
                                 <td class="text-center align-middle">
                                     <img class="rounded shadow-sm zoomable-image"
-                                        src="{{ optional($detalle->estudiante->persona->usuario)->url_foto_perfil ? URL::to('/') . '/' . $detalle->estudiante->persona->usuario->url_foto_perfil : URL::to('/') . '/public/img/user.png' }}"
+                                        src="{{ $detalle->estudiante->persona->usuario->url_foto_perfil ? URL::to('/') . '/' . $detalle->estudiante->persona->usuario->url_foto_perfil : URL::to('/') . '/public/img/user.png' }}"
                                         alt="Foto" style="width:35px; height:35px; object-fit:cover;">
                                 </td>
                                 <td class="align-middle fw-bold">
@@ -213,24 +221,37 @@
         </div>
         <div class="card-body">
             <div class="row g-3 fs-7">
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-user-pen me-1"></i> Registrado Por:</p>
                     <p class="mb-0">
-                        {{ optional($estudiante_asistencia->creado)->correo ?? 'Sistema/Desconocido' }}
+                        {{ $estudiante_asistencia->creado->correo }}
                     </p>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-calendar-clock me-1"></i> Fecha y Hora
                         Registro:</p>
                     <p class="mb-0">
                         {{ date('d/m/Y H:i:s', strtotime($estudiante_asistencia->fecha_registro)) }}
                     </p>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
+                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-user-pen me-1"></i> Modificado Por:</p>
+                    <p class="mb-0">
+                        {{ $estudiante_asistencia->modificado?->correo != null ? $estudiante_asistencia->modificado->correo : 'Sin modificar' }}
+                    </p>
+                </div>
+                <div class="col-md-2">
+                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-calendar-clock me-1"></i> Fecha y Hora
+                        Modificación:</p>
+                    <p class="mb-0">
+                        {{ $estudiante_asistencia->modificado?->correo != null ? date('d/m/Y H:i:s', strtotime($estudiante_asistencia->fecha_actualizacion)) : 'Sin modificar' }}
+                    </p>
+                </div>
+                <div class="col-md-2">
                     <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-network-wired me-1"></i> Dirección IP:</p>
                     <p class="mb-0"><code>{{ $estudiante_asistencia->ip ?? 'No registrada' }}</code></p>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-laptop-mobile me-1"></i> Dispositivo:</p>
                     <p class="mb-0 text-truncate" title="{{ $estudiante_asistencia->dispositivo }}">
                         {{ helper_recortar_texto($estudiante_asistencia->dispositivo ?? 'No registrado', 35) }}

@@ -310,9 +310,11 @@ Route::middleware(['session.acceso'])->group(function () {
             Route::get('estudiantes_asistencias/listar', 'listar')->name('estudiantes_asistencias.listar');
             Route::get('estudiantes_asistencias/crear/lista_asignatura/{lista_asignatura}', 'view_create')->name('estudiantes_asistencias.crear');
             Route::get('estudiantes_asistencias/{estudiante_asistencia}', 'mostrar')->name('estudiantes_asistencias.mostrar');
-            Route::post('estudiantes_asistencias', 'create')->name('estudiantes_asistencias.create');
-            //Route::put('estudiantes_asistencias/{estudiante_asistencia}', 'update')->name('estudiantes_asistencias.update');
             Route::get('estudiantes_asistencias/{estudiante_asistencia}/detalles', 'view_details')->name('estudiantes_asistencias.detalles');
+            Route::get('estudiantes_asistencias/{estudiante_asistencia}/editar', 'view_update')->name('estudiantes_asistencias.editar');
+            
+            Route::post('estudiantes_asistencias', 'create')->name('estudiantes_asistencias.create');
+            Route::put('estudiantes_asistencias/{estudiante_asistencia}', 'update')->name('estudiantes_asistencias.update');
         });
     });
 });
