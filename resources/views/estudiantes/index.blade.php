@@ -18,6 +18,7 @@
         <thead>
             <tr>
                 <th>#</th>
+                <th>Curso</th>
                 <th>Foto de perfil</th>
                 <th>Ap. paterno</th>
                 <th>Ap. materno</th>
@@ -37,7 +38,6 @@
 
                 <th>Tiene acceso</th>
 
-                <th>Curso</th>
                 <th>Nacimiento país</th>
                 <th>Nacimiento departamento</th>
                 <th>Nacimiento provincia</th>

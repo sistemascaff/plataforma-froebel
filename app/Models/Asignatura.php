@@ -104,9 +104,8 @@ class Asignatura extends Model
         ])->orderBy('asignatura', 'ASC')->get();
     }
 
-    public function get_docente_asignaturas($id_docente)
+    public function get_asignaturas(array $filtros = [])
     {
-        // Filtramos las asignaturas donde en listas_asignaturas esté el docente
         return $this::with([
             'materia:id_materia,materia',
             'area:id_area,area',
@@ -114,16 +113,26 @@ class Asignatura extends Model
             'nivel:id_nivel,nivel',
             'curso:id_curso,curso',
             'coordinacion:id_coordinacion,coordinacion',
-            // Filtramos la relación cargada para que solo incluya a este docente
-            'listas_asignaturas' => function ($query) use ($id_docente) {
-                $query->select('id_lista_asignatura', 'id_asignatura', 'id_periodo', 'id_docente')
-                    ->where('id_docente', $id_docente);
-            }
+
+            'creado:id_usuario,correo',
+            'modificado:id_usuario,correo',
+            'eliminado:id_usuario,correo'
         ])
-            // Obligamos a que la Asignatura tenga al menos un registro en listas_asignaturas con este id_docente
-            ->whereHas('listas_asignaturas', function ($query) use ($id_docente) {
-                $query->where('id_docente', $id_docente);
-            })
+            ->when(
+                $filtros['nivel'] ?? null,
+                fn($q, $valor) =>
+                $q->where('id_nivel', $valor)
+            )
+            ->when(
+                $filtros['coordinacion'] ?? null,
+                fn($q, $valor) =>
+                $q->where('id_coordinacion', $valor)
+            )
+            ->when(
+                $filtros['busqueda'] ?? null,
+                fn($q, $valor) =>
+                $q->where('asignatura', 'LIKE', "%{$valor}%")
+            )
             ->orderBy('asignatura', 'ASC')
             ->get();
     }

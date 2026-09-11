@@ -10,6 +10,7 @@ use App\Models\HorarioAsignatura;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class EstudianteAsistenciaController extends Controller
 {
@@ -114,7 +115,19 @@ class EstudianteAsistenciaController extends Controller
 
     public function listar()
     {
-        $estudiantes_asistencias = (new EstudianteAsistencia())->get_all_estudiantes_asistencias();
+        $tipo_perfil = Auth::user()->persona?->tipo_perfil;
+        $filtros = [];
+        $estudiantes_asistencias = null;
+
+        if ($tipo_perfil === 'SUBDIRECTOR') {
+            $filtros['nivel'] = Auth::user()->persona?->docente?->id_nivel;
+            $estudiantes_asistencias = (new EstudianteAsistencia())->get_estudiantes_asistencias($filtros);
+        } else if ($tipo_perfil === 'COORDINADOR') {
+            $filtros['coordinacion'] = Auth::user()->persona?->docente?->id_coordinacion;
+            $estudiantes_asistencias = (new EstudianteAsistencia())->get_estudiantes_asistencias($filtros);
+        } else {
+            $estudiantes_asistencias = (new EstudianteAsistencia())->get_all_estudiantes_asistencias();
+        }
 
         return response()->json([
             'data' => $estudiantes_asistencias

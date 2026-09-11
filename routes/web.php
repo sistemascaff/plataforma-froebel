@@ -25,62 +25,39 @@ use App\Http\Controllers\PrestamoLibroController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
-// Ruta por defecto
-//Route::get('/', function () {
-//    return redirect()->route('main.index');
-//});
-
-/*Estructura de Laravel => Route::get(URL web, método de controlador)->name('nombre.para.referenciar.ruta')*/
-
-// 1. RUTAS PÚBLICAS (No requieren middleware de sesión)
+// 1. RUTAS PÚBLICAS
 Route::controller(UsuarioController::class)->group(function () {
     Route::get('/', 'view_main_index')->name('main.index');
     Route::get('iniciar-sesion', 'view_iniciar_sesion')->name('login');
     Route::post('verificar', 'verificar')->name('login.verificar');
 });
 
-//nota: hay una api para listar los libros publicamente, accesible en api.php
 Route::get('biblioteca', [LibroController::class, 'view_public'])->name('libros.public.index');
 
-// 2. RUTAS PRIVADAS (Protegidas por el Middleware CheckSessionAccess.php (considerando que la primera condición es que deben tener acceso al sistema))
+// 2. RUTAS PRIVADAS
 Route::middleware(['session.acceso'])->group(function () {
 
-    // Panel y Cierre de sesión
+    // Panel y Cierre de sesión (Accesible para todos los autenticados)
     Route::controller(UsuarioController::class)->group(function () {
         Route::get('panel', 'view_dashboard')->name('dashboard');
         Route::post('cerrar-sesion', 'cerrar_sesion')->name('logout');
     });
 
-    // Formato del middleware que se usa para las rutas privadas: 'perfil:ADMIN,BIBLIOTECARIA' (separados por comas, sin espacios)
-    // Nota: el Middleware 'perfil' se encuentra en app/Http/Middleware/CheckPerfilAccess.php
-
-    // Módulo de biblioteca
-    Route::middleware(['perfil:ADMIN,BIBLIOTECARIA'])->group(function () {
+    // ==========================================
+    // MÓDULO BIBLIOTECA
+    // ==========================================
+    Route::middleware(['perfil:ADMIN,GERENTE,BIBLIOTECARIA'])->group(function () {
         Route::controller(LibroController::class)->group(function () {
-
             Route::get('libros', 'view_index')->name('libros.index');
             Route::get('libros/listar', 'listar')->name('libros.listar');
             Route::get('libros/{libro}', 'mostrar')->name('libros.mostrar');
             Route::post('libros', 'create')->name('libros.create');
             Route::put('libros/{libro}', 'update')->name('libros.update');
             Route::patch('libros/{libro}', 'delete')->name('libros.delete');
-
             Route::get('libros/{libro}/detalles', 'view_details')->name('libros.detalles');
         });
 
         Route::controller(PrestamoLibroController::class)->group(function () {
-            // Vistas web
             Route::get('prestamos_libros', 'view_index')->name('prestamos_libros.index');
             Route::get('prestamos_libros/crear', 'view_create')->name('prestamos_libros.crear');
             Route::get('prestamos_libros/reportes', 'view_reportes')->name('prestamos_libros.reportes');
@@ -88,15 +65,11 @@ Route::middleware(['session.acceso'])->group(function () {
             Route::get('prestamos_libros/{prestamo_libro}/detalles', 'view_details')->name('prestamos_libros.detalles');
             Route::get('prestamos_libros/{prestamo_libro}/editar', 'view_update')->name('prestamos_libros.editar');
             Route::get('prestamos_libros/{prestamo_libro}/comprobante', 'view_imprimir')->name('prestamos_libros.imprimir');
-
-            // Operaciones CRUD
             Route::get('prestamos_libros/listar', 'listar')->name('prestamos_libros.listar');
             Route::get('prestamos_libros/{prestamo_libro}', 'mostrar')->name('prestamos_libros.mostrar');
             Route::post('prestamos_libros', 'create')->name('prestamos_libros.create');
             Route::put('prestamos_libros/{prestamo_libro}', 'update')->name('prestamos_libros.update');
             Route::patch('prestamos_libros/{prestamo_libro}', 'delete')->name('prestamos_libros.delete');
-
-            // Operaciones de detalles de préstamos
             Route::post('prestamos_libros/{prestamo_libro}/marcar/{libro}', 'marcar_devolucion')->name('prestamos_libros.marcar');
         });
 
@@ -105,7 +78,89 @@ Route::middleware(['session.acceso'])->group(function () {
         });
     });
 
-    Route::middleware(['perfil:ADMIN'])->group(function () {
+    // ==========================================
+    // MÓDULO DE GESTIÓN ESTUDIANTIL Y LICENCIAS
+    // ==========================================
+    Route::middleware(['perfil:ADMIN,GERENTE,SECRETARIA ACADEMICA,DIRECTOR,SUBDIRECTOR'])->group(function () {
+        Route::controller(EstudianteController::class)->group(function () {
+            Route::get('estudiantes', 'view_index')->name('estudiantes.index');
+            Route::get('estudiantes/listar', 'listar')->name('estudiantes.listar');
+            Route::get('estudiantes/{estudiante}', 'mostrar')->name('estudiantes.mostrar');
+            Route::post('estudiantes', 'create')->name('estudiantes.create');
+            Route::put('estudiantes/{estudiante}', 'update')->name('estudiantes.update');
+            Route::patch('estudiantes/{estudiante}', 'delete')->name('estudiantes.delete');
+            Route::get('estudiantes/{estudiante}/detalles', 'view_details')->name('estudiantes.detalles');
+        });
+
+        Route::controller(EstudianteLicenciaController::class)->group(function () {
+            Route::get('estudiantes_licencias', 'view_index')->name('estudiantes_licencias.index');
+            Route::get('estudiantes_licencias/listar', 'listar')->name('estudiantes_licencias.listar');
+            Route::get('estudiantes_licencias/{estudiante_licencia}', 'mostrar')->name('estudiantes_licencias.mostrar');
+            Route::post('estudiantes_licencias', 'create')->name('estudiantes_licencias.create');
+            Route::put('estudiantes_licencias/{estudiante_licencia}', 'update')->name('estudiantes_licencias.update');
+            Route::patch('estudiantes_licencias/{estudiante_licencia}', 'delete')->name('estudiantes_licencias.delete');
+        });
+    });
+
+    // ==========================================
+    // MÓDULO ACADÉMICO (ASIGNATURAS Y LISTAS)
+    // ==========================================
+    Route::middleware(['perfil:ADMIN,GERENTE,DIRECTOR,SUBDIRECTOR,COORDINADOR,DOCENTE'])->group(function () {
+        Route::controller(AsignaturaController::class)->group(function () {
+            Route::get('asignaturas', 'view_index')->name('asignaturas.index');
+            Route::get('asignaturas/listar', 'listar')->name('asignaturas.listar');
+            Route::get('asignaturas/{asignatura}', 'mostrar')->name('asignaturas.mostrar');
+            Route::post('asignaturas', 'create')->name('asignaturas.create');
+            Route::put('asignaturas/{asignatura}', 'update')->name('asignaturas.update');
+            Route::patch('asignaturas/{asignatura}', 'delete')->name('asignaturas.delete');
+            Route::get('asignaturas/{asignatura}/detalles', 'view_details')->name('asignaturas.detalles');
+            Route::post('asignaturas/{asignatura}/horarios/sync', 'sync_horarios')->name('asignaturas.horarios.sync');
+        });
+
+        Route::controller(ListaAsignaturaController::class)->group(function () {
+            Route::get('listas_asignaturas/{lista_asignatura}', 'mostrar')->name('listas_asignaturas.mostrar');
+            Route::get('listas_asignaturas/{lista_asignatura}/detalles', 'view_details')->name('listas_asignaturas.detalles');
+            Route::put('listas_asignaturas/{lista_asignatura}', 'update')->name('listas_asignaturas.update');
+            Route::patch('listas_asignaturas/{lista_asignatura}/docente', 'actualizar_docente')->name('listas_asignaturas.actualizar_docente');
+        });
+
+        Route::controller(EstudianteAsistenciaController::class)->group(function () {
+            Route::get('estudiantes_asistencias', 'view_index')->name('estudiantes_asistencias.index');
+            Route::get('estudiantes_asistencias/listar', 'listar')->name('estudiantes_asistencias.listar');
+            Route::get('estudiantes_asistencias/crear/lista_asignatura/{lista_asignatura}', 'view_create')->name('estudiantes_asistencias.crear');
+            Route::get('estudiantes_asistencias/{estudiante_asistencia}', 'mostrar')->name('estudiantes_asistencias.mostrar');
+            Route::get('estudiantes_asistencias/{estudiante_asistencia}/detalles', 'view_details')->name('estudiantes_asistencias.detalles');
+            Route::get('estudiantes_asistencias/{estudiante_asistencia}/editar', 'view_update')->name('estudiantes_asistencias.editar');
+            Route::post('estudiantes_asistencias', 'create')->name('estudiantes_asistencias.create');
+            Route::put('estudiantes_asistencias/{estudiante_asistencia}', 'update')->name('estudiantes_asistencias.update');
+        });
+
+        Route::controller(HorarioAsignaturaController::class)->group(function () {
+            Route::get('horarios_asignaturas', 'view_index')->name('horarios_asignaturas.index');
+            Route::get('horarios_asignaturas/listar', 'listar')->name('horarios_asignaturas.listar');
+            Route::get('horarios_asignaturas/{horario_asignatura}', 'mostrar')->name('horarios_asignaturas.mostrar');
+            Route::post('horarios_asignaturas', 'create')->name('horarios_asignaturas.create');
+            Route::put('horarios_asignaturas/{horario_asignatura}', 'update')->name('horarios_asignaturas.update');
+            Route::patch('horarios_asignaturas/{horario_asignatura}', 'delete')->name('horarios_asignaturas.delete');
+            Route::get('horarios_asignaturas/{horario_asignatura}/detalles', 'view_details')->name('horarios_asignaturas.detalles');
+        });
+
+        Route::controller(DocenteController::class)->group(function () {
+            Route::get('docentes', 'view_index')->name('docentes.index');
+            Route::get('docentes/listar', 'listar')->name('docentes.listar');
+            Route::get('docentes/{docente}', 'mostrar')->name('docentes.mostrar');
+            Route::post('docentes', 'create')->name('docentes.create');
+            Route::put('docentes/{docente}', 'update')->name('docentes.update');
+            Route::patch('docentes/{docente}', 'delete')->name('docentes.delete');
+            Route::get('docentes/{docente}/detalles', 'view_details')->name('docentes.detalles');
+        });
+    });
+
+    // ==========================================
+    // MÓDULO CORE / ADMINISTRACIÓN COMPLETA
+    // ==========================================
+    Route::middleware(['perfil:ADMIN,GERENTE'])->group(function () {
+
         Route::controller(UsuarioController::class)->group(function () {
             Route::get('usuarios', 'view_index')->name('usuarios.index');
             Route::get('usuarios/listar', 'listar')->name('usuarios.listar');
@@ -124,7 +179,6 @@ Route::middleware(['session.acceso'])->group(function () {
             Route::post('gestiones', 'create')->name('gestiones.create');
             Route::put('gestiones/{gestion}', 'update')->name('gestiones.update');
             Route::patch('gestiones/{gestion}', 'delete')->name('gestiones.delete');
-
             Route::get('gestiones/{gestion}/detalles', 'view_details')->name('gestiones.detalles');
         });
 
@@ -162,7 +216,6 @@ Route::middleware(['session.acceso'])->group(function () {
             Route::post('niveles', 'create')->name('niveles.create');
             Route::put('niveles/{nivel}', 'update')->name('niveles.update');
             Route::patch('niveles/{nivel}', 'delete')->name('niveles.delete');
-
             Route::get('niveles/{nivel}/detalles', 'view_details')->name('niveles.detalles');
         });
 
@@ -173,7 +226,6 @@ Route::middleware(['session.acceso'])->group(function () {
             Route::post('grados', 'create')->name('grados.create');
             Route::put('grados/{grado}', 'update')->name('grados.update');
             Route::patch('grados/{grado}', 'delete')->name('grados.delete');
-
             Route::get('grados/{grado}/detalles', 'view_details')->name('grados.detalles');
         });
 
@@ -184,7 +236,6 @@ Route::middleware(['session.acceso'])->group(function () {
             Route::post('cursos', 'create')->name('cursos.create');
             Route::put('cursos/{curso}', 'update')->name('cursos.update');
             Route::patch('cursos/{curso}', 'delete')->name('cursos.delete');
-
             Route::get('cursos/{curso}/detalles', 'view_details')->name('cursos.detalles');
         });
 
@@ -195,7 +246,6 @@ Route::middleware(['session.acceso'])->group(function () {
             Route::post('campos', 'create')->name('campos.create');
             Route::put('campos/{campo}', 'update')->name('campos.update');
             Route::patch('campos/{campo}', 'delete')->name('campos.delete');
-
             Route::get('campos/{campo}/detalles', 'view_details')->name('campos.detalles');
         });
 
@@ -206,7 +256,6 @@ Route::middleware(['session.acceso'])->group(function () {
             Route::post('areas', 'create')->name('areas.create');
             Route::put('areas/{area}', 'update')->name('areas.update');
             Route::patch('areas/{area}', 'delete')->name('areas.delete');
-
             Route::get('areas/{area}/detalles', 'view_details')->name('areas.detalles');
         });
 
@@ -217,7 +266,6 @@ Route::middleware(['session.acceso'])->group(function () {
             Route::post('materias', 'create')->name('materias.create');
             Route::put('materias/{materia}', 'update')->name('materias.update');
             Route::patch('materias/{materia}', 'delete')->name('materias.delete');
-
             Route::get('materias/{materia}/detalles', 'view_details')->name('materias.detalles');
         });
 
@@ -228,7 +276,6 @@ Route::middleware(['session.acceso'])->group(function () {
             Route::post('coordinaciones', 'create')->name('coordinaciones.create');
             Route::put('coordinaciones/{coordinacion}', 'update')->name('coordinaciones.update');
             Route::patch('coordinaciones/{coordinacion}', 'delete')->name('coordinaciones.delete');
-
             Route::get('coordinaciones/{coordinacion}/detalles', 'view_details')->name('coordinaciones.detalles');
         });
 
@@ -239,82 +286,7 @@ Route::middleware(['session.acceso'])->group(function () {
             Route::post('mallas_curriculares', 'create')->name('mallas_curriculares.create');
             Route::put('mallas_curriculares/{malla_curricular}', 'update')->name('mallas_curriculares.update');
             Route::patch('mallas_curriculares/{malla_curricular}', 'delete')->name('mallas_curriculares.delete');
-
             Route::get('mallas_curriculares/{malla_curricular}/detalles', 'view_details')->name('mallas_curriculares.detalles');
-        });
-
-        Route::controller(AsignaturaController::class)->group(function () {
-            Route::get('asignaturas', 'view_index')->name('asignaturas.index');
-            Route::get('asignaturas/listar', 'listar')->name('asignaturas.listar');
-            Route::get('asignaturas/{asignatura}', 'mostrar')->name('asignaturas.mostrar');
-            Route::post('asignaturas', 'create')->name('asignaturas.create');
-            Route::put('asignaturas/{asignatura}', 'update')->name('asignaturas.update');
-            Route::patch('asignaturas/{asignatura}', 'delete')->name('asignaturas.delete');
-
-            Route::get('asignaturas/{asignatura}/detalles', 'view_details')->name('asignaturas.detalles');
-            Route::post('asignaturas/{asignatura}/horarios/sync', 'sync_horarios')->name('asignaturas.horarios.sync');
-        });
-
-        Route::controller(ListaAsignaturaController::class)->group(function () {
-            Route::get('listas_asignaturas/{lista_asignatura}', 'mostrar')->name('listas_asignaturas.mostrar');
-
-            Route::get('listas_asignaturas/{lista_asignatura}/detalles', 'view_details')->name('listas_asignaturas.detalles');
-            Route::put('listas_asignaturas/{lista_asignatura}', 'update')->name('listas_asignaturas.update');
-            Route::patch('listas_asignaturas/{lista_asignatura}/docente', 'actualizar_docente')->name('listas_asignaturas.actualizar_docente');
-        });
-
-        Route::controller(HorarioAsignaturaController::class)->group(function () {
-            Route::get('horarios_asignaturas', 'view_index')->name('horarios_asignaturas.index');
-            Route::get('horarios_asignaturas/listar', 'listar')->name('horarios_asignaturas.listar');
-            Route::get('horarios_asignaturas/{horario_asignatura}', 'mostrar')->name('horarios_asignaturas.mostrar');
-            Route::post('horarios_asignaturas', 'create')->name('horarios_asignaturas.create');
-            Route::put('horarios_asignaturas/{horario_asignatura}', 'update')->name('horarios_asignaturas.update');
-            Route::patch('horarios_asignaturas/{horario_asignatura}', 'delete')->name('horarios_asignaturas.delete');
-
-            Route::get('horarios_asignaturas/{horario_asignatura}/detalles', 'view_details')->name('horarios_asignaturas.detalles');
-        });
-
-        Route::controller(DocenteController::class)->group(function () {
-            Route::get('docentes', 'view_index')->name('docentes.index');
-            Route::get('docentes/listar', 'listar')->name('docentes.listar');
-            Route::get('docentes/{docente}', 'mostrar')->name('docentes.mostrar');
-            Route::post('docentes', 'create')->name('docentes.create');
-            Route::put('docentes/{docente}', 'update')->name('docentes.update');
-            Route::patch('docentes/{docente}', 'delete')->name('docentes.delete');
-
-            Route::get('docentes/{docente}/detalles', 'view_details')->name('docentes.detalles');
-        });
-
-        Route::controller(EstudianteController::class)->group(function () {
-            Route::get('estudiantes', 'view_index')->name('estudiantes.index');
-            Route::get('estudiantes/listar', 'listar')->name('estudiantes.listar');
-            Route::get('estudiantes/{estudiante}', 'mostrar')->name('estudiantes.mostrar');
-            Route::post('estudiantes', 'create')->name('estudiantes.create');
-            Route::put('estudiantes/{estudiante}', 'update')->name('estudiantes.update');
-            Route::patch('estudiantes/{estudiante}', 'delete')->name('estudiantes.delete');
-
-            Route::get('estudiantes/{estudiante}/detalles', 'view_details')->name('estudiantes.detalles');
-        });
-
-        Route::controller(EstudianteLicenciaController::class)->group(function () {
-            Route::get('estudiantes_licencias', 'view_index')->name('estudiantes_licencias.index');
-            Route::get('estudiantes_licencias/listar', 'listar')->name('estudiantes_licencias.listar');
-            Route::get('estudiantes_licencias/{estudiante_licencia}', 'mostrar')->name('estudiantes_licencias.mostrar');
-            Route::post('estudiantes_licencias', 'create')->name('estudiantes_licencias.create');
-            Route::put('estudiantes_licencias/{estudiante_licencia}', 'update')->name('estudiantes_licencias.update');
-            Route::patch('estudiantes_licencias/{estudiante_licencia}', 'delete')->name('estudiantes_licencias.delete');
-        });
-
-        Route::controller(EstudianteAsistenciaController::class)->group(function () {
-            Route::get('estudiantes_asistencias', 'view_index')->name('estudiantes_asistencias.index');
-            Route::get('estudiantes_asistencias/listar', 'listar')->name('estudiantes_asistencias.listar');
-            Route::get('estudiantes_asistencias/crear/lista_asignatura/{lista_asignatura}', 'view_create')->name('estudiantes_asistencias.crear');
-            Route::get('estudiantes_asistencias/{estudiante_asistencia}', 'mostrar')->name('estudiantes_asistencias.mostrar');
-            Route::get('estudiantes_asistencias/{estudiante_asistencia}/detalles', 'view_details')->name('estudiantes_asistencias.detalles');
-            Route::get('estudiantes_asistencias/{estudiante_asistencia}/editar', 'view_update')->name('estudiantes_asistencias.editar');
-            
-            Route::post('estudiantes_asistencias', 'create')->name('estudiantes_asistencias.create');
-            Route::put('estudiantes_asistencias/{estudiante_asistencia}', 'update')->name('estudiantes_asistencias.update');
         });
     });
 });

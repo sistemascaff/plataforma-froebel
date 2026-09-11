@@ -9,35 +9,52 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CheckPerfilAccess
 {
-    /**
-     * Handle an incoming request.
-     * El parámetro ...$perfiles recibe todos los roles permitidos separados por coma.
-     */
-    public function handle(Request $request, Closure $next, ...$perfiles): Response
+    public function handle(Request $request, Closure $next, ...$grupos): Response
     {
-        // 1. Obtenemos el perfil actual del usuario en sesión
         $perfilActual = Auth::user()->persona?->tipo_perfil;
 
-        // 2. Verificamos si el perfil actual existe dentro del arreglo de permitidos
-        if (!in_array($perfilActual, $perfiles)) {
+        // 1. Definimos los Alias o "Grupos de Acceso"
+        $mapaGrupos = [
+            'SISTEMA_COMPLETO' => ['ADMIN', 'GERENTE'],
+            'BIBLIOTECA_GRUPO' => ['ADMIN', 'GERENTE', 'BIBLIOTECA', 'BIBLIOTECARIA'],
+            'ASIGNATURAS_GRUPO' => ['ADMIN', 'GERENTE', 'DIRECTOR', 'SUBDIRECTOR', 'COORDINADOR', 'DOCENTE'],
+            'LICENCIAS_GRUPO'  => ['ADMIN', 'GERENTE', 'SECRETARIA'],
+        ];
 
-            // 3. Si la petición es AJAX (DataTables, guardados dinámicos, etc.)
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Acceso denegado. Tu perfil (' . $perfilActual . ') no tiene permisos para realizar esta acción.'
-                ], 403);
+        // 2. Extraemos todos los roles permitidos según los grupos recibidos en la ruta
+        $rolesPermitidos = [];
+        foreach ($grupos as $grupo) {
+            if (isset($mapaGrupos[$grupo])) {
+                $rolesPermitidos = array_merge($rolesPermitidos, $mapaGrupos[$grupo]);
+            } else {
+                $rolesPermitidos[] = $grupo; // Fallback por si se pasa un rol directo
             }
+        }
+        $rolesPermitidos = array_unique($rolesPermitidos);
 
-            // 4. Si es una petición web normal, redirigimos de forma segura
-            // Puedes usar abort(403) para mostrar una pantalla de error, o redirigir al panel
-            // return redirect()->route('dashboard');
-            
-            // 4. Si es una petición web normal, lanzamos el error 403 (esto renderiza errors/403.blade.php)
-            abort(403, 'Acceso denegado. Tu perfil (' . $perfilActual . ') no tiene permisos para realizar esta acción.');
+        // 3. Verificamos si el perfil actual pertenece a los roles permitidos
+        if (!in_array($perfilActual, $rolesPermitidos)) {
+            return $this->rechazar($request, 'Acceso denegado. Tu perfil (' . $perfilActual . ') no tiene permisos para realizar esta acción.');
         }
 
-        // Si el perfil coincide, la petición continúa
+        // 4. Bloqueo global de escritura (CRUD) para el GERENTE
+        // Solo se le permiten peticiones GET (visualización)
+        if ($perfilActual === 'GERENTE' && !$request->isMethod('get')) {
+            return $this->rechazar($request, 'Acceso de solo lectura. El rol GERENTE no puede crear, editar ni eliminar registros.');
+        }
+
         return $next($request);
+    }
+
+    private function rechazar(Request $request, $mensaje)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => $mensaje
+            ], 403);
+        }
+
+        abort(403, $mensaje);
     }
 }

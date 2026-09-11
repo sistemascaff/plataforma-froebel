@@ -7,7 +7,7 @@
         </li>
         <li class="nav-item mx-1">
             <a class="nav-link {{ request()->is('asignaturas/docente') ? 'active' : '' }}" aria-current="page"
-                href="{{ route('asignaturas.docente') }}"><i class="fa-solid fa-duotone fa-book-reader"></i>
+                href="#"><i class="fa-solid fa-duotone fa-book-reader"></i>
                 Mis asignaturas</a>
         </li>
     </ul>

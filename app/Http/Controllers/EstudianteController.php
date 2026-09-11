@@ -17,6 +17,8 @@ class EstudianteController extends Controller
 {
     public function view_index()
     {
+        $this->authorize('viewAny', Estudiante::class);
+
         $cursos = (new Curso())->get_all_cursos();
 
         return view('estudiantes.index', [
@@ -29,6 +31,8 @@ class EstudianteController extends Controller
     {
         $estudiante = (new Estudiante())->get_estudiante($id_estudiante);
 
+        $this->authorize('view', $estudiante);
+
         return view('estudiantes.details', [
             'head_title' => "ESTUDIANTE: {$estudiante->persona->apellidos_nombres}",
             'estudiante'    => $estudiante,
@@ -37,7 +41,18 @@ class EstudianteController extends Controller
 
     public function listar()
     {
-        $estudiantes = (new Estudiante())->get_all_estudiantes();
+        $this->authorize('viewAny', Estudiante::class);
+
+        $tipo_perfil = Auth::user()->persona?->tipo_perfil;
+        $filtros = [];
+        $estudiantes = null;
+
+        if ($tipo_perfil === 'SUBDIRECTOR') {
+            $filtros['nivel'] = Auth::user()->persona?->docente?->id_nivel;
+            $estudiantes = (new Estudiante())->get_estudiantes($filtros);
+        } else {
+            $estudiantes = (new Estudiante())->get_all_estudiantes();
+        }
 
         // Iterar sobre la colección para descifrar la contraseña
         $estudiantes->map(function ($estudiante) {
@@ -56,6 +71,9 @@ class EstudianteController extends Controller
     public function mostrar(Request $request)
     {
         $estudiante = (new Estudiante())->get_estudiante($request->estudiante);
+
+        $this->authorize('view', $estudiante);
+
         $estudiante->persona->usuario->contrasenha_descifrada = helper_decrypt($estudiante->persona->usuario->contrasenha);
 
         return response()->json(['data' => $estudiante]);
@@ -63,6 +81,8 @@ class EstudianteController extends Controller
 
     public function create(EstudianteValidation $request)
     {
+        $this->authorize('create', Estudiante::class);
+
         if ($request->contrasenha !== $request->confirmar_contrasenha) {
             return response()->json([
                 'success' => false,
@@ -84,8 +104,8 @@ class EstudianteController extends Controller
             $persona->fecha_nacimiento = $request->fecha_nacimiento;
             $persona->sexo = $request->sexo;
             $persona->idioma = $request->idioma ?? 'ESPAÑOL';
-            $persona->celular = $request->celular;
-            $persona->telefono = $request->telefono ?? '0';
+            $persona->celular = $request->celular ?? '';
+            $persona->telefono = $request->telefono ?? '';
             $persona->tipo_perfil = 'ESTUDIANTE';
             $persona->creado_por = auth()->id();
             $persona->ip = $request->ip();
@@ -111,8 +131,8 @@ class EstudianteController extends Controller
             // 3. Crear el usuario vinculado a la persona
             $usuario = new Usuario();
             $usuario->id_persona = $persona->id_persona;
-            $usuario->correo = $request->correo;
-            $usuario->contrasenha = helper_encrypt($request->contrasenha);
+            $usuario->correo = $request->correo ?? '';
+            $usuario->contrasenha = $request->contrasenha ? helper_encrypt($request->contrasenha) : '';
 
             // Si se sube una foto de perfil, se guarda el nombre del archivo en el campo correspondiente
             if ($request->hasFile('foto_perfil')) {
@@ -148,10 +168,12 @@ class EstudianteController extends Controller
 
     public function update(EstudianteValidation $request, int $id_estudiante)
     {
+        $estudiante = (new Estudiante())->get_estudiante($id_estudiante);
+
+        $this->authorize('update', $estudiante);
+
         DB::beginTransaction();
         try {
-            $estudiante = (new Estudiante())->get_estudiante($id_estudiante);
-
             // 1. Actualizar la persona vinculada
             $persona = (new Persona())->get_persona($estudiante->id_persona);
             $persona->apellido_paterno         = strtoupper($request->apellido_paterno);
@@ -164,7 +186,7 @@ class EstudianteController extends Controller
             $persona->sexo                     = $request->sexo;
             $persona->idioma                   = $request->idioma ?? 'ESPAÑOL';
             $persona->celular                  = $request->celular;
-            $persona->telefono                 = $request->telefono ?? '0';
+            $persona->telefono                 = $request->telefono;
             $persona->tipo_perfil = 'ESTUDIANTE';
             $persona->modificado_por           = auth()->id();
             $persona->ip                       = $request->ip();
@@ -187,7 +209,8 @@ class EstudianteController extends Controller
 
             // 3. Actualizar el usuario vinculado
             $usuario = (new Usuario())->get_usuario_desde_persona($persona->id_persona);
-            $usuario->correo = $request->correo;
+            $usuario->correo = $request->correo ?? '';
+            $usuario->contrasenha = $request->contrasenha ? helper_encrypt($request->contrasenha) : '';
             if ($request->contrasenha) {
                 if ($request->contrasenha !== $request->confirmar_contrasenha) {
                     return response()->json([
@@ -234,10 +257,12 @@ class EstudianteController extends Controller
             'id_estudiante' => ['required', 'numeric', 'integer', 'exists:estudiantes,id_estudiante'],
         ]);
 
+        $estudiante = (new Estudiante())->get_estudiante($request->id_estudiante);
+
+        $this->authorize('delete', $estudiante);
+
         DB::beginTransaction();
         try {
-            $estudiante = (new Estudiante())->get_estudiante($request->id_estudiante);
-
             $nuevoEstado = $estudiante->estado == '1' ? '0' : '1';
             $seArchiva   = $nuevoEstado === '0';
 

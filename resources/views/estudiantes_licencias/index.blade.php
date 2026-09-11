@@ -20,6 +20,7 @@
             <thead>
                 <tr>
                     <th>#</th>
+                    <th>Curso</th>
                     <th>Estudiante</th>
                     <th>Motivo (Tipo)</th>
                     <th>Fechas (Inicio - Fin)</th>

@@ -26,6 +26,17 @@ class Estudiante extends Model
         );
     }
 
+    /** Relación muchos a muchos con estudiantes_asistencias */
+    public function estudiantes_asistencias()
+    {
+        return $this->belongsToMany(
+            EstudianteAsistencia::class,
+            'detalles_estudiantes_asistencias', // Nombre de la tabla pivote
+            'id_estudiante',                    // FK de este modelo (Estudiante) en la tabla pivote
+            'id_estudiante_asistencia'          // FK del modelo relacionado en la tabla pivote
+        )->withPivot(['tipo', 'id_estudiante_licencia']);
+    }
+
     /** Relación FK con personas */
     public function persona()
     {
@@ -57,14 +68,51 @@ class Estudiante extends Model
 
     public function get_all_estudiantes()
     {
-        return $this::with(
-            'persona.usuario',
-            'curso',
+        return $this::select('estudiantes.*') // Evita colisión de columnas
+            ->join('personas', 'estudiantes.id_persona', '=', 'personas.id_persona')
+            ->join('cursos', 'estudiantes.id_curso', '=', 'cursos.id_curso')
+            ->join('grados', 'cursos.id_grado', '=', 'grados.id_grado')
+            ->join('niveles', 'grados.id_nivel', '=', 'niveles.id_nivel')
+            ->with([
+                'persona.usuario',
+                'curso',
+                'creado:id_usuario,correo',
+                'modificado:id_usuario,correo',
+                'eliminado:id_usuario,correo'
+            ])
+            ->orderBy('niveles.posicion_ordinal', 'ASC')
+            ->orderBy('grados.posicion_ordinal', 'ASC')
+            ->orderBy('cursos.curso', 'ASC')
+            ->orderBy('personas.apellido_paterno', 'ASC')
+            ->orderBy('personas.nombres', 'ASC')
+            ->get();
+    }
 
-            'creado:id_usuario,correo',
-            'modificado:id_usuario,correo',
-            'eliminado:id_usuario,correo'
-        )->orderBy('id_estudiante', 'ASC')->get();
+    public function get_estudiantes(array $filtros = [])
+    {
+        return $this::select('estudiantes.*')
+            ->join('personas', 'estudiantes.id_persona', '=', 'personas.id_persona')
+            ->join('cursos', 'estudiantes.id_curso', '=', 'cursos.id_curso')
+            ->join('grados', 'cursos.id_grado', '=', 'grados.id_grado')
+            ->join('niveles', 'grados.id_nivel', '=', 'niveles.id_nivel')
+            ->with([
+                'persona.usuario',
+                'curso:id_curso,id_grado,id_paralelo,curso,estado',
+                'creado:id_usuario,correo',
+                'modificado:id_usuario,correo',
+                'eliminado:id_usuario,correo'
+            ])
+            ->when(
+                $filtros['nivel'] ?? null,
+                // Como ya hicimos el join con niveles, filtramos directamente en lugar de usar whereHas (es más rápido)
+                fn($q, $valor) => $q->where('niveles.id_nivel', $valor)
+            )
+            ->orderBy('niveles.posicion_ordinal', 'ASC')
+            ->orderBy('grados.posicion_ordinal', 'ASC')
+            ->orderBy('cursos.curso', 'ASC')
+            ->orderBy('personas.apellido_paterno', 'ASC')
+            ->orderBy('personas.nombres', 'ASC')
+            ->get();
     }
 
     public function get_estudiante($id_estudiante)
@@ -74,7 +122,7 @@ class Estudiante extends Model
             'persona.usuario:id_usuario,id_persona,correo,contrasenha,url_foto_perfil,codigo_recuperacion,tiene_acceso,ultima_conexion,ultimo_dispositivo,ultima_ip,estado',
 
             'curso:id_curso,id_grado,id_paralelo,curso,estado',
-            
+
             'listas_asignaturas:id_lista_asignatura,id_asignatura,id_periodo,id_docente,estado',
             'listas_asignaturas.asignatura:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',
             'listas_asignaturas.periodo:id_periodo,id_gestion,periodo,posicion_ordinal,estado',
@@ -82,6 +130,11 @@ class Estudiante extends Model
             // para la vista de detalles del estudiante se omite información sensible del docente
             'listas_asignaturas.docente:id_docente,id_persona,id_nivel,id_coordinacion,estado',
             'listas_asignaturas.docente.persona:id_persona,id_colegio,apellido_paterno,apellido_materno,nombres',
+
+            'estudiantes_asistencias:id_estudiante_asistencia,id_lista_asignatura,id_horario_asignatura,fecha,estado',
+            'estudiantes_asistencias.lista_asignatura:id_lista_asignatura,id_asignatura,id_periodo,id_docente,estado',
+            'estudiantes_asistencias.lista_asignatura.asignatura:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',
+            'estudiantes_asistencias.horario_asignatura',
 
             'creado:id_usuario,correo',
             'modificado:id_usuario,correo',

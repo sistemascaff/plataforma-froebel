@@ -28,15 +28,31 @@ class UsuarioController extends Controller
     {
         $tipo_perfil = Auth::user()->persona?->tipo_perfil;
 
-        if ($tipo_perfil === 'ADMIN') {
+        if ($tipo_perfil === 'ADMIN' || $tipo_perfil === 'GERENTE') {
             return view('panel.admin_super.dashboard', [
+                'head_title' => 'PANEL DE ' . $tipo_perfil,
+            ]);
+        } else if ($tipo_perfil === 'DIRECTOR') {
+            return view('panel.director.dashboard', [
+                'head_title' => 'PANEL DE ' . $tipo_perfil,
+            ]);
+        } else if ($tipo_perfil === 'SECRETARIA ACADEMICA') {
+            return view('panel.secretaria_academica.dashboard', [
                 'head_title' => 'PANEL DE ' . $tipo_perfil,
             ]);
         } else if ($tipo_perfil === 'BIBLIOTECARIA') {
             return view('panel.biblioteca.dashboard', [
                 'head_title' => 'PANEL DE ' . $tipo_perfil,
             ]);
-        } else if ($tipo_perfil === 'DOCENTE' || $tipo_perfil === 'COORDINADOR' || $tipo_perfil === 'SUBDIRECTOR') {
+        } else if ($tipo_perfil === 'SUBDIRECTOR') {
+            return view('panel.subdirector.dashboard', [
+                'head_title' => 'PANEL DE ' . $tipo_perfil,
+            ]);
+        } else if ($tipo_perfil === 'COORDINADOR') {
+            return view('panel.coordinador.dashboard', [
+                'head_title' => 'PANEL DE ' . $tipo_perfil,
+            ]);
+        } else if ($tipo_perfil === 'DOCENTE') {
             return view('panel.docente.dashboard', [
                 'head_title' => 'PANEL DE ' . $tipo_perfil,
             ]);

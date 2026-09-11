@@ -66,10 +66,13 @@ if (! function_exists('helper_tipo_perfil_a_font_awesome_icono')) {
     {
         $font_awesome_icon = match ($tipo_perfil) {
             'ADMIN' => 'fa-user-shield',
+            'GERENTE' => 'fa-user-tie',
+            'DIRECTOR' => 'fa-user-tie',
+            'SECRETARIA ACADEMICA' => 'fa-user-tie',
             'BIBLIOTECARIA' => 'fa-book-open',
-            'DOCENTE' => 'fa-chalkboard-teacher',
             'SUBDIRECTOR' => 'fa-chalkboard-user',
             'COORDINADOR' => 'fa-chalkboard-user',
+            'DOCENTE' => 'fa-chalkboard-teacher',
             'TUTOR' => 'fa-people-roof', //nota: aquí se refiere tanto a socio o padre de familia o tutor*
             'ESTUDIANTE' => 'fa-user-graduate',
             default => 'fa-circle-question'

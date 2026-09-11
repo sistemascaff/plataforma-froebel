@@ -8,6 +8,7 @@ use App\Models\HorarioAsignatura;
 use App\Models\Nivel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HorarioAsignaturaController extends Controller
 {
@@ -35,7 +36,17 @@ class HorarioAsignaturaController extends Controller
 
     public function listar()
     {
-        $horarios_asignaturas = (new HorarioAsignatura())->get_all_horarios_asignaturas();
+        $tipo_perfil = Auth::user()->persona?->tipo_perfil;
+        $filtros = [];
+        $horarios_asignaturas = null;
+
+        if ($tipo_perfil === 'SUBDIRECTOR') {
+            $filtros['nivel'] = Auth::user()->persona?->docente?->id_nivel;
+            $horarios_asignaturas = (new HorarioAsignatura())->get_horarios_asignaturas($filtros);
+        } else {
+            $horarios_asignaturas = (new HorarioAsignatura())->get_all_horarios_asignaturas();
+        }
+
         return response()->json([
             'data' => $horarios_asignaturas
         ]);

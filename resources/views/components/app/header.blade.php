@@ -7,13 +7,19 @@
                 {{ Auth::user()->correo }}
             </div>
 
-            @if (Auth::user()->persona?->tipo_perfil === 'ADMIN')
+            @if (Auth::user()->persona?->tipo_perfil === 'ADMIN' || Auth::user()->persona?->tipo_perfil === 'GERENTE')
                 @include('panel.admin_super.dashboard_header')
+            @elseif (Auth::user()->persona?->tipo_perfil === 'DIRECTOR')
+                @include('panel.director.dashboard_header')
+            @elseif (Auth::user()->persona?->tipo_perfil === 'SECRETARIA ACADEMICA')
+                @include('panel.secretaria_academica.dashboard_header')
             @elseif (Auth::user()->persona?->tipo_perfil === 'BIBLIOTECARIA')
                 @include('panel.biblioteca.dashboard_header')
-            @elseif (Auth::user()->persona?->tipo_perfil === 'DOCENTE' ||
-                    Auth::user()->persona?->tipo_perfil === 'COORDINADOR' ||
-                    Auth::user()->persona?->tipo_perfil === 'SUBDIRECTOR')
+            @elseif (Auth::user()->persona?->tipo_perfil === 'SUBDIRECTOR')
+                @include('panel.subdirector.dashboard_header')
+            @elseif (Auth::user()->persona?->tipo_perfil === 'COORDINADOR')
+                @include('panel.coordinador.dashboard_header')
+            @elseif (Auth::user()->persona?->tipo_perfil === 'DOCENTE')
                 @include('panel.docente.dashboard_header')
             @endif
 
@@ -24,7 +30,7 @@
             <div class="dropdown text-end">
 
                 <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
-                    data-bs-toggle="dropdown" aria-expanded="false"> <img src="{{ URL::to('/') }}/public/img/user.jpeg"
+                    data-bs-toggle="dropdown" aria-expanded="false"> <img src="{{ URL::to('/') }}/{{ Auth::user()->url_foto_perfil ?? 'public/img/default.png' }}"
                         alt="mdo" width="32" height="32" class="rounded-circle"> </a>
                 <ul class="dropdown-menu text-small" style="">
                     <li><a class="dropdown-item" href="#"><i

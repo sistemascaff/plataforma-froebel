@@ -53,6 +53,12 @@
                     }
                 },
                 {
+                    data: "estudiante.curso.curso",
+                    render: function(data, type, row) {
+                        return `<span class="badge bg-info text-dark">${data}</span>`;
+                    }
+                },
+                {
                     data: null,
                     render: function(data, type, row) {
                         return `${row.estudiante.persona.apellidos_nombres}`;

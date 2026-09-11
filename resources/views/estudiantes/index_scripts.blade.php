@@ -38,6 +38,12 @@
                     }
                 },
                 {
+                    data: "curso.curso",
+                    render: function(data) {
+                        return `<span class="badge bg-info text-dark">${data}</span>`;
+                    }
+                },
+                {
                     data: "persona.usuario.url_foto_perfil",
                     orderable: false,
                     searchable: false,
@@ -105,12 +111,6 @@
                         if (data == 1) return '<span class="badge bg-success">SI</span>';
                         if (data == 0) return '<span class="badge bg-danger">NO</span>';
                         return '<span class="badge bg-warning">DESCONOCIDO</span>';
-                    }
-                },
-                {
-                    data: "curso.curso",
-                    render: function(data) {
-                        return data || '-';
                     }
                 },
                 {

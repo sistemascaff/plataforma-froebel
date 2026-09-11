@@ -77,6 +77,31 @@ class HorarioAsignatura extends Model
             ->get();
     }
 
+    public function get_horarios_asignaturas(array $filtros = [])
+    {
+        /* Se realiza un join para ordenar por año de gestión, luego por nivel y finalmente por hora de inicio. */
+        return $this::with([
+            'gestion:id_gestion,anio,estado',
+            'nivel:id_nivel,nivel,posicion_ordinal,estado',
+
+            'creado:id_usuario,correo',
+            'modificado:id_usuario,correo',
+            'eliminado:id_usuario,correo'
+        ])
+            ->join('gestiones', 'horarios_asignaturas.id_gestion', '=', 'gestiones.id_gestion')
+            ->join('niveles', 'horarios_asignaturas.id_nivel', '=', 'niveles.id_nivel')
+            ->when(
+                $filtros['nivel'] ?? null,
+                // Filtramos directamente en lugar de usar whereHas (es más rápido)
+                fn($q, $valor) => $q->where('niveles.id_nivel', $valor)
+            )
+            ->orderBy('gestiones.anio', 'DESC')
+            ->orderBy('niveles.posicion_ordinal', 'ASC')
+            ->orderBy('horarios_asignaturas.hora_inicio', 'ASC')
+            ->select('horarios_asignaturas.*')
+            ->get();
+    }
+
     public function get_horario_asignatura($id_horario_asignatura)
     {
         return $this::with([

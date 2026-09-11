@@ -60,6 +60,9 @@
                 },
                 {
                     data: "curso.curso",
+                    render: function(data, type, row) {
+                        return data ? data : row.tipo_bloque === 'curso' ? '<span class="badge bg-danger">No asignado</span>' : '<span class="badge bg-secondary">N/A</span>';
+                    }
                 },
                 {
                     data: "estado",
