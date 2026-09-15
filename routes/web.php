@@ -43,6 +43,10 @@ Route::middleware(['session.acceso'])->group(function () {
         Route::post('cerrar-sesion', 'cerrar_sesion')->name('logout');
     });
 
+    Route::controller(PersonaController::class)->group(function () {
+        Route::get('perfil', 'view_perfil')->name('perfil');
+    });
+
     // ==========================================
     // MÓDULO BIBLIOTECA
     // ==========================================
@@ -118,6 +122,8 @@ Route::middleware(['session.acceso'])->group(function () {
         });
 
         Route::controller(ListaAsignaturaController::class)->group(function () {
+            Route::get('listas_asignaturas', 'view_index')->name('listas_asignaturas.index');
+            Route::get('listas_asignaturas/listar', 'listar')->name('listas_asignaturas.listar');
             Route::get('listas_asignaturas/{lista_asignatura}', 'mostrar')->name('listas_asignaturas.mostrar');
             Route::get('listas_asignaturas/{lista_asignatura}/detalles', 'view_details')->name('listas_asignaturas.detalles');
             Route::put('listas_asignaturas/{lista_asignatura}', 'update')->name('listas_asignaturas.update');
@@ -168,8 +174,13 @@ Route::middleware(['session.acceso'])->group(function () {
         });
 
         Route::controller(PersonaController::class)->group(function () {
+            Route::get('personas', 'view_index')->name('personas.index');
             Route::get('personas/listar', 'listar')->name('personas.listar');
             Route::get('personas/{persona}', 'mostrar')->name('personas.mostrar');
+            Route::post('personas', 'create')->name('personas.create');
+            Route::put('personas/{persona}', 'update')->name('personas.update');
+            Route::patch('personas/{persona}', 'delete')->name('personas.delete');
+            Route::get('personas/{persona}/detalles', 'view_details')->name('personas.detalles');
         });
 
         Route::controller(GestionController::class)->group(function () {

@@ -30,21 +30,34 @@
             <div class="dropdown text-end">
 
                 <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
-                    data-bs-toggle="dropdown" aria-expanded="false"> <img src="{{ URL::to('/') }}/{{ Auth::user()->url_foto_perfil ?? 'public/img/default.png' }}"
+                    data-bs-toggle="dropdown" aria-expanded="false"> <img
+                        src="{{ URL::to('/') }}/{{ Auth::user()->url_foto_perfil ?? 'public/img/default.png' }}"
                         alt="mdo" width="32" height="32" class="rounded-circle"> </a>
                 <ul class="dropdown-menu text-small" style="">
-                    <li><a class="dropdown-item" href="#"><i
+                    <li>
+                        <span class="dropdown-item fw-bold">{{ Auth::user()->persona?->nombres_apellidos }}</span>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{ route('perfil') }}">
+                            <i
                                 class="fa-solid fa-duotone {{ helper_tipo_perfil_a_font_awesome_icono(Auth::user()->persona?->tipo_perfil) }}"></i>
-                            {{ Auth::user()->correo }}</a></li>
+                            Mi perfil
+                        </a>
+                    </li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>
-                    <li><a class="dropdown-item" href="{{ route('main.index') }}"><i
-                                class="fa-solid fa-duotone fa-house"></i>
-                            Index</a></li>
+                    <li>
+                        <a class="dropdown-item" href="{{ route('main.index') }}">
+                            <i class="fa-solid fa-duotone fa-house"></i>
+                            Index
+                        </a>
+                    </li>
                     <li>
                         <hr class="dropdown-divider">
-                    </li>
                     </li>
                     <li><button type="button" class="dropdown-item" data-bs-toggle="modal"
                             data-bs-target="#modal_sign_out">

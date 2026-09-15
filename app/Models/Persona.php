@@ -90,7 +90,7 @@ class Persona extends Model
     public function get_personal()
     {
         return $this::with('usuario', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')
-            ->whereNotIn('tipo_perfil', ['DOCENTE', 'ESTUDIANTE'])
+            ->whereNotIn('tipo_perfil', ['SUBDIRECTOR','COORDINADOR', 'DOCENTE', 'ESTUDIANTE'])
             ->get();
     }
 
@@ -140,7 +140,6 @@ class Persona extends Model
     {
         return Persona::with(
             'usuario',
-            'estudiante.curso',
             'creado:id_usuario,correo',
             'modificado:id_usuario,correo',
             'eliminado:id_usuario,correo'

@@ -68,18 +68,66 @@ class ListaAsignatura extends Model
         return $this->belongsTo(Usuario::class, 'eliminado_por', 'id_usuario');
     }
 
-    /* Método aún no utilizado. */
     public function get_all_listas_asignaturas()
     {
-        return $this->with([
-            'asignatura',
-            'periodo',
-            'docente.persona',
+        return $this::select('listas_asignaturas.*') // Evita la colisión de columnas con las tablas unidas
+            ->join('asignaturas', 'listas_asignaturas.id_asignatura', '=', 'asignaturas.id_asignatura')
+            ->join('periodos', 'listas_asignaturas.id_periodo', '=', 'periodos.id_periodo')
+            ->join('gestiones', 'periodos.id_gestion', '=', 'gestiones.id_gestion')
+            ->with([
+                'asignatura:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',
 
-            'creado:id_usuario,correo',
-            'modificado:id_usuario,correo',
-            'eliminado:id_usuario,correo'
-        ])->get();
+                'periodo:id_periodo,id_gestion,periodo,posicion_ordinal,estado',
+                'periodo.gestion:id_gestion,anio,estado',
+
+                // Carga mínima esencial de docente y persona para evitar sobrecarga de datos y scraping.
+                'docente:id_docente,id_persona,estado',
+                'docente.persona:id_persona,apellido_paterno,apellido_materno,nombres,estado',
+
+                'creado:id_usuario,correo',
+                'modificado:id_usuario,correo',
+                'eliminado:id_usuario,correo'
+            ])
+            ->orderBy('gestiones.anio', 'DESC')
+            ->orderBy('asignaturas.asignatura', 'ASC')
+            ->get();
+    }
+
+    public function get_listas_asignaturas(array $filtros = [])
+    {
+        return $this::select('listas_asignaturas.*')
+            ->join('asignaturas', 'listas_asignaturas.id_asignatura', '=', 'asignaturas.id_asignatura')
+            ->join('periodos', 'listas_asignaturas.id_periodo', '=', 'periodos.id_periodo')
+            ->join('gestiones', 'periodos.id_gestion', '=', 'gestiones.id_gestion')
+            ->with([
+                'asignatura:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',
+
+                'periodo:id_periodo,id_gestion,periodo,posicion_ordinal,estado',
+                'periodo.gestion:id_gestion,anio,estado',
+
+                // Carga mínima esencial de docente y persona para evitar sobrecarga de datos y scraping.
+                'docente:id_docente,id_persona,estado',
+                'docente.persona:id_persona,apellido_paterno,apellido_materno,nombres,estado',
+
+                'creado:id_usuario,correo',
+                'modificado:id_usuario,correo',
+                'eliminado:id_usuario,correo'
+            ])
+            ->when(
+                $filtros['nivel'] ?? null,
+                fn($q, $valor) => $q->where('asignaturas.id_nivel', $valor)
+            )
+            ->when(
+                $filtros['coordinacion'] ?? null,
+                fn($q, $valor) => $q->where('asignaturas.id_coordinacion', $valor)
+            )
+            ->when(
+                $filtros['docente'] ?? null,
+                fn($q, $valor) => $q->where('listas_asignaturas.id_docente', $valor)
+            )
+            ->orderBy('gestiones.anio', 'DESC')
+            ->orderBy('asignaturas.asignatura', 'ASC')
+            ->get();
     }
 
     public function get_lista_asignatura($id_lista_asignatura)

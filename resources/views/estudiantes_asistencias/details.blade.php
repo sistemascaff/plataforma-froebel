@@ -160,7 +160,7 @@
                                     'P' => 'Presente',
                                     'A' => 'Atraso',
                                     'F' => 'Falta',
-                                    'L' => 'Licencia Justificada',
+                                    'L' => 'Licencia',
                                     default => 'Desconocido',
                                 };
 

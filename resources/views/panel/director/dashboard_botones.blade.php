@@ -9,6 +9,15 @@
     </div>
 
     <div class="col-6 col-md-4 col-lg-2 d-flex justify-content-center my-3">
+        <a class="btn btn-sq-lg btn-info" href="{{ route('listas_asignaturas.index') }}">
+            <div>
+                <i class="fa-solid fa-duotone fa-clipboard-list fa-2xl"></i>
+                <br>Gestión de listas de asignaturas
+            </div>
+        </a>
+    </div>
+
+    <div class="col-6 col-md-4 col-lg-2 d-flex justify-content-center my-3">
         <a class="btn btn-sq-lg btn-info" href="{{ route('horarios_asignaturas.index') }}">
             <div>
                 <i class="fa-solid fa-duotone fa-clock fa-2xl"></i>

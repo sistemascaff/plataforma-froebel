@@ -162,6 +162,11 @@ class UsuarioController extends Controller
 
     public function verificar(Request $request)
     {
+        $request->validate([
+            'correo' => ['required', 'email'],
+            'contrasenha' => ['required', 'string'],
+        ]);
+
         $usuario = (new Usuario())->login(
             trim(strtoupper($request->correo))
         );

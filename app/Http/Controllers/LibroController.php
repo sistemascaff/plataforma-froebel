@@ -6,6 +6,7 @@ use App\Http\Requests\LibroValidation;
 use App\Models\Libro;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LibroController extends Controller
 {

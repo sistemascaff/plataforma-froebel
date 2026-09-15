@@ -16,6 +16,8 @@ class EstudianteAsistenciaController extends Controller
 {
     public function view_index()
     {
+        $this->authorize('viewAny', EstudianteAsistencia::class);
+
         return view('estudiantes_asistencias.index', [
             'head_title' => 'GESTIÓN DE ASISTENCIAS',
         ]);
@@ -24,6 +26,9 @@ class EstudianteAsistenciaController extends Controller
     public function view_create($lista_asignatura)
     {
         $lista_asignatura = (new ListaAsignatura())->get_lista_asignatura($lista_asignatura);
+
+        $this->authorize('create', [EstudianteAsistencia::class, $lista_asignatura]);
+
         $estudiantes_licencias = [];
 
         $a = Asignatura::with([
@@ -63,6 +68,8 @@ class EstudianteAsistenciaController extends Controller
     {
         // 1. Obtener el registro principal con todas sus relaciones cargadas
         $asistencia = (new EstudianteAsistencia())->get_estudiante_asistencia($estudiante_asistencia);
+
+        $this->authorize('update', $asistencia);
 
         $estudiantes_licencias = [];
 
@@ -107,6 +114,8 @@ class EstudianteAsistenciaController extends Controller
     {
         $estudiante_asistencia = (new EstudianteAsistencia())->get_estudiante_asistencia($estudiante_asistencia);
 
+        $this->authorize('view', $estudiante_asistencia);
+
         return view('estudiantes_asistencias.details', [
             'head_title' => 'DETALLES DE ASISTENCIA',
             'estudiante_asistencia' => $estudiante_asistencia,
@@ -115,6 +124,8 @@ class EstudianteAsistenciaController extends Controller
 
     public function listar()
     {
+        $this->authorize('viewAny', EstudianteAsistencia::class);
+
         $tipo_perfil = Auth::user()->persona?->tipo_perfil;
         $filtros = [];
         $estudiantes_asistencias = null;
@@ -138,6 +149,8 @@ class EstudianteAsistenciaController extends Controller
     {
         $estudiante_asistencia = (new EstudianteAsistencia())->get_estudiante_asistencia($request->estudiante_asistencia);
 
+        $this->authorize('view', $estudiante_asistencia);
+
         return response()->json([
             'data' => $estudiante_asistencia
         ]);
@@ -145,6 +158,10 @@ class EstudianteAsistenciaController extends Controller
 
     public function create(Request $request)
     {
+        $lista = ListaAsignatura::findOrFail($request->id_lista_asignatura);
+
+        $this->authorize('create', [EstudianteAsistencia::class, $lista]);
+
         $anio_actual = date('Y');
 
         $request->validate([
@@ -248,6 +265,10 @@ class EstudianteAsistenciaController extends Controller
 
     public function update(Request $request, $id_estudiante_asistencia)
     {
+        $asistencia = EstudianteAsistencia::findOrFail($id_estudiante_asistencia);
+
+        $this->authorize('update', $asistencia);
+
         $anio_actual = date('Y');
 
         // Para que la validación funcione correctamente, agregamos el id_estudiante_asistencia al request

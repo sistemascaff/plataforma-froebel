@@ -6,6 +6,7 @@ use App\Models\EstudianteLicencia;
 use App\Http\Requests\EstudianteLicenciaValidation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class EstudianteLicenciaController extends Controller
 {
@@ -50,27 +51,57 @@ class EstudianteLicenciaController extends Controller
 
     public function create(EstudianteLicenciaValidation $request)
     {
-        // Autorización estática: Bloquea intentos de creación de usuarios no autorizados
+        // Autorización estática: Bloquea intentos de creación no autorizados
         $this->authorize('create', EstudianteLicencia::class);
 
-        $licencia = new EstudianteLicencia();
-        $licencia->id_estudiante = $request->id_estudiante;
-        $licencia->tipo = $request->tipo;
-        $licencia->justificacion = $request->justificacion;
-        $licencia->fecha_inicio = $request->fecha_inicio;
-        $licencia->fecha_fin = $request->fecha_fin;
-        $licencia->evidencia = $request->evidencia;
+        DB::beginTransaction();
+        try {
+            // 1. Crear la Licencia
+            $licencia = new EstudianteLicencia();
+            $licencia->id_estudiante = $request->id_estudiante;
+            $licencia->tipo = $request->tipo;
+            $licencia->justificacion = $request->justificacion;
+            $licencia->fecha_inicio = $request->fecha_inicio;
+            $licencia->fecha_fin = $request->fecha_fin;
+            $licencia->evidencia = $request->evidencia;
 
-        $licencia->creado_por = auth()->id();
-        $licencia->ip = $request->ip();
-        $licencia->dispositivo    = $request->userAgent();
-        $licencia->save();
+            $licencia->creado_por = auth()->id();
+            $licencia->ip = $request->ip();
+            $licencia->dispositivo    = $request->userAgent();
+            $licencia->save();
 
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'La licencia fue registrada exitosamente.',
-            'licencia' => $licencia
-        ]);
+            // 2. Efecto Retroactivo: Buscar asistencias maestras que caigan dentro de la licencia
+            $asistenciasAfectadas = DB::table('estudiantes_asistencias')
+                ->join('horarios_asignaturas', 'estudiantes_asistencias.id_horario_asignatura', '=', 'horarios_asignaturas.id_horario_asignatura')
+                ->whereRaw("TIMESTAMP(estudiantes_asistencias.fecha, horarios_asignaturas.hora_inicio) <= ?", [$licencia->fecha_fin])
+                ->whereRaw("TIMESTAMP(estudiantes_asistencias.fecha, horarios_asignaturas.hora_fin) >= ?", [$licencia->fecha_inicio])
+                ->pluck('estudiantes_asistencias.id_estudiante_asistencia');
+
+            // 3. Sobreescribir automáticamente los detalles de asistencia del estudiante
+            if ($asistenciasAfectadas->isNotEmpty()) {
+                DB::table('detalles_estudiantes_asistencias')
+                    ->whereIn('id_estudiante_asistencia', $asistenciasAfectadas)
+                    ->where('id_estudiante', $licencia->id_estudiante)
+                    ->update([
+                        'tipo' => 'L',
+                        'id_estudiante_licencia' => $licencia->id_estudiante_licencia
+                    ]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'La licencia fue registrada exitosamente y se sincronizó con sus asistencias.',
+                'licencia' => $licencia
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Ocurrió un error crítico al registrar la licencia: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function update(EstudianteLicenciaValidation $request, int $id_estudiante_licencia)

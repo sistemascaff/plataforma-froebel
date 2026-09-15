@@ -34,7 +34,15 @@ class Estudiante extends Model
             'detalles_estudiantes_asistencias', // Nombre de la tabla pivote
             'id_estudiante',                    // FK de este modelo (Estudiante) en la tabla pivote
             'id_estudiante_asistencia'          // FK del modelo relacionado en la tabla pivote
-        )->withPivot(['tipo', 'id_estudiante_licencia']);
+        )->withPivot(['tipo', 'id_estudiante_licencia'])
+            ->orderBy('fecha', 'DESC');
+    }
+
+    /** Relación uno a muchos con estudiantes_licencias */
+    public function estudiantes_licencias()
+    {
+        return $this->hasMany(EstudianteLicencia::class, 'id_estudiante', 'id_estudiante')
+            ->orderBy('fecha_inicio', 'DESC');
     }
 
     /** Relación FK con personas */
@@ -117,13 +125,33 @@ class Estudiante extends Model
 
     public function get_estudiante($id_estudiante)
     {
-        return $this::with(
+        return $this::with([
             'persona:id_persona,id_colegio,apellido_paterno,apellido_materno,nombres,documento_identificacion,documento_complemento,documento_expedido,fecha_nacimiento,sexo,idioma,celular,telefono,tipo_perfil,estado',
             'persona.usuario:id_usuario,id_persona,correo,contrasenha,url_foto_perfil,codigo_recuperacion,tiene_acceso,ultima_conexion,ultimo_dispositivo,ultima_ip,estado',
 
+            'persona.prestamos:id_prestamo_libro,id_persona,fecha_devolucion,estado,fecha_registro',
+            'persona.prestamos.libros:id_libro,codigo,titulo,estado',
+
             'curso:id_curso,id_grado,id_paralelo,curso,estado',
 
-            'listas_asignaturas:id_lista_asignatura,id_asignatura,id_periodo,id_docente,estado',
+            // 1. Interceptamos la relación principal para aplicar los joins y el orden jerárquico
+            'listas_asignaturas' => function ($query) {
+                $query->select(
+                    'listas_asignaturas.id_lista_asignatura',
+                    'listas_asignaturas.id_asignatura',
+                    'listas_asignaturas.id_periodo',
+                    'listas_asignaturas.id_docente',
+                    'listas_asignaturas.estado'
+                ) // Select explícito para evitar colisiones
+                    ->join('asignaturas', 'listas_asignaturas.id_asignatura', '=', 'asignaturas.id_asignatura')
+                    ->join('periodos', 'listas_asignaturas.id_periodo', '=', 'periodos.id_periodo')
+                    ->join('gestiones', 'periodos.id_gestion', '=', 'gestiones.id_gestion')
+                    ->orderBy('gestiones.anio', 'DESC')
+                    ->orderBy('periodos.posicion_ordinal', 'DESC')
+                    ->orderBy('asignaturas.asignatura', 'ASC');
+            },
+
+            // 2. Cargamos el resto de sub-relaciones vinculadas a listas_asignaturas
             'listas_asignaturas.asignatura:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',
             'listas_asignaturas.periodo:id_periodo,id_gestion,periodo,posicion_ordinal,estado',
             'listas_asignaturas.periodo.gestion:id_gestion,anio,estado',
@@ -136,10 +164,12 @@ class Estudiante extends Model
             'estudiantes_asistencias.lista_asignatura.asignatura:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',
             'estudiantes_asistencias.horario_asignatura',
 
+            'estudiantes_licencias:id_estudiante_licencia,id_estudiante,tipo,justificacion,fecha_inicio,fecha_fin,evidencia,estado,fecha_registro',
+
             'creado:id_usuario,correo',
             'modificado:id_usuario,correo',
             'eliminado:id_usuario,correo'
-        )
+        ])
             ->findOrFail($id_estudiante);
     }
 }

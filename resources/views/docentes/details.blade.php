@@ -62,7 +62,8 @@
                                 <span
                                     class="fw-bold text-muted">{{ helper_decrypt($docente->persona->usuario->contrasenha) }}</span>
                             </div>
-                            <small class="text-warning-emphasis"><i class="fa-solid fa-duotone fa-circle-info"></i> Visible solo para
+                            <small class="text-warning-emphasis"><i class="fa-solid fa-duotone fa-circle-info"></i> Visible
+                                solo para
                                 ADMIN</small>
                         </li>
                     @endif
@@ -86,7 +87,8 @@
         <div class="col-12 col-lg-8">
             <div class="card shadow-sm mb-4">
                 <div class="card-header border-bottom-0 pt-4 pb-0">
-                    <h5 class="text-info fw-bold"><i class="fa-solid fa-duotone fa-address-card me-2"></i>Información Personal</h5>
+                    <h5 class="text-info fw-bold"><i class="fa-solid fa-duotone fa-address-card me-2"></i>Información
+                        Personal</h5>
                 </div>
                 <div class="card-body">
                     <div class="row border-bottom pb-2 mb-2">
@@ -126,7 +128,8 @@
 
             <div class="card shadow-sm">
                 <div class="card-header border-bottom-0 pt-4 pb-0">
-                    <h5 class="text-info fw-bold"><i class="fa-solid fa-duotone fa-graduation-cap me-2"></i>Información Académica</h5>
+                    <h5 class="text-info fw-bold"><i class="fa-solid fa-duotone fa-graduation-cap me-2"></i>Información
+                        Académica</h5>
                 </div>
                 <div class="card-body">
                     <div class="row border-bottom pb-2 mb-2">
@@ -156,7 +159,8 @@
 
     <div class="card shadow-sm mb-5">
         <div class="card-header pt-4 pb-2 border-bottom">
-            <h5 class="text-info fw-bold mb-0"><i class="fa-solid fa-duotone fa-book-open me-2"></i>Listas de asignaturas asignadas
+            <h5 class="text-info fw-bold mb-0"><i class="fa-solid fa-duotone fa-book-open me-2"></i>Listas de asignaturas
+                asignadas
             </h5>
         </div>
         <div class="card-body">
@@ -203,6 +207,13 @@
                                 </td>
                                 <td>{{ $lista_asignatura->periodo->gestion->anio }}</td>
                                 <td>
+                                    <div class="btn-group" role="group">
+                                        <a class="btn btn-info btn-sm"
+                                            href="{{ route('listas_asignaturas.detalles', $lista_asignatura->id_lista_asignatura) }}" target="_blank"
+                                            rel="noopener noreferrer" data-toggle="tooltip" title="Detalles">
+                                            <i class="fa-duotone fa-solid fa-eye"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach

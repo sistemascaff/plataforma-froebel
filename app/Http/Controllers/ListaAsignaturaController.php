@@ -6,13 +6,25 @@ use App\Models\DetalleListaAsignatura;
 use App\Models\Estudiante;
 use App\Models\ListaAsignatura;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ListaAsignaturaController extends Controller
 {
+    public function view_index()
+    {
+        $this->authorize('viewAny', ListaAsignatura::class);
+
+        return view('listas_asignaturas.index', [
+            'head_title' => 'LISTAS DE ASIGNATURAS'
+        ]);
+    }
+
     public function view_details($id_lista_asignatura)
     {
         // 1. Obtener la lista y cargar los estudiantes ordenados alfabéticamente
         $lista_asignatura = (new ListaAsignatura())->get_lista_asignatura($id_lista_asignatura);
+
+        $this->authorize('view', $lista_asignatura);
 
         // Forzamos la carga (o recarga) de estudiantes con ordenamiento por la tabla 'personas'
         $lista_asignatura->load([
@@ -154,9 +166,37 @@ class ListaAsignaturaController extends Controller
         ]);
     }
 
+    public function listar()
+    {
+        $this->authorize('viewAny', ListaAsignatura::class);
+
+        $tipo_perfil = Auth::user()->persona?->tipo_perfil;
+        $filtros = [];
+        $listas_asignaturas = null;
+
+        if ($tipo_perfil === 'SUBDIRECTOR') {
+            $filtros['nivel'] = Auth::user()->persona?->docente?->id_nivel;
+            $listas_asignaturas = (new ListaAsignatura())->get_listas_asignaturas($filtros);
+        } elseif ($tipo_perfil === 'COORDINADOR') {
+            $filtros['coordinacion'] = Auth::user()->persona?->docente?->id_coordinacion;
+            $listas_asignaturas = (new ListaAsignatura())->get_listas_asignaturas($filtros);
+        } elseif ($tipo_perfil === 'DOCENTE') {
+            $filtros['docente'] = Auth::user()->persona?->docente?->id_docente;
+            $listas_asignaturas = (new ListaAsignatura())->get_listas_asignaturas($filtros);
+        } else {
+            $listas_asignaturas = (new ListaAsignatura())->get_all_listas_asignaturas();
+        }
+
+        return response()->json([
+            'data' => $listas_asignaturas,
+        ]);
+    }
+
     public function mostrar(Request $request)
     {
         $lista_asignatura = (new ListaAsignatura())->get_lista_asignatura($request->lista_asignatura);
+
+        $this->authorize('view', $lista_asignatura);
 
         return response()->json([
             'data' => $lista_asignatura
@@ -173,6 +213,8 @@ class ListaAsignaturaController extends Controller
         ]);
 
         $lista_asignatura = (new ListaAsignatura())->get_lista_asignatura($request->id_lista_asignatura);
+
+        $this->authorize('update', $lista_asignatura);
 
         if ($lista_asignatura->asignatura->tipo_bloque !== 'mixto') {
             return response()->json(['success' => false, 'message' => 'La lista de asignatura no es de tipo mixto.'], 400);
@@ -221,6 +263,9 @@ class ListaAsignaturaController extends Controller
         ]);
 
         $lista_asignatura = (new ListaAsignatura())->get_lista_asignatura($request->lista_asignatura);
+
+        $this->authorize('update', $lista_asignatura);
+
         $lista_asignatura->id_docente = $request->docente;
         $lista_asignatura->modificado_por = auth()->id();
         $lista_asignatura->ip = $request->ip();

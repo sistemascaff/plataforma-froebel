@@ -24,6 +24,7 @@
     @endphp
 
     <div class="row g-4 mb-4">
+        <!-- Tarjetas Laterales de Perfil y Acceso -->
         <div class="col-12 col-lg-4">
             <div class="card shadow-sm mb-4">
                 <div class="card-body text-center pt-4">
@@ -63,8 +64,7 @@
                                     class="fw-bold text-muted">{{ helper_decrypt($estudiante->persona->usuario->contrasenha) }}</span>
                             </div>
                             <small class="text-warning-emphasis"><i class="fa-solid fa-duotone fa-circle-info"></i> Visible
-                                solo para
-                                ADMIN</small>
+                                solo para ADMIN</small>
                         </li>
                     @endif
 
@@ -84,6 +84,7 @@
             </div>
         </div>
 
+        <!-- Tarjetas Centrales de Información -->
         <div class="col-12 col-lg-8">
             <div class="card shadow-sm mb-4">
                 <div class="card-header border-bottom-0 pt-4 pb-0">
@@ -93,18 +94,15 @@
                 <div class="card-body">
                     <div class="row border-bottom pb-2 mb-2">
                         <div class="col-sm-4 text-muted">Apellido paterno:</div>
-                        <div class="col-sm-8 fw-bold">{{ $estudiante->persona->apellido_paterno }}
-                        </div>
+                        <div class="col-sm-8 fw-bold">{{ $estudiante->persona->apellido_paterno }}</div>
                     </div>
                     <div class="row border-bottom pb-2 mb-2">
                         <div class="col-sm-4 text-muted">Apellido materno:</div>
-                        <div class="col-sm-8 fw-bold">{{ $estudiante->persona->apellido_materno }}
-                        </div>
+                        <div class="col-sm-8 fw-bold">{{ $estudiante->persona->apellido_materno }}</div>
                     </div>
                     <div class="row border-bottom pb-2 mb-2">
                         <div class="col-sm-4 text-muted">Nombre/s:</div>
-                        <div class="col-sm-8 fw-bold">{{ $estudiante->persona->nombres }}
-                        </div>
+                        <div class="col-sm-8 fw-bold">{{ $estudiante->persona->nombres }}</div>
                     </div>
                     <div class="row border-bottom pb-2 mb-2">
                         <div class="col-sm-4 text-muted">Fecha de nacimiento:</div>
@@ -182,127 +180,57 @@
             </div>
         </div>
 
-        <div class="col-12 col-lg-12">
+        <!-- SECCIÓN DE PESTAÑAS (TABS) -->
+        <div class="col-12">
             <div class="card shadow-sm mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-bold text-info">
-                        <i class="fa-solid fa-duotone fa-book-open-reader me-2"></i>
-                        Asignaturas
-                    </h5>
+                <div class="card-header border-bottom-0 pt-3 pb-0">
+                    <ul class="nav nav-tabs" id="estudianteTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active fw-bold text-info" id="asignaturas-tab" data-bs-toggle="tab"
+                                data-bs-target="#asignaturas-pane" type="button" role="tab"
+                                aria-controls="asignaturas-pane" aria-selected="true">
+                                <i class="fa-solid fa-duotone fa-book-open-reader me-2"></i>Asignaturas
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link fw-bold text-info" id="asistencias-tab" data-bs-toggle="tab"
+                                data-bs-target="#asistencias-pane" type="button" role="tab"
+                                aria-controls="asistencias-pane" aria-selected="false">
+                                <i class="fa-solid fa-duotone fa-clipboard-user me-2"></i>Asistencias
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link fw-bold text-info" id="licencias-tab" data-bs-toggle="tab"
+                                data-bs-target="#licencias-pane" type="button" role="tab"
+                                aria-controls="licencias-pane" aria-selected="false">
+                                <i class="fa-solid fa-duotone fa-file-certificate me-2"></i>Licencias
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link fw-bold text-info" id="prestamos-libros-tab" data-bs-toggle="tab"
+                                data-bs-target="#prestamos-libros-pane" type="button" role="tab"
+                                aria-controls="prestamos-libros-pane" aria-selected="false">
+                                <i class="fa-solid fa-duotone fa-book-open me-2"></i>Préstamos de Libros
+                            </button>
+                        </li>
+                    </ul>
                 </div>
+
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped dataTable" id="asignaturas">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Asignatura</th>
-                                    <th scope="col">Tipo de Calificación</th>
-                                    <th scope="col">Tipo de Bloque</th>
-                                    <th scope="col">Docente</th>
-                                    <th scope="col">Gestión</th>
-                                    <th scope="col">Periodo</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($estudiante->listas_asignaturas as $lista_asignatura)
-                                    <tr>
-                                        <td>{{ $loop->index + 1 }}</td>
-                                        <td>{{ $lista_asignatura->asignatura->asignatura }}</td>
-                                        <td>
-                                            <span class="badge bg-info text-dark">
-                                                @php
-                                                    $icono =
-                                                        $lista_asignatura->asignatura->tipo_calificacion ===
-                                                        'cualitativa'
-                                                            ? 'fa-comments'
-                                                            : 'fa-chart-column';
-                                                @endphp
-                                                <i class="fa-solid fa-duotone {{ $icono }} me-1"></i>
-                                                {{ strtoupper($lista_asignatura->asignatura->tipo_calificacion) }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span
-                                                class="badge {{ $lista_asignatura->asignatura->tipo_bloque === 'curso' ? 'bg-primary' : 'bg-danger' }}">
-                                                {{ strtoupper($lista_asignatura->asignatura->tipo_bloque) }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            {{ $lista_asignatura->docente?->persona->nombres_apellidos }}
-                                        </td>
-                                        <td>{{ $lista_asignatura->periodo->gestion->anio }}</td>
-                                        <td>{{ $lista_asignatura->periodo->periodo }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+                    <div class="tab-content" id="estudianteTabsContent">
 
-        <div class="col-12 col-lg-12">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-bold text-info">
-                        <i class="fa-solid fa-duotone fa-clipboard-user me-2"></i>
-                        Historial de Asistencias
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped dataTable w-100" id="tabla-asistencias">
-                            <thead>
-                                <tr>
-                                    <th class="text-center" scope="col" style="width: 5%;">#</th>
-                                    <th scope="col" style="width: 15%;">Fecha</th>
-                                    <th scope="col">Asignatura</th>
-                                    <th scope="col">Horario</th>
-                                    <th class="text-center" scope="col" style="width: 15%;">Estado Registrado</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($estudiante->estudiantes_asistencias as $asistencia)
-                                    <tr>
-                                        <td class="text-center align-middle">{{ $loop->index + 1 }}</td>
-                                        <td class="align-middle fw-bold">
-                                            {{ date('d/m/Y', strtotime($asistencia->fecha)) }}
-                                        </td>
-                                        <td class="align-middle">
-                                            {{ $asistencia->lista_asignatura->asignatura->asignatura }}
-                                        </td>
-                                        <td class="align-middle">
-                                            <span class="text-muted">{{ $asistencia->horario_asignatura->hora_inicio }}</span>
-                                        </td>
-                                        <td class="text-center align-middle">
-                                            @php
-                                                $tipo = $asistencia->pivot->tipo;
+                        <!-- Panel de Asignaturas -->
+                        @include('estudiantes.details_asignaturas')
 
-                                                $badgeClass = match ($tipo) {
-                                                    'P' => 'bg-success',
-                                                    'A' => 'bg-warning text-dark',
-                                                    'F' => 'bg-danger',
-                                                    'L' => 'bg-info text-dark',
-                                                    default => 'bg-secondary',
-                                                };
+                        <!-- Panel de Asistencias -->
+                        @include('estudiantes.details_asistencias')
 
-                                                $badgeText = match ($tipo) {
-                                                    'P' => 'Presente',
-                                                    'A' => 'Atraso',
-                                                    'F' => 'Falta',
-                                                    'L' => 'Licencia',
-                                                    default => 'Desconocido',
-                                                };
-                                            @endphp
-                                            <span class="badge {{ $badgeClass }} px-3 py-2 shadow-sm">
-                                                {{ $badgeText }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                        <!-- Panel de Licencias -->
+                        @include('estudiantes.details_licencias')
+
+                        <!-- Panel de Préstamos de libros -->
+                        @include('estudiantes.details_prestamos_libros')
+
                     </div>
                 </div>
             </div>
@@ -315,18 +243,37 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
-            $("#asignaturas").DataTable({
+            var tablaAsignaturas = $("#asignaturas").DataTable({
                 @include('components.datatables.datatables_global_properties')
                 @include('components.datatables.datatables_language_property')
             });
 
-            $("#tabla-asistencias").DataTable({
+            var tablaAsistencias = $("#tabla-asistencias").DataTable({
                 @include('components.datatables.datatables_global_properties')
                 @include('components.datatables.datatables_language_property')
-                // Ordenar por fecha de asistencia
-                ,"order": [
-                    [1, "asc"]
+            });
+
+            var tablaLicencias = $("#tabla-licencias").DataTable({
+                @include('components.datatables.datatables_global_properties')
+                @include('components.datatables.datatables_language_property')
+            });
+
+            var tablaPrestamos = $("#tabla-prestamos-libros").DataTable({
+                @include('components.datatables.datatables_global_properties')
+                @include('components.datatables.datatables_language_property')
+                // Ordenar por préstamo más reciente
+                ,
+                "order": [
+                    [1, "desc"]
                 ]
+            });
+
+            // Reajustar DataTables al cambiar de pestaña
+            $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
+                $.fn.dataTable.tables({
+                    visible: true,
+                    api: true
+                }).columns.adjust();
             });
         });
     </script>
