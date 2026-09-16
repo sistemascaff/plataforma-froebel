@@ -177,31 +177,41 @@
                                             @if ($tieneLicencia)
                                                 <span class="text-muted">No se puede modificar</span>
                                             @else
-                                                <div class="btn-group shadow-sm" role="group">
-                                                    <input type="radio" class="btn-check radio-asistencia"
-                                                        name="estudiantes[{{ $index }}][tipo]"
-                                                        id="presente_{{ $index }}" value="P" required checked
-                                                        data-index="{{ $index }}">
-                                                    <label class="btn btn-outline-success"
-                                                        for="presente_{{ $index }}"
-                                                        title="Marcar como presente"><i
-                                                            class="fa fa-solid fa-duotone fa-check-circle"></i></label>
+                                                <div class="d-flex justify-content-center align-items-center gap-2">
+                                                    <div class="btn-group shadow-sm" role="group">
+                                                        <input type="radio" class="btn-check radio-asistencia"
+                                                            name="estudiantes[{{ $index }}][tipo]"
+                                                            id="presente_{{ $index }}" value="P" required
+                                                            checked data-index="{{ $index }}">
+                                                        <label class="btn btn-outline-success"
+                                                            for="presente_{{ $index }}"
+                                                            title="Marcar como presente"><i
+                                                                class="fa fa-solid fa-duotone fa-check-circle"></i></label>
 
-                                                    <input type="radio" class="btn-check radio-asistencia"
-                                                        name="estudiantes[{{ $index }}][tipo]"
-                                                        id="atraso_{{ $index }}" value="A" required
-                                                        data-index="{{ $index }}">
-                                                    <label class="btn btn-outline-warning"
-                                                        for="atraso_{{ $index }}" title="Marcar como atraso"><i
-                                                            class="fa fa-solid fa-duotone fa-hourglass-half"></i></label>
+                                                        <input type="radio" class="btn-check radio-asistencia"
+                                                            name="estudiantes[{{ $index }}][tipo]"
+                                                            id="atraso_{{ $index }}" value="A" required
+                                                            data-index="{{ $index }}">
+                                                        <label class="btn btn-outline-warning"
+                                                            for="atraso_{{ $index }}"
+                                                            title="Marcar como atraso"><i
+                                                                class="fa fa-solid fa-duotone fa-hourglass-half"></i></label>
 
-                                                    <input type="radio" class="btn-check radio-asistencia"
-                                                        name="estudiantes[{{ $index }}][tipo]"
-                                                        id="falta_{{ $index }}" value="F" required
-                                                        data-index="{{ $index }}">
-                                                    <label class="btn btn-outline-danger" for="falta_{{ $index }}"
-                                                        title="Marcar como falta"><i
-                                                            class="fa fa-solid fa-duotone fa-times-circle"></i></label>
+                                                        <input type="radio" class="btn-check radio-asistencia"
+                                                            name="estudiantes[{{ $index }}][tipo]"
+                                                            id="falta_{{ $index }}" value="F" required
+                                                            data-index="{{ $index }}">
+                                                        <label class="btn btn-outline-danger"
+                                                            for="falta_{{ $index }}" title="Marcar como falta"><i
+                                                                class="fa fa-solid fa-duotone fa-times-circle"></i></label>
+                                                    </div>
+
+                                                    <!-- Nuevo campo de Minutos de Atraso (Oculto por defecto) -->
+                                                    <input type="number" class="form-control form-control-sm shadow-sm"
+                                                        name="estudiantes[{{ $index }}][tiempo_atraso]"
+                                                        id="tiempo_atraso_{{ $index }}" min="1"
+                                                        max="60" placeholder="Min." title="Minutos de atraso"
+                                                        style="display: none; width: 70px;">
                                                 </div>
                                             @endif
                                         </td>

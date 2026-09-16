@@ -17,6 +17,7 @@ class DetalleEstudianteAsistencia extends Model
         'id_estudiante_asistencia',
         'id_estudiante',
         'tipo',
+        'tiempo_atraso',
         'id_estudiante_licencia'
     ];
 

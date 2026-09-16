@@ -31,7 +31,7 @@ class EstudiantePolicy
         $perfil = $usuario->persona?->tipo_perfil;
 
         // Estos roles tienen acceso de lectura (El ADMIN ya fue aprobado en before)
-        return in_array($perfil, ['GERENTE', 'SECRETARIA ACADEMICA', 'DIRECTOR', 'SUBDIRECTOR']);
+        return in_array($perfil, ['GERENTE', 'SECRETARIA ACADEMICA', 'DIRECTOR', 'SUBDIRECTOR', 'COORDINADOR']);
     }
 
     /**

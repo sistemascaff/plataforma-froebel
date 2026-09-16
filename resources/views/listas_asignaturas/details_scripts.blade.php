@@ -111,7 +111,7 @@
 
             function recargarEstudiantesSelect() {
                 $.ajax({
-                    url: "{{ route('estudiantes.listar') }}", // Asegurate que esta ruta exista
+                    url: "{{ route('estudiantes.listar') }}",
                     type: "GET",
                     dataType: "json",
                     success: function(response) {
@@ -125,9 +125,9 @@
                             let nombre = est.persona.apellidos_nombres;
                             let correo = est.persona.usuario.correo;
                             let curso = est.curso ? est.curso.curso : 'Sin Curso';
-                            let foto = est.persona.usuario.url_foto_perfil ? URL_BASE +
-                                '/' + est.persona.usuario.url_foto_perfil : URL_BASE +
-                                '/public/img/user.png';
+                            let foto = est.persona.usuario.url_foto_perfil ?
+                                `${URL_BASE}/${est.persona.usuario.url_foto_perfil}` :
+                                `${URL_BASE}/public/img/user.png`;
 
                             $select.append(`
                                     <option value="${est.id_estudiante}" 
@@ -248,7 +248,7 @@
                                     theme: localStorage.getItem('theme') ||
                                         'dark',
                                     title: '¡Éxito!',
-                                    text: response.message,
+                                    html: response.message,
                                     icon: 'success'
                                 }).then(() => {
                                     location

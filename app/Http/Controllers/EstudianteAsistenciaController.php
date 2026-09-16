@@ -171,6 +171,7 @@ class EstudianteAsistenciaController extends Controller
             'estudiantes' => 'required|array|min:1',
             'estudiantes.*.id_estudiante' => 'required|integer|exists:estudiantes,id_estudiante',
             'estudiantes.*.tipo' => 'required|string|in:P,F,A,L',
+            'estudiantes.*.tiempo_atraso' => 'nullable|integer|min:0|max:60',
             'estudiantes.*.id_estudiante_licencia' => 'nullable|integer|exists:estudiantes_licencias,id_estudiante_licencia',
         ]);
 
@@ -221,6 +222,7 @@ class EstudianteAsistenciaController extends Controller
 
                 $tipoAsistencia = $estudianteReq['tipo'];
                 $idLicencia = $estudianteReq['id_estudiante_licencia'] ?? null;
+                $tiempoAtraso = $estudianteReq['tiempo_atraso'] ?? 0;
 
                 // Cruce exacto de fechas para licencias médicas/justificaciones
                 $licenciaAprobada = EstudianteLicencia::where('id_estudiante', $idEstudiante)
@@ -233,12 +235,19 @@ class EstudianteAsistenciaController extends Controller
                 if ($licenciaAprobada) {
                     $tipoAsistencia = 'L';
                     $idLicencia = $licenciaAprobada->id_estudiante_licencia;
+                    $tiempoAtraso = 0; // Se anula el atraso si hay licencia
+                }
+
+                // Consistencia de datos: Forzar 0 si el tipo final no es un Atraso ('A')
+                if ($tipoAsistencia !== 'A') {
+                    $tiempoAtraso = 0;
                 }
 
                 $detallesAsistencia[] = [
                     'id_estudiante_asistencia' => $asistencia->id_estudiante_asistencia,
                     'id_estudiante' => $idEstudiante,
                     'tipo' => $tipoAsistencia,
+                    'tiempo_atraso' => $tiempoAtraso,
                     'id_estudiante_licencia' => $idLicencia,
                 ];
             }
@@ -283,6 +292,7 @@ class EstudianteAsistenciaController extends Controller
             'estudiantes' => 'required|array|min:1',
             'estudiantes.*.id_estudiante' => 'required|integer|exists:estudiantes,id_estudiante',
             'estudiantes.*.tipo' => 'required|string|in:P,F,A,L',
+            'estudiantes.*.tiempo_atraso' => 'nullable|integer|min:0|max:60',
             'estudiantes.*.id_estudiante_licencia' => 'nullable|integer|exists:estudiantes_licencias,id_estudiante_licencia',
         ]);
 
@@ -340,6 +350,7 @@ class EstudianteAsistenciaController extends Controller
 
                 $tipoAsistencia = $estudianteReq['tipo'];
                 $idLicencia = $estudianteReq['id_estudiante_licencia'] ?? null;
+                $tiempoAtraso = $estudianteReq['tiempo_atraso'] ?? 0;
 
                 // Cruce exacto de fechas para licencias médicas/justificaciones
                 $licenciaAprobada = EstudianteLicencia::where('id_estudiante', $idEstudiante)
@@ -352,12 +363,19 @@ class EstudianteAsistenciaController extends Controller
                 if ($licenciaAprobada) {
                     $tipoAsistencia = 'L';
                     $idLicencia = $licenciaAprobada->id_estudiante_licencia;
+                    $tiempoAtraso = 0; // Se anula el atraso si hay licencia
+                }
+
+                // Consistencia de datos: Forzar 0 si el tipo final no es un Atraso ('A')
+                if ($tipoAsistencia !== 'A') {
+                    $tiempoAtraso = 0;
                 }
 
                 $detallesAsistencia[] = [
                     'id_estudiante_asistencia' => $asistencia->id_estudiante_asistencia,
                     'id_estudiante' => $idEstudiante,
                     'tipo' => $tipoAsistencia,
+                    'tiempo_atraso' => $tiempoAtraso,
                     'id_estudiante_licencia' => $idLicencia,
                 ];
             }

@@ -144,6 +144,7 @@
                                                 : null);
                                         $tieneLicencia = !is_null($licencia);
                                         $tipoActual = $detalle->tipo;
+                                        $tiempoAtrasoActual = $detalle->tiempo_atraso ?? '';
                                     @endphp
                                     <tr>
                                         <td class="text-center align-middle">{{ $loop->index + 1 }}</td>
@@ -205,34 +206,46 @@
                                             @if ($tieneLicencia)
                                                 <span class="text-muted">No se puede modificar</span>
                                             @else
-                                                <div class="btn-group shadow-sm" role="group">
-                                                    <input type="radio" class="btn-check radio-asistencia"
-                                                        name="estudiantes[{{ $index }}][tipo]"
-                                                        id="presente_{{ $index }}" value="P" required
-                                                        {{ $tipoActual === 'P' ? 'checked' : '' }}
-                                                        data-index="{{ $index }}">
-                                                    <label class="btn btn-outline-success"
-                                                        for="presente_{{ $index }}"
-                                                        title="Marcar como presente"><i
-                                                            class="fa fa-solid fa-duotone fa-check-circle"></i></label>
+                                                <div class="d-flex justify-content-center align-items-center gap-2">
+                                                    <div class="btn-group shadow-sm" role="group">
+                                                        <input type="radio" class="btn-check radio-asistencia"
+                                                            name="estudiantes[{{ $index }}][tipo]"
+                                                            id="presente_{{ $index }}" value="P" required
+                                                            {{ $tipoActual === 'P' ? 'checked' : '' }}
+                                                            data-index="{{ $index }}">
+                                                        <label class="btn btn-outline-success"
+                                                            for="presente_{{ $index }}"
+                                                            title="Marcar como presente"><i
+                                                                class="fa fa-solid fa-duotone fa-check-circle"></i></label>
 
-                                                    <input type="radio" class="btn-check radio-asistencia"
-                                                        name="estudiantes[{{ $index }}][tipo]"
-                                                        id="atraso_{{ $index }}" value="A" required
-                                                        {{ $tipoActual === 'A' ? 'checked' : '' }}
-                                                        data-index="{{ $index }}">
-                                                    <label class="btn btn-outline-warning"
-                                                        for="atraso_{{ $index }}" title="Marcar como atraso"><i
-                                                            class="fa fa-solid fa-duotone fa-hourglass-half"></i></label>
+                                                        <input type="radio" class="btn-check radio-asistencia"
+                                                            name="estudiantes[{{ $index }}][tipo]"
+                                                            id="atraso_{{ $index }}" value="A" required
+                                                            {{ $tipoActual === 'A' ? 'checked' : '' }}
+                                                            data-index="{{ $index }}">
+                                                        <label class="btn btn-outline-warning"
+                                                            for="atraso_{{ $index }}"
+                                                            title="Marcar como atraso"><i
+                                                                class="fa fa-solid fa-duotone fa-hourglass-half"></i></label>
 
-                                                    <input type="radio" class="btn-check radio-asistencia"
-                                                        name="estudiantes[{{ $index }}][tipo]"
-                                                        id="falta_{{ $index }}" value="F" required
-                                                        {{ $tipoActual === 'F' ? 'checked' : '' }}
-                                                        data-index="{{ $index }}">
-                                                    <label class="btn btn-outline-danger" for="falta_{{ $index }}"
-                                                        title="Marcar como falta"><i
-                                                            class="fa fa-solid fa-duotone fa-times-circle"></i></label>
+                                                        <input type="radio" class="btn-check radio-asistencia"
+                                                            name="estudiantes[{{ $index }}][tipo]"
+                                                            id="falta_{{ $index }}" value="F" required
+                                                            {{ $tipoActual === 'F' ? 'checked' : '' }}
+                                                            data-index="{{ $index }}">
+                                                        <label class="btn btn-outline-danger"
+                                                            for="falta_{{ $index }}" title="Marcar como falta"><i
+                                                                class="fa fa-solid fa-duotone fa-times-circle"></i></label>
+                                                    </div>
+
+                                                    <input type="number" class="form-control form-control-sm shadow-sm"
+                                                        name="estudiantes[{{ $index }}][tiempo_atraso]"
+                                                        id="tiempo_atraso_{{ $index }}" min="1"
+                                                        max="60"
+                                                        value="{{ $tipoActual === 'A' ? $tiempoAtrasoActual : '' }}"
+                                                        placeholder="Min." title="Minutos de atraso"
+                                                        style="display: {{ $tipoActual === 'A' ? 'block' : 'none' }}; width: 70px;"
+                                                        {{ $tipoActual === 'A' ? 'required' : '' }}>
                                                 </div>
                                             @endif
                                         </td>
@@ -242,7 +255,7 @@
                         </table>
                     </div>
                     <div class="d-flex justify-content-end mt-3">
-                        <button type="submit" class="btn btn-warning shadow-sm" id="btn-guardar">
+                        <button type="submit" class="btn btn-warning shadow-sm text-white fw-bold" id="btn-guardar">
                             <i class="fa-solid fa-duotone fa-floppy-disk me-1"></i>Actualizar Asistencia
                         </button>
                     </div>

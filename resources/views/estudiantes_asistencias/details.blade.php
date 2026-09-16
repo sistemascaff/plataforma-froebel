@@ -156,9 +156,12 @@
                                     default => 'bg-secondary',
                                 };
 
+                                // Verificamos si es Atraso y tiene minutos registrados para concatenarlos
                                 $tipoTexto = match ($tipo) {
                                     'P' => 'Presente',
-                                    'A' => 'Atraso',
+                                    'A' => $detalle->tiempo_atraso
+                                        ? 'Atraso (' . $detalle->tiempo_atraso . ' min)'
+                                        : 'Atraso',
                                     'F' => 'Falta',
                                     'L' => 'Licencia',
                                     default => 'Desconocido',

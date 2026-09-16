@@ -250,9 +250,66 @@ class ListaAsignaturaController extends Controller
             DetalleListaAsignatura::insert($nuevosDetalles);
         }
 
+        // ====================================================================
+        // 5. LÓGICA DE REPLICACIÓN PARA PERIODOS SUCESIVOS
+        // ====================================================================
+        $periodosReplicados = []; // Array para capturar los nombres de los periodos llenados
+
+        // Solo intentamos replicar si la lista resultante no está vacía
+        if (!empty($estudiantes_nuevos)) {
+
+            // Obtenemos los parámetros del periodo actual
+            $idGestionActual = $lista_asignatura->periodo->id_gestion;
+            $posicionActual = $lista_asignatura->periodo->posicion_ordinal;
+            $idAsignatura = $lista_asignatura->id_asignatura;
+
+            // Buscamos listas de la misma asignatura, misma gestión, pero periodos posteriores
+            $listasSucesivas = ListaAsignatura::with('periodo') // Añadimos with('periodo') para poder leer su nombre
+                ->where('id_asignatura', $idAsignatura)
+                ->whereHas('periodo', function ($query) use ($idGestionActual, $posicionActual) {
+                    $query->where('id_gestion', $idGestionActual)
+                        ->where('posicion_ordinal', '>', $posicionActual);
+                })
+                ->get();
+
+            if ($listasSucesivas->isNotEmpty()) {
+                foreach ($listasSucesivas as $listaSucesiva) {
+                    // Verificamos si la lista sucesiva está completamente vacía
+                    $cantidadInscritos = DetalleListaAsignatura::where('id_lista_asignatura', $listaSucesiva->id_lista_asignatura)->count();
+
+                    if ($cantidadInscritos === 0) {
+                        $detallesSucesivos = [];
+                        foreach ($estudiantes_nuevos as $id_estudiante) {
+                            $detallesSucesivos[] = [
+                                'id_lista_asignatura' => $listaSucesiva->id_lista_asignatura,
+                                'id_estudiante'       => $id_estudiante,
+                            ];
+                        }
+                        // Inserción masiva optimizada para el periodo posterior
+                        DetalleListaAsignatura::insert($detallesSucesivos);
+
+                        // Registramos el periodo afectado para notificar al frontend
+                        $periodosReplicados[] = "<b>{$listaSucesiva->periodo->periodo}</b>";
+                    }
+                }
+            }
+        }
+
+        // ====================================================================
+        // 6. PREPARAR EL MENSAJE FINAL
+        // ====================================================================
+        $mensajeFinal = 'La lista de estudiantes se ha actualizado correctamente.';
+
+        // Si el array tiene elementos, concatenamos el mensaje adicional
+        if (!empty($periodosReplicados)) {
+            // Unimos los periodos con " y " (ej. "SEGUNDO TRIMESTRE y TERCER TRIMESTRE")
+            $nombresPeriodos = implode(' y ', $periodosReplicados);
+            $mensajeFinal .= "<br><br><i class='fa-solid fa-clone text-info me-1'></i> Además, se han llenado automáticamente las listas de: {$nombresPeriodos}.";
+        }
+
         return response()->json([
             'success' => true,
-            'message' => 'La lista de estudiantes se ha actualizado correctamente.',
+            'message' => $mensajeFinal,
         ]);
     }
 

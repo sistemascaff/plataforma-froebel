@@ -7,8 +7,7 @@
                     <th scope="col" style="width: 15%;">Fecha</th>
                     <th scope="col">Asignatura</th>
                     <th scope="col">Horario</th>
-                    <th class="text-center" scope="col" style="width: 15%;">Estado Registrado
-                    </th>
+                    <th class="text-center" scope="col" style="width: 15%;">Estado Registrado</th>
                 </tr>
             </thead>
             <tbody>
@@ -16,15 +15,19 @@
                     <tr>
                         <td class="text-center align-middle">{{ $loop->index + 1 }}</td>
                         <td class="align-middle fw-bold">
-                            {{ date('d/m/Y', strtotime($asistencia->fecha)) }}</td>
+                            {{ date('d/m/Y', strtotime($asistencia->fecha)) }}
+                        </td>
                         <td class="align-middle">
-                            {{ $asistencia->lista_asignatura->asignatura->asignatura }}</td>
-                        <td class="align-middle"><span
-                                class="text-muted">{{ $asistencia->horario_asignatura->hora_inicio }}</span>
+                            {{ $asistencia->lista_asignatura->asignatura->asignatura }}
+                        </td>
+                        <td class="align-middle">
+                            <span class="text-muted">{{ $asistencia->horario_asignatura->hora_inicio }}</span>
                         </td>
                         <td class="text-center align-middle">
                             @php
                                 $tipo = $asistencia->pivot->tipo;
+                                $tiempoAtraso = $asistencia->pivot->tiempo_atraso;
+
                                 $badgeClass = match ($tipo) {
                                     'P' => 'bg-success',
                                     'A' => 'bg-warning text-dark',
@@ -32,9 +35,11 @@
                                     'L' => 'bg-info text-dark',
                                     default => 'bg-secondary',
                                 };
+
+                                // Verificamos si es Atraso y tiene minutos registrados en el pivote
                                 $badgeText = match ($tipo) {
                                     'P' => 'Presente',
-                                    'A' => 'Atraso',
+                                    'A' => $tiempoAtraso ? 'Atraso (' . $tiempoAtraso . ' min)' : 'Atraso',
                                     'F' => 'Falta',
                                     'L' => 'Licencia',
                                     default => 'Desconocido',

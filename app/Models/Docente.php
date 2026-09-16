@@ -81,7 +81,18 @@ class Docente extends Model
     public function get_docente($id_docente)
     {
         return $this::with([
-            'listas_asignaturas:id_lista_asignatura,id_asignatura,id_periodo,id_docente,estado',
+            // Convertimos la carga de listas_asignaturas en un closure para aplicar Joins y Ordenamiento
+            'listas_asignaturas' => function ($query) {
+                $query->select('listas_asignaturas.*') // Obligatorio para evitar colisión de columnas (ej. estado)
+                    ->join('asignaturas', 'listas_asignaturas.id_asignatura', '=', 'asignaturas.id_asignatura')
+                    ->join('periodos', 'listas_asignaturas.id_periodo', '=', 'periodos.id_periodo')
+                    ->join('gestiones', 'periodos.id_gestion', '=', 'gestiones.id_gestion')
+                    ->orderBy('gestiones.anio', 'DESC')
+                    ->orderBy('asignaturas.asignatura', 'ASC')
+                    ->orderBy('periodos.posicion_ordinal', 'ASC');
+            },
+
+            // Mantenemos la carga de las relaciones anidadas con sus columnas específicas
             'listas_asignaturas.asignatura:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',
             'listas_asignaturas.periodo:id_periodo,id_gestion,periodo,posicion_ordinal,estado',
             'listas_asignaturas.periodo.gestion:id_gestion,anio,estado',

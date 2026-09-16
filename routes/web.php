@@ -85,7 +85,7 @@ Route::middleware(['session.acceso'])->group(function () {
     // ==========================================
     // MÓDULO DE GESTIÓN ESTUDIANTIL Y LICENCIAS
     // ==========================================
-    Route::middleware(['perfil:ADMIN,GERENTE,SECRETARIA ACADEMICA,DIRECTOR,SUBDIRECTOR'])->group(function () {
+    Route::middleware(['perfil:ADMIN,GERENTE,SECRETARIA ACADEMICA,DIRECTOR,SUBDIRECTOR,COORDINADOR'])->group(function () {
         Route::controller(EstudianteController::class)->group(function () {
             Route::get('estudiantes', 'view_index')->name('estudiantes.index');
             Route::get('estudiantes/listar', 'listar')->name('estudiantes.listar');

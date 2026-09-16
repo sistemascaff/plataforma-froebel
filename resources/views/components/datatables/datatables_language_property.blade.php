@@ -26,7 +26,7 @@ language: {
                         "colvis": "<i class=\"fa-duotone fa-solid fa-eye\"></i> Visibilidad de columnas",
                         "collection": "Colección",
                         "colvisRestore": "Restaurar visibilidad",
-                        "copyKeys": "Presione ctrl o u2318 + C para copiar los datos de la tabla al portapapeles del sistema. <br \/> <br \/> Para cancelar, haga clic en este mensaje o presione escape.",
+                        "copyKeys": "Presione ctrl o \u2318 + C para copiar los datos de la tabla al portapapeles del sistema. <br \/> <br \/> Para cancelar, haga clic en este mensaje o presione escape.",
                         "copySuccess": {
                             "1": "Copiada 1 fila al portapapeles",
                             "_": "Copiadas %ds filas al portapapeles"
@@ -125,5 +125,41 @@ language: {
                         "title": "Filtros activos - %d",
                         "showMessage": "Mostrar todos",
                         "collapseMessage": "Colapsar todos"
+                    },
+                    "searchPlaceholder": "Término de búsqueda...",
+                    "datetime": {
+                        "previous": "Anterior",
+                        "next": "Próximo",
+                        "hours": "Horas",
+                        "minutes": "Minutos",
+                        "seconds": "Segundos",
+                        "unknown": "-",
+                        "amPm": [
+                            "am",
+                            "pm"
+                        ],
+                        "weekdays": [
+                            "Dom",
+                            "Lun",
+                            "Mar",
+                            "Mié",
+                            "Jue",
+                            "Vie",
+                            "Sáb"
+                        ],
+                        "months": [
+                            "Enero",
+                            "Febrero",
+                            "Marzo",
+                            "Abril",
+                            "Mayo",
+                            "Junio",
+                            "Julio",
+                            "Agosto",
+                            "Septiembre",
+                            "Octubre",
+                            "Noviembre",
+                            "Diciembre"
+                        ]
                     }
                 }

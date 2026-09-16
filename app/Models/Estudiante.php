@@ -34,7 +34,7 @@ class Estudiante extends Model
             'detalles_estudiantes_asistencias', // Nombre de la tabla pivote
             'id_estudiante',                    // FK de este modelo (Estudiante) en la tabla pivote
             'id_estudiante_asistencia'          // FK del modelo relacionado en la tabla pivote
-        )->withPivot(['tipo', 'id_estudiante_licencia'])
+        )->withPivot(['tipo', 'tiempo_atraso', 'id_estudiante_licencia'])
             ->orderBy('fecha', 'DESC');
     }
 

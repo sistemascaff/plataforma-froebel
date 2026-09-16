@@ -90,6 +90,7 @@ class ListaAsignatura extends Model
             ])
             ->orderBy('gestiones.anio', 'DESC')
             ->orderBy('asignaturas.asignatura', 'ASC')
+            ->orderBy('periodos.posicion_ordinal', 'ASC')
             ->get();
     }
 
@@ -127,6 +128,7 @@ class ListaAsignatura extends Model
             )
             ->orderBy('gestiones.anio', 'DESC')
             ->orderBy('asignaturas.asignatura', 'ASC')
+            ->orderBy('periodos.posicion_ordinal', 'ASC')
             ->get();
     }
 

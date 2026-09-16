@@ -1,23 +1,70 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
-        // --- 1. Lógica visual para los Badges de Estado en tiempo real ---
+        // --- 1. Lógica visual para los Badges de Estado y Tiempo de Atraso ---
         document.querySelectorAll('.radio-asistencia').forEach(radio => {
             radio.addEventListener('change', function() {
                 const index = this.dataset.index;
                 const badge = document.getElementById('badge_tipo_' + index);
+                const inputAtraso = document.getElementById('tiempo_atraso_' + index);
 
                 if (badge) {
                     if (this.value === 'P') {
                         badge.className = 'badge bg-success tipo';
                         badge.textContent = 'Presente';
+                        if (inputAtraso) {
+                            inputAtraso.style.display = 'none';
+                            inputAtraso.required = false;
+                            inputAtraso.value = '';
+                        }
                     } else if (this.value === 'A') {
                         badge.className = 'badge bg-warning tipo';
                         badge.textContent = 'Atraso';
+                        if (inputAtraso) {
+                            inputAtraso.style.display = 'block';
+                            inputAtraso.required = true;
+                            inputAtraso.focus();
+                        }
                     } else if (this.value === 'F') {
                         badge.className = 'badge bg-danger tipo';
                         badge.textContent = 'Falta';
+                        if (inputAtraso) {
+                            inputAtraso.style.display = 'none';
+                            inputAtraso.required = false;
+                            inputAtraso.value = '';
+                        }
                     }
+                }
+            });
+        });
+
+        // --- 3. Validación en tiempo real para el Tiempo de Atraso ---
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 4000,
+            timerProgressBar: true,
+            background: localStorage.getItem('theme') === 'dark' ? '#343a40' : '#fff',
+            color: localStorage.getItem('theme') === 'dark' ? '#fff' : '#545454',
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+            }
+        });
+
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('change', function() {
+                let valor = parseInt(this.value);
+
+                if (this.value !== '' && (valor < 1 || valor > 60)) {
+                    Toast.fire({
+                        icon: 'warning',
+                        title: 'Tiempo inválido',
+                        text: 'El atraso debe estar entre 1 y 60 minutos.'
+                    });
+
+                    this.value = valor > 60 ? 60 : 1;
                 }
             });
         });
@@ -27,27 +74,21 @@
 
         if (formAsistencia) {
             formAsistencia.addEventListener('submit', function(e) {
-                e.preventDefault(); // Evitamos la recarga tradicional
+                e.preventDefault();
 
-                // Deshabilitar botón para evitar envíos múltiples
                 const btnSubmit = document.getElementById('btn-guardar');
                 const originalText = btnSubmit.innerHTML;
                 btnSubmit.disabled = true;
-                btnSubmit.innerHTML = 'Actualizando... <i class="fas fa-spinner fa-spin"></i>';
+                btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Actualizando...';
 
-                // Recolectar automáticamente todos los datos del formulario 
                 const formData = new FormData(formAsistencia);
-
-                // Agregamos el método PUT spoofing para Laravel
                 formData.append('_method', 'PUT');
 
-                // Endpoint dinámico para la actualización
                 const updateUrl =
                     "{{ route('estudiantes_asistencias.update', $estudiante_asistencia->id_estudiante_asistencia) }}";
 
-                // Solicitud AJAX asíncrona
                 fetch(updateUrl, {
-                        method: 'POST', // Enviamos via POST con _method = PUT
+                        method: 'POST',
                         body: formData,
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
@@ -61,7 +102,6 @@
                     })))
                     .then(res => {
                         if (res.status === 200 && res.body.success) {
-                            // Éxito al actualizar
                             Swal.fire({
                                 theme: localStorage.getItem('theme') || 'dark',
                                 icon: 'success',
@@ -71,13 +111,11 @@
                                 timer: 2000
                             }).then(() => {
                                 const idAsistencia = res.body.data.id_estudiante_asistencia;
-                                // Redirección a los detalles de la asistencia
                                 window.location.href =
                                     `{{ route('estudiantes_asistencias.detalles', ['estudiante_asistencia' => ':id']) }}`
                                     .replace(':id', idAsistencia);
                             });
                         } else {
-                            // Errores de Validación o Duplicidad
                             let errorMessage = res.body.message ||
                                 'Verifica los datos e intenta nuevamente.';
 
@@ -94,7 +132,6 @@
                                 confirmButtonColor: '#3085d6'
                             });
 
-                            // Restaurar el botón
                             btnSubmit.disabled = false;
                             btnSubmit.innerHTML = originalText;
                         }
