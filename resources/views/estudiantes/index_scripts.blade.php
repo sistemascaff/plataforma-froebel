@@ -75,7 +75,7 @@
                 {
                     data: "persona.fecha_nacimiento",
                     render: function(data) {
-                        return data ? new Date(data).toLocaleDateString() : '-';
+                        return data ? moment(data).format('DD/MM/YYYY') : '';
                     }
                 },
                 {
@@ -146,19 +146,19 @@
                 {
                     data: "fecha_registro",
                     render: function(data) {
-                        return data ? new Date(data).toLocaleString() : '-';
+                        return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
                 {
                     data: "fecha_actualizacion",
                     render: function(data) {
-                        return data ? new Date(data).toLocaleString() : '-';
+                        return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
                 {
                     data: "fecha_eliminacion",
                     render: function(data) {
-                        return data ? new Date(data).toLocaleString() : '-';
+                        return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
                 {

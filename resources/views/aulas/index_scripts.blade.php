@@ -36,19 +36,19 @@
                 {
                     data: "fecha_registro",
                     render: function(data, type, row) {
-                        return data ? new Date(data).toLocaleString() : '-';
+                        return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
                 {
                     data: "fecha_actualizacion",
                     render: function(data, type, row) {
-                        return data ? new Date(data).toLocaleString() : '-';
+                        return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
                 {
                     data: "fecha_eliminacion",
                     render: function(data, type, row) {
-                        return data ? new Date(data).toLocaleString() : '-';
+                        return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
                 {

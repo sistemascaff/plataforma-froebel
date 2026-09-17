@@ -144,6 +144,9 @@
                 },
                 {
                     data: "fecha_ingreso_cooperativa",
+                    render: function(data, type, row) {
+                        return data ? moment(data).format('DD/MM/YYYY') : '';
+                    }
                 },
                 {
                     data: null,

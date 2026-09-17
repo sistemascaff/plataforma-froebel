@@ -30,7 +30,6 @@
 
     <!-- Bootstrap JS -->
     <script src="{{ asset('/public/dependencies/bootstrap-5.3.8/js/bootstrap.bundle.min.js') }}"></script>
-    <script></script>
 </body>
 
 </html>

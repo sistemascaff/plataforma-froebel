@@ -24,12 +24,12 @@
                                 {{ $licencia->justificacion }}
                             </td>
                             <td class="align-middle">
-                                <span class="badge bg-primary text-white shadow-sm w-100 py-2">
+                                <span class="badge bg-primary text-white">
                                     {{ date('d/m/Y H:i', strtotime($licencia->fecha_inicio)) }}
                                 </span>
                             </td>
                             <td class="align-middle">
-                                <span class="badge bg-danger text-white shadow-sm w-100 py-2">
+                                <span class="badge bg-danger text-white">
                                     {{ date('d/m/Y H:i', strtotime($licencia->fecha_fin)) }}
                                 </span>
                             </td>
@@ -45,7 +45,7 @@
                                 @endif
                             </td>
                             <td class="align-middle">
-                                {{ date('d/m/Y H:i', strtotime($licencia->fecha_registro)) }}
+                                {{ date('d/m/Y H:i:s', strtotime($licencia->fecha_registro)) }}
                             </td>
                         </tr>
                     @endforeach

@@ -2,6 +2,11 @@
 <script src="{{ asset('/public/dependencies/bootstrap-5.3.8/js/bootstrap.bundle.min.js') }}"></script>
 <!-- Font Awesome JS -->
 <link defer href="{{ asset('/public/dependencies/fontawesome-pro-plus-v7.0.1/js/all.js') }}" rel="stylesheet">
+<!-- Moment.js-->
+<script src="{{ asset('/public/dependencies/moment.js/moment-with-locales.min.js') }}"></script>
+<script>
+    moment.locale('es');
+</script>
 <!-- DataTables JS -->
 <script src="{{ asset('/public/dependencies/datatables-net/datatables.min.js') }}"></script>
 <!-- Select2 JS -->

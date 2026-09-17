@@ -31,10 +31,10 @@
                     <th>Estado</th>
                     <th>F. Registro</th>
                     <th>F. Actualización</th>
-                    <th>F. Archivado</th>
+                    {{--<th>F. Archivado</th>--}}
                     <th>Creado por</th>
                     <th>Modificado por</th>
-                    <th>Archivado por</th>
+                    {{--<th>Archivado por</th>--}}
                     <th>Ip</th>
                     <th>Dispositivo</th>
                     <th>Acciones</th>

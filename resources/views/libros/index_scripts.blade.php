@@ -82,6 +82,9 @@
                 },
                 {
                     data: "fecha_ingreso_cooperativa",
+                    render: function(data, type, row) {
+                        return data ? moment(data).format('DD/MM/YYYY') : '';
+                    }
                 },
                 {
                     data: null,
@@ -122,19 +125,19 @@
                 {
                     data: "fecha_registro",
                     render: function(data, type, row) {
-                        return data ? new Date(data).toLocaleString() : '-';
+                        return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
                 {
                     data: "fecha_actualizacion",
                     render: function(data, type, row) {
-                        return data ? new Date(data).toLocaleString() : '-';
+                        return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
                 {
                     data: "fecha_eliminacion",
                     render: function(data, type, row) {
-                        return data ? new Date(data).toLocaleString() : '-';
+                        return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
                 {
@@ -289,10 +292,6 @@
                 $('#form-crear-o-editar input[name="costo"]').val(libro.data.costo);
                 $('#descripcion').val(libro.data.descripcion);
                 $('#form-crear-o-editar select[name="adquisicion"]').val(libro.data.adquisicion).trigger('change');
-                /* const fechaRaw = libro.data.fecha_ingreso_cooperativa;
-                const fechaFormateada = fechaRaw ? fechaRaw.split('T')[0] : '';
-                $('#form-crear-o-editar input[name="fecha_ingreso_cooperativa"]').val(
-                    fechaFormateada); */
                 $('#form-crear-o-editar input[name="fecha_ingreso_cooperativa"]').val(libro.data.fecha_ingreso_cooperativa);
                 $('#observacion').val(libro.data.observacion);
 

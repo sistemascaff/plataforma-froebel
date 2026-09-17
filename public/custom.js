@@ -125,3 +125,8 @@ $(document).on('click', '.zoomable-image', function () {
 $('#image-viewer-modal').on('hidden.bs.modal', function () {
     $('#modal-image-preview').attr('src', '');
 });
+
+// Indicación a DataTable los formatos esperados para reconocerlos como date y datetime con moment.js
+DataTable.datetime('DD/MM/YYYY HH:mm:ss');
+DataTable.datetime('DD/MM/YYYY HH:mm');
+DataTable.datetime('DD/MM/YYYY');

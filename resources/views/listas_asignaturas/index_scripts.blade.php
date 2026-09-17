@@ -42,9 +42,9 @@
                     }
                 },
                 {
-                    data: "docente.persona",
+                    data: "docente.persona.nombres_apellidos",
                     render: function(data, type, row) {
-                        return `${data.nombres_apellidos}`;
+                        return data ? `${data}` : '<span class="text-danger"><i class="fa-duotone fa-triangle-exclamation"></i> Sin asignar</span>';
                     }
                 },
                 {

@@ -69,8 +69,9 @@
                 },
                 {
                     data: "fecha_nacimiento",
-                    className: "align-middle",
-                    render: data => data ? new Date(data).toLocaleDateString() : '-'
+                    render: function(data) {
+                        return data ? moment(data).format('DD/MM/YYYY') : '';
+                    }
                 },
                 {
                     data: "sexo",
@@ -112,24 +113,27 @@
                     render: function(data) {
                         if (data == 1) return '<span class="badge bg-success">ACTIVO</span>';
                         if (data == 0)
-                        return '<span class="badge bg-secondary">ARCHIVADO</span>';
+                            return '<span class="badge bg-secondary">ARCHIVADO</span>';
                         return '<span class="badge bg-warning">DESCONOCIDO</span>';
                     }
                 },
                 {
                     data: "fecha_registro",
-                    className: "align-middle",
-                    render: data => data ? new Date(data).toLocaleString() : '-'
+                    render: function(data) {
+                        return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
+                    }
                 },
                 {
                     data: "fecha_actualizacion",
-                    className: "align-middle",
-                    render: data => data ? new Date(data).toLocaleString() : '-'
+                    render: function(data) {
+                        return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
+                    }
                 },
                 {
                     data: "fecha_eliminacion",
-                    className: "align-middle",
-                    render: data => data ? new Date(data).toLocaleString() : '-'
+                    render: function(data) {
+                        return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
+                    }
                 },
                 {
                     data: "creado.correo",
@@ -283,8 +287,8 @@
                         };
                     }
                     let htmlError = respuesta.errors ? Object.values(respuesta.errors)
-                    .flat().join("<br>") : (respuesta.message ||
-                        "Ocurrió un error inesperado.");
+                        .flat().join("<br>") : (respuesta.message ||
+                            "Ocurrió un error inesperado.");
 
                     Swal.fire({
                         theme: localStorage.getItem('theme') || 'dark',

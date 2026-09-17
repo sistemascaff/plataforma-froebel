@@ -130,7 +130,7 @@
                             </td>
 
                             <td class="text-center align-middle">
-                                {{ \Carbon\Carbon::parse($prestamo->fecha_registro)->format('d/m/Y H:i') }}
+                                {{ \Carbon\Carbon::parse($prestamo->fecha_registro)->format('d/m/Y H:i:s') }}
                             </td>
                         </tr>
                     @endforeach

@@ -56,9 +56,8 @@
                                 estadoTexto = "(EN USO)";
                                 css = "text-primary fw-bold";
                             } else if (libro.pivot.fecha_retorno !== null) {
-                                const fecha = new Date(libro.pivot.fecha_retorno)
-                                    .toLocaleString();
-                                estadoTexto = `(DEVUELTO EL ${fecha})`;
+                                const fecha = libro.pivot.fecha_retorno;
+                                estadoTexto = `(DEVUELTO EL ${moment(fecha).format('DD/MM/YYYY HH:mm:ss')})`;
                                 css = "text-success opacity-75";
                             } else {
                                 estadoTexto = "(DISPONIBLE)";
@@ -71,12 +70,7 @@
                 {
                     data: "fecha_devolucion",
                     render: function(data, type, row) {
-                        const fecha = new Date(data);
-                        const anio = fecha.getFullYear();
-                        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-                        const dia = String(fecha.getDate()).padStart(2, '0');
-                        //return `${anio}-${mes}-${dia}`;
-                        return `${dia}/${mes}/${anio}`;
+                        return data ? moment(data).format('DD/MM/YYYY') : '';
                     }
                 },
                 {
@@ -138,19 +132,19 @@
                 {
                     data: "fecha_registro",
                     render: function(data, type, row) {
-                        return data ? new Date(data).toLocaleString() : '-';
+                        return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
                 {
                     data: "fecha_actualizacion",
                     render: function(data, type, row) {
-                        return data ? new Date(data).toLocaleString() : '-';
+                        return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
                 {
                     data: "fecha_eliminacion",
                     render: function(data, type, row) {
-                        return data ? new Date(data).toLocaleString() : '-';
+                        return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
                 {
