@@ -5,6 +5,10 @@
         <i class="fa-solid fa-duotone fa-clipboard-list-check me-1"></i>{{ $head_title }}
     </h1>
 
+    <a class="btn btn-info text-white" href="{{ route('estudiantes_asistencias.reportes') }}">
+        <i class="fa-solid fa-duotone fa-chart-column me-1"></i> Reportes
+    </a>
+
     <h2 class="text-info fw-bold">Lista de asistencias</h2>
 
     <div class="card p-3 mb-3">
@@ -31,10 +35,10 @@
                     <th>Estado</th>
                     <th>F. Registro</th>
                     <th>F. Actualización</th>
-                    {{--<th>F. Archivado</th>--}}
+                    {{-- <th>F. Archivado</th> --}}
                     <th>Creado por</th>
                     <th>Modificado por</th>
-                    {{--<th>Archivado por</th>--}}
+                    {{-- <th>Archivado por</th> --}}
                     <th>Ip</th>
                     <th>Dispositivo</th>
                     <th>Acciones</th>

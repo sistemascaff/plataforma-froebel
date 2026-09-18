@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Asignatura;
+use App\Models\Coordinacion;
+use App\Models\Curso;
+use App\Models\DetalleEstudianteAsistencia;
 use App\Models\EstudianteAsistencia;
 use App\Models\EstudianteLicencia;
 use App\Models\ListaAsignatura;
 use App\Models\HorarioAsignatura;
+use App\Models\Nivel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -110,6 +114,22 @@ class EstudianteAsistenciaController extends Controller
         ]);
     }
 
+    public function view_reportes()
+    {
+        $this->authorize('viewAny', EstudianteAsistencia::class);
+
+        $niveles = (new Nivel())->get_all_niveles();
+        $cursos = (new Curso())->get_all_cursos();
+        $coordinaciones = (new Coordinacion())->get_all_coordinaciones();
+
+        return view('estudiantes_asistencias.reportes', [
+            'head_title' => 'REPORTES DE ASISTENCIAS',
+            'niveles' => $niveles,
+            'coordinaciones' => $coordinaciones,
+            'cursos' => $cursos,
+        ]);
+    }
+
     public function view_details($estudiante_asistencia)
     {
         $estudiante_asistencia = (new EstudianteAsistencia())->get_estudiante_asistencia($estudiante_asistencia);
@@ -142,6 +162,46 @@ class EstudianteAsistenciaController extends Controller
 
         return response()->json([
             'data' => $estudiantes_asistencias
+        ]);
+    }
+
+    public function listar_reporte_incidencias(Request $request)
+    {
+        $this->authorize('viewAny', EstudianteAsistencia::class);
+
+        $tipo_perfil = Auth::user()->persona?->tipo_perfil;
+        $filtros = [];
+
+        // Filtros dinámicos (Desde la vista)
+        if ($request->filled('fecha_inicio')) {
+            $filtros['fecha_inicio'] = $request->fecha_inicio;
+        }
+        if ($request->filled('fecha_fin')) {
+            $filtros['fecha_fin'] = $request->fecha_fin;
+        }
+        if ($request->filled('id_nivel')) {
+            $filtros['nivel'] = $request->id_nivel;
+        }
+        if ($request->filled('id_coordinacion')) {
+            $filtros['coordinacion'] = $request->id_coordinacion;
+        }
+        if ($request->filled('id_curso')) {
+            $filtros['id_curso'] = $request->id_curso;
+        }
+
+        // Filtros inmutables (Según el perfil del usuario)
+        if ($tipo_perfil === 'SUBDIRECTOR') {
+            $filtros['nivel'] = Auth::user()->persona?->docente?->id_nivel;
+        } else if ($tipo_perfil === 'COORDINADOR') {
+            $filtros['coordinacion'] = Auth::user()->persona?->docente?->id_coordinacion;
+        }
+
+
+
+        $reporte_incidencias = (new DetalleEstudianteAsistencia())->get_reporte_incidencias($filtros);
+
+        return response()->json([
+            'data' => $reporte_incidencias
         ]);
     }
 

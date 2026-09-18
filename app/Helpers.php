@@ -10,7 +10,7 @@ if (! function_exists('helper_titulo_pagina')) {
 if (! function_exists('helper_version_app')) {
     function helper_version_app()
     {
-        return '0.3';
+        return '0.4';
     }
 }
 

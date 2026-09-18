@@ -132,8 +132,10 @@ Route::middleware(['session.acceso'])->group(function () {
 
         Route::controller(EstudianteAsistenciaController::class)->group(function () {
             Route::get('estudiantes_asistencias', 'view_index')->name('estudiantes_asistencias.index');
-            Route::get('estudiantes_asistencias/listar', 'listar')->name('estudiantes_asistencias.listar');
             Route::get('estudiantes_asistencias/crear/lista_asignatura/{lista_asignatura}', 'view_create')->name('estudiantes_asistencias.crear');
+            Route::get('estudiantes_asistencias/listar', 'listar')->name('estudiantes_asistencias.listar');
+            Route::get('estudiantes_asistencias/reportes', 'view_reportes')->name('estudiantes_asistencias.reportes');
+            Route::get('estudiantes_asistencias/reportes/listar_incidencias', 'listar_reporte_incidencias')->name('estudiantes_asistencias.listar_reporte_incidencias');
             Route::get('estudiantes_asistencias/{estudiante_asistencia}', 'mostrar')->name('estudiantes_asistencias.mostrar');
             Route::get('estudiantes_asistencias/{estudiante_asistencia}/detalles', 'view_details')->name('estudiantes_asistencias.detalles');
             Route::get('estudiantes_asistencias/{estudiante_asistencia}/editar', 'view_update')->name('estudiantes_asistencias.editar');
