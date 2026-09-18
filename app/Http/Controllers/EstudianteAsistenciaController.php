@@ -6,6 +6,7 @@ use App\Models\Asignatura;
 use App\Models\Coordinacion;
 use App\Models\Curso;
 use App\Models\DetalleEstudianteAsistencia;
+use App\Models\Docente;
 use App\Models\EstudianteAsistencia;
 use App\Models\EstudianteLicencia;
 use App\Models\ListaAsignatura;
@@ -121,12 +122,14 @@ class EstudianteAsistenciaController extends Controller
         $niveles = (new Nivel())->get_all_niveles();
         $cursos = (new Curso())->get_all_cursos();
         $coordinaciones = (new Coordinacion())->get_all_coordinaciones();
+        $docentes = (new Docente())->get_all_docentes();
 
         return view('estudiantes_asistencias.reportes', [
             'head_title' => 'REPORTES DE ASISTENCIAS',
             'niveles' => $niveles,
             'coordinaciones' => $coordinaciones,
             'cursos' => $cursos,
+            'docentes' => $docentes,
         ]);
     }
 
@@ -155,6 +158,9 @@ class EstudianteAsistenciaController extends Controller
             $estudiantes_asistencias = (new EstudianteAsistencia())->get_estudiantes_asistencias($filtros);
         } else if ($tipo_perfil === 'COORDINADOR') {
             $filtros['coordinacion'] = Auth::user()->persona?->docente?->id_coordinacion;
+            $estudiantes_asistencias = (new EstudianteAsistencia())->get_estudiantes_asistencias($filtros);
+        } else if ($tipo_perfil === 'DOCENTE') {
+            $filtros['docente'] = Auth::user()->persona?->docente?->id_docente;
             $estudiantes_asistencias = (new EstudianteAsistencia())->get_estudiantes_asistencias($filtros);
         } else {
             $estudiantes_asistencias = (new EstudianteAsistencia())->get_all_estudiantes_asistencias();
@@ -185,6 +191,9 @@ class EstudianteAsistenciaController extends Controller
         if ($request->filled('id_coordinacion')) {
             $filtros['coordinacion'] = $request->id_coordinacion;
         }
+        if ($request->filled('id_docente')) {
+            $filtros['docente'] = $request->id_docente;
+        }
         if ($request->filled('id_curso')) {
             $filtros['id_curso'] = $request->id_curso;
         }
@@ -194,6 +203,8 @@ class EstudianteAsistenciaController extends Controller
             $filtros['nivel'] = Auth::user()->persona?->docente?->id_nivel;
         } else if ($tipo_perfil === 'COORDINADOR') {
             $filtros['coordinacion'] = Auth::user()->persona?->docente?->id_coordinacion;
+        } else if ($tipo_perfil === 'DOCENTE') {
+            $filtros['docente'] = Auth::user()->persona?->docente?->id_docente;
         }
 
 

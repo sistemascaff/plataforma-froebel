@@ -159,8 +159,11 @@ class EstudianteAsistencia extends Model
             )
             ->when(
                 $filtros['coordinacion'] ?? null,
-                // Filtramos directamente gracias a los joins anidados
                 fn($q, $valor) => $q->where('asignaturas.id_coordinacion', $valor)
+            )
+            ->when(
+                $filtros['docente'] ?? null,
+                fn($q, $valor) => $q->where('listas_asignaturas.id_docente', $valor)
             )
             ->orderBy('estudiantes_asistencias.fecha', 'DESC')
             ->orderBy('horarios_asignaturas.hora_inicio', 'ASC')

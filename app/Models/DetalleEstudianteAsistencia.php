@@ -80,7 +80,10 @@ class DetalleEstudianteAsistencia extends Model
                 $filtros['coordinacion'] ?? null,
                 fn($q, $valor) => $q->where('asignaturas.id_coordinacion', $valor)
             )
-            // Filtros opcionales (fechas)
+            ->when(
+                $filtros['docente'] ?? null,
+                fn($q, $valor) => $q->where('listas_asignaturas.id_docente', $valor)
+            )
             ->when(
                 $filtros['fecha_inicio'] ?? null,
                 fn($q, $fecha) => $q->whereDate('estudiantes_asistencias.fecha', '>=', $fecha)

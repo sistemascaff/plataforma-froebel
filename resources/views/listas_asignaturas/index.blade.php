@@ -1,39 +1,42 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="text-center text-info fw-bold">
-        <i class="fa-solid fa-duotone fa-book-reader me-1"></i>{{ $head_title }}
-    </h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-info fw-bold mb-0">
+            <i class="fa-solid fa-duotone fa-book-reader me-2"></i> {{ $head_title }}
+        </h1>
+    </div>
 
-    <h2 class="text-info fw-bold">Listas de asignaturas</h2>
-
-    <p class="text-justify">
+    <p class="text-justify mb-4">
         En esta sección se encuentran todas las listas de asignaturas registradas en el sistema.
     </p>
 
-    <div class="card p-3 mb-3">
-        <p>Seleccione una opción para <i class="fa-solid fa-duotone fa-file-export"></i> exportar o <i
-                class="fa-solid fa-duotone fa-filter"></i> filtrar la tabla:</p>
-        <div id="dataTable-export-buttons-container"></div>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header p-3 d-flex justify-content-between align-items-center">
+            <p class="mb-0">Seleccione una opción para <i class="fa-solid fa-duotone fa-file-export mx-1"></i> exportar o
+                <i class="fa-solid fa-duotone fa-filter mx-1"></i> filtrar la tabla:
+            </p>
+            <div id="dataTable-export-buttons-container"></div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered table-striped w-100" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th class="text-center">#</th>
+                            <th>Asignatura</th>
+                            <th>Tipo de calificación</th>
+                            <th>Tipo de bloque</th>
+                            <th>Periodo</th>
+                            <th>Docente</th>
+                            <th>Gestión</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
     </div>
-
-    <table class="table table-bordered table-striped" id="dataTable">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Asignatura</th>
-                <th>Tipo de calificación</th>
-                <th>Tipo de bloque</th>
-                <th>Periodo</th>
-                <th>Docente</th>
-                <th>Gestión</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-    </table>
-
-    <div class="mb-3"></div>
-
 @endsection
 
 @section('scripts')

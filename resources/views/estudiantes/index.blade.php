@@ -1,66 +1,67 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="text-center text-info fw-bold"><i class="fa-solid fa-duotone fa-user-graduate"></i> {{ $head_title }}</h1>
-
-    <button type="button" class="btn btn-success mb-3 btn-crear" data-bs-toggle="modal" data-bs-target="#modal-formulario">
-        <i class="fa-solid fa-duotone fa-plus"></i> Crear estudiante</button>
-
-    <h2 class="text-info fw-bold">Lista de estudiantes</h2>
-    
-    <div class="card p-3 mb-3">
-        <p>Seleccione una opción para <i class="fa-solid fa-duotone fa-file-export"></i> exportar o <i
-                class="fa-solid fa-duotone fa-filter"></i> filtrar la tabla:</p>
-        <div id="dataTable-export-buttons-container"></div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-info fw-bold mb-0"><i class="fa-solid fa-duotone fa-user-graduate me-2"></i> {{ $head_title }}</h1>
+        <button type="button" class="btn btn-success shadow-sm btn-crear" data-bs-toggle="modal"
+            data-bs-target="#modal-formulario">
+            <i class="fa-solid fa-duotone fa-plus me-1"></i> Crear estudiante
+        </button>
     </div>
 
-    <table class="table table-bordered table-striped" id="dataTable">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Curso</th>
-                <th>Foto de perfil</th>
-                <th>Ap. paterno</th>
-                <th>Ap. materno</th>
-                <th>Nombres</th>
-                <th>C.I.</th>
-                <th>C.I. Complemento</th>
-                <th>C.I. Expedido</th>
-                <th>F. Nacimiento</th>
-                <th>Sexo</th>
-                <th>Idioma</th>
-                <th>Celular</th>
-                <th>Teléfono</th>
-
-                <th>Tipo de perfil</th>
-                <th>Correo</th>
-                <th>Contraseña</th>
-
-                <th>Tiene acceso</th>
-
-                <th>Nacimiento país</th>
-                <th>Nacimiento departamento</th>
-                <th>Nacimiento provincia</th>
-                <th>Nacimiento localidad</th>
-                <th>Salud tipo de sangre</th>
-                <th>Salud alergias</th>
-                <th>Salud datos méditos importantes</th>
-                
-                <th>Estado</th>
-                <th>F. Registro</th>
-                <th>F. Actualización</th>
-                <th>F. Archivado</th>
-                <th>Creado por</th>
-                <th>Modificado por</th>
-                <th>Archivado por</th>
-                <th>Ip</th>
-                <th>Dispositivo</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-    </table>
-
-    <div class="mb-3"></div>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header p-3 d-flex justify-content-between align-items-center">
+            <p class="mb-0">Seleccione una opción para <i class="fa-solid fa-duotone fa-file-export mx-1"></i> exportar o
+                <i class="fa-solid fa-duotone fa-filter mx-1"></i> filtrar la tabla:
+            </p>
+            <div id="dataTable-export-buttons-container"></div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered table-striped w-100" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th class="text-center">#</th>
+                            <th>Curso</th>
+                            <th class="text-center">Foto de perfil</th>
+                            <th>Ap. paterno</th>
+                            <th>Ap. materno</th>
+                            <th>Nombres</th>
+                            <th>C.I.</th>
+                            <th>C.I. Complemento</th>
+                            <th>C.I. Expedido</th>
+                            <th>F. Nacimiento</th>
+                            <th class="text-center">Sexo</th>
+                            <th>Idioma</th>
+                            <th>Celular</th>
+                            <th>Teléfono</th>
+                            <th>Tipo de perfil</th>
+                            <th>Correo</th>
+                            <th>Contraseña</th>
+                            <th class="text-center">Tiene acceso</th>
+                            <th>Nacimiento país</th>
+                            <th>Nacimiento departamento</th>
+                            <th>Nacimiento provincia</th>
+                            <th>Nacimiento localidad</th>
+                            <th>Salud tipo de sangre</th>
+                            <th>Salud alergias</th>
+                            <th>Salud datos méditos importantes</th>
+                            <th class="text-center">Estado</th>
+                            <th>F. Registro</th>
+                            <th>F. Actualización</th>
+                            <th>F. Archivado</th>
+                            <th>Creado por</th>
+                            <th>Modificado por</th>
+                            <th>Archivado por</th>
+                            <th>Ip</th>
+                            <th>Dispositivo</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
 
     @include('estudiantes.modal_form')
     @include('components.app.img_modal')

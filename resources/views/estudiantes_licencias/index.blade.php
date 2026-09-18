@@ -1,48 +1,51 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="text-center text-info fw-bold"><i class="fa-solid fa-duotone fa-file-medical"></i> {{ $head_title }}</h1>
-
-    <button type="button" class="btn btn-success mb-3 btn-crear" data-bs-toggle="modal" data-bs-target="#modal-formulario">
-        <i class="fa-solid fa-duotone fa-plus"></i> Registrar licencia
-    </button>
-
-    <h2 class="text-info fw-bold">Lista de licencias estudiantiles</h2>
-
-    <div class="card p-3 mb-3 shadow-sm">
-        <p>Seleccione una opción para <i class="fa-solid fa-duotone fa-file-export"></i> exportar o <i
-                class="fa-solid fa-duotone fa-filter"></i> filtrar la tabla:</p>
-        <div id="dataTable-export-buttons-container"></div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-info fw-bold mb-0">
+            <i class="fa-solid fa-duotone fa-file-medical me-2"></i> {{ $head_title }}
+        </h1>
+        <button type="button" class="btn btn-success shadow-sm btn-crear" data-bs-toggle="modal"
+            data-bs-target="#modal-formulario">
+            <i class="fa-solid fa-duotone fa-plus me-1"></i> Registrar licencia
+        </button>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped" id="dataTable" style="width: 100%;">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Curso</th>
-                    <th>Estudiante</th>
-                    <th>Motivo (Tipo)</th>
-                    <th>Fechas (Inicio - Fin)</th>
-                    <th>Justificación</th>
-                    <th>Evidencia</th>
-
-                    <th>Estado</th>
-                    <th>F. Registro</th>
-                    <th>F. Actualización</th>
-                    <th>F. Archivado</th>
-                    <th>Creado por</th>
-                    <th>Modificado por</th>
-                    <th>Archivado por</th>
-                    <th>Ip</th>
-                    <th>Dispositivo</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-        </table>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header p-3 d-flex justify-content-between align-items-center">
+            <p class="mb-0">Seleccione una opción para <i class="fa-solid fa-duotone fa-file-export mx-1"></i> exportar o
+                <i class="fa-solid fa-duotone fa-filter mx-1"></i> filtrar la tabla:
+            </p>
+            <div id="dataTable-export-buttons-container"></div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered table-striped w-100" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th class="text-center">#</th>
+                            <th>Curso</th>
+                            <th>Estudiante</th>
+                            <th>Motivo (Tipo)</th>
+                            <th>Fechas (Inicio - Fin)</th>
+                            <th>Justificación</th>
+                            <th>Evidencia</th>
+                            <th class="text-center">Estado</th>
+                            <th>F. Registro</th>
+                            <th>F. Actualización</th>
+                            <th>F. Archivado</th>
+                            <th>Creado por</th>
+                            <th>Modificado por</th>
+                            <th>Archivado por</th>
+                            <th>Ip</th>
+                            <th>Dispositivo</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
     </div>
-
-    <div class="mb-3"></div>
 
     @include('estudiantes_licencias.modal_form')
 @endsection
