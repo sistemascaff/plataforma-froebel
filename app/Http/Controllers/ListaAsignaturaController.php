@@ -174,7 +174,7 @@ class ListaAsignaturaController extends Controller
         $filtros = [];
         $listas_asignaturas = null;
 
-        if ($tipo_perfil === 'SUBDIRECTOR') {
+        if ($tipo_perfil === 'DIRECTOR DE NIVEL') {
             $filtros['nivel'] = Auth::user()->persona?->docente?->id_nivel;
             $listas_asignaturas = (new ListaAsignatura())->get_listas_asignaturas($filtros);
         } elseif ($tipo_perfil === 'COORDINADOR') {

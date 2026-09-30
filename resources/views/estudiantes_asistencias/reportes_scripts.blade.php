@@ -88,11 +88,21 @@
                     kpiLicencias = 0,
                     sumaMins = 0;
                 let objFechas = {},
-                    objHorarios = {},
-                    objEstudiantes = {},
+                    objHorarios = {};
+
+                // Inicializamos los nuevos objetos dinámicos
+                let objEstudiantes = {},
                     objCursos = {},
                     objAsignaturas = {},
                     objDocentes = {};
+
+                // Helper para inicializar contadores
+                const initIncidencias = () => ({
+                    A: 0,
+                    F: 0,
+                    L: 0,
+                    Total: 0
+                });
 
                 // 2. Iteración sobre la data filtrada
                 filteredData.forEach(row => {
@@ -118,19 +128,38 @@
                         ?.persona ? row.estudiante_asistencia.lista_asignatura.docente
                         .persona.nombres_apellidos : 'Sin Asignar';
 
-                    // Acumuladores
+                    // Acumuladores Clásicos
                     objFechas[fecha] = (objFechas[fecha] || 0) + 1;
                     if (!objHorarios[horario]) objHorarios[horario] = {
                         A: 0,
                         F: 0,
                         L: 0
                     };
-                    if (['A', 'F', 'L'].includes(t)) objHorarios[horario][t]++;
 
-                    objEstudiantes[estudiante] = (objEstudiantes[estudiante] || 0) + 1;
-                    objCursos[curso] = (objCursos[curso] || 0) + 1;
-                    objAsignaturas[asignatura] = (objAsignaturas[asignatura] || 0) + 1;
-                    objDocentes[docente] = (objDocentes[docente] || 0) + 1;
+                    // Inicialización de acumuladores avanzados
+                    if (!objEstudiantes[estudiante]) objEstudiantes[estudiante] =
+                        initIncidencias();
+                    if (!objCursos[curso]) objCursos[curso] = initIncidencias();
+                    if (!objAsignaturas[asignatura]) objAsignaturas[asignatura] =
+                        initIncidencias();
+                    if (!objDocentes[docente]) objDocentes[docente] = initIncidencias();
+
+                    if (['A', 'F', 'L'].includes(t)) {
+                        objHorarios[horario][t]++;
+
+                        // Suma desagregada y total para rankings
+                        objEstudiantes[estudiante][t]++;
+                        objEstudiantes[estudiante].Total++;
+
+                        objCursos[curso][t]++;
+                        objCursos[curso].Total++;
+
+                        objAsignaturas[asignatura][t]++;
+                        objAsignaturas[asignatura].Total++;
+
+                        objDocentes[docente][t]++;
+                        objDocentes[docente].Total++;
+                    }
                 });
 
                 // 3. Pintar KPIs
@@ -156,7 +185,9 @@
                             color: textColor,
                             font: {
                                 weight: 'bold'
-                            }
+                            },
+                            formatter: v => v > 0 ? v :
+                                '' // Oculta ceros para no saturar visualmente
                         }
                     },
                     scales: {
@@ -272,13 +303,6 @@
                     },
                     options: {
                         ...baseOpts,
-                        plugins: {
-                            ...baseOpts.plugins,
-                            datalabels: {
-                                color: textColor,
-                                formatter: v => v > 0 ? v : ''
-                            }
-                        },
                         scales: {
                             x: {
                                 stacked: true,
@@ -304,53 +328,125 @@
                     }
                 });
 
-                // Helper para recortes de texto
                 const trunc = (str, n) => str.length > n ? str.substring(0, n) + '...' : str;
 
-                // e) Ranking Top 20 Estudiantes (Barras Horizontales)
-                let topEst = Object.entries(objEstudiantes).sort((a, b) => b[1] - a[1]).slice(0,
-                20);
+                // e) Ranking Top 20 Estudiantes (Barras Horizontales Apiladas)
+                let topEst = Object.entries(objEstudiantes)
+                    .sort((a, b) => b[1].Total - a[1].Total)
+                    .slice(0, 20);
+
                 chartRanking = initOrUpdateChart(chartRanking, 'chart-ranking', {
                     type: 'bar',
                     data: {
                         labels: topEst.map(e => trunc(e[0], 25)),
                         datasets: [{
-                            label: 'Total Incidencias',
-                            data: topEst.map(e => e[1]),
-                            backgroundColor: '#dc3545',
-                            borderRadius: 4
-                        }]
+                                label: 'Atrasos',
+                                data: topEst.map(e => e[1].A),
+                                backgroundColor: palette.atraso,
+                                borderRadius: 2
+                            },
+                            {
+                                label: 'Faltas',
+                                data: topEst.map(e => e[1].F),
+                                backgroundColor: palette.falta,
+                                borderRadius: 2
+                            },
+                            {
+                                label: 'Licencias',
+                                data: topEst.map(e => e[1].L),
+                                backgroundColor: palette.licencia,
+                                borderRadius: 2
+                            }
+                        ]
                     },
                     options: {
                         ...baseOpts,
-                        indexAxis: 'y'
+                        indexAxis: 'y', // Barra horizontal
+                        scales: {
+                            x: {
+                                stacked: true,
+                                ticks: {
+                                    color: textColor,
+                                    precision: 0
+                                },
+                                grid: {
+                                    color: gridColor
+                                },
+                                beginAtZero: true
+                            },
+                            y: {
+                                stacked: true,
+                                ticks: {
+                                    color: textColor
+                                },
+                                grid: {
+                                    color: gridColor
+                                }
+                            }
+                        }
                     }
                 });
 
-                // f, g, h) Helper genérico para Cursos, Asignaturas y Docentes
-                const renderBar = (chartInst, canvas, dataMap, color, label) => {
-                    let sorted = Object.entries(dataMap).sort((a, b) => b[1] - a[1]);
+                // f, g, h) Helper genérico apilado para Cursos, Asignaturas y Docentes
+                const renderStackedBar = (chartInst, canvas, dataMap) => {
+                    let sorted = Object.entries(dataMap).sort((a, b) => b[1].Total - a[1]
+                        .Total);
                     return initOrUpdateChart(chartInst, canvas, {
                         type: 'bar',
                         data: {
                             labels: sorted.map(e => trunc(e[0], 25)),
                             datasets: [{
-                                label: label,
-                                data: sorted.map(e => e[1]),
-                                backgroundColor: color,
-                                borderRadius: 4
-                            }]
+                                    label: 'Atrasos',
+                                    data: sorted.map(e => e[1].A),
+                                    backgroundColor: palette.atraso,
+                                    borderRadius: 4
+                                },
+                                {
+                                    label: 'Faltas',
+                                    data: sorted.map(e => e[1].F),
+                                    backgroundColor: palette.falta,
+                                    borderRadius: 4
+                                },
+                                {
+                                    label: 'Licencias',
+                                    data: sorted.map(e => e[1].L),
+                                    backgroundColor: palette.licencia,
+                                    borderRadius: 4
+                                }
+                            ]
                         },
-                        options: baseOpts
+                        options: {
+                            ...baseOpts,
+                            scales: {
+                                x: {
+                                    stacked: true,
+                                    ticks: {
+                                        color: textColor
+                                    },
+                                    grid: {
+                                        color: gridColor
+                                    }
+                                },
+                                y: {
+                                    stacked: true,
+                                    ticks: {
+                                        color: textColor,
+                                        precision: 0
+                                    },
+                                    grid: {
+                                        color: gridColor
+                                    },
+                                    beginAtZero: true
+                                }
+                            }
+                        }
                     });
                 };
 
-                chartCursos = renderBar(chartCursos, 'chart-cursos', objCursos, '#6f42c1',
-                    'Incidencias por Curso');
-                chartAsignaturas = renderBar(chartAsignaturas, 'chart-asignaturas', objAsignaturas,
-                    '#20c997', 'Incidencias por Asignatura');
-                chartDocentes = renderBar(chartDocentes, 'chart-docentes', objDocentes, '#fd7e14',
-                    'Incidencias por Docente');
+                chartCursos = renderStackedBar(chartCursos, 'chart-cursos', objCursos);
+                chartAsignaturas = renderStackedBar(chartAsignaturas, 'chart-asignaturas',
+                    objAsignaturas);
+                chartDocentes = renderStackedBar(chartDocentes, 'chart-docentes', objDocentes);
             },
             columns: [{
                     data: null,
@@ -395,11 +491,11 @@
                     className: "text-center align-middle",
                     render: function(data) {
                         if (data === 'A')
-                        return `<span class="badge bg-warning text-dark px-3 py-2 shadow-sm"><i class="fa-solid fa-duotone fa-hourglass-half me-1"></i> Atraso</span>`;
+                            return `<span class="badge bg-warning text-dark px-3 py-2 shadow-sm"><i class="fa-solid fa-duotone fa-hourglass-half me-1"></i> Atraso</span>`;
                         if (data === 'F')
-                        return `<span class="badge bg-danger px-3 py-2 shadow-sm"><i class="fa-solid fa-duotone fa-times-circle me-1"></i> Falta</span>`;
+                            return `<span class="badge bg-danger px-3 py-2 shadow-sm"><i class="fa-solid fa-duotone fa-times-circle me-1"></i> Falta</span>`;
                         if (data === 'L')
-                        return `<span class="badge bg-info text-dark px-3 py-2 shadow-sm"><i class="fa-solid fa-duotone fa-file-certificate me-1"></i> Licencia</span>`;
+                            return `<span class="badge bg-info text-dark px-3 py-2 shadow-sm"><i class="fa-solid fa-duotone fa-file-certificate me-1"></i> Licencia</span>`;
                         return `<span class="badge bg-secondary px-3 py-2 shadow-sm">-</span>`;
                     }
                 },

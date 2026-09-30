@@ -36,7 +36,7 @@ class PersonaController extends Controller
     {
         $tipo_perfil = Auth::user()->persona?->tipo_perfil;
 
-        if (in_array($tipo_perfil, ['ADMIN', 'GERENTE', 'DIRECTOR', 'SECRETARIA ACADEMICA', 'BIBLIOTECARIA'])) {
+        if (in_array($tipo_perfil, ['ADMINISTRADOR', 'GERENTE GENERAL', 'DIRECTOR', 'SECRETARIA ACADEMICA', 'BIBLIOTECARIA'])) {
             $persona = (new Persona())->get_persona(auth()->user()->id_persona);
             return view('personas.details', [
                 'head_title' => "Mi perfil",
@@ -44,7 +44,7 @@ class PersonaController extends Controller
             ]);
         }
 
-        if (in_array($tipo_perfil, ['SUBDIRECTOR', 'COORDINADOR', 'DOCENTE'])) {
+        if (in_array($tipo_perfil, ['DIRECTOR DE NIVEL', 'COORDINADOR', 'DOCENTE'])) {
             $docente = (new Docente())->get_docente(auth()->user()->persona->docente?->id_docente);
             return view('docentes.details', [
                 'head_title' => "Mi perfil",
@@ -55,8 +55,23 @@ class PersonaController extends Controller
 
     public function listar()
     {
-        // La función get_personal() se salta la convención de nombres debido a que exceptúa los tipos de perfil que ya tienen sus módulos dedicados (SUBDIRECTOR, COORDINADOR, DOCENTE = Módulo de gestión de docentes) y ESTUDIANTE, por ende solo recupera a las demás personas que también son parte del personal administrativo y académico de la institución. 
+        $tipo_perfil = Auth::user()->persona?->tipo_perfil;
+        // La función get_personal() se salta la convención de nombres debido a que exceptúa los tipos de perfil que ya tienen sus módulos dedicados (DIRECTOR DE NIVEL, COORDINADOR, DOCENTE = Módulo de gestión de docentes) y ESTUDIANTE, por ende solo recupera a las demás personas que también son parte del personal administrativo y académico de la institución. 
         $personas = (new Persona())->get_personal();
+
+        // Solo si el usuario es un administrador, iterar sobre la colección para descifrar la contraseña
+        if ($tipo_perfil === 'ADMINISTRADOR') {
+            $personas->map(function ($persona) {
+                // Verificamos que las relaciones existan para evitar errores de "null pointer"
+                if ($persona->usuario && $persona->usuario->contrasenha) {
+                    // Reemplazamos el valor de la columna 'contrasenha' por su versión descifrada
+                    $contrasenhaCifrada = $persona->usuario->contrasenha;
+                    $persona->usuario->contrasenha_descifrada = helper_decrypt($contrasenhaCifrada);
+                }
+                return $persona;
+            });
+        }
+
         return response()->json([
             'data' => $personas
         ]);
@@ -87,7 +102,7 @@ class PersonaController extends Controller
             ], 400);
         }
 
-        if ($request->tipo_perfil === 'ADMIN' && auth()->id() !== 1 && auth()->user()->persona->tipo_perfil !== 'ADMIN') {
+        if ($request->tipo_perfil === 'ADMINISTRADOR' && auth()->id() !== 1 && auth()->user()->persona->tipo_perfil !== 'ADMINISTRADOR') {
             return response()->json([
                 'success' => false,
                 'message' => 'No autorizado: Solo el primer administrador puede crear otro administrador',
@@ -111,7 +126,7 @@ class PersonaController extends Controller
             $persona->celular = $request->celular;
             $persona->telefono = $request->telefono ?? '0';
 
-            // Tipos de perfil existentes actualmente: ADMIN, GERENTE, DIRECTOR, SECRETARIA ACADEMICA, BIBLIOTECARIA.
+            // Tipos de perfil existentes actualmente: ADMINISTRADOR, GERENTE GENERAL, DIRECTOR, SECRETARIA ACADEMICA, BIBLIOTECARIA.
             $persona->tipo_perfil = $request->tipo_perfil;
             $persona->creado_por = auth()->id();
             $persona->ip = $request->ip();

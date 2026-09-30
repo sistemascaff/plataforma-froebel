@@ -142,6 +142,10 @@
                                         data-id="${row.id_asignatura}" data-toggle="tooltip" title="Editar">
                                     <i class="fa-duotone fa-solid fa-edit"></i>
                                 </button>
+                                <button type="button" class="btn btn-success btn-sm btn-clonar" 
+                                        data-id="${row.id_asignatura}" data-toggle="tooltip" title="Clonar propiedades">
+                                    <i class="fa-duotone fa-solid fa-clone"></i>
+                                </button>
                                 <button type="button" class="btn btn-${row.estado == 1 ? 'danger' : 'success'} btn-sm btn-cambiar-estado" 
                                         data-id="${row.id_asignatura}" data-estado="${row.estado}" data-nombre="${row.asignatura}" 
                                         data-toggle="tooltip" title="${row.estado == 1 ? 'Deshabilitar' : 'Habilitar'}">
@@ -194,6 +198,29 @@
                 const titleElement = document.getElementById('modal-formulario-titulo');
                 titleElement.innerHTML =
                     '<i class="fa-solid fa-duotone fa-edit"></i> EDITAR ASIGNATURA';
+                $('#modal-formulario').modal('show');
+            });
+        });
+
+        $(document).on('click', '.btn-clonar', function() {
+            const id = $(this).data('id');
+
+            $.get("{{ route('asignaturas.index') . '/' }}" + id, function(asignatura) {
+                $('#form-crear-o-editar input[name="id_asignatura"]').val(0);
+                $('#form-crear-o-editar input[name="asignatura"]').val(asignatura.data.asignatura);
+                $('#form-crear-o-editar select[name="tipo_calificacion"]').val(asignatura.data.tipo_calificacion);
+                $('#form-crear-o-editar select[name="tipo_bloque"]').val(asignatura.data.tipo_bloque);
+                //se usa trigger('change') para que los select2 actualicen su valor, de normal no sería necesario.
+                $('#form-crear-o-editar select[name="id_materia"]').val(asignatura.data.id_materia).trigger('change');
+                $('#form-crear-o-editar select[name="id_area"]').val(asignatura.data.id_area).trigger('change');
+                $('#form-crear-o-editar select[name="id_aula"]').val(asignatura.data.id_aula).trigger('change');
+                $('#form-crear-o-editar select[name="id_nivel"]').val(asignatura.data.id_nivel).trigger('change');
+                $('#form-crear-o-editar select[name="id_coordinacion"]').val(asignatura.data.id_coordinacion).trigger('change');
+                $('#form-crear-o-editar select[name="id_curso"]').val(asignatura.data.id_curso).trigger('change');
+
+                const titleElement = document.getElementById('modal-formulario-titulo');
+                titleElement.innerHTML =
+                    '<i class="fa-solid fa-duotone fa-plus"></i> CLONAR ASIGNATURA';
                 $('#modal-formulario').modal('show');
             });
         });

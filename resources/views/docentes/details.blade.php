@@ -55,7 +55,7 @@
                         <span class="fw-bold">{{ $docente->persona->usuario->correo }}</span>
                     </li>
 
-                    @if (Auth::user()->persona?->tipo_perfil === 'ADMIN')
+                    @if (Auth::user()->persona?->tipo_perfil === 'ADMINISTRADOR')
                         <li class="list-group-item flex-column align-items-start border-warning border-start border-4">
                             <div class="d-flex justify-content-between w-100 mb-1">
                                 <span class="text-muted">Contraseña:</span>
@@ -64,7 +64,7 @@
                             </div>
                             <small class="text-warning-emphasis"><i class="fa-solid fa-duotone fa-circle-info"></i> Visible
                                 solo para
-                                ADMIN</small>
+                                ADMINISTRADOR</small>
                         </li>
                     @endif
 

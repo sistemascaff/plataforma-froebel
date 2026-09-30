@@ -16,8 +16,8 @@ class AsignaturaPolicy
     {
         $perfil = $usuario->persona?->tipo_perfil;
 
-        // El ADMIN tiene pase libre a todas las operaciones
-        if ($perfil === 'ADMIN') {
+        // El ADMINISTRADOR tiene pase libre a todas las operaciones
+        if ($perfil === 'ADMINISTRADOR') {
             return true;
         }
 
@@ -36,7 +36,7 @@ class AsignaturaPolicy
             return false;
         }
 
-        return in_array($perfil, ['GERENTE', 'DIRECTOR', 'SUBDIRECTOR', 'COORDINADOR']);
+        return in_array($perfil, ['GERENTE GENERAL', 'DIRECTOR', 'DIRECTOR DE NIVEL', 'COORDINADOR']);
     }
 
     /**
@@ -46,11 +46,11 @@ class AsignaturaPolicy
     {
         $perfil = $usuario->persona?->tipo_perfil;
 
-        if (in_array($perfil, ['GERENTE', 'DIRECTOR'])) {
+        if (in_array($perfil, ['GERENTE GENERAL', 'DIRECTOR'])) {
             return true;
         }
 
-        if ($perfil === 'SUBDIRECTOR') {
+        if ($perfil === 'DIRECTOR DE NIVEL') {
             // Verifica que la asignatura corresponda al nivel que el subdirector gestiona
             return $usuario->persona->docente->id_nivel === $asignatura->id_nivel;
         }
@@ -77,14 +77,14 @@ class AsignaturaPolicy
     {
         $perfil = $usuario->persona?->tipo_perfil;
 
-        // El GERENTE solo tiene lectura. 
-        if ($perfil === 'GERENTE') {
+        // El GERENTE GENERAL solo tiene lectura. 
+        if ($perfil === 'GERENTE GENERAL') {
             return Response::deny('Acceso denegado: El rol Gerencia tiene acceso de solo lectura.');
         }
 
         // Permitimos la creación a estos roles
         // Nota: también se puede retornar true o false directamente, pero Response permite personalizar el mensaje de denegación.
-        return in_array($perfil, ['DIRECTOR', 'SUBDIRECTOR', 'COORDINADOR'])
+        return in_array($perfil, ['DIRECTOR', 'DIRECTOR DE NIVEL', 'COORDINADOR'])
             ? Response::allow()
             : Response::deny('Acceso denegado: Tu perfil no cuenta con permisos para crear asignaturas.');
     }
@@ -94,7 +94,7 @@ class AsignaturaPolicy
      */
     public function update(Usuario $usuario, Asignatura $asignatura): Response
     {
-        if ($usuario->persona?->tipo_perfil === 'GERENTE') {
+        if ($usuario->persona?->tipo_perfil === 'GERENTE GENERAL') {
             return Response::deny('Acceso denegado: El rol Gerencia tiene acceso de solo lectura.');
         }
 
@@ -108,7 +108,7 @@ class AsignaturaPolicy
      */
     public function delete(Usuario $usuario, Asignatura $asignatura): Response
     {
-        if ($usuario->persona?->tipo_perfil === 'GERENTE') {
+        if ($usuario->persona?->tipo_perfil === 'GERENTE GENERAL') {
             return Response::deny('Acceso denegado: El rol Gerencia tiene acceso de solo lectura.');
         }
 

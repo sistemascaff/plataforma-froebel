@@ -29,7 +29,7 @@ class EstudianteLicenciaController extends Controller
         $filtros = [];
         $licencias = null;
 
-        if ($tipo_perfil === 'SUBDIRECTOR') {
+        if ($tipo_perfil === 'DIRECTOR DE NIVEL') {
             $filtros['nivel'] = Auth::user()->persona?->docente?->id_nivel;
             $licencias = (new EstudianteLicencia())->get_estudiantes_licencias($filtros);
         } else {

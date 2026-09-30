@@ -24,12 +24,21 @@ class AsignaturaController extends Controller
         // Autorización para ver el catálogo general
         $this->authorize('viewAny', Asignatura::class);
 
+        $tipo_perfil = Auth::user()->persona?->tipo_perfil;
+        $filtros = [];
+
         $materias = (new Materia())->get_all_materias();
         $areas = (new Area())->get_all_areas();
         $aulas = (new Aula())->get_all_aulas();
         $niveles = (new Nivel())->get_all_niveles();
         $coordinaciones = (new Coordinacion())->get_all_coordinaciones();
-        $cursos = (new Curso())->get_all_cursos();
+
+        if ($tipo_perfil === 'DIRECTOR DE NIVEL') {
+            $filtros['nivel'] = Auth::user()->persona?->docente?->id_nivel;
+            $cursos = (new Curso())->get_cursos($filtros);
+        } else {
+            $cursos = (new Curso())->get_all_cursos();
+        }
 
         return view('asignaturas.index', [
             'head_title' => 'GESTIÓN DE ASIGNATURAS',
@@ -52,7 +61,7 @@ class AsignaturaController extends Controller
 
         $tipo_perfil = Auth::user()->persona?->tipo_perfil;
 
-        if (in_array($tipo_perfil, ['ADMIN', 'DIRECTOR', 'COORDINADOR', 'SUBDIRECTOR'])) {
+        if (in_array($tipo_perfil, ['ADMINISTRADOR', 'DIRECTOR', 'COORDINADOR', 'DIRECTOR DE NIVEL'])) {
             // IDs de periodos activos que YA tienen lista para esta asignatura
             $periodosConLista = ListaAsignatura::where('id_asignatura', $asignatura)
                 ->pluck('id_periodo')
@@ -90,7 +99,7 @@ class AsignaturaController extends Controller
         $filtros = [];
         $asignaturas = null;
 
-        if ($tipo_perfil === 'SUBDIRECTOR') {
+        if ($tipo_perfil === 'DIRECTOR DE NIVEL') {
             $filtros['nivel'] = Auth::user()->persona?->docente?->id_nivel;
             $asignaturas = (new Asignatura())->get_asignaturas($filtros);
         } elseif ($tipo_perfil === 'COORDINADOR') {
@@ -138,7 +147,7 @@ class AsignaturaController extends Controller
         // SOBREESCRITURA CERO-CONFIANZA
         // ==========================================
         $tipo_perfil = auth()->user()->persona->tipo_perfil;
-        if ($tipo_perfil === 'SUBDIRECTOR') {
+        if ($tipo_perfil === 'DIRECTOR DE NIVEL') {
             $asignatura->id_nivel = auth()->user()->persona->docente->id_nivel;
         } elseif ($tipo_perfil === 'COORDINADOR') {
             $asignatura->id_coordinacion = auth()->user()->persona->docente->id_coordinacion;
@@ -180,7 +189,7 @@ class AsignaturaController extends Controller
         // SOBREESCRITURA CERO-CONFIANZA
         // ==========================================
         $tipo_perfil = auth()->user()->persona->tipo_perfil;
-        if ($tipo_perfil === 'SUBDIRECTOR') {
+        if ($tipo_perfil === 'DIRECTOR DE NIVEL') {
             $asignatura->id_nivel = auth()->user()->persona->docente->id_nivel;
         } elseif ($tipo_perfil === 'COORDINADOR') {
             $asignatura->id_coordinacion = auth()->user()->persona->docente->id_coordinacion;

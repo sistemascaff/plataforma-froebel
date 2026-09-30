@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
+
 
 class EstudianteController extends Controller
 {
@@ -47,7 +49,7 @@ class EstudianteController extends Controller
         $filtros = [];
         $estudiantes = null;
 
-        if ($tipo_perfil === 'SUBDIRECTOR') {
+        if ($tipo_perfil === 'DIRECTOR DE NIVEL') {
             $filtros['nivel'] = Auth::user()->persona?->docente?->id_nivel;
             $estudiantes = (new Estudiante())->get_estudiantes($filtros);
         } else {
@@ -137,7 +139,7 @@ class EstudianteController extends Controller
             // Si se sube una foto de perfil, se guarda el nombre del archivo en el campo correspondiente
             if ($request->hasFile('foto_perfil')) {
                 $foto = $request->file('foto_perfil');
-                $nombreArchivo = 'foto_perfil_estudiante_' . $persona->id_persona . '.' . $foto->getClientOriginalExtension();
+                $nombreArchivo = 'estudiante_' . $persona->id_persona . '_' . Str::random(32) . '.' . $foto->getClientOriginalExtension();
                 $foto->storeAs('public/fotos_perfil/estudiantes', $nombreArchivo);
 
                 $usuario->url_foto_perfil = 'public/storage/fotos_perfil/estudiantes/' . $nombreArchivo;
@@ -224,7 +226,7 @@ class EstudianteController extends Controller
             // Si se sube una nueva foto de perfil, se guarda el nombre del archivo en el campo correspondiente
             if ($request->hasFile('foto_perfil')) {
                 $foto = $request->file('foto_perfil');
-                $nombreArchivo = 'foto_perfil_estudiante_' . $persona->id_persona . '.' . $foto->getClientOriginalExtension();
+                $nombreArchivo = 'estudiante_' . $persona->id_persona . '_' . Str::random(32) . '.' . $foto->getClientOriginalExtension();
                 $foto->storeAs('public/fotos_perfil/estudiantes', $nombreArchivo);
 
                 $usuario->url_foto_perfil = 'public/storage/fotos_perfil/estudiantes/' . $nombreArchivo;

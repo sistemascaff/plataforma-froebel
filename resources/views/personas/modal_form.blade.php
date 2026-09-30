@@ -72,8 +72,8 @@
                                             class="text-danger">*</span></label>
                                     <select class="form-select" id="tipo_perfil" name="tipo_perfil" required>
                                         <option value="" disabled selected>Seleccione...</option>
-                                        <option value="ADMIN">ADMIN</option>
-                                        <option value="GERENTE">GERENTE</option>
+                                        <option value="ADMINISTRADOR">ADMINISTRADOR</option>
+                                        <option value="GERENTE GENERAL">GERENTE GENERAL</option>
                                         <option value="DIRECTOR">DIRECTOR</option>
                                         <option value="SECRETARIA ACADEMICA">SECRETARIA ACADEMICA</option>
                                         <option value="BIBLIOTECARIA">BIBLIOTECARIA</option>

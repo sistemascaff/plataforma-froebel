@@ -61,7 +61,7 @@ class Docente extends Model
     {
         return $this::with([
             'persona:id_persona,id_colegio,apellido_paterno,apellido_materno,nombres,documento_identificacion,documento_complemento,documento_expedido,fecha_nacimiento,sexo,idioma,celular,telefono,tipo_perfil,estado',
-            'persona.usuario:id_usuario,id_persona,correo,url_foto_perfil,tiene_acceso,ultima_conexion,ultimo_dispositivo,ultima_ip,estado',
+            'persona.usuario:id_usuario,id_persona,correo,contrasenha,url_foto_perfil,tiene_acceso,ultima_conexion,ultimo_dispositivo,ultima_ip,estado',
 
             'nivel:id_nivel,nivel,posicion_ordinal,estado',
             'coordinacion:id_coordinacion,coordinacion,estado',

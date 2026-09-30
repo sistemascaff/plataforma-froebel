@@ -28,7 +28,7 @@ class UsuarioController extends Controller
     {
         $tipo_perfil = Auth::user()->persona?->tipo_perfil;
 
-        if ($tipo_perfil === 'ADMIN' || $tipo_perfil === 'GERENTE') {
+        if ($tipo_perfil === 'ADMINISTRADOR' || $tipo_perfil === 'GERENTE GENERAL') {
             return view('panel.admin_super.dashboard', [
                 'head_title' => 'PANEL DE ' . $tipo_perfil,
             ]);
@@ -44,7 +44,7 @@ class UsuarioController extends Controller
             return view('panel.biblioteca.dashboard', [
                 'head_title' => 'PANEL DE ' . $tipo_perfil,
             ]);
-        } else if ($tipo_perfil === 'SUBDIRECTOR') {
+        } else if ($tipo_perfil === 'DIRECTOR DE NIVEL') {
             return view('panel.subdirector.dashboard', [
                 'head_title' => 'PANEL DE ' . $tipo_perfil,
             ]);
@@ -90,11 +90,11 @@ class UsuarioController extends Controller
 
         $nombreCompleto = $usuario->persona?->nombres_apellidos;
 
-        // Se valida que el usuario no sea de tipo ADMIN antes de permitir archivar o desarchivar
-        if ($tipo_perfil === 'ADMIN') {
+        // Se valida que el usuario no sea de tipo ADMINISTRADOR antes de permitir archivar o desarchivar
+        if ($tipo_perfil === 'ADMINISTRADOR') {
             return response()->json([
                 'success' => false,
-                'message' => "No se puede archivar o desarchivar al usuario <b class=\"text-primary\">{$nombreCompleto}</b> porque es <b class=\"text-info\">ADMIN</b>.",
+                'message' => "No se puede archivar o desarchivar al usuario <b class=\"text-primary\">{$nombreCompleto}</b> porque es <b class=\"text-info\">ADMINISTRADOR</b>.",
             ], 403);
         }
 

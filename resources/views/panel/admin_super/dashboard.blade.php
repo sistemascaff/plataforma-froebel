@@ -39,7 +39,7 @@
         </div>
 
         <div class="card-body">
-            @if (Auth::id() === 1 && Auth::user()->persona?->tipo_perfil === 'ADMIN')
+            @if (Auth::id() === 1 && Auth::user()->persona?->tipo_perfil === 'ADMINISTRADOR')
                 @include('panel.admin_super.dashboard_botones')
             @else
                 <!-- Editar posteriormente -->

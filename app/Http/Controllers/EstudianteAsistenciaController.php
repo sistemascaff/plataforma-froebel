@@ -153,7 +153,7 @@ class EstudianteAsistenciaController extends Controller
         $filtros = [];
         $estudiantes_asistencias = null;
 
-        if ($tipo_perfil === 'SUBDIRECTOR') {
+        if ($tipo_perfil === 'DIRECTOR DE NIVEL') {
             $filtros['nivel'] = Auth::user()->persona?->docente?->id_nivel;
             $estudiantes_asistencias = (new EstudianteAsistencia())->get_estudiantes_asistencias($filtros);
         } else if ($tipo_perfil === 'COORDINADOR') {
@@ -199,7 +199,7 @@ class EstudianteAsistenciaController extends Controller
         }
 
         // Filtros inmutables (Según el perfil del usuario)
-        if ($tipo_perfil === 'SUBDIRECTOR') {
+        if ($tipo_perfil === 'DIRECTOR DE NIVEL') {
             $filtros['nivel'] = Auth::user()->persona?->docente?->id_nivel;
         } else if ($tipo_perfil === 'COORDINADOR') {
             $filtros['coordinacion'] = Auth::user()->persona?->docente?->id_coordinacion;

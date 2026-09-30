@@ -65,12 +65,12 @@ if (! function_exists('helper_tipo_perfil_a_font_awesome_icono')) {
     function helper_tipo_perfil_a_font_awesome_icono(string $tipo_perfil)
     {
         $font_awesome_icon = match ($tipo_perfil) {
-            'ADMIN' => 'fa-user-shield',
-            'GERENTE' => 'fa-user-tie',
+            'ADMINISTRADOR' => 'fa-user-shield',
+            'GERENTE GENERAL' => 'fa-user-tie',
             'DIRECTOR' => 'fa-user-tie',
             'SECRETARIA ACADEMICA' => 'fa-user-tie',
             'BIBLIOTECARIA' => 'fa-book-open',
-            'SUBDIRECTOR' => 'fa-chalkboard-user',
+            'DIRECTOR DE NIVEL' => 'fa-chalkboard-user',
             'COORDINADOR' => 'fa-chalkboard-user',
             'DOCENTE' => 'fa-chalkboard-teacher',
             'TUTOR' => 'fa-people-roof', //nota: aquí se refiere tanto a socio o padre de familia o tutor*

@@ -58,14 +58,47 @@ class Curso extends Model
 
     public function get_all_cursos()
     {
-        return $this->with([
-            'grado:id_grado,id_nivel,grado,posicion_ordinal,estado',
-            'paralelo:id_paralelo,paralelo,estado',
+        return $this::select('cursos.*') // Evita colisión de columnas
+            ->join('grados', 'cursos.id_grado', '=', 'grados.id_grado')
+            ->join('niveles', 'grados.id_nivel', '=', 'niveles.id_nivel')
+            ->with([
+                'grado:id_grado,id_nivel,grado,posicion_ordinal,estado',
+                'paralelo:id_paralelo,paralelo,estado',
 
-            'creado:id_usuario,correo',
-            'modificado:id_usuario,correo',
-            'eliminado:id_usuario,correo'
-        ])->withCount('estudiantes')->orderBy('id_grado', 'ASC')->orderBy('id_paralelo', 'ASC')->get();
+                'creado:id_usuario,correo',
+                'modificado:id_usuario,correo',
+                'eliminado:id_usuario,correo'
+            ])
+            ->withCount('estudiantes')
+            ->orderBy('niveles.posicion_ordinal', 'ASC')
+            ->orderBy('grados.posicion_ordinal', 'ASC')
+            ->orderBy('cursos.id_paralelo', 'ASC')
+            ->get();
+    }
+
+    public function get_cursos(array $filtros = [])
+    {
+        return $this::select('cursos.*') // Evita colisión de columnas
+            ->join('grados', 'cursos.id_grado', '=', 'grados.id_grado')
+            ->join('niveles', 'grados.id_nivel', '=', 'niveles.id_nivel')
+            ->with([
+                'grado:id_grado,id_nivel,grado,posicion_ordinal,estado',
+                'paralelo:id_paralelo,paralelo,estado',
+
+                'creado:id_usuario,correo',
+                'modificado:id_usuario,correo',
+                'eliminado:id_usuario,correo'
+            ])
+            ->withCount('estudiantes')
+            ->when(
+                $filtros['nivel'] ?? null,
+                // Filtramos directamente usando la tabla unida en lugar de whereHas
+                fn($q, $valor) => $q->where('grados.id_nivel', $valor)
+            )
+            ->orderBy('niveles.posicion_ordinal', 'ASC')
+            ->orderBy('grados.posicion_ordinal', 'ASC')
+            ->orderBy('cursos.id_paralelo', 'ASC')
+            ->get();
     }
 
     public function get_curso(int $id_curso)

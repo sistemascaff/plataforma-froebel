@@ -43,7 +43,7 @@ class AulaController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Gestión creada correctamente',
+            'message' => 'Aula creada correctamente',
             'aula' => $aula
         ]);
     }
@@ -59,7 +59,7 @@ class AulaController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Gestión actualizada correctamente',
+            'message' => 'Aula actualizada correctamente',
             'aula' => $aula
         ]);
     }
@@ -80,7 +80,7 @@ class AulaController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => $aula->estado == '1' ? 'La gestión fue restaurada con éxito.' : 'La gestión fue archivada con éxito.',
+            'message' => $aula->estado == '1' ? 'Aula restaurada con éxito.' : 'Aula archivada con éxito.',
             'aula' => $aula
         ]);
     }

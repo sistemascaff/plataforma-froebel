@@ -15,10 +15,10 @@ class CheckPerfilAccess
 
         // 1. Definimos los Alias o "Grupos de Acceso"
         $mapaGrupos = [
-            'SISTEMA_COMPLETO' => ['ADMIN', 'GERENTE'],
-            'BIBLIOTECA_GRUPO' => ['ADMIN', 'GERENTE', 'BIBLIOTECA', 'BIBLIOTECARIA'],
-            'ASIGNATURAS_GRUPO' => ['ADMIN', 'GERENTE', 'DIRECTOR', 'SUBDIRECTOR', 'COORDINADOR', 'DOCENTE'],
-            'LICENCIAS_GRUPO'  => ['ADMIN', 'GERENTE', 'SECRETARIA'],
+            'SISTEMA_COMPLETO' => ['ADMINISTRADOR', 'GERENTE GENERAL'],
+            'BIBLIOTECA_GRUPO' => ['ADMINISTRADOR', 'GERENTE GENERAL', 'BIBLIOTECA', 'BIBLIOTECARIA'],
+            'ASIGNATURAS_GRUPO' => ['ADMINISTRADOR', 'GERENTE GENERAL', 'DIRECTOR', 'DIRECTOR DE NIVEL', 'COORDINADOR', 'DOCENTE'],
+            'LICENCIAS_GRUPO'  => ['ADMINISTRADOR', 'GERENTE GENERAL', 'SECRETARIA'],
         ];
 
         // 2. Extraemos todos los roles permitidos según los grupos recibidos en la ruta
@@ -37,10 +37,10 @@ class CheckPerfilAccess
             return $this->rechazar($request, 'Acceso denegado. Tu perfil (' . $perfilActual . ') no tiene permisos para realizar esta acción.');
         }
 
-        // 4. Bloqueo global de escritura (CRUD) para el GERENTE
+        // 4. Bloqueo global de escritura (CRUD) para el GERENTE GENERAL
         // Solo se le permiten peticiones GET (visualización)
-        if ($perfilActual === 'GERENTE' && !$request->isMethod('get')) {
-            return $this->rechazar($request, 'Acceso de solo lectura. El rol GERENTE no puede crear, editar ni eliminar registros.');
+        if ($perfilActual === 'GERENTE GENERAL' && !$request->isMethod('get')) {
+            return $this->rechazar($request, 'Acceso de solo lectura. El rol GERENTE GENERAL no puede crear, editar ni eliminar registros.');
         }
 
         return $next($request);

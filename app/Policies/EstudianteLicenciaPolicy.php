@@ -15,8 +15,8 @@ class EstudianteLicenciaPolicy
     {
         $perfil = $usuario->persona?->tipo_perfil;
 
-        // El ADMIN y la SECRETARIA ACADEMICA tienen pase libre a todas las operaciones CRUD
-        if (in_array($perfil, ['ADMIN', 'SECRETARIA ACADEMICA'])) {
+        // El ADMINISTRADOR y la SECRETARIA ACADEMICA tienen pase libre a todas las operaciones CRUD
+        if (in_array($perfil, ['ADMINISTRADOR', 'SECRETARIA ACADEMICA'])) {
             return true;
         }
 
@@ -31,7 +31,7 @@ class EstudianteLicenciaPolicy
         $perfil = $usuario->persona?->tipo_perfil;
 
         // Los roles de solo lectura permitidos por el middleware en web.php
-        return in_array($perfil, ['GERENTE', 'DIRECTOR', 'SUBDIRECTOR']);
+        return in_array($perfil, ['GERENTE GENERAL', 'DIRECTOR', 'DIRECTOR DE NIVEL']);
     }
 
     /**
@@ -41,7 +41,7 @@ class EstudianteLicenciaPolicy
     {
         $perfil = $usuario->persona?->tipo_perfil;
 
-        return in_array($perfil, ['GERENTE', 'DIRECTOR', 'SUBDIRECTOR']);
+        return in_array($perfil, ['GERENTE GENERAL', 'DIRECTOR', 'DIRECTOR DE NIVEL']);
     }
 
     /**

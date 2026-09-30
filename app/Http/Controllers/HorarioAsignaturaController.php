@@ -40,7 +40,7 @@ class HorarioAsignaturaController extends Controller
         $filtros = [];
         $horarios_asignaturas = null;
 
-        if ($tipo_perfil === 'SUBDIRECTOR') {
+        if ($tipo_perfil === 'DIRECTOR DE NIVEL') {
             $filtros['nivel'] = Auth::user()->persona?->docente?->id_nivel;
             $horarios_asignaturas = (new HorarioAsignatura())->get_horarios_asignaturas($filtros);
         } else {

@@ -90,7 +90,7 @@ class Persona extends Model
     public function get_personal()
     {
         return $this::with('usuario', 'creado:id_usuario,correo', 'modificado:id_usuario,correo', 'eliminado:id_usuario,correo')
-            ->whereNotIn('tipo_perfil', ['SUBDIRECTOR','COORDINADOR', 'DOCENTE', 'ESTUDIANTE'])
+            ->whereNotIn('tipo_perfil', ['DIRECTOR DE NIVEL','COORDINADOR', 'DOCENTE', 'ESTUDIANTE'])
             ->get();
     }
 

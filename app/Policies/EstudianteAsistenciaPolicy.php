@@ -10,11 +10,11 @@ use Illuminate\Auth\Access\Response;
 class EstudianteAsistenciaPolicy
 {
     /**
-     * Intercepta todas las peticiones para aprobar al ADMIN automáticamente.
+     * Intercepta todas las peticiones para aprobar al ADMINISTRADOR automáticamente.
      */
     public function before(Usuario $usuario, string $ability): bool|null
     {
-        if ($usuario->persona?->tipo_perfil === 'ADMIN') {
+        if ($usuario->persona?->tipo_perfil === 'ADMINISTRADOR') {
             return true;
         }
         return null;
@@ -26,7 +26,7 @@ class EstudianteAsistenciaPolicy
     public function viewAny(Usuario $usuario): bool
     {
         $perfil = $usuario->persona?->tipo_perfil;
-        return in_array($perfil, ['GERENTE', 'DIRECTOR', 'SUBDIRECTOR', 'COORDINADOR', 'DOCENTE']);
+        return in_array($perfil, ['GERENTE GENERAL', 'DIRECTOR', 'DIRECTOR DE NIVEL', 'COORDINADOR', 'DOCENTE']);
     }
 
     /**
@@ -37,11 +37,11 @@ class EstudianteAsistenciaPolicy
         $perfil = $usuario->persona?->tipo_perfil;
         $lista = $asistencia->lista_asignatura;
 
-        if (in_array($perfil, ['GERENTE', 'DIRECTOR'])) {
+        if (in_array($perfil, ['GERENTE GENERAL', 'DIRECTOR'])) {
             return true;
         }
 
-        if ($perfil === 'SUBDIRECTOR') {
+        if ($perfil === 'DIRECTOR DE NIVEL') {
             return $usuario->persona->docente->id_nivel === $lista->asignatura->id_nivel
                 ? true
                 : Response::deny('Acceso denegado: Esta asistencia no pertenece a tu nivel asignado.');
@@ -71,11 +71,11 @@ class EstudianteAsistenciaPolicy
         $perfil = $usuario->persona?->tipo_perfil;
 
         // Roles de solo lectura
-        if (in_array($perfil, ['GERENTE', 'DIRECTOR'])) {
+        if (in_array($perfil, ['GERENTE GENERAL', 'DIRECTOR'])) {
             return Response::deny('Acceso denegado: Tu rol de ' . $perfil . ' tiene permisos de solo lectura.');
         }
 
-        if ($perfil === 'SUBDIRECTOR') {
+        if ($perfil === 'DIRECTOR DE NIVEL') {
             return $usuario->persona->docente->id_nivel === $listaAsignatura->asignatura->id_nivel
                 ? true
                 : Response::deny('Acceso denegado: No puedes registrar asistencias para un nivel que no te corresponde.');
@@ -104,11 +104,11 @@ class EstudianteAsistenciaPolicy
         $perfil = $usuario->persona?->tipo_perfil;
         $lista = $asistencia->lista_asignatura;
 
-        if (in_array($perfil, ['GERENTE', 'DIRECTOR'])) {
+        if (in_array($perfil, ['GERENTE GENERAL', 'DIRECTOR'])) {
             return Response::deny('Acceso denegado: Tu rol de ' . $perfil . ' tiene permisos de solo lectura.');
         }
 
-        if ($perfil === 'SUBDIRECTOR') {
+        if ($perfil === 'DIRECTOR DE NIVEL') {
             return $usuario->persona->docente->id_nivel === $lista->asignatura->id_nivel
                 ? true
                 : Response::deny('Acceso denegado: No puedes modificar asistencias de un nivel que no te corresponde.');

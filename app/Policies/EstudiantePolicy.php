@@ -15,8 +15,8 @@ class EstudiantePolicy
     {
         $perfil = $usuario->persona?->tipo_perfil;
 
-        // El ADMIN tiene pase libre a todas las operaciones CRUD
-        if ($perfil === 'ADMIN') {
+        // El ADMINISTRADOR tiene pase libre a todas las operaciones CRUD
+        if ($perfil === 'ADMINISTRADOR') {
             return true;
         }
 
@@ -30,8 +30,8 @@ class EstudiantePolicy
     {
         $perfil = $usuario->persona?->tipo_perfil;
 
-        // Estos roles tienen acceso de lectura (El ADMIN ya fue aprobado en before)
-        return in_array($perfil, ['GERENTE', 'SECRETARIA ACADEMICA', 'DIRECTOR', 'SUBDIRECTOR', 'COORDINADOR']);
+        // Estos roles tienen acceso de lectura (El ADMINISTRADOR ya fue aprobado en before)
+        return in_array($perfil, ['GERENTE GENERAL', 'SECRETARIA ACADEMICA', 'DIRECTOR', 'DIRECTOR DE NIVEL', 'COORDINADOR']);
     }
 
     /**
@@ -41,7 +41,7 @@ class EstudiantePolicy
     {
         $perfil = $usuario->persona?->tipo_perfil;
 
-        return in_array($perfil, ['GERENTE', 'SECRETARIA ACADEMICA', 'DIRECTOR', 'SUBDIRECTOR']);
+        return in_array($perfil, ['GERENTE GENERAL', 'SECRETARIA ACADEMICA', 'DIRECTOR', 'DIRECTOR DE NIVEL']);
     }
 
     /**

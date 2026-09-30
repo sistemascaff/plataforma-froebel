@@ -45,7 +45,7 @@ class DocenteValidation extends FormRequest
             'fecha_nacimiento'          => ['required', 'date', 'before:today'],
             'sexo'                      => ['required', 'string', Rule::in(['M', 'F'])],
             'idioma'                    => ['nullable', 'string', 'max:45'],
-            'celular'                   => ['required', 'string', 'max:20'],
+            'celular'                   => ['nullable', 'string', 'max:20'],
             'telefono'                  => ['nullable', 'string', 'max:20'],
 
             // --- Docente ---
@@ -86,7 +86,6 @@ class DocenteValidation extends FormRequest
             'fecha_nacimiento.before'           => 'La fecha de nacimiento debe ser anterior a hoy.',
             'sexo.required'                     => 'El sexo es obligatorio.',
             'sexo.in'                           => 'El sexo debe ser M o F.',
-            'celular.required'                  => 'El celular es obligatorio.',
             'celular.max'                       => 'El celular no puede superar los 20 caracteres.',
             'telefono.max'                      => 'El teléfono no puede superar los 20 caracteres.',
 

@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class DocenteController extends Controller
 {
@@ -40,7 +41,21 @@ class DocenteController extends Controller
 
     public function listar()
     {
+        $tipo_perfil = Auth::user()->persona?->tipo_perfil;
         $docentes = (new Docente())->get_all_docentes();
+
+        // Solo si el usuario es un administrador, iterar sobre la colección para descifrar la contraseña
+        if ($tipo_perfil === 'ADMINISTRADOR') {
+            $docentes->map(function ($docente) {
+                // Verificamos que las relaciones existan para evitar errores de "null pointer"
+                if ($docente->persona->usuario && $docente->persona->usuario->contrasenha) {
+                    // Reemplazamos el valor de la columna 'contrasenha' por su versión descifrada
+                    $contrasenhaCifrada = $docente->persona->usuario->contrasenha;
+                    $docente->persona->usuario->contrasenha_descifrada = helper_decrypt($contrasenhaCifrada);
+                }
+                return $docente;
+            });
+        }
 
         return response()->json(['data' => $docentes]);
     }
@@ -80,7 +95,7 @@ class DocenteController extends Controller
 
             // Se prioriza el tipo de perfil de subdirector si tiene nivel asignado, coordinador si tiene coordinación asignada y sino se establece como docente
             if ($request->id_nivel) {
-                $persona->tipo_perfil = 'SUBDIRECTOR';
+                $persona->tipo_perfil = 'DIRECTOR DE NIVEL';
             } elseif ($request->id_coordinacion) {
                 $persona->tipo_perfil = 'COORDINADOR';
             } else {
@@ -113,7 +128,7 @@ class DocenteController extends Controller
             // Si se sube una foto de perfil, se guarda el nombre del archivo en el campo correspondiente
             if ($request->hasFile('foto_perfil')) {
                 $foto = $request->file('foto_perfil');
-                $nombreArchivo = 'foto_perfil_docente_' . $persona->id_persona . '.' . $foto->getClientOriginalExtension();
+                $nombreArchivo = 'docente_' . $persona->id_persona . '_' . Str::random(32) .'.' . $foto->getClientOriginalExtension();
                 $foto->storeAs('public/fotos_perfil/docentes', $nombreArchivo);
 
                 $usuario->url_foto_perfil = 'public/storage/fotos_perfil/docentes/' . $nombreArchivo;
@@ -164,7 +179,7 @@ class DocenteController extends Controller
 
             // Se prioriza el tipo de perfil de subdirector si tiene nivel asignado, coordinador si tiene coordinación asignada y sino se establece como docente
             if ($request->id_nivel) {
-                $persona->tipo_perfil = 'SUBDIRECTOR';
+                $persona->tipo_perfil = 'DIRECTOR DE NIVEL';
             } elseif ($request->id_coordinacion) {
                 $persona->tipo_perfil = 'COORDINADOR';
             } else {
@@ -203,7 +218,7 @@ class DocenteController extends Controller
             // Si se sube una nueva foto de perfil, se guarda el nombre del archivo en el campo correspondiente
             if ($request->hasFile('foto_perfil')) {
                 $foto = $request->file('foto_perfil');
-                $nombreArchivo = 'foto_perfil_docente_' . $persona->id_persona . '.' . $foto->getClientOriginalExtension();
+                $nombreArchivo = 'docente_' . $persona->id_persona . '_' . Str::random(32) . '.' . $foto->getClientOriginalExtension();
                 $foto->storeAs('public/fotos_perfil/docentes', $nombreArchivo);
 
                 $usuario->url_foto_perfil = 'public/storage/fotos_perfil/docentes/' . $nombreArchivo;

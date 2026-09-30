@@ -46,7 +46,7 @@ class EstudianteValidation extends FormRequest
         return [
             // --- Persona ---
             'apellido_paterno'          => ['required', 'string', 'max:50'],
-            'apellido_materno'          => ['required', 'string', 'max:50'], // Requerido según el formulario Blade
+            'apellido_materno'          => ['required', 'string', 'max:50'],
             'nombres'                   => ['required', 'string', 'max:50'],
             'documento_identificacion'  => ['required', 'string', 'max:15'],
             'documento_complemento'     => ['nullable', 'string', 'max:10'],

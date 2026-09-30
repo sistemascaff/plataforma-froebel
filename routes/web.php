@@ -50,7 +50,7 @@ Route::middleware(['session.acceso'])->group(function () {
     // ==========================================
     // MÓDULO BIBLIOTECA
     // ==========================================
-    Route::middleware(['perfil:ADMIN,GERENTE,BIBLIOTECARIA'])->group(function () {
+    Route::middleware(['perfil:ADMINISTRADOR,GERENTE GENERAL,BIBLIOTECARIA'])->group(function () {
         Route::controller(LibroController::class)->group(function () {
             Route::get('libros', 'view_index')->name('libros.index');
             Route::get('libros/listar', 'listar')->name('libros.listar');
@@ -85,7 +85,7 @@ Route::middleware(['session.acceso'])->group(function () {
     // ==========================================
     // MÓDULO DE GESTIÓN ESTUDIANTIL Y LICENCIAS
     // ==========================================
-    Route::middleware(['perfil:ADMIN,GERENTE,SECRETARIA ACADEMICA,DIRECTOR,SUBDIRECTOR,COORDINADOR'])->group(function () {
+    Route::middleware(['perfil:ADMINISTRADOR,GERENTE GENERAL,SECRETARIA ACADEMICA,DIRECTOR,DIRECTOR DE NIVEL,COORDINADOR'])->group(function () {
         Route::controller(EstudianteController::class)->group(function () {
             Route::get('estudiantes', 'view_index')->name('estudiantes.index');
             Route::get('estudiantes/listar', 'listar')->name('estudiantes.listar');
@@ -109,7 +109,7 @@ Route::middleware(['session.acceso'])->group(function () {
     // ==========================================
     // MÓDULO ACADÉMICO (ASIGNATURAS Y LISTAS)
     // ==========================================
-    Route::middleware(['perfil:ADMIN,GERENTE,DIRECTOR,SUBDIRECTOR,COORDINADOR,DOCENTE'])->group(function () {
+    Route::middleware(['perfil:ADMINISTRADOR,GERENTE GENERAL,DIRECTOR,DIRECTOR DE NIVEL,COORDINADOR,DOCENTE'])->group(function () {
         Route::controller(AsignaturaController::class)->group(function () {
             Route::get('asignaturas', 'view_index')->name('asignaturas.index');
             Route::get('asignaturas/listar', 'listar')->name('asignaturas.listar');
@@ -167,7 +167,7 @@ Route::middleware(['session.acceso'])->group(function () {
     // ==========================================
     // MÓDULO CORE / ADMINISTRACIÓN COMPLETA
     // ==========================================
-    Route::middleware(['perfil:ADMIN,GERENTE'])->group(function () {
+    Route::middleware(['perfil:ADMINISTRADOR,GERENTE GENERAL'])->group(function () {
 
         Route::controller(UsuarioController::class)->group(function () {
             Route::get('usuarios', 'view_index')->name('usuarios.index');

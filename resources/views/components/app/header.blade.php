@@ -7,7 +7,7 @@
                 {{ Auth::user()->correo }}
             </div>
 
-            @if (Auth::user()->persona?->tipo_perfil === 'ADMIN' || Auth::user()->persona?->tipo_perfil === 'GERENTE')
+            @if (Auth::user()->persona?->tipo_perfil === 'ADMINISTRADOR' || Auth::user()->persona?->tipo_perfil === 'GERENTE GENERAL')
                 @include('panel.admin_super.dashboard_header')
             @elseif (Auth::user()->persona?->tipo_perfil === 'DIRECTOR')
                 @include('panel.director.dashboard_header')
@@ -15,7 +15,7 @@
                 @include('panel.secretaria_academica.dashboard_header')
             @elseif (Auth::user()->persona?->tipo_perfil === 'BIBLIOTECARIA')
                 @include('panel.biblioteca.dashboard_header')
-            @elseif (Auth::user()->persona?->tipo_perfil === 'SUBDIRECTOR')
+            @elseif (Auth::user()->persona?->tipo_perfil === 'DIRECTOR DE NIVEL')
                 @include('panel.subdirector.dashboard_header')
             @elseif (Auth::user()->persona?->tipo_perfil === 'COORDINADOR')
                 @include('panel.coordinador.dashboard_header')

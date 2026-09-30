@@ -13,8 +13,8 @@ class ListaAsignaturaPolicy
      */
     public function before(Usuario $usuario, string $ability): bool|null
     {
-        // El ADMIN tiene pase libre a todas las operaciones
-        if ($usuario->persona?->tipo_perfil === 'ADMIN') {
+        // El ADMINISTRADOR tiene pase libre a todas las operaciones
+        if ($usuario->persona?->tipo_perfil === 'ADMINISTRADOR') {
             return true;
         }
 
@@ -30,7 +30,7 @@ class ListaAsignaturaPolicy
 
         // Todos los roles del middleware pueden entrar al index. 
         // El controlador ya se encarga de filtrar qué ve cada uno en el método listar().
-        return in_array($perfil, ['GERENTE', 'DIRECTOR', 'SUBDIRECTOR', 'COORDINADOR', 'DOCENTE']);
+        return in_array($perfil, ['GERENTE GENERAL', 'DIRECTOR', 'DIRECTOR DE NIVEL', 'COORDINADOR', 'DOCENTE']);
     }
 
     /**
@@ -40,12 +40,12 @@ class ListaAsignaturaPolicy
     {
         $perfil = $usuario->persona?->tipo_perfil;
 
-        if (in_array($perfil, ['GERENTE', 'DIRECTOR'])) {
+        if (in_array($perfil, ['GERENTE GENERAL', 'DIRECTOR'])) {
             return true;
         }
 
         // Subdirector: Solo ve listas de asignaturas que pertenezcan a su nivel
-        if ($perfil === 'SUBDIRECTOR') {
+        if ($perfil === 'DIRECTOR DE NIVEL') {
             return $usuario->persona->docente->id_nivel === $listaAsignatura->asignatura->id_nivel;
         }
 
@@ -74,12 +74,12 @@ class ListaAsignaturaPolicy
 
         // Solo Subdirector y Coordinador pueden llegar aquí (Admin ya fue aprobado en before)
         // El resto (Gerente, Director, Docente) tienen solo lectura
-        if (!in_array($perfil, ['SUBDIRECTOR', 'COORDINADOR'])) {
+        if (!in_array($perfil, ['DIRECTOR DE NIVEL', 'COORDINADOR'])) {
             return Response::deny('Acceso denegado: Tu rol de ' . $perfil . ' tiene permisos de solo lectura para las listas.');
         }
 
         // Reutilizamos la lógica de lectura para garantizar que no modifiquen listas de otros niveles/coordinaciones
-        if ($perfil === 'SUBDIRECTOR' && $usuario->persona->docente->id_nivel !== $listaAsignatura->asignatura->id_nivel) {
+        if ($perfil === 'DIRECTOR DE NIVEL' && $usuario->persona->docente->id_nivel !== $listaAsignatura->asignatura->id_nivel) {
             return Response::deny('Acceso denegado: No puedes modificar una lista que no pertenece a tu nivel asignado.');
         }
 
