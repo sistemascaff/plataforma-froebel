@@ -36,7 +36,7 @@
     <div class="card shadow-sm mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0 fw-bold text-info">
-                <i class="fa-solid fa-duotone fa-circle-info me-2"></i> Información del Préstamo
+                <i class="fa-solid fa-duotone fa-circle-info me-2"></i>Información del Préstamo
             </h5>
             <span class="badge {{ $estadoBadge }} fs-6 px-3 py-2"><i class="fa-solid fa-flag me-1"></i>
                 {{ $estadoStr }}</span>
@@ -77,7 +77,7 @@
     <div class="card shadow-sm mb-4">
         <div class="card-header">
             <h5 class="mb-0 fw-bold text-info">
-                <i class="fa-solid fa-duotone fa-list-check me-2"></i> Libros Prestados
+                <i class="fa-solid fa-duotone fa-list-check me-2"></i>Libros Prestados
             </h5>
         </div>
         <div class="card-body p-0">

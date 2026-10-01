@@ -28,6 +28,14 @@
                 },
                 {
                     data: "asignatura",
+                    render: function(data, type, row) {
+                        const url_detalles = "{{ route('asignaturas.detalles', ':id') }}"
+                            .replace(':id', row.id_asignatura);
+                        return `
+                            <a class="fw-bold" target="_blank" rel="noopener noreferrer" href="${url_detalles}">
+                                ${data}
+                            </a>`;
+                    }
                 },
                 {
                     data: "tipo_calificacion",
@@ -44,6 +52,14 @@
                     }
                 },
                 {
+                    data: "curso.curso",
+                    render: function(data, type, row) {
+                        return data ? `<span class="badge bg-info text-dark">${data}</span>` : row.tipo_bloque === 'curso' ?
+                            '<span class="badge bg-danger">No asignado</span>' :
+                            '<span class="badge bg-secondary">N/A</span>';
+                    }
+                },
+                {
                     data: "materia.materia",
                 },
                 {
@@ -57,12 +73,6 @@
                 },
                 {
                     data: "coordinacion.coordinacion",
-                },
-                {
-                    data: "curso.curso",
-                    render: function(data, type, row) {
-                        return data ? data : row.tipo_bloque === 'curso' ? '<span class="badge bg-danger">No asignado</span>' : '<span class="badge bg-secondary">N/A</span>';
-                    }
                 },
                 {
                     data: "estado",
@@ -183,17 +193,27 @@
             const id = $(this).data('id');
 
             $.get("{{ route('asignaturas.index') . '/' }}" + id, function(asignatura) {
-                $('#form-crear-o-editar input[name="id_asignatura"]').val(asignatura.data.id_asignatura);
-                $('#form-crear-o-editar input[name="asignatura"]').val(asignatura.data.asignatura);
-                $('#form-crear-o-editar select[name="tipo_calificacion"]').val(asignatura.data.tipo_calificacion);
-                $('#form-crear-o-editar select[name="tipo_bloque"]').val(asignatura.data.tipo_bloque);
+                $('#form-crear-o-editar input[name="id_asignatura"]').val(asignatura.data
+                    .id_asignatura);
+                $('#form-crear-o-editar input[name="asignatura"]').val(asignatura.data
+                    .asignatura);
+                $('#form-crear-o-editar select[name="tipo_calificacion"]').val(asignatura.data
+                    .tipo_calificacion);
+                $('#form-crear-o-editar select[name="tipo_bloque"]').val(asignatura.data
+                    .tipo_bloque);
                 //se usa trigger('change') para que los select2 actualicen su valor, de normal no sería necesario.
-                $('#form-crear-o-editar select[name="id_materia"]').val(asignatura.data.id_materia).trigger('change');
-                $('#form-crear-o-editar select[name="id_area"]').val(asignatura.data.id_area).trigger('change');
-                $('#form-crear-o-editar select[name="id_aula"]').val(asignatura.data.id_aula).trigger('change');
-                $('#form-crear-o-editar select[name="id_nivel"]').val(asignatura.data.id_nivel).trigger('change');
-                $('#form-crear-o-editar select[name="id_coordinacion"]').val(asignatura.data.id_coordinacion).trigger('change');
-                $('#form-crear-o-editar select[name="id_curso"]').val(asignatura.data.id_curso).trigger('change');
+                $('#form-crear-o-editar select[name="id_materia"]').val(asignatura.data
+                    .id_materia).trigger('change');
+                $('#form-crear-o-editar select[name="id_area"]').val(asignatura.data.id_area)
+                    .trigger('change');
+                $('#form-crear-o-editar select[name="id_aula"]').val(asignatura.data.id_aula)
+                    .trigger('change');
+                $('#form-crear-o-editar select[name="id_nivel"]').val(asignatura.data.id_nivel)
+                    .trigger('change');
+                $('#form-crear-o-editar select[name="id_coordinacion"]').val(asignatura.data
+                    .id_coordinacion).trigger('change');
+                $('#form-crear-o-editar select[name="id_curso"]').val(asignatura.data.id_curso)
+                    .trigger('change');
 
                 const titleElement = document.getElementById('modal-formulario-titulo');
                 titleElement.innerHTML =
@@ -207,16 +227,25 @@
 
             $.get("{{ route('asignaturas.index') . '/' }}" + id, function(asignatura) {
                 $('#form-crear-o-editar input[name="id_asignatura"]').val(0);
-                $('#form-crear-o-editar input[name="asignatura"]').val(asignatura.data.asignatura);
-                $('#form-crear-o-editar select[name="tipo_calificacion"]').val(asignatura.data.tipo_calificacion);
-                $('#form-crear-o-editar select[name="tipo_bloque"]').val(asignatura.data.tipo_bloque);
+                $('#form-crear-o-editar input[name="asignatura"]').val(asignatura.data
+                    .asignatura);
+                $('#form-crear-o-editar select[name="tipo_calificacion"]').val(asignatura.data
+                    .tipo_calificacion);
+                $('#form-crear-o-editar select[name="tipo_bloque"]').val(asignatura.data
+                    .tipo_bloque);
                 //se usa trigger('change') para que los select2 actualicen su valor, de normal no sería necesario.
-                $('#form-crear-o-editar select[name="id_materia"]').val(asignatura.data.id_materia).trigger('change');
-                $('#form-crear-o-editar select[name="id_area"]').val(asignatura.data.id_area).trigger('change');
-                $('#form-crear-o-editar select[name="id_aula"]').val(asignatura.data.id_aula).trigger('change');
-                $('#form-crear-o-editar select[name="id_nivel"]').val(asignatura.data.id_nivel).trigger('change');
-                $('#form-crear-o-editar select[name="id_coordinacion"]').val(asignatura.data.id_coordinacion).trigger('change');
-                $('#form-crear-o-editar select[name="id_curso"]').val(asignatura.data.id_curso).trigger('change');
+                $('#form-crear-o-editar select[name="id_materia"]').val(asignatura.data
+                    .id_materia).trigger('change');
+                $('#form-crear-o-editar select[name="id_area"]').val(asignatura.data.id_area)
+                    .trigger('change');
+                $('#form-crear-o-editar select[name="id_aula"]').val(asignatura.data.id_aula)
+                    .trigger('change');
+                $('#form-crear-o-editar select[name="id_nivel"]').val(asignatura.data.id_nivel)
+                    .trigger('change');
+                $('#form-crear-o-editar select[name="id_coordinacion"]').val(asignatura.data
+                    .id_coordinacion).trigger('change');
+                $('#form-crear-o-editar select[name="id_curso"]').val(asignatura.data.id_curso)
+                    .trigger('change');
 
                 const titleElement = document.getElementById('modal-formulario-titulo');
                 titleElement.innerHTML =

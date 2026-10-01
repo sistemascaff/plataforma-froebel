@@ -88,7 +88,7 @@
         <div class="col-12 col-lg-8">
             <div class="card shadow-sm mb-4">
                 <div class="card-header border-bottom-0 pt-4 pb-0">
-                    <h5 class="text-info fw-bold"><i class="fa-solid fa-duotone fa-address-card me-2"></i> Información
+                    <h5 class="text-info fw-bold"><i class="fa-solid fa-duotone fa-address-card me-2"></i>Información
                         Personal</h5>
                 </div>
                 <div class="card-body">
@@ -129,7 +129,7 @@
 
             <div class="card shadow-sm mb-4">
                 <div class="card-header border-bottom-0 pt-4 pb-0">
-                    <h5 class="text-info fw-bold"><i class="fa-solid fa-duotone fa-school me-2"></i> Datos Académicos y
+                    <h5 class="text-info fw-bold"><i class="fa-solid fa-duotone fa-school me-2"></i>Datos Académicos y
                         Nacimiento</h5>
                 </div>
                 <div class="card-body">
@@ -159,7 +159,7 @@
 
             <div class="card shadow-sm mb-4 border-start border-danger border-4">
                 <div class="card-header border-bottom-0 pt-4 pb-0">
-                    <h5 class="text-danger fw-bold"><i class="fa-solid fa-duotone fa-notes-medical me-2"></i> Información de
+                    <h5 class="text-danger fw-bold"><i class="fa-solid fa-duotone fa-notes-medical me-2"></i>Información de
                         Salud</h5>
                 </div>
                 <div class="card-body">

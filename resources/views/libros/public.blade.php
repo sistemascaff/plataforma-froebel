@@ -11,7 +11,7 @@
     </div>
 
     <div class="alert alert-info border-info border-start border-4 shadow-sm mb-4">
-        <h5 class="fw-bold text-info mb-2"><i class="fa-solid fa-duotone fa-circle-info me-2"></i> Disponibilidad de títulos
+        <h5 class="fw-bold text-info mb-2"><i class="fa-solid fa-duotone fa-circle-info me-2"></i>Disponibilidad de títulos
         </h5>
         <div class="d-flex flex-wrap gap-3 small fw-bold">
             <div><span class="badge bg-success px-2 py-1 me-1">DISPONIBLE</span> El libro está libre para su préstamo.</div>
@@ -96,7 +96,7 @@
 
     <div class="card shadow-sm mb-4">
         <div class="card-header">
-            <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-list-ol me-2"></i> Catálogo</h5>
+            <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-list-ol me-2"></i>Catálogo</h5>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive p-3">

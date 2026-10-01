@@ -12,7 +12,7 @@
 
     <div class="card shadow-sm mb-4">
         <div class="card-header">
-            <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-user-graduate me-2"></i> 1. Datos del Prestatario</h5>
+            <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-user-graduate me-2"></i>1. Datos del Prestatario</h5>
         </div>
         <div class="card-body">
             <div class="row g-3">
@@ -31,7 +31,7 @@
 
     <div class="card shadow-sm mb-4">
         <div class="card-header">
-            <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-book-open-reader me-2"></i> 2. Catálogo de Libros</h5>
+            <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-book-open-reader me-2"></i>2. Catálogo de Libros</h5>
         </div>
         <div class="card-body">
             <table class="table table-bordered table-striped w-100" id="dataTable">
@@ -62,7 +62,7 @@
 
     <div class="card shadow-sm mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-list-check me-2"></i> 3. Resumen y Devolución</h5>
+            <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-list-check me-2"></i>3. Resumen y Devolución</h5>
         </div>
         <div class="card-body">
             <div class="row g-3 mb-4">

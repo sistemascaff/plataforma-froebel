@@ -4,7 +4,7 @@
         <div class="modal-content shadow-lg">
             <div class="modal-header">
                 <h5 class="modal-title fw-bold text-info" id="modal-formulario-titulo">
-                    <i class="fa-solid fa-duotone fa-user-tie me-2"></i> CREAR PERSONAL
+                    <i class="fa-solid fa-duotone fa-user-tie me-2"></i>CREAR PERSONAL
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -16,7 +16,7 @@
                     <div class="card shadow-sm mb-4">
                         <div class="card-body">
                             <h5 class="text-primary border-bottom pb-2 mb-3">
-                                <i class="fa-solid fa-address-card me-2"></i> Datos Personales
+                                <i class="fa-solid fa-address-card me-2"></i>Datos Personales
                             </h5>
                             <div class="row g-3">
                                 <div class="col-md-4">
@@ -121,7 +121,7 @@
                     <div class="card shadow-sm mb-2">
                         <div class="card-body">
                             <h5 class="text-warning text-darken border-bottom pb-2 mb-3">
-                                <i class="fa-solid fa-key me-2"></i> Datos de Acceso
+                                <i class="fa-solid fa-key me-2"></i>Datos de Acceso
                             </h5>
                             <div class="row g-3 align-items-center">
                                 <div class="col-md-8">

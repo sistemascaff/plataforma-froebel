@@ -3,7 +3,7 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="text-info fw-bold mb-0">
-            <i class="fa-solid fa-duotone fa-clipboard-list-check me-2"></i> {{ $head_title }}
+            <i class="fa-solid fa-duotone fa-clipboard-list-check me-2"></i>{{ $head_title }}
         </h1>
         <a class="btn btn-secondary shadow-sm" href="{{ route('asignaturas.detalles', $lista_asignatura->id_asignatura) }}">
             <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver
@@ -13,7 +13,7 @@
     @if (!empty($cambios) && count($cambios) > 0)
         <div class="mb-3">
             <button type="button" class="btn btn-warning shadow-sm" data-bs-toggle="modal" data-bs-target="#modalCambios">
-                <i class="fa-solid fa-triangle-exclamation me-2"></i> Ver cambios recientes en la lista
+                <i class="fa-solid fa-triangle-exclamation me-2"></i>Ver cambios recientes en la lista
             </button>
         </div>
     @endif
@@ -100,7 +100,7 @@
     <div class="card shadow-sm mb-4">
         <div class="card-header p-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
             <h5 class="card-title mb-0 fw-bold text-info">
-                <i class="fa-solid fa-users-class me-2"></i> Estudiantes Inscritos
+                <i class="fa-solid fa-users-class me-2"></i>Estudiantes Inscritos
             </h5>
             @if ($lista_asignatura->asignatura->tipo_bloque === 'mixto')
                 <div class="d-flex gap-2">
@@ -174,7 +174,7 @@
     <div class="card shadow-sm mb-4">
         <div class="card-header p-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
             <h5 class="card-title mb-0 fw-bold text-info">
-                <i class="fa-solid fa-clipboard-list-check me-2"></i> Asistencias Registradas
+                <i class="fa-solid fa-clipboard-list-check me-2"></i>Asistencias Registradas
             </h5>
             <div class="d-flex gap-2">
                 <a class="btn btn-success shadow-sm"
@@ -290,7 +290,7 @@
                 <div class="modal-content shadow">
                     <div class="modal-header bg-warning">
                         <h5 class="modal-title fw-bold text-dark" id="modalCambiosLabel">
-                            <i class="fa-solid fa-rotate me-2"></i> Actualización Automática de Lista
+                            <i class="fa-solid fa-rotate me-2"></i>Actualización Automática de Lista
                         </h5>
                     </div>
                     <div class="modal-body pb-2">
@@ -306,7 +306,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary shadow-sm" data-bs-dismiss="modal">
-                            <i class="fa-solid fa-check me-2"></i> Entendido
+                            <i class="fa-solid fa-check me-2"></i>Entendido
                         </button>
                     </div>
                 </div>

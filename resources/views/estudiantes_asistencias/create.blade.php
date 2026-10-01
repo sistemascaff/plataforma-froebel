@@ -3,7 +3,7 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="text-info fw-bold mb-0">
-            <i class="fa-solid fa-duotone fa-clipboard-list-check me-2"></i> {{ $head_title }}
+            <i class="fa-solid fa-duotone fa-clipboard-list-check me-2"></i>{{ $head_title }}
         </h1>
         <a class="btn btn-secondary shadow-sm"
             href="{{ route('listas_asignaturas.detalles', $lista_asignatura->id_lista_asignatura) }}">
@@ -101,14 +101,14 @@
 
         @if ($lista_asignatura->estudiantes->isEmpty())
             <div class="alert alert-warning shadow-sm" role="alert">
-                <i class="fa-duotone fa-triangle-exclamation me-2"></i> Aún no hay estudiantes inscritos en esta asignatura
+                <i class="fa-duotone fa-triangle-exclamation me-2"></i>Aún no hay estudiantes inscritos en esta asignatura
                 y período.
             </div>
         @else
             <div class="card shadow-sm mb-4">
                 <div class="card-header p-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
                     <h5 class="card-title mb-0 fw-bold text-info">
-                        <i class="fa-solid fa-users-class me-2"></i> Estudiantes
+                        <i class="fa-solid fa-users-class me-2"></i>Estudiantes
                     </h5>
                 </div>
                 <div class="card-body">

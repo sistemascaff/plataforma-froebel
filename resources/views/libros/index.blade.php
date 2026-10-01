@@ -31,7 +31,7 @@
 
     <div class="card shadow-sm mb-4">
         <div class="card-header">
-            <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-chart-simple me-2"></i> Estadísticas de
+            <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-chart-simple me-2"></i>Estadísticas de
                 Libros</h5>
         </div>
         <div class="card-body">
@@ -107,7 +107,7 @@
 
     <div class="card shadow-sm mb-4">
         <div class="card-header">
-            <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-table-list me-2"></i> Inventario de la
+            <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-table-list me-2"></i>Inventario de la
                 Biblioteca</h5>
         </div>
         <div class="card-body p-0">

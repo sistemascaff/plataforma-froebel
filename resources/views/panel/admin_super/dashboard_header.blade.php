@@ -25,6 +25,12 @@
         </li>
 
         <li class="nav-item mx-1">
+            <a class="nav-link {{ request()->is('personas*') ? 'active' : '' }}" aria-current="page"
+                href="{{ route('personas.index') }}"><i class="fa-solid fa-duotone fa-users"></i>
+                Personal</a>
+        </li>
+
+        <li class="nav-item mx-1">
             <a class="nav-link {{ request()->is('prestamos_libros*') ? 'active' : '' }}" aria-current="page"
                 href="{{ route('prestamos_libros.index') }}"><i class="fa-solid fa-duotone fa-books fa-rotate-270"></i>
                 Préstamos de libros</a>

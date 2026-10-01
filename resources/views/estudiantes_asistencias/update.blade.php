@@ -3,7 +3,7 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="text-info fw-bold mb-0">
-            <i class="fa-solid fa-duotone fa-pen-to-square me-2"></i> {{ $head_title }}
+            <i class="fa-solid fa-duotone fa-pen-to-square me-2"></i>{{ $head_title }}
         </h1>
         <a class="btn btn-secondary shadow-sm"
             href="{{ route('listas_asignaturas.detalles', $estudiante_asistencia->id_lista_asignatura) }}">
@@ -110,14 +110,14 @@
 
         @if ($estudiante_asistencia->detalles_estudiantes_asistencias->isEmpty())
             <div class="alert alert-warning shadow-sm" role="alert">
-                <i class="fa-duotone fa-triangle-exclamation me-2"></i> No existen registros de estudiantes en esta
+                <i class="fa-duotone fa-triangle-exclamation me-2"></i>No existen registros de estudiantes en esta
                 asistencia.
             </div>
         @else
             <div class="card shadow-sm mb-4">
                 <div class="card-header p-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
                     <h5 class="card-title mb-0 fw-bold text-info">
-                        <i class="fa-solid fa-users-class me-2"></i> Modificar Registro de Estudiantes
+                        <i class="fa-solid fa-users-class me-2"></i>Modificar Registro de Estudiantes
                     </h5>
                 </div>
                 <div class="card-body">

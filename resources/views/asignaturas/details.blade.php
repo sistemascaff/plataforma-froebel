@@ -77,7 +77,9 @@
                     </div>
                     <div class="row mb-2">
                         <div class="col-sm-5 fw-bold text-muted">Curso:</div>
-                        <div class="col-sm-7">{{ $asignatura->curso?->curso ?? 'No especificada' }}</div>
+                        <div class="col-sm-7">
+                            {!! "<span class=\"badge bg-info text-dark\">{$asignatura->curso?->curso}</span>" ?? 'No especificada' !!}
+                        </div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-sm-5 fw-bold text-muted">Nivel:</div>
@@ -85,7 +87,7 @@
                     </div>
                     <div class="row mb-2">
                         <div class="col-sm-5 fw-bold text-muted">Coordinación:</div>
-                        <div class="col-sm-7">{{ $asignatura->coordinacion?->coordinacion ?? 'No especificada' }}</div>
+                        <div class="col-sm-7">{{ $asignatura->coordinacion?->coordinacion ?? '' }}</div>
                     </div>
                 </div>
             </div>
@@ -95,20 +97,42 @@
     <div class="card shadow-sm mb-4">
         <div class="card-header p-4 d-flex justify-content-between align-items-center">
             <h4 class="fw-bold mb-0 text-info">
-                <i class="fa-duotone fa-calendar-clock me-2"></i> Horarios de la Asignatura
+                <i class="fa-duotone fa-calendar-clock me-2"></i>Horarios de la Asignatura
             </h4>
-            <button type="button" class="btn btn-primary" id="btn-guardar-horarios">
-                <i class="fa-solid fa-duotone fa-floppy-disk me-1"></i>Guardar cambios
-            </button>
         </div>
         <div class="card-body">
-            <div class="accordion mb-4 shadow-sm" id="bootstrap-acordeon">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered mb-0 dataTable" id="horarios">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width: 5%;">#</th>
+                            <th>Día</th>
+                            <th>Denominación</th>
+                            <th>Hora Inicio</th>
+                            <th>Hora Fin</th>
+                            <th>Gestión</th>
+                            <th class="text-center" style="width: 10%;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{-- Renderizado dinámico desde JS --}}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-end mt-3">
+                <button type="button" class="btn btn-primary" id="btn-guardar-horarios">
+                    <i class="fa-solid fa-duotone fa-floppy-disk me-1"></i>Guardar cambios
+                </button>
+            </div>
+
+            <div class="accordion mt-4 shadow-sm" id="bootstrap-acordeon">
                 <div class="accordion-item">
                     <h2 class="accordion-header">
-                        <button class="accordion-button collapsed rounded" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                            <b class="text-secondary"><i class="fa-duotone fa-calendar-plus me-1"></i> ASIGNAR NUEVO HORARIO
-                                DISPONIBLE</b>
+                        <button class="accordion-button collapsed rounded bg-success-subtle" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true"
+                            aria-controls="collapseOne">
+                            <b class="text-success"><i class="fa-duotone fa-calendar-plus me-1"></i> ASIGNAR HORARIOS</b>
                         </button>
                     </h2>
                     <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#bootstrap-acordeon">
@@ -145,32 +169,13 @@
                     </div>
                 </div>
             </div>
-
-            <div class="table-responsive">
-                <table class="table table-hover table-bordered mb-0 dataTable" id="horarios">
-                    <thead>
-                        <tr>
-                            <th class="text-center" style="width: 5%;">#</th>
-                            <th>Día</th>
-                            <th>Denominación</th>
-                            <th>Hora Inicio</th>
-                            <th>Hora Fin</th>
-                            <th>Gestión</th>
-                            <th class="text-center" style="width: 10%;">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{-- Renderizado dinámico desde JS --}}
-                    </tbody>
-                </table>
-            </div>
         </div>
     </div>
 
     <div class="card shadow-sm mb-4">
         <div class="card-header p-4 border-bottom">
             <h4 class="fw-bold mb-0 text-info">
-                <i class="fa-duotone fa-users-class me-2"></i> Listas de la Asignatura
+                <i class="fa-duotone fa-users-class me-2"></i>Listas de la Asignatura
             </h4>
         </div>
         <div class="card-body">

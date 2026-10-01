@@ -201,7 +201,7 @@
             $('#label-contrasenha-requerida, #label-confirmar-requerida').show();
 
             document.getElementById('modal-formulario-titulo').innerHTML =
-                '<i class="fa-solid fa-duotone fa-user-plus me-2"></i> CREAR PERSONAL';
+                '<i class="fa-solid fa-duotone fa-user-plus me-2"></i>CREAR PERSONAL';
         });
 
         // EDITAR
@@ -237,7 +237,7 @@
                 $('#label-contrasenha-requerida, #label-confirmar-requerida').hide();
 
                 document.getElementById('modal-formulario-titulo').innerHTML =
-                    '<i class="fa-solid fa-duotone fa-user-pen me-2"></i> EDITAR PERSONAL';
+                    '<i class="fa-solid fa-duotone fa-user-pen me-2"></i>EDITAR PERSONAL';
                 $('#modal-formulario').modal('show');
             });
         });

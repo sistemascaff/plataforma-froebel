@@ -3,7 +3,7 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="text-info fw-bold mb-0">
-            <i class="fa-solid fa-duotone fa-book-reader me-2"></i> {{ $head_title }}
+            <i class="fa-solid fa-duotone fa-book-reader me-2"></i>{{ $head_title }}
         </h1>
         <button type="button" class="btn btn-success shadow-sm btn-crear" data-bs-toggle="modal"
             data-bs-target="#modal-formulario">
@@ -34,12 +34,12 @@
                             <th>Asignatura</th>
                             <th>Tipo de calificación</th>
                             <th>Tipo de bloque</th>
-                            <th>Materia</th>
-                            <th>Área</th>
+                            <th>Curso</th>
+                            <th>Materia interna</th>
+                            <th>Área SIE</th>
                             <th>Aula</th>
                             <th>Nivel</th>
                             <th>Coordinación</th>
-                            <th>Curso</th>
                             <th class="text-center">Estado</th>
                             <th>F. Registro</th>
                             <th>F. Actualización</th>

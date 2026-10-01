@@ -48,7 +48,7 @@
     <div class="card shadow-sm mb-4">
         <div class="card-header p-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
             <h5 class="card-title mb-0 fw-bold text-info">
-                <i class="fa-solid fa-users-class me-2"></i> Estudiantes
+                <i class="fa-solid fa-users-class me-2"></i>Estudiantes
             </h5>
         </div>
         <div class="card-body">

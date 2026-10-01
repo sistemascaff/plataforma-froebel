@@ -3,7 +3,7 @@
 @section('content')
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
         <h1 class="text-info fw-bold mb-0 me-auto">
-            <i class="fa-solid fa-duotone fa-chart-pie me-2"></i> Reportes y Métricas de Asistencias
+            <i class="fa-solid fa-duotone fa-chart-pie me-2"></i>Reportes y Métricas de Asistencias
         </h1>
         <a class="btn btn-secondary shadow-sm" href="{{ route('estudiantes_asistencias.index') }}">
             <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver

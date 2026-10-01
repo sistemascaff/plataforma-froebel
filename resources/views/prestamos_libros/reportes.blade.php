@@ -7,7 +7,7 @@
 
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
         <h1 class="text-info fw-bold mb-0 me-auto">
-            <i class="fa-solid fa-duotone fa-chart-pie me-2"></i> Reportes de Biblioteca
+            <i class="fa-solid fa-duotone fa-chart-pie me-2"></i>Reportes de Biblioteca
         </h1>
         <a class="btn btn-secondary" href="{{ route('prestamos_libros.index') }}">
             <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver
@@ -30,7 +30,7 @@
         <div class="col-lg-8">
             <div class="card shadow-sm h-100">
                 <div class="card-header">
-                    <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-calendar-days me-2"></i> Filtros de
+                    <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-calendar-days me-2"></i>Filtros de
                         Búsqueda</h5>
                 </div>
                 <div class="card-body">
@@ -76,7 +76,7 @@
 
     <div class="card shadow-sm mb-4">
         <div class="card-header">
-            <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-list-ol me-2"></i> Índice del Reporte</h5>
+            <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-list-ol me-2"></i>Índice del Reporte</h5>
         </div>
         <div class="card-body">
             <div class="d-flex flex-wrap gap-2">
@@ -348,7 +348,7 @@
 
     <div class="card border-danger shadow-sm mb-4" id="pendientes_hasta_hoy">
         <div class="card-header bg-danger bg-opacity-10 text-danger">
-            <h5 class="mb-0 fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i> 7. Libros Pendientes de
+            <h5 class="mb-0 fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i>7. Libros Pendientes de
                 Devolución Hasta Hoy ({{ date('d/m/Y') }})</h5>
         </div>
         <div class="card-body p-0">

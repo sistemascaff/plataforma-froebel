@@ -15,7 +15,7 @@
             <div class="card shadow-sm h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 fw-bold text-info">
-                        <i class="fa-solid fa-duotone fa-heading me-2"></i> Datos Principales del Libro
+                        <i class="fa-solid fa-duotone fa-heading me-2"></i>Datos Principales del Libro
                     </h5>
                 </div>
                 <div class="card-body">
@@ -51,7 +51,7 @@
             <div class="card shadow-sm h-100">
                 <div class="card-header">
                     <h5 class="mb-0 fw-bold text-info">
-                        <i class="fa-solid fa-duotone fa-paste me-2"></i> Ficha Técnica e Inventario
+                        <i class="fa-solid fa-duotone fa-paste me-2"></i>Ficha Técnica e Inventario
                     </h5>
                 </div>
                 <div class="card-body">
@@ -105,7 +105,7 @@
     <div class="card shadow-sm mb-4">
         <div class="card-header">
             <h5 class="mb-0 fw-bold text-info">
-                <i class="fa-solid fa-duotone fa-clock-rotate-left me-2"></i> Historial de Préstamos de este Libro
+                <i class="fa-solid fa-duotone fa-clock-rotate-left me-2"></i>Historial de Préstamos de este Libro
             </h5>
         </div>
         <div class="card-body p-0">

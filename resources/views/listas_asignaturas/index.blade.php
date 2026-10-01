@@ -3,7 +3,7 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="text-info fw-bold mb-0">
-            <i class="fa-solid fa-duotone fa-book-reader me-2"></i> {{ $head_title }}
+            <i class="fa-solid fa-duotone fa-book-reader me-2"></i>{{ $head_title }}
         </h1>
     </div>
 
