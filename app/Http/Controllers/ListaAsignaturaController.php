@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Curso;
 use App\Models\DetalleListaAsignatura;
 use App\Models\Estudiante;
 use App\Models\ListaAsignatura;
@@ -53,13 +54,10 @@ class ListaAsignaturaController extends Controller
             // LÓGICA PARA BLOQUE: CURSO
             // ====================================================================
             if ($asignatura->tipo_bloque === 'curso' && !is_null($asignatura->id_curso)) {
-
-                // A.1 LIMPIEZA: Identificar a los estudiantes inactivos
+                // A.1 LIMPIEZA INACTIVOS
                 $inactivosAEliminar = DetalleListaAsignatura::with('estudiante.persona')
                     ->where('id_lista_asignatura', $id_lista_asignatura)
-                    ->whereHas('estudiante', function ($query) {
-                        $query->where('estado', 0);
-                    })
+                    ->whereHas('estudiante', fn($q) => $q->where('estado', 0))
                     ->get();
 
                 if ($inactivosAEliminar->isNotEmpty()) {
@@ -67,18 +65,15 @@ class ListaAsignaturaController extends Controller
                         $persona = $detalle->estudiante->persona;
                         $cambios[] = "<p class='text-danger mb-2'><i class='fa-solid fa-user-minus me-2'></i> Se ha retirado de la lista al estudiante <b>{$persona->apellidos_nombres}</b> (Retirado/Inactivo).</p>";
                     }
-
                     DetalleListaAsignatura::whereIn('id_estudiante', $inactivosAEliminar->pluck('id_estudiante'))
                         ->where('id_lista_asignatura', $id_lista_asignatura)
                         ->delete();
                 }
 
-                // A.2 LIMPIEZA ADICIONAL: Eliminar estudiantes de otros cursos (ej. cambio de mixto a curso)
+                // A.2 LIMPIEZA AJENOS
                 $ajenosAEliminar = DetalleListaAsignatura::with('estudiante.persona', 'estudiante.curso')
                     ->where('id_lista_asignatura', $id_lista_asignatura)
-                    ->whereHas('estudiante', function ($query) use ($asignatura) {
-                        $query->where('id_curso', '!=', $asignatura->id_curso);
-                    })
+                    ->whereHas('estudiante', fn($q) => $q->where('id_curso', '!=', $asignatura->id_curso))
                     ->get();
 
                 if ($ajenosAEliminar->isNotEmpty()) {
@@ -87,7 +82,6 @@ class ListaAsignaturaController extends Controller
                         $cursoErroneo = $detalle->estudiante->curso->curso ?? 'Otro curso';
                         $cambios[] = "<p class='text-danger mb-2'><i class='fa-solid fa-user-slash me-2'></i> Se ha retirado a <b>{$persona->apellidos_nombres}</b> porque pertenece a <b>{$cursoErroneo}</b> y la asignatura ahora es exclusiva de otro curso.</p>";
                     }
-
                     DetalleListaAsignatura::whereIn('id_estudiante', $ajenosAEliminar->pluck('id_estudiante'))
                         ->where('id_lista_asignatura', $id_lista_asignatura)
                         ->delete();
@@ -110,7 +104,6 @@ class ListaAsignaturaController extends Controller
                     foreach ($estudiantesFaltantes as $estudiante) {
                         $persona = $estudiante->persona;
                         $cambios[] = "<p class='text-success mb-2'><i class='fa-solid fa-user-plus me-2'></i> Se ha incorporado a la lista al estudiante <b>{$persona->apellidos_nombres}</b>.</p>";
-
                         $nuevosDetalles[] = [
                             'id_lista_asignatura' => $id_lista_asignatura,
                             'id_estudiante'       => $estudiante->id_estudiante,
@@ -126,9 +119,7 @@ class ListaAsignaturaController extends Controller
                 // A. LIMPIEZA ÚNICAMENTE: Retirar estudiantes inactivos
                 $detallesAEliminar = DetalleListaAsignatura::with('estudiante.persona')
                     ->where('id_lista_asignatura', $id_lista_asignatura)
-                    ->whereHas('estudiante', function ($query) {
-                        $query->where('estado', 0);
-                    })
+                    ->whereHas('estudiante', fn($q) => $q->where('estado', 0))
                     ->get();
 
                 if ($detallesAEliminar->isNotEmpty()) {
@@ -136,7 +127,6 @@ class ListaAsignaturaController extends Controller
                         $persona = $detalle->estudiante->persona;
                         $cambios[] = "<p class='text-danger mb-2'><i class='fa-solid fa-user-minus me-2'></i> Se ha retirado automáticamente de la lista mixta al estudiante <b>{$persona->apellidos_nombres}</b> (Retirado/Inactivo).</p>";
                     }
-
                     DetalleListaAsignatura::whereIn('id_estudiante', $detallesAEliminar->pluck('id_estudiante'))
                         ->where('id_lista_asignatura', $id_lista_asignatura)
                         ->delete();
@@ -157,12 +147,26 @@ class ListaAsignaturaController extends Controller
             ]);
         }
 
+        // Obtención de cursos solo si la asignatura es mixta
+        $cursos = collect();
+        if ($asignatura->tipo_bloque === 'mixto') {
+            $tipo_perfil = Auth::user()->persona?->tipo_perfil;
+            $filtros = [];
+            if ($tipo_perfil === 'DIRECTOR DE NIVEL') {
+                $filtros['nivel'] = Auth::user()->persona?->docente?->id_nivel;
+                $cursos = (new Curso())->get_cursos($filtros);
+            } else {
+                $cursos = (new Curso())->get_all_cursos();
+            }
+        }
+
         $nombre_asignatura = $asignatura->asignatura;
 
         return view('listas_asignaturas.details', [
             'head_title' => "LISTA DE $nombre_asignatura | $anio_gestion - $periodo",
             'lista_asignatura' => $lista_asignatura,
-            'cambios' => $cambios
+            'cambios' => $cambios,
+            'cursos' => $cursos
         ]);
     }
 
@@ -335,6 +339,101 @@ class ListaAsignaturaController extends Controller
             'message' => 'El/la docente de la lista seleccionada se ha actualizado correctamente.',
             'lista_asignatura' => $lista_asignatura,
             'nuevoDocente' => $nuevoDocente
+        ]);
+    }
+
+    public function importar_cursos(Request $request, $id_lista_asignatura)
+    {
+        $request->validate([
+            'cursos' => 'required|array|min:1',
+            'cursos.*' => 'exists:cursos,id_curso'
+        ], [
+            'cursos.required' => 'Debe seleccionar al menos un curso.',
+            'cursos.min' => 'Debe seleccionar al menos un curso.'
+        ]);
+
+        $lista_asignatura = (new ListaAsignatura())->get_lista_asignatura($id_lista_asignatura);
+        $this->authorize('update', $lista_asignatura);
+
+        if ($lista_asignatura->asignatura->tipo_bloque !== 'mixto') {
+            return response()->json(['success' => false, 'message' => 'Esta acción solo está disponible para listas mixtas.'], 400);
+        }
+
+        // 1. IDs ya existentes en la lista
+        $existentesIds = DetalleListaAsignatura::where('id_lista_asignatura', $id_lista_asignatura)
+            ->pluck('id_estudiante')
+            ->toArray();
+
+        // 2. Buscar estudiantes activos de los cursos seleccionados que NO estén ya en la lista
+        $estudiantesAInsertar = Estudiante::whereIn('id_curso', $request->cursos)
+            ->where('estado', 1)
+            ->whereNotIn('id_estudiante', $existentesIds)
+            ->pluck('id_estudiante')
+            ->toArray();
+
+        if (empty($estudiantesAInsertar)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Los estudiantes de los cursos seleccionados ya se encuentran agregados en esta lista.'
+            ], 422);
+        }
+
+        // 3. Inserción masiva en la lista actual
+        $detalles = [];
+        foreach ($estudiantesAInsertar as $id_estudiante) {
+            $detalles[] = [
+                'id_lista_asignatura' => $id_lista_asignatura,
+                'id_estudiante'       => $id_estudiante,
+            ];
+        }
+        DetalleListaAsignatura::insert($detalles);
+
+        // 4. Replicación en periodos posteriores si están vacíos
+        $periodosReplicados = [];
+        $idGestionActual = $lista_asignatura->periodo->id_gestion;
+        $posicionActual = $lista_asignatura->periodo->posicion_ordinal;
+        $idAsignatura = $lista_asignatura->id_asignatura;
+
+        $listasSucesivas = ListaAsignatura::with('periodo')
+            ->where('id_asignatura', $idAsignatura)
+            ->whereHas('periodo', function ($query) use ($idGestionActual, $posicionActual) {
+                $query->where('id_gestion', $idGestionActual)
+                    ->where('posicion_ordinal', '>', $posicionActual);
+            })
+            ->get();
+
+        if ($listasSucesivas->isNotEmpty()) {
+            // Obtenemos todos los estudiantes que tiene ahora la lista completa
+            $totalEstudiantesIds = DetalleListaAsignatura::where('id_lista_asignatura', $id_lista_asignatura)
+                ->pluck('id_estudiante')
+                ->toArray();
+
+            foreach ($listasSucesivas as $listaSucesiva) {
+                $cantidad = DetalleListaAsignatura::where('id_lista_asignatura', $listaSucesiva->id_lista_asignatura)->count();
+                if ($cantidad === 0) {
+                    $detallesSucesivos = [];
+                    foreach ($totalEstudiantesIds as $id_est) {
+                        $detallesSucesivos[] = [
+                            'id_lista_asignatura' => $listaSucesiva->id_lista_asignatura,
+                            'id_estudiante'       => $id_est,
+                        ];
+                    }
+                    DetalleListaAsignatura::insert($detallesSucesivos);
+                    $periodosReplicados[] = "<b>{$listaSucesiva->periodo->periodo}</b>";
+                }
+            }
+        }
+
+        $cantInsertados = count($estudiantesAInsertar);
+        $mensaje = "Se han incorporado exitosamente {$cantInsertados} estudiantes a la lista.";
+        if (!empty($periodosReplicados)) {
+            $nombresPeriodos = implode(' y ', $periodosReplicados);
+            $mensaje .= "<br><br><i class='fa-solid fa-clone text-info me-1'></i> Se actualizaron automáticamente las listas de: {$nombresPeriodos}.";
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $mensaje
         ]);
     }
 }

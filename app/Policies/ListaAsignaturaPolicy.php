@@ -59,7 +59,7 @@ class ListaAsignaturaPolicy
             if ($usuario->persona->docente->id_docente === $listaAsignatura->id_docente) {
                 return true;
             }
-            return Response::deny('Acceso denegado: No figuras como el docente titular asignado a esta lista de asignatura.');
+            return Response::deny('Acceso denegado: No figuras como el docente titular asignado/a a esta lista de asignatura.');
         }
 
         return false;
@@ -74,17 +74,21 @@ class ListaAsignaturaPolicy
 
         // Solo Subdirector y Coordinador pueden llegar aquí (Admin ya fue aprobado en before)
         // El resto (Gerente, Director, Docente) tienen solo lectura
-        if (!in_array($perfil, ['DIRECTOR DE NIVEL', 'COORDINADOR'])) {
+        if (!in_array($perfil, ['DIRECTOR DE NIVEL', 'COORDINADOR', 'DOCENTE'])) {
             return Response::deny('Acceso denegado: Tu rol de ' . $perfil . ' tiene permisos de solo lectura para las listas.');
         }
 
         // Reutilizamos la lógica de lectura para garantizar que no modifiquen listas de otros niveles/coordinaciones
         if ($perfil === 'DIRECTOR DE NIVEL' && $usuario->persona->docente->id_nivel !== $listaAsignatura->asignatura->id_nivel) {
-            return Response::deny('Acceso denegado: No puedes modificar una lista que no pertenece a tu nivel asignado.');
+            return Response::deny('Acceso denegado: No puedes modificar una lista que no pertenece a tu nivel asignado/a.');
         }
 
         if ($perfil === 'COORDINADOR' && $usuario->persona->docente->id_coordinacion !== $listaAsignatura->asignatura->id_coordinacion) {
             return Response::deny('Acceso denegado: No puedes modificar una lista que no pertenece a tu coordinación.');
+        }
+
+        if ($perfil === 'DOCENTE' && $usuario->persona->docente->id_docente !== $listaAsignatura->id_docente) {
+            return Response::deny('Acceso denegado: No puedes modificar una lista a la que no estás asignado/a.');
         }
 
         return true;

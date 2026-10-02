@@ -128,6 +128,7 @@ Route::middleware(['session.acceso'])->group(function () {
             Route::get('listas_asignaturas/{lista_asignatura}/detalles', 'view_details')->name('listas_asignaturas.detalles');
             Route::put('listas_asignaturas/{lista_asignatura}', 'update')->name('listas_asignaturas.update');
             Route::patch('listas_asignaturas/{lista_asignatura}/docente', 'actualizar_docente')->name('listas_asignaturas.actualizar_docente');
+            Route::post('listas_asignaturas/{lista_asignatura}/importar-cursos', 'importar_cursos')->name('listas_asignaturas.importar_cursos');
         });
 
         Route::controller(EstudianteAsistenciaController::class)->group(function () {

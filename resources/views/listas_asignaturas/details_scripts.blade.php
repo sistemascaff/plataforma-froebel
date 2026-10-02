@@ -279,5 +279,117 @@
                 });
             });
         @endif
+
+        // ─── Lógica para Importación Masiva por Cursos ──────────────────────────
+        @if ($lista_asignatura->asignatura->tipo_bloque === 'mixto')
+            // Inicializar DataTable dentro del modal de cursos
+            let dtCursos = $("#tabla-cursos-importar").DataTable({
+                @include('components.datatables.datatables_global_properties')
+                @include('components.datatables.datatables_language_property'),
+                paging: false,
+                columnDefs: [{
+                        orderable: false,
+                        targets: [0]
+                    },
+                    {
+                        searchable: false,
+                        targets: [0]
+                    }
+                ]
+            });
+
+            // Seleccionar / Deseleccionar todos los cursos
+            $('#check-todos-cursos').on('change', function() {
+                let isChecked = $(this).is(':checked');
+                // Afecta a los checkboxes incluso si están filtrados
+                dtCursos.$('.check-curso').prop('checked', isChecked);
+            });
+
+            // Envío del Formulario de Cursos
+            $('#form-importar-cursos').on('submit', function(e) {
+                e.preventDefault();
+
+                // Obtenemos los valores de los checkboxes marcados en el DataTable
+                let cursosSeleccionados = [];
+                dtCursos.$('.check-curso:checked').each(function() {
+                    cursosSeleccionados.push($(this).val());
+                });
+
+                if (cursosSeleccionados.length === 0) {
+                    Swal.fire({
+                        theme: localStorage.getItem('theme') || 'dark',
+                        icon: 'warning',
+                        title: 'Atención',
+                        text: 'Debes seleccionar al menos un curso de la tabla.'
+                    });
+                    return;
+                }
+
+                const n = cursosSeleccionados.length;
+
+                // Confirmación antes de proceder
+                Swal.fire({
+                    theme: localStorage.getItem('theme') || 'dark',
+                    icon: 'question',
+                    title: 'Confirmar operación',
+                    html: `Has seleccionado <b>${n} ${n === 1 ? 'curso' : 'cursos'}</b>, ¿estás seguro de continuar con la operación?`,
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, continuar',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        enviarImportacion(cursosSeleccionados);
+                    }
+                });
+            });
+
+            function enviarImportacion(cursosSeleccionados) {
+                const btn = $('#btn-submit-importar-cursos');
+                btn.prop('disabled', true).html(
+                    '<i class="fa-solid fa-spinner fa-spin me-1"></i> Incorporando...');
+
+                $.ajax({
+                    url: "{{ route('listas_asignaturas.importar_cursos', $lista_asignatura->id_lista_asignatura) }}",
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: {
+                        cursos: cursosSeleccionados
+                    },
+                    success: function(response) {
+                        $('#modalImportarCursos').modal('hide');
+                        Swal.fire({
+                            theme: localStorage.getItem('theme') || 'dark',
+                            title: '¡Operación Exitosa!',
+                            html: response.message,
+                            icon: 'success'
+                        }).then(() => {
+                            location
+                        .reload(); // Recarga para renderizar a los nuevos estudiantes
+                        });
+                    },
+                    error: function(xhr) {
+                        btn.prop('disabled', false).html(
+                            '<i class="fa-solid fa-duotone fa-check me-1"></i> Incorporar a la Lista'
+                        );
+                        let respuesta = xhr.responseJSON || {
+                            message: "Error inesperado"
+                        };
+                        let errorHtml = respuesta.errors ?
+                            Object.values(respuesta.errors).flat().join('<br>') :
+                            respuesta.message;
+
+                        Swal.fire({
+                            theme: localStorage.getItem('theme') || 'dark',
+                            icon: 'error',
+                            title: 'Error',
+                            html: errorHtml
+                        });
+                    }
+                });
+            }
+        @endif
     });
 </script>
