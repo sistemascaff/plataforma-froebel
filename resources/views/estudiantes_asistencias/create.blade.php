@@ -86,7 +86,9 @@
                         <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-clock me-1"></i> Horario de la clase:</p>
                         <select class="form-select" name="id_horario" id="id_horario_asignatura" required>
                             @foreach ($horarios as $horario)
-                                <option value="{{ $horario->id_horario_asignatura }}">
+                                <!-- Agregamos data-dia con el valor numérico de la BD -->
+                                <option value="{{ $horario->id_horario_asignatura }}"
+                                    data-dia="{{ $horario->pivot->dia_semana }}">
                                     {{ helper_dia_semana_a_nombre($horario->pivot->dia_semana) }}
                                     {{ $horario->denominacion }}
                                     ({{ date('H:i', strtotime($horario->hora_inicio)) }} -

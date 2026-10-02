@@ -43,6 +43,31 @@
             formAsistencia.addEventListener('submit', function(e) {
                 e.preventDefault(); // Evitamos la recarga tradicional
 
+                // ====================================================================
+                // NUEVA VALIDACIÓN: Cruce de Fecha vs Día del Horario
+                // ====================================================================
+                const inputFecha = document.getElementById('fecha').value;
+                const selectHorario = document.getElementById('id_horario_asignatura');
+                const opcionSeleccionada = selectHorario.options[selectHorario.selectedIndex];
+
+                // Obtenemos el día esperado de la base de datos
+                const diaHorario = parseInt(opcionSeleccionada.getAttribute('data-dia'));
+
+                // Obtenemos el día real de la fecha seleccionada usando Moment.js (1=Lunes, 7=Domingo)
+                const diaFecha = moment(inputFecha).isoWeekday();
+
+                if (diaFecha !== diaHorario) {
+                    Swal.fire({
+                        theme: localStorage.getItem('theme') || 'dark',
+                        icon: 'error',
+                        title: 'Discrepancia de Horario',
+                        text: 'El día de la fecha seleccionada no coincide con el día de la semana del horario elegido.',
+                        confirmButtonColor: '#d33'
+                    });
+                    return; // Detenemos la ejecución de todo el script aquí mismo
+                }
+                // ====================================================================
+
                 // Deshabilitar botón para evitar envíos múltiples
                 const btnSubmit = document.getElementById('btn-guardar');
                 const originalText = btnSubmit.innerHTML;

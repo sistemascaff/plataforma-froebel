@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Models\Materia;
+use App\Models\Area;
 
 class AsignaturaValidation extends FormRequest
 {
@@ -23,9 +25,12 @@ class AsignaturaValidation extends FormRequest
     public function rules(): array
     {
         return [
-            'asignatura' => ['required', 'string', 'max:100', 
+            'asignatura' => [
+                'required',
+                'string',
+                'max:100',
                 Rule::unique('asignaturas', 'asignatura')->ignore($this->route('asignatura'), 'id_asignatura'),
-                ],
+            ],
             'tipo_calificacion' => 'required|string|max:20|in:cualitativa,cuantitativa',
             'tipo_bloque' => 'required|string|max:20|in:curso,mixto',
             'id_materia' => 'required|integer|exists:materias,id_materia',
@@ -35,6 +40,31 @@ class AsignaturaValidation extends FormRequest
             'id_coordinacion' => 'nullable|integer|exists:coordinaciones,id_coordinacion',
             'id_curso' => 'nullable|integer|exists:cursos,id_curso',
         ];
+    }
+
+    /**
+     * Configura el validador con reglas adicionales (Validación cruzada).
+     */
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $id_materia = $this->input('id_materia');
+            $id_area = $this->input('id_area');
+
+            // Solo hacemos la consulta si ambos datos fueron enviados en el request
+            if ($id_materia && $id_area) {
+                $materia = Materia::find($id_materia);
+                $area = Area::find($id_area);
+
+                // Verificamos que ambos existan y que sus campos coincidan
+                if ($materia && $area && $materia->id_campo !== $area->id_campo) {
+                    $validator->errors()->add(
+                        'id_area',
+                        'La materia y el área seleccionados no pertenecen al mismo campo.'
+                    );
+                }
+            }
+        });
     }
 
     /**
