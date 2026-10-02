@@ -316,7 +316,7 @@ class ListaAsignaturaController extends Controller
     public function actualizar_docente(Request $request)
     {
         $request->validate([
-            'docente' => 'required|exists:docentes,id_docente',
+            'docente' => 'nullable|exists:docentes,id_docente',
         ]);
 
         $lista_asignatura = (new ListaAsignatura())->get_lista_asignatura($request->lista_asignatura);

@@ -6,9 +6,14 @@
                 Panel</a>
         </li>
         <li class="nav-item mx-1">
+            <a class="nav-link {{ request()->is('asignaturas') ? 'active' : '' }}" aria-current="page"
+                href="{{ route('asignaturas.index') }}"><i class="fa-solid fa-duotone fa-book-reader"></i>
+                Mis asignaturas</a>
+        </li>
+        <li class="nav-item mx-1">
             <a class="nav-link {{ request()->is('listas_asignaturas') ? 'active' : '' }}" aria-current="page"
                 href="{{ route('listas_asignaturas.index') }}"><i class="fa-solid fa-duotone fa-clipboard-list"></i>
-                Mis asignaturas</a>
+                Mis listas de asignaturas</a>
         </li>
         <li class="nav-item mx-1">
             <a class="nav-link {{ request()->is('estudiantes_asistencias') ? 'active' : '' }}" aria-current="page"

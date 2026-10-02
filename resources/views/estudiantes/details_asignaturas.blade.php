@@ -38,7 +38,7 @@
                         </td>
                         <td>{{ $lista_asignatura->docente?->persona->nombres_apellidos }}</td>
                         <td>{{ $lista_asignatura->periodo->gestion->anio }}</td>
-                        <td>{{ $lista_asignatura->periodo->periodo }}</td>
+                        <td><span class="badge bg-light text-dark">{{ $lista_asignatura->periodo->periodo }}</span></td>
                     </tr>
                 @endforeach
             </tbody>

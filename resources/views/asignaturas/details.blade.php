@@ -23,77 +23,72 @@
         };
     @endphp
 
+    <!-- Listas de la Asignatura -->
     <div class="card shadow-sm mb-4">
-        <div class="card-header p-4 d-flex justify-content-between align-items-center">
-            <h4 class="fw-bold text-primary">{{ $asignatura->asignatura }}</h4>
-            <span class="badge {{ $badgeClass }} px-3 py-2 fs-6 shadow-sm"><i class="fa-duotone fa-circle-check me-1"></i>
-                {{ $estado }}</span>
+        <div class="card-header p-4 border-bottom">
+            <h4 class="fw-bold mb-0 text-info">
+                <i class="fa-duotone fa-users-class me-2"></i>Listas de la Asignatura
+            </h4>
         </div>
         <div class="card-body">
-            <div class="row g-4 mt-1">
-                <div class="col-md-6">
-                    <h6 class="text-muted fw-bold mb-3 border-bottom pb-2">
-                        <i class="fa-duotone fa-graduation-cap me-1"></i> Información Académica
-                    </h6>
-                    <div class="row mb-2">
-                        <div class="col-sm-5 fw-bold text-muted">Materia:</div>
-                        <div class="col-sm-7">{{ $asignatura->materia->abreviatura }} - {{ $asignatura->materia->materia }}
-                        </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-5 fw-bold text-muted">Área:</div>
-                        <div class="col-sm-7">{{ $asignatura->area->abreviatura }} - {{ $asignatura->area->area }}</div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-5 fw-bold text-muted">Tipo Calificación:</div>
-                        @php
-                            $icono =
-                                $asignatura->tipo_calificacion === 'cualitativa' ? 'fa-comments' : 'fa-chart-column';
-                        @endphp
-                        <div class="col-sm-7">
-                            <span class="badge bg-info text-dark">
-                                <i class="fa-solid fa-duotone {{ $icono }} me-1"></i>
-                                {{ strtoupper($asignatura->tipo_calificacion) }}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-5 fw-bold text-muted">Tipo Bloque:</div>
-                        <div class="col-sm-7">
-                            <span class="badge {{ $asignatura->tipo_bloque === 'curso' ? 'bg-primary' : 'bg-danger' }}">
-                                {{ strtoupper($asignatura->tipo_bloque) }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <h6 class="text-muted fw-bold mb-3 border-bottom pb-2">
-                        <i class="fa-duotone fa-sitemap me-1"></i> Ubicación y Estructura
-                    </h6>
-                    <div class="row mb-2">
-                        <div class="col-sm-5 fw-bold text-muted">Aula:</div>
-                        <div class="col-sm-7">{{ $asignatura->aula->aula }}</div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-5 fw-bold text-muted">Curso:</div>
-                        <div class="col-sm-7">
-                            {!! "<span class=\"badge bg-info text-dark\">{$asignatura->curso?->curso}</span>" ?? 'No especificada' !!}
-                        </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-5 fw-bold text-muted">Nivel:</div>
-                        <div class="col-sm-7">{{ $asignatura->nivel->nivel }}</div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-5 fw-bold text-muted">Coordinación:</div>
-                        <div class="col-sm-7">{{ $asignatura->coordinacion?->coordinacion ?? '' }}</div>
-                    </div>
-                </div>
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered mb-0 dataTable" id="listas">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width: 5%;">#</th>
+                            <th>Periodo</th>
+                            <th>Gestión</th>
+                            <th>Docente</th>
+                            <th>Cant. Estudiantes</th>
+                            <th class="text-center" style="width: 10%;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($asignatura->listas_asignaturas as $lista_asignatura)
+                            <tr>
+                                <td class="text-center">{{ $loop->iteration }}</td>
+                                <td><span class="badge bg-light text-dark">{{ $lista_asignatura->periodo->periodo }}</span>
+                                </td>
+                                <td>{{ $lista_asignatura->periodo->gestion->anio }}</td>
+                                <td class="fw-bold text-muted">
+                                    {!! $lista_asignatura->docente?->persona->nombres_apellidos == null
+                                        ? '<i class="fa-duotone fa-solid fa-exclamation-triangle"></i> '
+                                        : '' !!}
+                                    {{ $lista_asignatura->docente?->persona->nombres_apellidos ?? 'No asignado' }}
+                                </td>
+                                <td>
+                                    <span
+                                        class="badge {{ $lista_asignatura->estudiantes_count > 0 ? 'bg-primary' : 'bg-warning text-dark' }}">
+                                        {!! $lista_asignatura->estudiantes_count === 0
+                                            ? '<i class="fa-duotone fa-solid fa-exclamation-triangle"></i> '
+                                            : '' !!}
+                                        {{ $lista_asignatura->estudiantes_count > 0 ? $lista_asignatura->estudiantes_count : ($asignatura->tipo_bloque === 'curso' ? 'Bloque curso: Ingresa para generar estudiantes' : 'Bloque mixto: Ingresa y asigna a los estudiantes') }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <a class="btn btn-info btn-sm"
+                                            href="{{ route('listas_asignaturas.detalles', $lista_asignatura->id_lista_asignatura) }}"
+                                            data-bs-toggle="tooltip" title="Detalles de la lista">
+                                            <i class="fa-duotone fa-solid fa-eye"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-warning btn-sm btn-editar-docente"
+                                            data-id-docente="{{ $lista_asignatura->id_docente }}"
+                                            data-id-lista="{{ $lista_asignatura->id_lista_asignatura }}"
+                                            data-bs-toggle="tooltip" title="Editar docente">
+                                            <i class="fa-duotone fa-solid fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
+    <!-- Horarios de la Asignatura -->
     <div class="card shadow-sm mb-4">
         <div class="card-header p-4 d-flex justify-content-between align-items-center">
             <h4 class="fw-bold mb-0 text-info">
@@ -172,52 +167,80 @@
         </div>
     </div>
 
+    <!-- Detalles de la Asignatura -->
     <div class="card shadow-sm mb-4">
-        <div class="card-header p-4 border-bottom">
-            <h4 class="fw-bold mb-0 text-info">
-                <i class="fa-duotone fa-users-class me-2"></i>Listas de la Asignatura
-            </h4>
+        <div class="card-header p-4 d-flex justify-content-between align-items-center">
+            <h4 class="fw-bold text-primary">{{ $asignatura->asignatura }}</h4>
+            <span class="badge {{ $badgeClass }} px-3 py-2 fs-6 shadow-sm"><i
+                    class="fa-duotone fa-circle-check me-1"></i>
+                {{ $estado }}</span>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover table-bordered mb-0 dataTable" id="listas">
-                    <thead>
-                        <tr>
-                            <th class="text-center" style="width: 5%;">#</th>
-                            <th>Periodo</th>
-                            <th>Gestión</th>
-                            <th>Docente</th>
-                            <th class="text-center" style="width: 10%;">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($asignatura->listas_asignaturas as $lista_asignatura)
-                            <tr>
-                                <td class="text-center">{{ $loop->iteration }}</td>
-                                <td>{{ $lista_asignatura->periodo->periodo }}</td>
-                                <td>{{ $lista_asignatura->periodo->gestion->anio }}</td>
-                                <td class="fw-bold text-muted">
-                                    {{ $lista_asignatura->docente?->persona->nombres_apellidos }}
-                                </td>
-                                <td class="text-center">
-                                    <div class="btn-group" role="group">
-                                        <a class="btn btn-info btn-sm"
-                                            href="{{ route('listas_asignaturas.detalles', $lista_asignatura->id_lista_asignatura) }}"
-                                            data-bs-toggle="tooltip" title="Detalles de la lista">
-                                            <i class="fa-duotone fa-solid fa-eye"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-warning btn-sm btn-editar-docente"
-                                            data-id-docente="{{ $lista_asignatura->id_docente }}"
-                                            data-id-lista="{{ $lista_asignatura->id_lista_asignatura }}"
-                                            data-bs-toggle="tooltip" title="Editar docente">
-                                            <i class="fa-duotone fa-solid fa-edit"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <div class="row g-4 mt-1">
+                <div class="col-md-6">
+                    <h6 class="text-muted fw-bold mb-3 border-bottom pb-2">
+                        <i class="fa-duotone fa-graduation-cap me-1"></i> Información Académica
+                    </h6>
+                    <div class="row mb-2">
+                        <div class="col-sm-5 fw-bold text-muted">Materia:</div>
+                        <div class="col-sm-7"><b>{{ $asignatura->materia->abreviatura }}</b> -
+                            {{ $asignatura->materia->materia }}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-5 fw-bold text-muted">Área:</div>
+                        <div class="col-sm-7"><b>{{ $asignatura->area->abreviatura }}</b> - {{ $asignatura->area->area }}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-5 fw-bold text-muted">Tipo Calificación:</div>
+                        @php
+                            $icono =
+                                $asignatura->tipo_calificacion === 'cualitativa' ? 'fa-comments' : 'fa-chart-column';
+                        @endphp
+                        <div class="col-sm-7">
+                            <span class="badge bg-info text-dark">
+                                <i class="fa-solid fa-duotone {{ $icono }} me-1"></i>
+                                {{ strtoupper($asignatura->tipo_calificacion) }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-5 fw-bold text-muted">Tipo Bloque:</div>
+                        <div class="col-sm-7">
+                            <span class="badge {{ $asignatura->tipo_bloque === 'curso' ? 'bg-primary' : 'bg-danger' }}">
+                                {{ strtoupper($asignatura->tipo_bloque) }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="text-muted fw-bold mb-3 border-bottom pb-2">
+                        <i class="fa-duotone fa-sitemap me-1"></i> Ubicación y Estructura
+                    </h6>
+                    <div class="row mb-2">
+                        <div class="col-sm-5 fw-bold text-muted">Aula:</div>
+                        <div class="col-sm-7">{{ $asignatura->aula->aula }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-5 fw-bold text-muted">Curso:</div>
+                        <div class="col-sm-7">
+                            <span
+                                class="badge {{ $asignatura->tipo_bloque === 'curso' ? 'bg-info text-dark' : 'bg-secondary' }}">
+                                {{ $asignatura->tipo_bloque === 'curso' ? $asignatura->curso?->curso : 'N/A' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-5 fw-bold text-muted">Nivel:</div>
+                        <div class="col-sm-7">{{ $asignatura->nivel->nivel }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-5 fw-bold text-muted">Coordinación:</div>
+                        <div class="col-sm-7">{{ $asignatura->coordinacion?->coordinacion ?? '' }}</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

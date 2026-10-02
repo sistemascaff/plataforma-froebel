@@ -61,7 +61,7 @@ class AsignaturaController extends Controller
 
         $tipo_perfil = Auth::user()->persona?->tipo_perfil;
 
-        if (in_array($tipo_perfil, ['ADMINISTRADOR', 'DIRECTOR', 'COORDINADOR', 'DIRECTOR DE NIVEL'])) {
+        if (in_array($tipo_perfil, ['ADMINISTRADOR', 'DIRECTOR', 'COORDINADOR', 'DIRECTOR DE NIVEL', 'DOCENTE'])) {
             // IDs de periodos activos que YA tienen lista para esta asignatura
             $periodosConLista = ListaAsignatura::where('id_asignatura', $asignatura)
                 ->pluck('id_periodo')
@@ -104,6 +104,9 @@ class AsignaturaController extends Controller
             $asignaturas = (new Asignatura())->get_asignaturas($filtros);
         } elseif ($tipo_perfil === 'COORDINADOR') {
             $filtros['coordinacion'] = Auth::user()->persona?->docente?->id_coordinacion;
+            $asignaturas = (new Asignatura())->get_asignaturas($filtros);
+        } elseif ($tipo_perfil === 'DOCENTE') {
+            $filtros['docente'] = Auth::user()->persona?->docente?->id_docente;
             $asignaturas = (new Asignatura())->get_asignaturas($filtros);
         } else {
             $asignaturas = (new Asignatura())->get_all_asignaturas();

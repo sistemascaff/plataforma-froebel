@@ -32,7 +32,7 @@
                         const url_detalles = "{{ route('asignaturas.detalles', ':id') }}"
                             .replace(':id', row.id_asignatura);
                         return `
-                            <a class="fw-bold" target="_blank" rel="noopener noreferrer" href="${url_detalles}">
+                            <a class="fw-bold" href="${url_detalles}">
                                 ${data}
                             </a>`;
                     }
@@ -60,10 +60,16 @@
                     }
                 },
                 {
-                    data: "materia.materia",
+                    data: "materia",
+                    render: function(data, type, row) {
+                        return `<b>${data.abreviatura}</b> - ${data.materia}`;
+                    }
                 },
                 {
-                    data: "area.area",
+                    data: "area",
+                    render: function(data, type, row) {
+                        return `<b>${data.abreviatura}</b> - ${data.area}`;
+                    }
                 },
                 {
                     data: "aula.aula",
@@ -144,8 +150,7 @@
 
                         return `
                             <div class="btn-group" role="group">
-                                <a class="btn btn-info btn-sm" href="${url_detalles}" target="_blank" rel="noopener noreferrer"
-                                    data-toggle="tooltip" title="Detalles">
+                                <a class="btn btn-info btn-sm" href="${url_detalles}" data-toggle="tooltip" title="Detalles">
                                     <i class="fa-duotone fa-solid fa-eye"></i>
                                 </a>
                                 <button type="button" class="btn btn-warning btn-sm btn-editar" 

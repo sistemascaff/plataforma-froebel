@@ -11,7 +11,7 @@
                 <form id="form-editar-docente">
                     <div class="mb-3">
                         <label for="docente" class="form-label">Docente <span class="text-danger">*</span></label>
-                        <select class="form-select" id="docente" name="docente" required>
+                        <select class="form-select" id="docente" name="docente">
                         </select>
                     </div>
                 </form>

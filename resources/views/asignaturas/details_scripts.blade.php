@@ -153,13 +153,14 @@
                 success: function(response) {
                     let $select = $("#docente");
                     $select.empty();
-                    $select.append('<option value="">Selecciona un docente</option>');
+                    $select.append('<option value="">Ninguno</option>');
 
                     $.each(response.data, function(i, docente) {
                         if (docente.estado != 1) return;
-                        
+
                         $select.append(
-                            `<option value="${docente.id_docente}">${docente.persona.nombres_apellidos}</option>`);
+                            `<option value="${docente.id_docente}">${docente.persona.nombres_apellidos}</option>`
+                        );
                     });
                 }
             });
@@ -184,17 +185,8 @@
         $(document).on('click', '#btn-guardar-docente', function() {
             const btn = $(this);
             const idLista = $('#modal-formulario').data('id-lista');
+            // Ahora capturamos el valor, permitiendo que sea una cadena vacía ""
             const idDocente = $('#docente').val();
-
-            if (!idDocente) {
-                Swal.fire({
-                    theme: localStorage.getItem('theme') || 'dark',
-                    title: 'Atención',
-                    text: 'Debes seleccionar un docente.',
-                    icon: 'warning'
-                });
-                return;
-            }
 
             btn.prop('disabled', true)
                 .html('<i class="fa-solid fa-spinner fa-spin"></i> Guardando...');
@@ -222,22 +214,16 @@
                     btn.prop('disabled', false)
                         .html('<i class="fa-solid fa-duotone fa-save me-1"></i>Guardar');
 
-                    // Se obtiene el nuevo docente desde la respuesta y se actualiza la tabla
                     const nuevoDocente = response.nuevoDocente;
-
-                    // 1. Encontrar el botón de edición específico de esta fila usando el data-id-lista
                     const botonEdicion = $(
                         `#listas .btn-editar-docente[data-id-lista="${idLista}"]`);
-
-                    // 2. Navegar hacia arriba en el DOM hasta encontrar la fila (tr) correspondiente
                     const fila = botonEdicion.closest('tr');
 
-                    // 3. Actualizar el texto de la celda del docente (es la 4ta columna, índice 3)
-                    fila.find('td:eq(3)').text(nuevoDocente.persona.nombres_apellidos);
+                    // Protegemos la lectura: si nuevoDocente es nulo, renderiza 'No asignado'
+                    const nombreMostrar = nuevoDocente?.persona?.nombres_apellidos ??
+                        '<i class="fa-solid fa-duotone fa-exclamation-triangle"></i> No asignado';
+                    fila.find('td:eq(3)').html(nombreMostrar);
 
-                    // 4. Mantenimiento crucial: Actualizar el atributo data-id-docente del botón
-                    // Esto asegura que si el usuario vuelve a hacer clic en "Editar" sin recargar la página, 
-                    // el modal cargue el ID del nuevo docente y no el antiguo.
                     botonEdicion.data('id-docente', idDocente);
                     botonEdicion.attr('data-id-docente', idDocente);
                 },

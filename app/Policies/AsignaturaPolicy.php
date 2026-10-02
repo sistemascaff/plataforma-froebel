@@ -30,13 +30,8 @@ class AsignaturaPolicy
     public function viewAny(Usuario $usuario): bool
     {
         $perfil = $usuario->persona?->tipo_perfil;
-
-        // El DOCENTE opera exclusivamente desde sus Listas, no desde el catálogo general de asignaturas.
-        if ($perfil === 'DOCENTE') {
-            return false;
-        }
-
-        return in_array($perfil, ['GERENTE GENERAL', 'DIRECTOR', 'DIRECTOR DE NIVEL', 'COORDINADOR']);
+        
+        return in_array($perfil, ['GERENTE GENERAL', 'DIRECTOR', 'DIRECTOR DE NIVEL', 'COORDINADOR', 'DOCENTE']);
     }
 
     /**

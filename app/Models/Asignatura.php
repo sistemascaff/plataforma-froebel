@@ -91,8 +91,8 @@ class Asignatura extends Model
     public function get_all_asignaturas()
     {
         return $this::with([
-            'materia:id_materia,materia',
-            'area:id_area,area',
+            'materia:id_materia,materia,abreviatura',
+            'area:id_area,area,abreviatura',
             'aula:id_aula,aula',
             'nivel:id_nivel,nivel',
             'curso:id_curso,curso',
@@ -107,8 +107,8 @@ class Asignatura extends Model
     public function get_asignaturas(array $filtros = [])
     {
         return $this::with([
-            'materia:id_materia,materia',
-            'area:id_area,area',
+            'materia:id_materia,materia,abreviatura',
+            'area:id_area,area,abreviatura',
             'aula:id_aula,aula',
             'nivel:id_nivel,nivel',
             'curso:id_curso,curso',
@@ -129,6 +129,12 @@ class Asignatura extends Model
                 $q->where('id_coordinacion', $valor)
             )
             ->when(
+                $filtros['docente'] ?? null,
+                // Filtra solo las asignaturas que tengan al menos una lista vinculada a este docente
+                fn($q, $valor) =>
+                $q->whereHas('listas_asignaturas', fn($query) => $query->where('id_docente', $valor))
+            )
+            ->when(
                 $filtros['busqueda'] ?? null,
                 fn($q, $valor) =>
                 $q->where('asignatura', 'LIKE', "%{$valor}%")
@@ -143,7 +149,24 @@ class Asignatura extends Model
             'horarios_asignaturas:id_horario_asignatura,id_nivel,id_gestion,denominacion,hora_inicio,hora_fin,estado',
             'horarios_asignaturas.gestion:id_gestion,anio,estado',
 
-            'listas_asignaturas:id_lista_asignatura,id_asignatura,id_periodo,id_docente,estado',
+            'listas_asignaturas' => function ($query) {
+                $query->select(
+                    'listas_asignaturas.id_lista_asignatura',
+                    'listas_asignaturas.id_asignatura',
+                    'listas_asignaturas.id_periodo',
+                    'listas_asignaturas.id_docente',
+                    'listas_asignaturas.estado'
+                )
+                    // Encadenamiento estratégico para habilitar el ordenamiento
+                    ->join('periodos', 'listas_asignaturas.id_periodo', '=', 'periodos.id_periodo')
+                    ->join('gestiones', 'periodos.id_gestion', '=', 'gestiones.id_gestion')
+
+                    ->withCount('estudiantes') // Delega el COUNT() a la relación en base de datos
+
+                    // Ordenamiento estricto solicitado
+                    ->orderBy('gestiones.anio', 'DESC')
+                    ->orderBy('periodos.posicion_ordinal', 'ASC');
+            },
             'listas_asignaturas.periodo:id_periodo,id_gestion,periodo,posicion_ordinal,estado',
             'listas_asignaturas.periodo.gestion:id_gestion,anio,estado',
             'listas_asignaturas.docente:id_docente,id_persona,id_nivel,id_coordinacion,especialidad,grado_estudios,domicilio,estado',
