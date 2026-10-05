@@ -5,10 +5,13 @@
         <h1 class="text-info fw-bold mb-0">
             <i class="fa-solid fa-duotone fa-book-reader me-2"></i>{{ $head_title }}
         </h1>
-        <button type="button" class="btn btn-success shadow-sm btn-crear" data-bs-toggle="modal"
-            data-bs-target="#modal-formulario">
-            <i class="fa-solid fa-duotone fa-plus me-1"></i> Crear asignatura
-        </button>
+        {{-- Verifica que el usuario tenga permiso para crear asignaturas --}}
+        @can('create', App\Models\Asignatura::class)
+            <button type="button" class="btn btn-success shadow-sm btn-crear" data-bs-toggle="modal"
+                data-bs-target="#modal-formulario">
+                <i class="fa-solid fa-duotone fa-plus me-1"></i> Crear asignatura
+            </button>
+        @endcan
     </div>
 
     <p class="text-justify mb-4">

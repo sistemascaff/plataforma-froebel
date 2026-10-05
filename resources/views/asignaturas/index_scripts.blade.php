@@ -1,4 +1,11 @@
 <script>
+    const AUTH_PERFIL = '{{ Auth::user()->persona?->tipo_perfil }}';
+    const ES_ADMINISTRADOR = AUTH_PERFIL === 'ADMINISTRADOR';
+    const ROLES_PERMITIDOS = ['DIRECTOR DE NIVEL', 'COORDINADOR'];
+    const PUEDE_CREAR = ROLES_PERMITIDOS.includes(AUTH_PERFIL) || ES_ADMINISTRADOR;
+    const PUEDE_EDITAR = ROLES_PERMITIDOS.includes(AUTH_PERFIL) || ES_ADMINISTRADOR;
+    const PUEDE_ELIMINAR = ROLES_PERMITIDOS.includes(AUTH_PERFIL) || ES_ADMINISTRADOR;
+
     $(document).ready(function() {
         $('.select2').select2({
             width: '100%',
@@ -54,7 +61,8 @@
                 {
                     data: "curso.curso",
                     render: function(data, type, row) {
-                        return data ? `<span class="badge bg-info text-dark">${data}</span>` : row.tipo_bloque === 'curso' ?
+                        return data ? `<span class="badge bg-info text-dark">${data}</span>` :
+                            row.tipo_bloque === 'curso' ?
                             '<span class="badge bg-danger">No asignado</span>' :
                             '<span class="badge bg-secondary">N/A</span>';
                     }
@@ -82,6 +90,7 @@
                 },
                 {
                     data: "estado",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data, type, row) {
                         if (data == 1) {
                             return '<span class="badge bg-success">ACTIVO</span>';
@@ -94,48 +103,56 @@
                 },
                 {
                     data: "fecha_registro",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data, type, row) {
                         return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
                 {
                     data: "fecha_actualizacion",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data, type, row) {
                         return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
                 {
                     data: "fecha_eliminacion",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data, type, row) {
                         return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
                 {
                     data: "creado.correo",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data, type, row) {
                         return data || '-';
                     }
                 },
                 {
                     data: "modificado.correo",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data, type, row) {
                         return data || '-';
                     }
                 },
                 {
                     data: "eliminado.correo",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data, type, row) {
                         return data || '-';
                     }
                 },
                 {
                     data: "ip",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data, type, row) {
                         return data || '-';
                     }
                 },
                 {
                     data: "dispositivo",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data, type, row) {
                         return data || '-';
                     }
@@ -148,25 +165,45 @@
                         const url_detalles = "{{ route('asignaturas.detalles', ':id') }}"
                             .replace(':id', row.id_asignatura);
 
-                        return `
-                            <div class="btn-group" role="group">
-                                <a class="btn btn-info btn-sm" href="${url_detalles}" data-toggle="tooltip" title="Detalles">
-                                    <i class="fa-duotone fa-solid fa-eye"></i>
-                                </a>
+                        // Inicializamos el contenedor de botones
+                        let botones = `<div class="btn-group" role="group">`;
+
+                        botones += `
+                            <a class="btn btn-info btn-sm" href="${url_detalles}" data-toggle="tooltip" title="Detalles">
+                                <i class="fa-duotone fa-solid fa-eye"></i>
+                            </a>`;
+
+                        if (PUEDE_EDITAR) {
+                            botones += `
                                 <button type="button" class="btn btn-warning btn-sm btn-editar" 
                                         data-id="${row.id_asignatura}" data-toggle="tooltip" title="Editar">
                                     <i class="fa-duotone fa-solid fa-edit"></i>
-                                </button>
+                                </button>`;
+                        }
+
+                        if (PUEDE_CREAR) {
+                            botones += `
                                 <button type="button" class="btn btn-success btn-sm btn-clonar" 
                                         data-id="${row.id_asignatura}" data-toggle="tooltip" title="Clonar propiedades">
                                     <i class="fa-duotone fa-solid fa-clone"></i>
-                                </button>
-                                <button type="button" class="btn btn-${row.estado == 1 ? 'danger' : 'success'} btn-sm btn-cambiar-estado" 
+                                </button>`;
+                        }
+
+                        if (PUEDE_ELIMINAR) {
+                            let colorBtn = row.estado == 1 ? 'danger' : 'success';
+                            let iconBtn = row.estado == 1 ? 'off' : 'on';
+                            let titleBtn = row.estado == 1 ? 'Deshabilitar' : 'Habilitar';
+
+                            botones += `
+                                <button type="button" class="btn btn-${colorBtn} btn-sm btn-cambiar-estado" 
                                         data-id="${row.id_asignatura}" data-estado="${row.estado}" data-nombre="${row.asignatura}" 
-                                        data-toggle="tooltip" title="${row.estado == 1 ? 'Deshabilitar' : 'Habilitar'}">
-                                    <i class="fa-duotone fa-solid fa-toggle-${row.estado == 1 ? 'off' : 'on'}"></i>
-                                </button>
-                            </div>`;
+                                        data-toggle="tooltip" title="${titleBtn}">
+                                    <i class="fa-duotone fa-solid fa-toggle-${iconBtn}"></i>
+                                </button>`;
+                        }
+
+                        botones += `</div>`;
+                        return botones;
                     }
                 }
             ],

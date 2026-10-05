@@ -11,7 +11,6 @@
             <i
                 class="fa-solid fa-duotone {{ helper_tipo_perfil_a_font_awesome_icono(Auth::user()->persona?->tipo_perfil) }}"></i>
             {{ Auth::user()->persona?->nombres_apellidos }}
-            [{{ Auth::user()->correo }}]
         </span>
     </h2>
 
