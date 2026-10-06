@@ -15,6 +15,12 @@
             dropdownParent: $('#modal-formulario'),
         });
 
+        $('#filter_id_docente, #filter_id_curso').select2({
+            language: "es",
+            dropdownCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
+            selectionCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
+        });
+
         $("#dataTable").DataTable({
             processing: true,
             ajax: {
@@ -22,6 +28,14 @@
                 type: "GET",
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: function(d) {
+                    d.id_nivel = $('#filter_id_nivel').val();
+                    d.id_coordinacion = $('#filter_id_coordinacion').val();
+                    d.id_curso = $('#filter_id_curso').val();
+                    d.tipo_calificacion = $('#filter_tipo_calificacion').val();
+                    d.tipo_bloque = $('#filter_tipo_bloque').val();
+                    d.id_docente = $('#filter_id_docente').val();
                 },
                 error: function(xhr, error, thrown) {
                     console.error("Error al cargar los datos:", error);
@@ -87,6 +101,10 @@
                 },
                 {
                     data: "coordinacion.coordinacion",
+                },
+                {
+                    data: "horarios_asignaturas_count",
+                    visible: ES_ADMINISTRADOR,
                 },
                 {
                     data: "estado",
@@ -210,6 +228,11 @@
             @include('components.datatables.datatables_global_properties')
             @include('components.datatables.datatables_language_property')
         }).buttons().container().appendTo('#dataTable-export-buttons-container');
+
+        $("#btn-filtrar").on("click", function(e) {
+            e.preventDefault();
+            $("#dataTable").DataTable().ajax.reload();
+        });
 
         $(document).on('click', '.btn-crear', function() {
             $('#form-crear-o-editar input[name="id_asignatura"]').val(0);

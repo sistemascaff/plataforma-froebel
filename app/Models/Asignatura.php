@@ -101,7 +101,7 @@ class Asignatura extends Model
             'creado:id_usuario,correo',
             'modificado:id_usuario,correo',
             'eliminado:id_usuario,correo'
-        ])->orderBy('asignatura', 'ASC')->get();
+        ])->withCount('horarios_asignaturas')->orderBy('asignatura', 'ASC')->get();
     }
 
     public function get_asignaturas(array $filtros = [])
@@ -118,6 +118,7 @@ class Asignatura extends Model
             'modificado:id_usuario,correo',
             'eliminado:id_usuario,correo'
         ])
+        ->withCount('horarios_asignaturas')
             ->when(
                 $filtros['nivel'] ?? null,
                 fn($q, $valor) =>
@@ -129,10 +130,25 @@ class Asignatura extends Model
                 $q->where('id_coordinacion', $valor)
             )
             ->when(
+                $filtros['curso'] ?? null,
+                fn($q, $valor) =>
+                $q->where('id_curso', $valor)
+            )
+            ->when(
                 $filtros['docente'] ?? null,
                 // Filtra solo las asignaturas que tengan al menos una lista vinculada a este docente
                 fn($q, $valor) =>
                 $q->whereHas('listas_asignaturas', fn($query) => $query->where('id_docente', $valor))
+            )
+            ->when(
+                $filtros['tipo_calificacion'] ?? null,
+                fn($q, $valor) =>
+                $q->where('tipo_calificacion', $valor)
+            )
+            ->when(
+                $filtros['tipo_bloque'] ?? null,
+                fn($q, $valor) =>
+                $q->where('tipo_bloque', $valor)
             )
             ->when(
                 $filtros['busqueda'] ?? null,

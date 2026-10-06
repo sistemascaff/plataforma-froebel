@@ -21,9 +21,15 @@
         nivel al que pertenece y la coordinación encargada.
     </p>
 
+    {{-- Si el usuario es un docente no es necesario mostrar los filtros --}}
+    @if ($tipo_perfil !== 'DOCENTE')
+        @include('asignaturas.index_filters')
+    @endif
+
     <div class="card shadow-sm mb-4">
         <div class="card-header p-3 d-flex justify-content-between align-items-center">
-            <p class="mb-0">Seleccione una opción para <i class="fa-solid fa-duotone fa-file-export mx-1"></i> exportar o
+            <p class="mb-0">Seleccione una opción para <i class="fa-solid fa-duotone fa-file-export mx-1"></i> exportar
+                o
                 <i class="fa-solid fa-duotone fa-filter mx-1"></i> filtrar la tabla:
             </p>
             <div id="dataTable-export-buttons-container"></div>
@@ -43,6 +49,7 @@
                             <th>Aula</th>
                             <th>Nivel</th>
                             <th>Coordinación</th>
+                            <th>Cant. Horarios</th>
                             <th class="text-center">Estado</th>
                             <th>F. Registro</th>
                             <th>F. Actualización</th>

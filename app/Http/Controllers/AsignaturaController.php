@@ -8,6 +8,7 @@ use App\Models\Asignatura;
 use App\Models\Aula;
 use App\Models\Coordinacion;
 use App\Models\Curso;
+use App\Models\Docente;
 use App\Models\ListaAsignatura;
 use App\Models\Materia;
 use App\Models\Nivel;
@@ -32,6 +33,7 @@ class AsignaturaController extends Controller
         $aulas = (new Aula())->get_all_aulas();
         $niveles = (new Nivel())->get_all_niveles();
         $coordinaciones = (new Coordinacion())->get_all_coordinaciones();
+        $docentes = (new Docente())->get_all_docentes();
 
         if ($tipo_perfil === 'DIRECTOR DE NIVEL') {
             $filtros['nivel'] = Auth::user()->persona?->docente?->id_nivel;
@@ -42,11 +44,13 @@ class AsignaturaController extends Controller
 
         return view('asignaturas.index', [
             'head_title' => 'GESTIÓN DE ASIGNATURAS',
+            'tipo_perfil' => $tipo_perfil,
             'materias' => $materias,
             'areas' => $areas,
             'aulas' => $aulas,
             'niveles' => $niveles,
             'coordinaciones' => $coordinaciones,
+            'docentes' => $docentes,
             'cursos' => $cursos,
         ]);
     }
@@ -90,7 +94,7 @@ class AsignaturaController extends Controller
         ]);
     }
 
-    public function listar()
+    public function listar(Request $request)
     {
         // Autorización general
         $this->authorize('viewAny', Asignatura::class);
@@ -99,6 +103,27 @@ class AsignaturaController extends Controller
         $filtros = [];
         $asignaturas = null;
 
+        // Filtros dinámicos (Desde la vista)
+        if ($request->filled('id_nivel')) {
+            $filtros['nivel'] = $request->id_nivel;
+        }
+        if ($request->filled('id_coordinacion')) {
+            $filtros['coordinacion'] = $request->id_coordinacion;
+        }
+        if ($request->filled('id_curso')) {
+            $filtros['curso'] = $request->id_curso;
+        }
+        if ($request->filled('tipo_calificacion')) {
+            $filtros['tipo_calificacion'] = $request->tipo_calificacion;
+        }
+        if ($request->filled('tipo_bloque')) {
+            $filtros['tipo_bloque'] = $request->tipo_bloque;
+        }
+        if ($request->filled('id_docente')) {
+            $filtros['docente'] = $request->id_docente;
+        }
+
+        // Si el usuario tiene un perfil que requiere filtrado automático, aplicamos esos filtros
         if ($tipo_perfil === 'DIRECTOR DE NIVEL') {
             $filtros['nivel'] = Auth::user()->persona?->docente?->id_nivel;
             $asignaturas = (new Asignatura())->get_asignaturas($filtros);
@@ -107,6 +132,8 @@ class AsignaturaController extends Controller
             $asignaturas = (new Asignatura())->get_asignaturas($filtros);
         } elseif ($tipo_perfil === 'DOCENTE') {
             $filtros['docente'] = Auth::user()->persona?->docente?->id_docente;
+            $asignaturas = (new Asignatura())->get_asignaturas($filtros);
+        } elseif ($filtros && count($filtros) > 0) {
             $asignaturas = (new Asignatura())->get_asignaturas($filtros);
         } else {
             $asignaturas = (new Asignatura())->get_all_asignaturas();
