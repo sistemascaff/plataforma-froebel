@@ -6,7 +6,7 @@
             <i class="fa-solid fa-duotone fa-book-open-reader me-2"></i>{{ $head_title ?? 'Detalles de la Asignatura' }}
         </h1>
         <a class="btn btn-secondary shadow-sm" href="{{ route('asignaturas.index') }}">
-            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i>Volver
+            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i>Volver a <b>Asignaturas</b>
         </a>
     </div>
 
@@ -72,12 +72,15 @@
                                             data-bs-toggle="tooltip" title="Detalles de la lista">
                                             <i class="fa-duotone fa-solid fa-eye"></i>
                                         </a>
-                                        <button type="button" class="btn btn-warning btn-sm btn-editar-docente"
-                                            data-id-docente="{{ $lista_asignatura->id_docente }}"
-                                            data-id-lista="{{ $lista_asignatura->id_lista_asignatura }}"
-                                            data-bs-toggle="tooltip" title="Editar docente">
-                                            <i class="fa-duotone fa-solid fa-edit"></i>
-                                        </button>
+                                        {{-- Si el usuario es un docente no puede editar el docente --}}
+                                        @if (Auth::user()->persona->tipo_perfil != 'DOCENTE')
+                                            <button type="button" class="btn btn-warning btn-sm btn-editar-docente"
+                                                data-id-docente="{{ $lista_asignatura->id_docente }}"
+                                                data-id-lista="{{ $lista_asignatura->id_lista_asignatura }}"
+                                                data-bs-toggle="tooltip" title="Editar docente">
+                                                <i class="fa-duotone fa-solid fa-edit"></i>
+                                            </button>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -245,7 +248,10 @@
         </div>
     </div>
 
-    @include('asignaturas.details_docentes_modal_form')
+    {{-- Si el usuario es un docente no renderizar el modal para editar docentes --}}
+    @if (Auth::user()->persona->tipo_perfil != 'DOCENTE')
+        @include('asignaturas.details_docentes_modal_form')
+    @endif
 @endsection
 
 @section('scripts')

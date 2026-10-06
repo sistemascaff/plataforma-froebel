@@ -6,7 +6,7 @@
             <i class="fa-solid fa-duotone fa-clipboard-list-check me-2"></i>{{ $head_title }}
         </h1>
         <a class="btn btn-secondary shadow-sm" href="{{ route('asignaturas.detalles', $lista_asignatura->id_asignatura) }}">
-            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver
+            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver a <b>{{ $lista_asignatura->asignatura->asignatura }}</b>
         </a>
     </div>
 

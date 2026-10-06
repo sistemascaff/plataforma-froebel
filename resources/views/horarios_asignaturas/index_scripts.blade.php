@@ -1,4 +1,6 @@
 <script>
+    const AUTH_PERFIL = '{{ Auth::user()->persona?->tipo_perfil }}';
+    const ES_ADMINISTRADOR = AUTH_PERFIL === 'ADMINISTRADOR';
     $(document).ready(function() {
         $("#dataTable").DataTable({
             processing: true,
@@ -41,6 +43,7 @@
                 },
                 {
                     data: "estado",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data, type, row) {
                         if (data == 1) {
                             return '<span class="badge bg-success">ACTIVO</span>';
@@ -53,48 +56,56 @@
                 },
                 {
                     data: "fecha_registro",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data, type, row) {
                         return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
                 {
                     data: "fecha_actualizacion",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data, type, row) {
                         return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
                 {
                     data: "fecha_eliminacion",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data, type, row) {
                         return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
                 {
                     data: "creado.correo",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data, type, row) {
                         return data || '-';
                     }
                 },
                 {
                     data: "modificado.correo",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data, type, row) {
                         return data || '-';
                     }
                 },
                 {
                     data: "eliminado.correo",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data, type, row) {
                         return data || '-';
                     }
                 },
                 {
                     data: "ip",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data, type, row) {
                         return data || '-';
                     }
                 },
                 {
                     data: "dispositivo",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data, type, row) {
                         return data || '-';
                     }

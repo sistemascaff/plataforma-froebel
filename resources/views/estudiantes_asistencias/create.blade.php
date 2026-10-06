@@ -7,7 +7,7 @@
         </h1>
         <a class="btn btn-secondary shadow-sm"
             href="{{ route('listas_asignaturas.detalles', $lista_asignatura->id_lista_asignatura) }}">
-            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver
+            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver a la Lista
         </a>
     </div>
 

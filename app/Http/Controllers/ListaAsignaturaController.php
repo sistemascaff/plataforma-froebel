@@ -323,6 +323,14 @@ class ListaAsignaturaController extends Controller
             'docente' => 'nullable|exists:docentes,id_docente',
         ]);
 
+        // Regla especial fuera de la política: Los docentes no pueden modificar el docente asignado a la lista
+        if(Auth::user()->persona?->tipo_perfil === 'DOCENTE') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Acceso denegado: Los docentes no pueden modificar el docente asignado a la lista.'
+            ], 403);
+        }
+
         $lista_asignatura = (new ListaAsignatura())->get_lista_asignatura($request->lista_asignatura);
 
         $this->authorize('update', $lista_asignatura);
