@@ -3,11 +3,17 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="text-info fw-bold mb-0"><i class="fa-solid fa-duotone fa-user-graduate me-2"></i>{{ $head_title }}</h1>
-        <button type="button" class="btn btn-success shadow-sm btn-crear" data-bs-toggle="modal"
-            data-bs-target="#modal-formulario">
-            <i class="fa-solid fa-duotone fa-plus me-1"></i> Crear estudiante
-        </button>
+
+        {{-- Verifica que el usuario tenga permiso para crear estudiantes --}}
+        @can('create', App\Models\Estudiante::class)
+            <button type="button" class="btn btn-success shadow-sm btn-crear" data-bs-toggle="modal"
+                data-bs-target="#modal-formulario">
+                <i class="fa-solid fa-duotone fa-plus me-1"></i> Crear estudiante
+            </button>
+        @endcan
     </div>
+
+    @include('estudiantes.index_filters')
 
     <div class="card shadow-sm mb-4">
         <div class="card-header p-3 d-flex justify-content-between align-items-center">
@@ -38,6 +44,8 @@
                             <th>Tipo de perfil</th>
                             <th>Correo</th>
                             <th>Contraseña</th>
+                            <th>Código interno</th>
+                            <th>Código RUDE</th>
                             <th class="text-center">Tiene acceso</th>
                             <th>Nacimiento país</th>
                             <th>Nacimiento departamento</th>

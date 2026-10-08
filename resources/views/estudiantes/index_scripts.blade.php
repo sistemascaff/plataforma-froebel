@@ -1,7 +1,18 @@
 <script>
+    const AUTH_PERFIL = '{{ Auth::user()->persona?->tipo_perfil }}';
+    const ES_ADMINISTRADOR = AUTH_PERFIL === 'ADMINISTRADOR';
+    const ROLES_PERMITIDOS = ['SECRETARIA ACADEMICA'];
+    const PUEDE_EDITAR = ROLES_PERMITIDOS.includes(AUTH_PERFIL) || ES_ADMINISTRADOR;
+    const PUEDE_ELIMINAR = ROLES_PERMITIDOS.includes(AUTH_PERFIL) || ES_ADMINISTRADOR;
+    const PUEDE_CREAR_LICENCIAS = ROLES_PERMITIDOS.includes(AUTH_PERFIL) || ES_ADMINISTRADOR;
     const URL_BASE = "{{ URL::to('/') }}";
 
     $(document).ready(function() {
+        $('#filter_id_grado, #filter_id_curso').select2({
+            language: "es",
+            dropdownCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
+            selectionCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
+        });
 
         // ─── Preview de foto de perfil al seleccionar archivo ───────────────────────
         $('#foto_perfil').on('change', function() {
@@ -26,6 +37,13 @@
                 type: "GET",
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: function(d) {
+                    d.id_nivel = $('#filter_id_nivel').val();
+                    d.id_grado = $('#filter_id_grado').val();
+                    d.id_curso = $('#filter_id_curso').val();
+                    d.id_paralelo = $('#filter_id_paralelo').val();
+                    d.estado = $('#filter_estado').val();
                 },
                 error: function(xhr, error, thrown) {
                     console.error("Error al cargar los datos:", error);
@@ -85,16 +103,20 @@
                     }
                 },
                 {
-                    data: "persona.idioma"
+                    data: "persona.idioma",
+                    visible: ES_ADMINISTRADOR,
                 },
                 {
-                    data: "persona.celular"
+                    data: "persona.celular",
+                    visible: ES_ADMINISTRADOR,
                 },
                 {
-                    data: "persona.telefono"
+                    data: "persona.telefono",
+                    visible: ES_ADMINISTRADOR,
                 },
                 {
-                    data: "persona.tipo_perfil"
+                    data: "persona.tipo_perfil",
+                    visible: ES_ADMINISTRADOR,
                 },
                 {
                     data: "persona.usuario.correo"
@@ -106,6 +128,12 @@
                     }
                 },
                 {
+                    data: "codigo_interno"
+                },
+                {
+                    data: "codigo_rude"
+                },
+                {
                     data: "persona.usuario.tiene_acceso",
                     render: function(data) {
                         if (data == 1) return '<span class="badge bg-success">SI</span>';
@@ -114,25 +142,32 @@
                     }
                 },
                 {
-                    data: "nacimiento_pais"
+                    data: "nacimiento_pais",
+                    visible: ES_ADMINISTRADOR,
                 },
                 {
-                    data: "nacimiento_departamento"
+                    data: "nacimiento_departamento",
+                    visible: ES_ADMINISTRADOR,
                 },
                 {
-                    data: "nacimiento_provincia"
+                    data: "nacimiento_provincia",
+                    visible: ES_ADMINISTRADOR,
                 },
                 {
-                    data: "nacimiento_localidad"
+                    data: "nacimiento_localidad",
+                    visible: ES_ADMINISTRADOR,
                 },
                 {
-                    data: "salud_tipo_sangre"
+                    data: "salud_tipo_sangre",
+                    visible: ES_ADMINISTRADOR,
                 },
                 {
-                    data: "salud_alergias"
+                    data: "salud_alergias",
+                    visible: ES_ADMINISTRADOR,
                 },
                 {
-                    data: "salud_datos"
+                    data: "salud_datos",
+                    visible: ES_ADMINISTRADOR,
                 },
                 {
                     data: "estado",
@@ -145,48 +180,56 @@
                 },
                 {
                     data: "fecha_registro",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data) {
                         return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
                 {
                     data: "fecha_actualizacion",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data) {
                         return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
                 {
                     data: "fecha_eliminacion",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data) {
                         return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
                 {
                     data: "creado.correo",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data) {
                         return data || '-';
                     }
                 },
                 {
                     data: "modificado.correo",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data) {
                         return data || '-';
                     }
                 },
                 {
                     data: "eliminado.correo",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data) {
                         return data || '-';
                     }
                 },
                 {
                     data: "ip",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data) {
                         return data || '-';
                     }
                 },
                 {
                     data: "dispositivo",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data) {
                         return data || '-';
                     }
@@ -198,23 +241,51 @@
                     render: function(data, type, row) {
                         const url_detalles = "{{ route('estudiantes.detalles', ':id') }}"
                             .replace(':id', row.id_estudiante);
-                        return `
-                            <div class="btn-group" role="group">
-                                <a class="btn btn-info btn-sm" href="${url_detalles}" target="_blank" rel="noopener noreferrer"
-                                    data-toggle="tooltip" title="Detalles">
-                                    <i class="fa-duotone fa-solid fa-eye"></i>
-                                </a>
-                                <button type="button" class="btn btn-warning btn-sm btn-editar"
-                                        data-id="${row.id_estudiante}" data-toggle="tooltip" title="Editar">
-                                    <i class="fa-duotone fa-solid fa-edit"></i>
-                                </button>
-                                <button type="button" class="btn btn-${row.estado == 1 ? 'danger' : 'success'} btn-sm btn-cambiar-estado"
-                                        data-id="${row.id_estudiante}" data-estado="${row.estado}"
-                                        data-nombre="${row.persona.apellidos_nombres}"
-                                        data-toggle="tooltip" title="${row.estado == 1 ? 'Archivar' : 'Activar'}">
-                                    <i class="fa-duotone fa-solid fa-toggle-${row.estado == 1 ? 'off' : 'on'}"></i>
-                                </button>
-                            </div>`;
+                        const url_licencia =
+                            `{{ route('estudiantes_licencias.index') }}?id_estudiante=${row.id_estudiante}`;
+
+                        let botones = `<div class="btn-group" role="group">`;
+
+                        if (PUEDE_CREAR_LICENCIAS) {
+                            botones += `
+                            <a class="btn btn-info btn-sm" href="${url_licencia}" target="_blank" rel="noopener noreferrer"
+                                data-toggle="tooltip" title="Registrar licencia">
+                                <i class="fa-duotone fa-solid fa-file-medical"></i>
+                            </a>`;
+                        }
+
+                        // El botón de detalles suele ser público/accesible por defecto
+                        botones += `
+                            <a class="btn btn-primary btn-sm" href="${url_detalles}" target="_blank" rel="noopener noreferrer"
+                                data-toggle="tooltip" title="Detalles">
+                                <i class="fa-duotone fa-solid fa-eye"></i>
+                            </a>`;
+
+                        if (PUEDE_EDITAR) {
+                            botones += `
+                            <button type="button" class="btn btn-warning btn-sm btn-editar"
+                                    data-id="${row.id_estudiante}" data-toggle="tooltip" title="Editar">
+                                <i class="fa-duotone fa-solid fa-edit"></i>
+                            </button>`;
+                        }
+
+                        if (PUEDE_ELIMINAR) {
+                            let colorBtn = row.estado == 1 ? 'danger' : 'success';
+                            let iconBtn = row.estado == 1 ? 'off' : 'on';
+                            let titleBtn = row.estado == 1 ? 'Archivar' : 'Activar';
+
+                            botones += `
+                            <button type="button" class="btn btn-${colorBtn} btn-sm btn-cambiar-estado"
+                                    data-id="${row.id_estudiante}" data-estado="${row.estado}"
+                                    data-nombre="${row.persona.apellidos_nombres}"
+                                    data-toggle="tooltip" title="${titleBtn}">
+                                <i class="fa-duotone fa-solid fa-toggle-${iconBtn}"></i>
+                            </button>`;
+                        }
+
+                        botones += `</div>`;
+
+                        return botones;
                     }
                 }
             ],
@@ -222,6 +293,10 @@
             @include('components.datatables.datatables_language_property')
         }).buttons().container().appendTo('#dataTable-export-buttons-container');
 
+        $("#btn-filtrar").on("click", function(e) {
+            e.preventDefault();
+            $("#dataTable").DataTable().ajax.reload();
+        });
 
         // ─── CREAR ───────────────────────────────────────────────────────────────────
         $(document).on('click', '.btn-crear', function() {

@@ -7,7 +7,7 @@
     <div class="card-body">
         <div class="row g-3 align-items-end">
             <div class="col-md-3">
-                <label for="id_nivel" class="form-label text-muted fw-bold">Nivel:</label>
+                <label for="filter_id_nivel" class="form-label text-muted fw-bold">Nivel:</label>
                 <select class="form-select" id="filter_id_nivel">
                     <option value="">Todos</option>
                     @foreach ($niveles as $nivel)
@@ -16,17 +16,16 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="id_coordinacion" class="form-label text-muted fw-bold">Coordinación:</label>
-                <select class="form-select" id="filter_id_coordinacion">
+                <label for="filter_id_grado" class="form-label text-muted fw-bold">Grado:</label>
+                <select class="form-select" id="filter_id_grado">
                     <option value="">Todos</option>
-                    @foreach ($coordinaciones as $coordinacion)
-                        <option value="{{ $coordinacion->id_coordinacion }}">
-                            {{ $coordinacion->coordinacion }}</option>
+                    @foreach ($grados as $grado)
+                        <option value="{{ $grado->id_grado }}">{{ $grado->grado }}</option>
                     @endforeach
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="id_curso" class="form-label text-muted fw-bold">Curso:</label>
+                <label for="filter_id_curso" class="form-label text-muted fw-bold">Curso:</label>
                 <select class="form-select" id="filter_id_curso">
                     <option value="">Todos</option>
                     @foreach ($cursos as $curso)
@@ -35,28 +34,11 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="id_curso" class="form-label text-muted fw-bold">Tipo de calificación:</label>
-                <select class="form-select" id="filter_tipo_calificacion">
+                <label for="filter_id_paralelo" class="form-label text-muted fw-bold">Paralelo:</label>
+                <select class="form-select" id="filter_id_paralelo">
                     <option value="">Todos</option>
-                    <option value="cualitativa">CUALITATIVA</option>
-                    <option value="cuantitativa">CUANTITATIVA</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label for="id_curso" class="form-label text-muted fw-bold">Tipo de bloque:</label>
-                <select class="form-select" id="filter_tipo_bloque">
-                    <option value="">Todos</option>
-                    <option value="curso">CURSO</option>
-                    <option value="mixto">MIXTO</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label for="id_curso" class="form-label text-muted fw-bold">Docente:</label>
-                <select class="form-select" id="filter_id_docente">
-                    <option value="">Todos</option>
-                    @foreach ($docentes as $docente)
-                        <option value="{{ $docente->id_docente }}">{{ $docente->persona->nombres_apellidos }}</option>
-                    @endforeach
+                    <option value="1">A (ROT)</option>
+                    <option value="2">B (WEISS)</option>
                 </select>
             </div>
             <div class="col-md-3">

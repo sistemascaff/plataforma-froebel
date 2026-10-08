@@ -81,6 +81,7 @@ class Estudiante extends Model
             ->join('cursos', 'estudiantes.id_curso', '=', 'cursos.id_curso')
             ->join('grados', 'cursos.id_grado', '=', 'grados.id_grado')
             ->join('niveles', 'grados.id_nivel', '=', 'niveles.id_nivel')
+            ->join('paralelos', 'cursos.id_paralelo', '=', 'paralelos.id_paralelo')
             ->with([
                 'persona.usuario',
                 'curso',
@@ -103,6 +104,7 @@ class Estudiante extends Model
             ->join('cursos', 'estudiantes.id_curso', '=', 'cursos.id_curso')
             ->join('grados', 'cursos.id_grado', '=', 'grados.id_grado')
             ->join('niveles', 'grados.id_nivel', '=', 'niveles.id_nivel')
+            ->join('paralelos', 'cursos.id_paralelo', '=', 'paralelos.id_paralelo')
             ->with([
                 'persona.usuario',
                 'curso:id_curso,id_grado,id_paralelo,curso,estado',
@@ -112,8 +114,24 @@ class Estudiante extends Model
             ])
             ->when(
                 $filtros['nivel'] ?? null,
-                // Como ya hicimos el join con niveles, filtramos directamente en lugar de usar whereHas (es más rápido)
+                // Como ya se hizo el join con niveles se puede filtrar directamente en lugar de usar whereHas (y también es más rápido)
                 fn($q, $valor) => $q->where('niveles.id_nivel', $valor)
+            )
+            ->when(
+                $filtros['grado'] ?? null,
+                fn($q, $valor) => $q->where('grados.id_grado', $valor)
+            )
+            ->when(
+                $filtros['curso'] ?? null,
+                fn($q, $valor) => $q->where('cursos.id_curso', $valor)
+            )
+            ->when(
+                $filtros['paralelo'] ?? null,
+                fn($q, $valor) => $q->where('paralelos.id_paralelo', $valor)
+            )
+            ->when(
+                isset($filtros['estado']),
+                fn($q) => $q->where('estudiantes.estado', $filtros['estado'])
             )
             ->orderBy('niveles.posicion_ordinal', 'ASC')
             ->orderBy('grados.posicion_ordinal', 'ASC')

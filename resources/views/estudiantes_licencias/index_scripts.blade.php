@@ -22,12 +22,30 @@
                         // Omitir estudiantes inactivos
                         if (estudiante.estado == '0') return;
 
-                        let fila = `(${estudiante.curso.curso}) ${estudiante.persona.apellidos_nombres}`;
+                        let fila =
+                            `(${estudiante.curso.curso}) ${estudiante.persona.apellidos_nombres}`;
 
                         $select.append(
                             `<option value="${estudiante.id_estudiante}">${fila}</option>`
                         );
                     });
+
+                    // ====================================================================
+                    // Apertura automática del modal desde redirección
+                    // ====================================================================
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const idEstudianteUrl = urlParams.get('id_estudiante');
+
+                    if (idEstudianteUrl) {
+                        // 1. Ejecutar la misma lógica de reseteo y apertura del modal
+                        $('.btn-crear')
+                    .click(); // 2. Sobrescribir el valor del select con el ID recibido en la URL
+                        $('#form-crear-o-editar select[name="id_estudiante"]').val(idEstudianteUrl).trigger('change');
+
+                        // 3. Limpiar la barra de direcciones para que no se vuelva a abrir el modal si el usuario presiona F5
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                    // ====================================================================
                 }
             });
         }

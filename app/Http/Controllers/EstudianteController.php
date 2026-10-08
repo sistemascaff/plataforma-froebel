@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\EstudianteValidation;
 use App\Models\Curso;
 use App\Models\Estudiante;
+use App\Models\Grado;
+use App\Models\Nivel;
 use App\Models\Persona;
 use App\Models\Usuario;
 use Carbon\Carbon;
@@ -21,11 +23,24 @@ class EstudianteController extends Controller
     {
         $this->authorize('viewAny', Estudiante::class);
 
-        $cursos = (new Curso())->get_all_cursos();
+        $tipo_perfil = Auth::user()->persona?->tipo_perfil;
+
+        if ($tipo_perfil === 'DIRECTOR DE NIVEL') {
+            $filtros['nivel'] = Auth::user()->persona?->docente?->id_nivel;
+            $cursos = (new Curso())->get_cursos($filtros);
+            $grados = (new Grado())->get_grados($filtros);
+        } else {
+            $cursos = (new Curso())->get_all_cursos();
+            $grados = (new Grado())->get_all_grados();
+        }
+        
+        $niveles = (new Nivel())->get_all_niveles();
 
         return view('estudiantes.index', [
             'head_title' => 'GESTIÓN DE ESTUDIANTES',
-            'cursos' => $cursos
+            'cursos' => $cursos,
+            'niveles' => $niveles,
+            'grados' => $grados
         ]);
     }
 
@@ -41,7 +56,7 @@ class EstudianteController extends Controller
         ]);
     }
 
-    public function listar()
+    public function listar(Request $request)
     {
         $this->authorize('viewAny', Estudiante::class);
 
@@ -49,8 +64,27 @@ class EstudianteController extends Controller
         $filtros = [];
         $estudiantes = null;
 
+        // Filtros dinámicos (Desde la vista)
+        if ($request->filled('id_nivel')) {
+            $filtros['nivel'] = $request->id_nivel;
+        }
+        if ($request->filled('id_grado')) {
+            $filtros['grado'] = $request->id_grado;
+        }
+        if ($request->filled('id_curso')) {
+            $filtros['curso'] = $request->id_curso;
+        }
+        if ($request->filled('id_paralelo')) {
+            $filtros['paralelo'] = $request->id_paralelo;
+        }
+        if ($request->estado !== null && $request->estado !== '') {
+            $filtros['estado'] = $request->estado;
+        }
+
         if ($tipo_perfil === 'DIRECTOR DE NIVEL') {
             $filtros['nivel'] = Auth::user()->persona?->docente?->id_nivel;
+            $estudiantes = (new Estudiante())->get_estudiantes($filtros);
+        } elseif ($filtros && count($filtros) > 0) {
             $estudiantes = (new Estudiante())->get_estudiantes($filtros);
         } else {
             $estudiantes = (new Estudiante())->get_all_estudiantes();

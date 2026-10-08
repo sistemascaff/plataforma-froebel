@@ -122,6 +122,9 @@ class AsignaturaController extends Controller
         if ($request->filled('id_docente')) {
             $filtros['docente'] = $request->id_docente;
         }
+        if ($request->estado !== null && $request->estado !== '') {
+            $filtros['estado'] = $request->estado;
+        }
 
         // Si el usuario tiene un perfil que requiere filtrado automático, aplicamos esos filtros
         if ($tipo_perfil === 'DIRECTOR DE NIVEL') {
@@ -132,6 +135,8 @@ class AsignaturaController extends Controller
             $asignaturas = (new Asignatura())->get_asignaturas($filtros);
         } elseif ($tipo_perfil === 'DOCENTE') {
             $filtros['docente'] = Auth::user()->persona?->docente?->id_docente;
+            /* Los docentes solo ven asignaturas activas */
+            $filtros['estado'] = 1;
             $asignaturas = (new Asignatura())->get_asignaturas($filtros);
         } elseif ($filtros && count($filtros) > 0) {
             $asignaturas = (new Asignatura())->get_asignaturas($filtros);

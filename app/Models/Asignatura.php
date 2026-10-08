@@ -90,49 +90,66 @@ class Asignatura extends Model
 
     public function get_all_asignaturas()
     {
-        return $this::with([
-            'materia:id_materia,materia,abreviatura',
-            'area:id_area,area,abreviatura',
-            'aula:id_aula,aula',
-            'nivel:id_nivel,nivel',
-            'curso:id_curso,curso',
-            'coordinacion:id_coordinacion,coordinacion',
+        return $this::select('asignaturas.*') // Previene colisión de columnas
+            // Usamos leftJoin porque id_curso es nullable para bloques mixtos
+            ->leftJoin('niveles', 'asignaturas.id_nivel', '=', 'niveles.id_nivel')
+            ->leftJoin('cursos', 'asignaturas.id_curso', '=', 'cursos.id_curso')
+            ->leftJoin('grados', 'cursos.id_grado', '=', 'grados.id_grado')
+            ->leftJoin('materias', 'asignaturas.id_materia', '=', 'materias.id_materia')
+            ->with([
+                'materia:id_materia,materia,abreviatura',
+                'area:id_area,area,abreviatura',
+                'aula:id_aula,aula',
+                'nivel:id_nivel,nivel',
+                'curso:id_curso,curso',
+                'coordinacion:id_coordinacion,coordinacion',
 
-            'creado:id_usuario,correo',
-            'modificado:id_usuario,correo',
-            'eliminado:id_usuario,correo'
-        ])->withCount('horarios_asignaturas')->orderBy('asignatura', 'ASC')->get();
+                'creado:id_usuario,correo',
+                'modificado:id_usuario,correo',
+                'eliminado:id_usuario,correo'
+            ])
+            ->withCount('horarios_asignaturas')
+            // Ordenamiento jerárquico solicitado
+            ->orderBy('niveles.posicion_ordinal', 'ASC')
+            ->orderBy('grados.posicion_ordinal', 'ASC')
+            ->orderBy('cursos.curso', 'ASC')
+            ->orderBy('materias.posicion_ordinal', 'ASC')
+            ->orderBy('asignaturas.asignatura', 'ASC') // Desempate final sugerido
+            ->get();
     }
 
     public function get_asignaturas(array $filtros = [])
     {
-        return $this::with([
-            'materia:id_materia,materia,abreviatura',
-            'area:id_area,area,abreviatura',
-            'aula:id_aula,aula',
-            'nivel:id_nivel,nivel',
-            'curso:id_curso,curso',
-            'coordinacion:id_coordinacion,coordinacion',
+        return $this::select('asignaturas.*')
+            ->leftJoin('niveles', 'asignaturas.id_nivel', '=', 'niveles.id_nivel')
+            ->leftJoin('cursos', 'asignaturas.id_curso', '=', 'cursos.id_curso')
+            ->leftJoin('grados', 'cursos.id_grado', '=', 'grados.id_grado')
+            ->leftJoin('materias', 'asignaturas.id_materia', '=', 'materias.id_materia')
+            ->with([
+                'materia:id_materia,materia,abreviatura',
+                'area:id_area,area,abreviatura',
+                'aula:id_aula,aula',
+                'nivel:id_nivel,nivel',
+                'curso:id_curso,curso',
+                'coordinacion:id_coordinacion,coordinacion',
 
-            'creado:id_usuario,correo',
-            'modificado:id_usuario,correo',
-            'eliminado:id_usuario,correo'
-        ])
-        ->withCount('horarios_asignaturas')
+                'creado:id_usuario,correo',
+                'modificado:id_usuario,correo',
+                'eliminado:id_usuario,correo'
+            ])
+            ->withCount('horarios_asignaturas')
             ->when(
                 $filtros['nivel'] ?? null,
-                fn($q, $valor) =>
-                $q->where('id_nivel', $valor)
+                // Prefijo de tabla obligatorio al usar joins para evitar ambigüedad
+                fn($q, $valor) => $q->where('asignaturas.id_nivel', $valor)
             )
             ->when(
                 $filtros['coordinacion'] ?? null,
-                fn($q, $valor) =>
-                $q->where('id_coordinacion', $valor)
+                fn($q, $valor) => $q->where('asignaturas.id_coordinacion', $valor)
             )
             ->when(
                 $filtros['curso'] ?? null,
-                fn($q, $valor) =>
-                $q->where('id_curso', $valor)
+                fn($q, $valor) => $q->where('asignaturas.id_curso', $valor)
             )
             ->when(
                 $filtros['docente'] ?? null,
@@ -142,20 +159,25 @@ class Asignatura extends Model
             )
             ->when(
                 $filtros['tipo_calificacion'] ?? null,
-                fn($q, $valor) =>
-                $q->where('tipo_calificacion', $valor)
+                fn($q, $valor) => $q->where('asignaturas.tipo_calificacion', $valor)
             )
             ->when(
                 $filtros['tipo_bloque'] ?? null,
-                fn($q, $valor) =>
-                $q->where('tipo_bloque', $valor)
+                fn($q, $valor) => $q->where('asignaturas.tipo_bloque', $valor)
+            )
+            ->when(
+                isset($filtros['estado']),
+                fn($q) => $q->where('asignaturas.estado', $filtros['estado'])
             )
             ->when(
                 $filtros['busqueda'] ?? null,
-                fn($q, $valor) =>
-                $q->where('asignatura', 'LIKE', "%{$valor}%")
+                fn($q, $valor) => $q->where('asignaturas.asignatura', 'LIKE', "%{$valor}%")
             )
-            ->orderBy('asignatura', 'ASC')
+            ->orderBy('niveles.posicion_ordinal', 'ASC')
+            ->orderBy('grados.posicion_ordinal', 'ASC')
+            ->orderBy('cursos.curso', 'ASC')
+            ->orderBy('materias.posicion_ordinal', 'ASC')
+            ->orderBy('asignaturas.asignatura', 'ASC')
             ->get();
     }
 

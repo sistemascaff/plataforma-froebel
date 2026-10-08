@@ -36,6 +36,7 @@
                     d.tipo_calificacion = $('#filter_tipo_calificacion').val();
                     d.tipo_bloque = $('#filter_tipo_bloque').val();
                     d.id_docente = $('#filter_id_docente').val();
+                    d.estado = $('#filter_estado').val();
                 },
                 error: function(xhr, error, thrown) {
                     console.error("Error al cargar los datos:", error);

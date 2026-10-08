@@ -24,9 +24,16 @@ class UsuarioController extends Controller
         return view('usuarios.login');
     }
 
-    public function view_dashboard()
+    public function view_dashboard(Request $request)
     {
         $tipo_perfil = Auth::user()->persona?->tipo_perfil;
+
+        $usuario = Auth::user();
+        $usuario->timestamps = false;
+        $usuario->ultima_conexion = Carbon::now();
+        $usuario->ultimo_dispositivo = $request->userAgent();
+        $usuario->ultima_ip = $request->ip();
+        $usuario->save();
 
         if ($tipo_perfil === 'ADMINISTRADOR' || $tipo_perfil === 'GERENTE GENERAL') {
             return view('panel.admin_super.dashboard', [
