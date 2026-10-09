@@ -199,7 +199,9 @@ class Asignatura extends Model
                     ->join('periodos', 'listas_asignaturas.id_periodo', '=', 'periodos.id_periodo')
                     ->join('gestiones', 'periodos.id_gestion', '=', 'gestiones.id_gestion')
 
-                    ->withCount('estudiantes') // Delega el COUNT() a la relación en base de datos
+                    // Delega el COUNT() a la relación en base de datos
+                    ->withCount('estudiantes')
+                    ->withCount('estudiantes_asistencias')
 
                     // Ordenamiento estricto solicitado
                     ->orderBy('gestiones.anio', 'DESC')

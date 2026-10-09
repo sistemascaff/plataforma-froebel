@@ -40,6 +40,7 @@
                             <th>Gestión</th>
                             <th>Docente</th>
                             <th>Cant. Estudiantes</th>
+                            <th>Cant. Asistencias</th>
                             <th class="text-center" style="width: 10%;">Acciones</th>
                         </tr>
                     </thead>
@@ -65,6 +66,7 @@
                                         {{ $lista_asignatura->estudiantes_count > 0 ? $lista_asignatura->estudiantes_count : ($asignatura->tipo_bloque === 'curso' ? 'Bloque curso: Ingresa para generar estudiantes' : 'Bloque mixto: Ingresa y asigna a los estudiantes') }}
                                     </span>
                                 </td>
+                                <td>{{ $lista_asignatura->estudiantes_asistencias_count ?? 0 }}</td>
                                 <td class="text-center">
                                     <div class="btn-group" role="group">
                                         <a class="btn btn-info btn-sm"
@@ -97,75 +99,34 @@
             <h4 class="fw-bold mb-0 text-info">
                 <i class="fa-duotone fa-calendar-clock me-2"></i>Horarios de la Asignatura
             </h4>
+            <button type="button" class="btn btn-primary shadow-sm" id="btn-guardar-horarios">
+                <i class="fa-solid fa-duotone fa-floppy-disk me-1"></i>Guardar cambios
+            </button>
         </div>
-        <div class="card-body">
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover table-bordered mb-0 dataTable" id="horarios">
+                <table class="table table-hover table-bordered mb-0 text-center align-middle" id="horarios-grid">
                     <thead>
                         <tr>
-                            <th class="text-center" style="width: 5%;">#</th>
-                            <th>Día</th>
-                            <th>Denominación</th>
-                            <th>Hora Inicio</th>
-                            <th>Hora Fin</th>
-                            <th>Gestión</th>
-                            <th class="text-center" style="width: 10%;">Acciones</th>
+                            <th style="width: 16%;" class="text-start ps-3"><i class="fa-duotone fa-clock me-1"></i> PERIODO
+                            </th>
+                            <th style="width: 14%;">LUNES</th>
+                            <th style="width: 14%;">MARTES</th>
+                            <th style="width: 14%;">MIÉRCOLES</th>
+                            <th style="width: 14%;">JUEVES</th>
+                            <th style="width: 14%;">VIERNES</th>
+                            <th style="width: 14%;">SÁBADO</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {{-- Renderizado dinámico desde JS --}}
+                    <tbody id="horarios-grid-body">
+                        {{-- Renderizado dinámico de la cuadrícula desde JS --}}
+                        <tr>
+                            <td colspan="7" class="py-4 text-muted">
+                                <i class="fa-solid fa-spinner fa-spin me-2"></i> Cargando cuadrícula de horarios...
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
-            </div>
-
-            <div class="text-end mt-3">
-                <button type="button" class="btn btn-primary" id="btn-guardar-horarios">
-                    <i class="fa-solid fa-duotone fa-floppy-disk me-1"></i>Guardar cambios
-                </button>
-            </div>
-
-            <div class="accordion mt-4 shadow-sm" id="bootstrap-acordeon">
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed rounded bg-success-subtle" type="button"
-                            data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true"
-                            aria-controls="collapseOne">
-                            <b class="text-success"><i class="fa-duotone fa-calendar-plus me-1"></i> ASIGNAR HORARIOS</b>
-                        </button>
-                    </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#bootstrap-acordeon">
-                        <div class="accordion-body border border-top-0 rounded-bottom">
-                            <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <label for="dia_semana" class="form-label fw-bold">Día de la semana <span
-                                            class="text-danger">*</span></label>
-                                    <select class="form-select" id="dia_semana" name="dia_semana" required>
-                                        <option value="" disabled selected>Selecciona un día...</option>
-                                        <option value="1">LUNES</option>
-                                        <option value="2">MARTES</option>
-                                        <option value="3">MIÉRCOLES</option>
-                                        <option value="4">JUEVES</option>
-                                        <option value="5">VIERNES</option>
-                                        <option value="6">SÁBADO</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-8 mb-3">
-                                    <label for="horario" class="form-label fw-bold">Horario <span
-                                            class="text-danger">*</span></label>
-                                    <select class="form-select" id="horario" name="horario" required>
-                                    </select>
-                                    <div class="form-text text-muted small"><i class="fa-duotone fa-info-circle"></i> Se
-                                        omiten los horarios de otros niveles, inactivos o de receso/recreo.</div>
-                                </div>
-                            </div>
-                            <div class="text-end">
-                                <button type="button" class="btn btn-success" id="btn-agregar-horario">
-                                    <i class="fa-solid fa-duotone fa-plus me-1"></i>Agregar a la lista
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
