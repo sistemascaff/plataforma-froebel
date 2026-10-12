@@ -6,8 +6,7 @@
                 <h5 class="modal-title" id="modal-formulario-titulo">
                     <i class="fa-solid fa-duotone fa-user-plus me-2"></i>CREAR ESTUDIANTE
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                    aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
             <div class="modal-body">
@@ -20,18 +19,22 @@
                                 <i class="fa-solid fa-address-card me-2"></i>Datos Personales
                             </h5>
                             <div class="row g-3">
+                                <div class="col-md-12 mb-1">
+                                    <small class="text-muted"><i class="fa-solid fa-circle-info me-1"></i>Debe ingresar
+                                        al menos un apellido (paterno o materno).</small>
+                                </div>
                                 <div class="col-md-4">
-                                    <label for="apellido_paterno" class="form-label fw-semibold">Apellido paterno <span
-                                            class="text-danger">*</span></label>
+                                    <label for="apellido_paterno" class="form-label fw-semibold">Apellido
+                                        paterno</label>
                                     <input type="text" class="form-control" id="apellido_paterno"
-                                        name="apellido_paterno" minlength="1" maxlength="50" required>
+                                        name="apellido_paterno" maxlength="50">
                                 </div>
                                 <div class="col-md-4">
-                                    <label for="apellido_materno" class="form-label fw-semibold">Apellido materno <span
-                                            class="text-danger">*</span></label>
+                                    <label for="apellido_materno" class="form-label fw-semibold">Apellido
+                                        materno</label>
                                     <input type="text" class="form-control" id="apellido_materno"
-                                        name="apellido_materno" minlength="1" maxlength="50" required>
-                                </div>
+                                        name="apellido_materno" maxlength="50">
+                                </div>                                
                                 <div class="col-md-4">
                                     <label for="nombres" class="form-label fw-semibold">Nombres <span
                                             class="text-danger">*</span></label>
@@ -212,7 +215,8 @@
                                 <div class="col-md-8">
                                     <label for="salud_alergias" class="form-label fw-semibold">Alergias</label>
                                     <input type="text" class="form-control" id="salud_alergias"
-                                        name="salud_alergias" maxlength="45" placeholder="Ej. Animales, alimentos...">
+                                        name="salud_alergias" maxlength="45"
+                                        placeholder="Ej. Animales, alimentos...">
                                 </div>
                                 <div class="col-md-12">
                                     <label for="salud_datos" class="form-label fw-semibold">Datos médicos

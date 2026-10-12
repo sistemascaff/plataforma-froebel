@@ -1,15 +1,33 @@
 <script>
     $(document).ready(function() {
+        $('#filter_id_docente').select2({
+            language: "es",
+            dropdownCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
+            selectionCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
+        });
+
         $("#dataTable").DataTable({
             processing: true,
             ajax: {
-                url: "{{ route('estudiantes_asistencias.listar') }}", // Ruta de Laravel
+                url: "{{ route('estudiantes_asistencias.listar') }}",
                 type: "GET",
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
+                data: function(d) {
+                    d.id_nivel = $('#filter_id_nivel').val();
+                    d.id_coordinacion = $('#filter_id_coordinacion').val();
+                    d.id_docente = $('#filter_id_docente').val();
+                },
                 error: function(xhr, error, thrown) {
                     console.error("Error al cargar los datos:", error);
+                }
+            },
+            rowCallback: function(row, data, index) {
+                // Comparamos que sean iguales y (opcionalmente) que haya al menos 1 registrado para no pintar filas vacías
+                if (data.detalles_estudiantes_asistencias_count > 0 &&
+                    data.detalles_estudiantes_asistencias_count == data.presentes_count) {
+                    $(row).addClass('table-success');
                 }
             },
             columns: [{
@@ -102,12 +120,6 @@
                         return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
                     }
                 },
-                /*{
-                    data: "fecha_eliminacion",
-                    render: function(data, type, row) {
-                        return data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : '';
-                    }
-                },*/
                 {
                     data: "creado.correo",
                     render: function(data, type, row) {
@@ -120,12 +132,6 @@
                         return data || '-';
                     }
                 },
-                /*{
-                    data: "eliminado.correo",
-                    render: function(data, type, row) {
-                        return data || '-';
-                    }
-                },*/
                 {
                     data: "ip",
                     render: function(data, type, row) {
@@ -160,5 +166,10 @@
             @include('components.datatables.datatables_global_properties')
             @include('components.datatables.datatables_language_property')
         }).buttons().container().appendTo('#dataTable-export-buttons-container');
+
+        $("#btn-filtrar").on("click", function(e) {
+            e.preventDefault();
+            $("#dataTable").DataTable().ajax.reload();
+        });
     });
 </script>

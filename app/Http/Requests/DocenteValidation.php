@@ -29,15 +29,16 @@ class DocenteValidation extends FormRequest
         $correoUnico = $isUpdate && $id_persona
             ? Rule::unique('usuarios', 'correo')
             ->where('estado', 1)
-            ->ignore(Usuario::where('id_persona', $id_persona)->value('id_usuario'),
+            ->ignore(
+                Usuario::where('id_persona', $id_persona)->value('id_usuario'),
                 'id_usuario'
             )
             : Rule::unique('usuarios', 'correo')->where('estado', 1);
 
         return [
             // --- Persona ---
-            'apellido_paterno'          => ['required', 'string', 'max:50'],
-            'apellido_materno'          => ['nullable', 'string', 'max:50'],
+            'apellido_paterno'          => ['nullable', 'string', 'max:50', 'required_without:apellido_materno'],
+            'apellido_materno'          => ['nullable', 'string', 'max:50', 'required_without:apellido_paterno'],
             'nombres'                   => ['required', 'string', 'max:50'],
             'documento_identificacion'  => ['required', 'string', 'max:15'],
             'documento_complemento'     => ['nullable', 'string', 'max:10'],
@@ -71,8 +72,9 @@ class DocenteValidation extends FormRequest
     {
         return [
             // Persona
-            'apellido_paterno.required'         => 'El apellido paterno es obligatorio.',
+            'apellido_paterno.required_without' => 'Debe ingresar el apellido paterno si no cuenta con apellido materno.',
             'apellido_paterno.max'              => 'El apellido paterno no puede superar los 50 caracteres.',
+            'apellido_materno.required_without' => 'Debe ingresar el apellido materno si no cuenta con apellido paterno.',
             'apellido_materno.max'              => 'El apellido materno no puede superar los 50 caracteres.',
             'nombres.required'                  => 'Los nombres son obligatorios.',
             'nombres.max'                       => 'Los nombres no pueden superar los 50 caracteres.',

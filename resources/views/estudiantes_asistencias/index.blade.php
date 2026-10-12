@@ -10,6 +10,11 @@
         </a>
     </div>
 
+    {{-- Si el usuario no es un docente, mostramos los filtros --}}
+    @if ($tipo_perfil !== 'DOCENTE')
+        @include('estudiantes_asistencias.index_filters')
+    @endif
+
     <div class="card shadow-sm mb-4">
         <div class="card-header p-3 d-flex justify-content-between align-items-center">
             <p class="mb-0">Seleccione una opción para <i class="fa-solid fa-duotone fa-file-export mx-1"></i> exportar o

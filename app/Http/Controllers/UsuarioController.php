@@ -225,4 +225,29 @@ class UsuarioController extends Controller
 
         return redirect()->route('login');
     }
+
+    public function cambiar_contrasenha(Request $request)
+    {
+        $request->validate([
+            'contrasenha_actual' => ['required', 'string'],
+            'nueva_contrasenha' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $usuario = Auth::user();
+
+        if ($request->contrasenha_actual != helper_decrypt($usuario->contrasenha)) {
+            return response()->json([
+                'success' => false,
+                'message' => "La contraseña actual es incorrecta.",
+            ], 400);
+        }
+
+        $usuario->contrasenha = helper_encrypt($request->nueva_contrasenha);
+        $usuario->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => "La contraseña ha sido cambiada con éxito.",
+        ]);
+    }
 }

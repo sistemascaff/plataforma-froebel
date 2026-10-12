@@ -33,7 +33,7 @@ class EstudianteController extends Controller
             $cursos = (new Curso())->get_all_cursos();
             $grados = (new Grado())->get_all_grados();
         }
-        
+
         $niveles = (new Nivel())->get_all_niveles();
 
         return view('estudiantes.index', [
@@ -96,7 +96,7 @@ class EstudianteController extends Controller
             if ($estudiante->persona && $estudiante->persona->usuario && $estudiante->persona->usuario->contrasenha) {
                 // Reemplazamos el valor de la columna 'contrasenha' por su versión descifrada
                 $contrasenhaCifrada = $estudiante->persona->usuario->contrasenha;
-                $estudiante->persona->usuario->contrasenha_descifrada = helper_decrypt($contrasenhaCifrada);
+                $estudiante->persona->usuario->contrasenha_descifrada = helper_decrypt($contrasenhaCifrada) ?? '';
             }
             return $estudiante;
         });
@@ -110,7 +110,7 @@ class EstudianteController extends Controller
 
         $this->authorize('view', $estudiante);
 
-        $estudiante->persona->usuario->contrasenha_descifrada = helper_decrypt($estudiante->persona->usuario->contrasenha);
+        $estudiante->persona->usuario->contrasenha_descifrada = helper_decrypt($estudiante->persona->usuario->contrasenha) ?? '';
 
         return response()->json(['data' => $estudiante]);
     }
@@ -118,13 +118,6 @@ class EstudianteController extends Controller
     public function create(EstudianteValidation $request)
     {
         $this->authorize('create', Estudiante::class);
-
-        if ($request->contrasenha !== $request->confirmar_contrasenha) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Las contraseñas no coinciden',
-            ], 400);
-        }
 
         DB::beginTransaction();
         try {
@@ -245,15 +238,10 @@ class EstudianteController extends Controller
 
             // 3. Actualizar el usuario vinculado
             $usuario = (new Usuario())->get_usuario_desde_persona($persona->id_persona);
-            $usuario->correo = $request->correo ?? '';
-            $usuario->contrasenha = $request->contrasenha ? helper_encrypt($request->contrasenha) : '';
-            if ($request->contrasenha) {
-                if ($request->contrasenha !== $request->confirmar_contrasenha) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Las contraseñas no coinciden',
-                    ], 400);
-                }
+            $usuario->correo = $request->correo ?? $usuario->correo; // Mantiene el correo actual si no viene en el request
+
+            // Solo actualizamos la contraseña si el usuario escribió una nueva
+            if ($request->filled('contrasenha')) {
                 $usuario->contrasenha = helper_encrypt($request->contrasenha);
             }
 

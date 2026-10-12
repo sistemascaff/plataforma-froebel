@@ -37,10 +37,11 @@ Route::get('biblioteca', [LibroController::class, 'view_public'])->name('libros.
 // 2. RUTAS PRIVADAS
 Route::middleware(['session.acceso'])->group(function () {
 
-    // Panel y Cierre de sesión (Accesible para todos los autenticados)
+    // Panel, Cierre de sesión y Cambiar contraseña (Accesible para todos los autenticados)
     Route::controller(UsuarioController::class)->group(function () {
         Route::get('panel', 'view_dashboard')->name('dashboard');
         Route::post('cerrar-sesion', 'cerrar_sesion')->name('logout');
+        Route::patch('cambiar_contrasenha', 'cambiar_contrasenha')->name('password.change');
     });
 
     Route::controller(PersonaController::class)->group(function () {

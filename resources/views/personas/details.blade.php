@@ -5,9 +5,19 @@
         <h1 class="text-info fw-bold mb-0">
             <i class="fa-solid fa-duotone fa-user-tie me-2"></i>{{ $head_title }}
         </h1>
-        <a class="btn btn-outline-secondary shadow-sm" href="{{ route('personas.index') }}">
-            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i>Volver
-        </a>
+
+        <div class="d-flex gap-2">
+            {{-- Si la ruta es /perfil mostramos el botón para desplegar el modal para cambiar contraseña --}}
+            @if (request()->is('perfil'))
+                <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                    data-bs-target="#modal-cambiar-contrasenha">
+                    <i class="fa-solid fa-duotone fa-key me-1"></i>Cambiar contraseña
+                </button>
+            @endif
+            <a class="btn btn-outline-secondary shadow-sm" href="{{ route('personas.index') }}">
+                <i class="fa-solid fa-duotone fa-arrow-left me-1"></i>Volver
+            </a>
+        </div>
     </div>
 
     @php
@@ -25,6 +35,7 @@
 
     <div class="row g-4 mb-4">
         <div class="col-12 col-lg-4">
+            {{-- Perfil de la persona --}}
             <div class="card shadow-sm mb-4">
                 <div class="card-body text-center pt-4">
                     <img class="rounded-circle img-thumbnail shadow-sm mb-3 zoomable-image"
@@ -45,6 +56,7 @@
                 </div>
             </div>
 
+            {{-- Datos de Acceso --}}
             <div class="card shadow-sm">
                 <div class="card-header bg-info fw-bold text-white">
                     <i class="fa-solid fa-duotone fa-key me-2"></i>Datos de Acceso
@@ -85,6 +97,7 @@
         </div>
 
         <div class="col-12 col-lg-8">
+            {{-- Información Personal --}}
             <div class="card shadow-sm mb-4 h-100">
                 <div class="card-header border-bottom-0 pt-4 pb-0">
                     <h5 class="text-info fw-bold"><i class="fa-solid fa-duotone fa-address-card me-2"></i>Información
@@ -128,5 +141,17 @@
         </div>
     </div>
 
+    {{-- Si la ruta es /perfil mostramos el modal para cambiar contraseña --}}
+    @if (request()->is('perfil'))
+        @include('usuarios.password_change_modal')
+    @endif
+
     @include('components.app.img_modal')
+@endsection
+
+@section('scripts')
+    {{-- Si la ruta es /perfil se aplica los scripts para cambiar contraseña --}}
+    @if (request()->is('perfil'))
+        @include('usuarios.password_change_scripts')
+    @endif
 @endsection

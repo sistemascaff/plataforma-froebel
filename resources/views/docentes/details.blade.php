@@ -5,9 +5,19 @@
         <h1 class="text-info fw-bold mb-0">
             <i class="fa-solid fa-duotone fa-chalkboard-user me-2"></i>{{ $head_title }}
         </h1>
-        <a class="btn btn-outline-secondary shadow-sm" href="{{ route('docentes.index') }}">
-            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i>Volver
-        </a>
+
+        <div class="d-flex gap-2">
+            {{-- Si la ruta es /perfil mostramos el botón para desplegar el modal para cambiar contraseña --}}
+            @if (request()->is('perfil'))
+                <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                    data-bs-target="#modal-cambiar-contrasenha">
+                    <i class="fa-solid fa-duotone fa-key me-1"></i>Cambiar contraseña
+                </button>
+            @endif
+            <a class="btn btn-outline-secondary shadow-sm" href="{{ route('docentes.index') }}">
+                <i class="fa-solid fa-duotone fa-arrow-left me-1"></i>Volver
+            </a>
+        </div>
     </div>
 
     @php
@@ -209,8 +219,9 @@
                                 <td>
                                     <div class="btn-group" role="group">
                                         <a class="btn btn-info btn-sm"
-                                            href="{{ route('listas_asignaturas.detalles', $lista_asignatura->id_lista_asignatura) }}" target="_blank"
-                                            rel="noopener noreferrer" data-toggle="tooltip" title="Detalles">
+                                            href="{{ route('listas_asignaturas.detalles', $lista_asignatura->id_lista_asignatura) }}"
+                                            target="_blank" rel="noopener noreferrer" data-toggle="tooltip"
+                                            title="Detalles">
                                             <i class="fa-duotone fa-solid fa-eye"></i>
                                         </a>
                                     </div>
@@ -222,6 +233,11 @@
             </div>
         </div>
     </div>
+
+    {{-- Si la ruta es /perfil mostramos el modal para cambiar contraseña --}}
+    @if (request()->is('perfil'))
+        @include('usuarios.password_change_modal')
+    @endif
 
     @include('components.app.img_modal')
 @endsection
@@ -235,4 +251,9 @@
             });
         });
     </script>
+
+    {{-- Si la ruta es /perfil se aplica los scripts para cambiar contraseña --}}
+    @if (request()->is('perfil'))
+        @include('usuarios.password_change_scripts')
+    @endif
 @endsection

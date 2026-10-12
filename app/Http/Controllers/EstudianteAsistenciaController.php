@@ -23,8 +23,18 @@ class EstudianteAsistenciaController extends Controller
     {
         $this->authorize('viewAny', EstudianteAsistencia::class);
 
+        $tipo_perfil = Auth::user()->persona?->tipo_perfil;
+
+        $niveles = (new Nivel())->get_all_niveles();
+        $coordinaciones = (new Coordinacion())->get_all_coordinaciones();
+        $docentes = (new Docente())->get_all_docentes();
+
         return view('estudiantes_asistencias.index', [
             'head_title' => 'GESTIÓN DE ASISTENCIAS',
+            'tipo_perfil' => $tipo_perfil,
+            'niveles' => $niveles,
+            'coordinaciones' => $coordinaciones,
+            'docentes' => $docentes,
         ]);
     }
 
@@ -145,7 +155,7 @@ class EstudianteAsistenciaController extends Controller
         ]);
     }
 
-    public function listar()
+    public function listar(Request $request)
     {
         $this->authorize('viewAny', EstudianteAsistencia::class);
 
@@ -153,6 +163,18 @@ class EstudianteAsistenciaController extends Controller
         $filtros = [];
         $estudiantes_asistencias = null;
 
+        // Filtros dinámicos (Desde la vista)
+        if ($request->filled('id_nivel')) {
+            $filtros['nivel'] = $request->id_nivel;
+        }
+        if ($request->filled('id_coordinacion')) {
+            $filtros['coordinacion'] = $request->id_coordinacion;
+        }
+        if ($request->filled('id_docente')) {
+            $filtros['docente'] = $request->id_docente;
+        }
+
+        // Si el usuario tiene un perfil que requiere filtrado automático, aplicamos esos filtros
         if ($tipo_perfil === 'DIRECTOR DE NIVEL') {
             $filtros['nivel'] = Auth::user()->persona?->docente?->id_nivel;
             $estudiantes_asistencias = (new EstudianteAsistencia())->get_estudiantes_asistencias($filtros);
@@ -161,6 +183,8 @@ class EstudianteAsistenciaController extends Controller
             $estudiantes_asistencias = (new EstudianteAsistencia())->get_estudiantes_asistencias($filtros);
         } else if ($tipo_perfil === 'DOCENTE') {
             $filtros['docente'] = Auth::user()->persona?->docente?->id_docente;
+            $estudiantes_asistencias = (new EstudianteAsistencia())->get_estudiantes_asistencias($filtros);
+        } elseif ($filtros && count($filtros) > 0) {
             $estudiantes_asistencias = (new EstudianteAsistencia())->get_estudiantes_asistencias($filtros);
         } else {
             $estudiantes_asistencias = (new EstudianteAsistencia())->get_all_estudiantes_asistencias();
