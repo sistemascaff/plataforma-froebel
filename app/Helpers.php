@@ -94,10 +94,8 @@ if (! function_exists('helper_abreviar_curso')) {
 
         // Casos especiales
         $especiales = [
-            'JARDIN MATERNAL ROT' => 'JMR',
-            'JARDIN MATERNAL WEISS' => 'JMW',
-            'JARDIN INFANTIL ROT' => 'JIR',
-            'JARDIN INFANTIL WEISS' => 'JIW',
+            'JARDIN MATERNAL' => 'JM',
+            'JARDIN INFANTIL' => 'JI',
             'TALLER INICIAL ROT' => 'TIR',
             'TALLER INICIAL WEISS' => 'TIW',
             'PRE KINDER ROT' => 'PKR',

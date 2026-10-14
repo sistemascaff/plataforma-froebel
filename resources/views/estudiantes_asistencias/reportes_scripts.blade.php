@@ -34,7 +34,7 @@
     }
 
     $(document).ready(function() {
-        $('#id_docente').select2({
+        $('#id_docente, #id_curso').select2({
             width: '100%',
             language: "es",
             dropdownCssClass: localStorage.getItem('theme') === 'dark' ? 'bg-dark text-white' : '',

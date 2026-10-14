@@ -156,9 +156,22 @@
                                                 alt="Foto" style="width:35px; height:35px; object-fit:cover;">
                                         </td>
                                         <td class="align-middle fw-bold">
-                                            {{ $estudiante->persona->apellidos_nombres }}
-                                            <span class="badge bg-secondary ms-2 curso"
-                                                title="{{ $estudiante->curso->curso }}">{{ helper_abreviar_curso($estudiante->curso->curso) }}</span>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    {{ $estudiante->persona->apellidos_nombres }}
+                                                    <span class="badge bg-secondary ms-2 curso"
+                                                        title="{{ $estudiante->curso->curso }}">
+                                                        {{ helper_abreviar_curso($estudiante->curso->curso) }}
+                                                    </span>
+                                                </div>
+                                                <!-- Botón para abrir el historial -->
+                                                <button type="button"
+                                                    class="btn btn-primary btn-sm shadow-sm btn-historial ms-2"
+                                                    data-id="{{ $estudiante->id_estudiante }}"
+                                                    title="Ver últimas 30 asistencias">
+                                                    <i class="fa-solid fa-duotone fa-clock-rotate-left"></i>
+                                                </button>
+                                            </div>
                                             <br>
                                             @if ($tieneLicencia)
                                                 <div class="mt-1">
@@ -267,6 +280,8 @@
     </form>
 
     @include('components.app.img_modal')
+
+    @include('estudiantes_asistencias.modal_asistencias_historial')
 @endsection
 
 @section('scripts')
@@ -276,5 +291,8 @@
             background-color: #0d6efd !important;
         }
     </style>
+
     @include('estudiantes_asistencias.update_scripts')
+
+    @include('estudiantes_asistencias.modal_asistencias_historial_scripts')
 @endsection

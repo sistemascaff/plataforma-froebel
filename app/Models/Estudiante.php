@@ -35,7 +35,8 @@ class Estudiante extends Model
             'id_estudiante',                    // FK de este modelo (Estudiante) en la tabla pivote
             'id_estudiante_asistencia'          // FK del modelo relacionado en la tabla pivote
         )->withPivot(['tipo', 'tiempo_atraso', 'id_estudiante_licencia'])
-            ->orderBy('fecha', 'DESC');
+            // Agregamos el prefijo de tabla para evitar ambigüedades en SQL
+            ->orderBy('estudiantes_asistencias.fecha', 'DESC');
     }
 
     /** Relación uno a muchos con estudiantes_licencias */
@@ -152,7 +153,7 @@ class Estudiante extends Model
 
             'curso:id_curso,id_grado,id_paralelo,curso,estado',
 
-            // 1. Interceptamos la relación principal para aplicar los joins y el orden jerárquico
+            // 1. Interceptamos listas_asignaturas
             'listas_asignaturas' => function ($query) {
                 $query->select(
                     'listas_asignaturas.id_lista_asignatura',
@@ -160,7 +161,7 @@ class Estudiante extends Model
                     'listas_asignaturas.id_periodo',
                     'listas_asignaturas.id_docente',
                     'listas_asignaturas.estado'
-                ) // Select explícito para evitar colisiones
+                )
                     ->join('asignaturas', 'listas_asignaturas.id_asignatura', '=', 'asignaturas.id_asignatura')
                     ->join('periodos', 'listas_asignaturas.id_periodo', '=', 'periodos.id_periodo')
                     ->join('gestiones', 'periodos.id_gestion', '=', 'gestiones.id_gestion')
@@ -169,15 +170,30 @@ class Estudiante extends Model
                     ->orderBy('asignaturas.asignatura', 'ASC');
             },
 
-            // 2. Cargamos el resto de sub-relaciones vinculadas a listas_asignaturas
             'listas_asignaturas.asignatura:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',
             'listas_asignaturas.periodo:id_periodo,id_gestion,periodo,posicion_ordinal,estado',
             'listas_asignaturas.periodo.gestion:id_gestion,anio,estado',
-            // para la vista de detalles del estudiante se omite información sensible del docente
             'listas_asignaturas.docente:id_docente,id_persona,id_nivel,id_coordinacion,estado',
             'listas_asignaturas.docente.persona:id_persona,id_colegio,apellido_paterno,apellido_materno,nombres',
 
-            'estudiantes_asistencias:id_estudiante_asistencia,id_lista_asignatura,id_horario_asignatura,fecha,estado',
+            // 2. Interceptamos estudiantes_asistencias para inyectar JOIN y Ordenamiento Compuesto
+            'estudiantes_asistencias' => function ($query) {
+                $query->select(
+                    'estudiantes_asistencias.id_estudiante_asistencia',
+                    'estudiantes_asistencias.id_lista_asignatura',
+                    'estudiantes_asistencias.id_horario_asignatura',
+                    'estudiantes_asistencias.fecha',
+                    'estudiantes_asistencias.estado'
+                )
+                    // Hacemos join con horarios para poder ordenar por su hora_inicio
+                    ->join('horarios_asignaturas', 'estudiantes_asistencias.id_horario_asignatura', '=', 'horarios_asignaturas.id_horario_asignatura')
+
+                    // Orden jerárquico
+                    ->orderBy('estudiantes_asistencias.fecha', 'DESC')
+                    ->orderBy('horarios_asignaturas.hora_inicio', 'DESC');
+            },
+
+            // Cargamos el resto de sub-relaciones con normalidad
             'estudiantes_asistencias.lista_asignatura:id_lista_asignatura,id_asignatura,id_periodo,id_docente,estado',
             'estudiantes_asistencias.lista_asignatura.asignatura:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',
             'estudiantes_asistencias.horario_asignatura',
@@ -188,6 +204,38 @@ class Estudiante extends Model
             'modificado:id_usuario,correo',
             'eliminado:id_usuario,correo'
         ])
+            ->findOrFail($id_estudiante);
+    }
+
+    public function get_estudiante_asistencias($id_estudiante)
+    {
+        return $this::select('id_estudiante', 'id_persona', 'id_curso') // Solo traemos los IDs necesarios
+            ->with([
+                'persona:id_persona,id_colegio,apellido_paterno,apellido_materno,nombres',
+                'curso:id_curso,id_grado,id_paralelo,curso',
+
+                'estudiantes_asistencias' => function ($query) {
+                    $query->select(
+                        'estudiantes_asistencias.id_estudiante_asistencia',
+                        'estudiantes_asistencias.id_lista_asignatura',
+                        'estudiantes_asistencias.id_horario_asignatura',
+                        'estudiantes_asistencias.fecha',
+                        'estudiantes_asistencias.estado'
+                    )
+                        // Hacemos join con horarios para poder ordenar por su hora_inicio
+                        ->join('horarios_asignaturas', 'estudiantes_asistencias.id_horario_asignatura', '=', 'horarios_asignaturas.id_horario_asignatura')
+                        // Limitamos a las últimas 30 asistencias
+                        ->limit(30)
+                        // Orden jerárquico
+                        ->orderBy('estudiantes_asistencias.fecha', 'DESC')
+                        ->orderBy('horarios_asignaturas.hora_inicio', 'DESC');
+                },
+
+                // Cargamos el resto de sub-relaciones con normalidad
+                'estudiantes_asistencias.lista_asignatura:id_lista_asignatura,id_asignatura,id_periodo,id_docente,estado',
+                'estudiantes_asistencias.lista_asignatura.asignatura:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',
+                'estudiantes_asistencias.horario_asignatura',
+            ])
             ->findOrFail($id_estudiante);
     }
 }

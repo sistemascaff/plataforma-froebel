@@ -115,6 +115,13 @@ class EstudianteController extends Controller
         return response()->json(['data' => $estudiante]);
     }
 
+    public function mostrar_asistencias(Request $request)
+    {
+        $asistencias = (new Estudiante())->get_estudiante_asistencias($request->estudiante);
+
+        return response()->json(['data' => $asistencias]);
+    }
+
     public function create(EstudianteValidation $request)
     {
         $this->authorize('create', Estudiante::class);

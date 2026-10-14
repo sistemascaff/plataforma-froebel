@@ -122,6 +122,10 @@ Route::middleware(['session.acceso'])->group(function () {
             Route::post('asignaturas/{asignatura}/horarios/sync', 'sync_horarios')->name('asignaturas.horarios.sync');
         });
 
+        Route::controller(EstudianteController::class)->group(function () {
+            Route::get('estudiantes/{estudiante}/asistencias', 'mostrar_asistencias')->name('estudiantes.mostrar_asistencias');
+        });
+
         Route::controller(ListaAsignaturaController::class)->group(function () {
             Route::get('listas_asignaturas', 'view_index')->name('listas_asignaturas.index');
             Route::get('listas_asignaturas/listar', 'listar')->name('listas_asignaturas.listar');
