@@ -6,7 +6,8 @@
             <i class="fa-solid fa-duotone fa-clipboard-list-check me-2"></i>{{ $head_title }}
         </h1>
         <a class="btn btn-secondary shadow-sm" href="{{ route('asignaturas.detalles', $lista_asignatura->id_asignatura) }}">
-            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver a <b>{{ $lista_asignatura->asignatura->asignatura }}</b>
+            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver a
+            <b>{{ $lista_asignatura->asignatura->asignatura }}</b>
         </a>
     </div>
 
@@ -201,6 +202,8 @@
                                 <th>Atrasos</th>
                                 <th>Faltas</th>
                                 <th>Licencias</th>
+                                <th>Permisos</th>
+                                <th>Otros</th>
                                 <th>Estado</th>
                                 <th class="text-center" style="width: 10%;">Acciones</th>
                             </tr>
@@ -222,7 +225,8 @@
                                         default => 'DESCONOCIDO',
                                     };
                                 @endphp
-                                <tr>
+                                <tr
+                                    class="{{ $estudiante_asistencia->detalles_estudiantes_asistencias_count === $estudiante_asistencia->presentes_count ? 'table-success' : ($estudiante_asistencia->otros_count > 0 ? 'table-secondary' : '') }}">
                                     <td class="text-center">{{ $loop->index + 1 }}</td>
                                     <td>{{ date('d/m/Y', strtotime($estudiante_asistencia->fecha)) }}</td>
                                     <td>
@@ -235,7 +239,8 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-success">
+                                        <span
+                                            class="{{ $estudiante_asistencia->presentes_count > 0 ? 'badge bg-success' : 'text-muted' }}">
                                             {{ $estudiante_asistencia->presentes_count }}
                                         </span>
                                     </td>
@@ -255,6 +260,19 @@
                                         <span
                                             class="{{ $estudiante_asistencia->licencias_count > 0 ? 'badge bg-info' : 'text-muted' }}">
                                             {{ $estudiante_asistencia->licencias_count }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span
+                                            class="{{ $estudiante_asistencia->permisos_count > 0 ? 'badge bg-primary' : 'text-muted' }}">
+                                            {{ $estudiante_asistencia->permisos_count }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span
+                                            class="{{ $estudiante_asistencia->otros_count > 0 ? 'badge bg-secondary' : 'text-muted' }}"
+                                            title="{{ $estudiante_asistencia->otros_count > 0 ? $estudiante_asistencia->justificacion_otros : '' }}">
+                                            {{ $estudiante_asistencia->otros_count }}
                                         </span>
                                     </td>
                                     <td>

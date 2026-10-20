@@ -14,11 +14,12 @@
         };
     }
 
-    // Colores semánticos de incidencias
+    // Colores semánticos de las 4 incidencias
     const palette = {
-        atraso: '#ffc107',
-        falta: '#dc3545',
-        licencia: '#0dcaf0'
+        atraso: '#ffc107', // Warning
+        falta: '#dc3545', // Danger
+        licencia: '#0dcaf0', // Info
+        permiso: '#0d6efd' // Primary
     };
 
     // Función core para construir o actualizar un gráfico
@@ -86,57 +87,70 @@
                 let kpiAtrasos = 0,
                     kpiFaltas = 0,
                     kpiLicencias = 0,
+                    kpiPermisos = 0,
                     sumaMins = 0;
                 let objFechas = {},
-                    objHorarios = {};
-
-                // Inicializamos los nuevos objetos dinámicos
-                let objEstudiantes = {},
+                    objHorarios = {},
+                    objEstudiantes = {},
                     objCursos = {},
                     objAsignaturas = {},
                     objDocentes = {};
 
-                // Helper para inicializar contadores
+                // Helper para inicializar contadores con los 4 tipos de incidencia
                 const initIncidencias = () => ({
-                    A: 0,
-                    F: 0,
-                    L: 0,
+                    ATRASO: 0,
+                    FALTA: 0,
+                    LICENCIA: 0,
+                    PERMISO: 0,
                     Total: 0
                 });
+
+                const tiposValidos = ['ATRASO', 'FALTA', 'LICENCIA', 'PERMISO'];
 
                 // 2. Iteración sobre la data filtrada
                 filteredData.forEach(row => {
                     let t = row.tipo;
-                    if (t === 'A') {
+
+                    // Ignorar por seguridad si llegara algún registro que no sea incidencia
+                    if (!tiposValidos.includes(t)) return;
+
+                    if (t === 'ATRASO') {
                         kpiAtrasos++;
                         sumaMins += (parseFloat(row.tiempo_atraso) || 0);
-                    } else if (t === 'F') kpiFaltas++;
-                    else if (t === 'L') kpiLicencias++;
+                    } else if (t === 'FALTA') {
+                        kpiFaltas++;
+                    } else if (t === 'LICENCIA') {
+                        kpiLicencias++;
+                    } else if (t === 'PERMISO') {
+                        kpiPermisos++;
+                    }
 
                     // Extracción segura de datos
-                    let fecha = row.estudiante_asistencia?.fecha ? moment(row
-                        .estudiante_asistencia.fecha).format('DD/MM/YYYY') : 'S/F';
+                    let fecha = row.estudiante_asistencia?.fecha ?
+                        moment(row.estudiante_asistencia.fecha).format('DD/MM/YYYY') :
+                        'S/F';
                     let horario = row.estudiante_asistencia?.horario_asignatura
-                        ?.hora_inicio ? moment(row.estudiante_asistencia.horario_asignatura
-                            .hora_inicio, 'HH:mm:ss').format('HH:mm') : 'S/H';
-                    let estudiante = row.estudiante?.persona ? row.estudiante.persona
-                        .apellidos_nombres : 'Desc.';
+                        ?.hora_inicio ?
+                        moment(row.estudiante_asistencia.horario_asignatura.hora_inicio,
+                            'HH:mm:ss').format('HH:mm') :
+                        'S/H';
+                    let estudiante = row.estudiante?.persona ?
+                        row.estudiante.persona.apellidos_nombres :
+                        'Desc.';
                     let curso = row.estudiante?.curso?.curso || 'Desc.';
                     let asignatura = row.estudiante_asistencia?.lista_asignatura?.asignatura
                         ?.asignatura || 'Desc.';
                     let docente = row.estudiante_asistencia?.lista_asignatura?.docente
-                        ?.persona ? row.estudiante_asistencia.lista_asignatura.docente
-                        .persona.nombres_apellidos : 'Sin Asignar';
+                        ?.persona ?
+                        row.estudiante_asistencia.lista_asignatura.docente.persona
+                        .nombres_apellidos :
+                        'Sin Asignar';
 
-                    // Acumuladores Clásicos
+                    // Acumuladores por Fecha y Horario
                     objFechas[fecha] = (objFechas[fecha] || 0) + 1;
-                    if (!objHorarios[horario]) objHorarios[horario] = {
-                        A: 0,
-                        F: 0,
-                        L: 0
-                    };
+                    if (!objHorarios[horario]) objHorarios[horario] = initIncidencias();
 
-                    // Inicialización de acumuladores avanzados
+                    // Inicialización de acumuladores por entidad
                     if (!objEstudiantes[estudiante]) objEstudiantes[estudiante] =
                         initIncidencias();
                     if (!objCursos[curso]) objCursos[curso] = initIncidencias();
@@ -144,29 +158,30 @@
                         initIncidencias();
                     if (!objDocentes[docente]) objDocentes[docente] = initIncidencias();
 
-                    if (['A', 'F', 'L'].includes(t)) {
-                        objHorarios[horario][t]++;
+                    // Suma desagregada y total
+                    objHorarios[horario][t]++;
+                    objHorarios[horario].Total++;
 
-                        // Suma desagregada y total para rankings
-                        objEstudiantes[estudiante][t]++;
-                        objEstudiantes[estudiante].Total++;
+                    objEstudiantes[estudiante][t]++;
+                    objEstudiantes[estudiante].Total++;
 
-                        objCursos[curso][t]++;
-                        objCursos[curso].Total++;
+                    objCursos[curso][t]++;
+                    objCursos[curso].Total++;
 
-                        objAsignaturas[asignatura][t]++;
-                        objAsignaturas[asignatura].Total++;
+                    objAsignaturas[asignatura][t]++;
+                    objAsignaturas[asignatura].Total++;
 
-                        objDocentes[docente][t]++;
-                        objDocentes[docente].Total++;
-                    }
+                    objDocentes[docente][t]++;
+                    objDocentes[docente].Total++;
                 });
 
                 // 3. Pintar KPIs
-                $('#kpi-total').text(filteredData.length);
+                const totalIncidencias = kpiAtrasos + kpiFaltas + kpiLicencias + kpiPermisos;
+                $('#kpi-total').text(totalIncidencias);
                 $('#kpi-atrasos').text(kpiAtrasos);
                 $('#kpi-faltas').text(kpiFaltas);
                 $('#kpi-licencias').text(kpiLicencias);
+                $('#kpi-permisos').text(kpiPermisos);
                 $('#kpi-minutos-total').text(sumaMins);
                 $('#kpi-minutos-promedio').text(kpiAtrasos > 0 ? (sumaMins / kpiAtrasos).toFixed(
                     1) : 0);
@@ -212,14 +227,49 @@
                     }
                 };
 
+                // Helper para generar los 4 datasets apilados (Atrasos, Faltas, Licencias, Permisos)
+                const buildStackedDatasets = (entriesArray, isObjectValues = false, radius =
+                4) => [{
+                        label: 'Atrasos',
+                        data: entriesArray.map(item => isObjectValues ? item.ATRASO : item[1]
+                            .ATRASO),
+                        backgroundColor: palette.atraso,
+                        borderRadius: radius
+                    },
+                    {
+                        label: 'Faltas',
+                        data: entriesArray.map(item => isObjectValues ? item.FALTA : item[1]
+                            .FALTA),
+                        backgroundColor: palette.falta,
+                        borderRadius: radius
+                    },
+                    {
+                        label: 'Licencias',
+                        data: entriesArray.map(item => isObjectValues ? item.LICENCIA : item[1]
+                            .LICENCIA),
+                        backgroundColor: palette.licencia,
+                        borderRadius: radius
+                    },
+                    {
+                        label: 'Permisos',
+                        data: entriesArray.map(item => isObjectValues ? item.PERMISO : item[1]
+                            .PERMISO),
+                        backgroundColor: palette.permiso,
+                        borderRadius: radius
+                    }
+                ];
+
                 // b) Proporción General (Dona)
                 chartProporcion = initOrUpdateChart(chartProporcion, 'chart-proporcion', {
                     type: 'doughnut',
                     data: {
-                        labels: ['Atrasos', 'Faltas', 'Licencias'],
+                        labels: ['Atrasos', 'Faltas', 'Licencias', 'Permisos'],
                         datasets: [{
-                            data: [kpiAtrasos, kpiFaltas, kpiLicencias],
-                            backgroundColor: Object.values(palette),
+                            data: [kpiAtrasos, kpiFaltas, kpiLicencias,
+                                kpiPermisos],
+                            backgroundColor: [palette.atraso, palette.falta, palette
+                                .licencia, palette.permiso
+                            ],
                             borderWidth: 0
                         }]
                     },
@@ -272,7 +322,8 @@
                                 color: textColor,
                                 font: {
                                     weight: 'bold'
-                                }
+                                },
+                                formatter: v => v > 0 ? v : ''
                             }
                         }
                     }
@@ -280,26 +331,12 @@
 
                 // d) Barras Apiladas por Horario
                 let keysHorarios = Object.keys(objHorarios).sort();
+                let valoresHorarios = keysHorarios.map(h => objHorarios[h]);
                 chartHorarios = initOrUpdateChart(chartHorarios, 'chart-horarios', {
                     type: 'bar',
                     data: {
                         labels: keysHorarios,
-                        datasets: [{
-                                label: 'Atrasos',
-                                data: keysHorarios.map(h => objHorarios[h].A),
-                                backgroundColor: palette.atraso
-                            },
-                            {
-                                label: 'Faltas',
-                                data: keysHorarios.map(h => objHorarios[h].F),
-                                backgroundColor: palette.falta
-                            },
-                            {
-                                label: 'Licencias',
-                                data: keysHorarios.map(h => objHorarios[h].L),
-                                backgroundColor: palette.licencia
-                            }
-                        ]
+                        datasets: buildStackedDatasets(valoresHorarios, true, 0)
                     },
                     options: {
                         ...baseOpts,
@@ -339,25 +376,7 @@
                     type: 'bar',
                     data: {
                         labels: topEst.map(e => trunc(e[0], 25)),
-                        datasets: [{
-                                label: 'Atrasos',
-                                data: topEst.map(e => e[1].A),
-                                backgroundColor: palette.atraso,
-                                borderRadius: 2
-                            },
-                            {
-                                label: 'Faltas',
-                                data: topEst.map(e => e[1].F),
-                                backgroundColor: palette.falta,
-                                borderRadius: 2
-                            },
-                            {
-                                label: 'Licencias',
-                                data: topEst.map(e => e[1].L),
-                                backgroundColor: palette.licencia,
-                                borderRadius: 2
-                            }
-                        ]
+                        datasets: buildStackedDatasets(topEst, false, 2)
                     },
                     options: {
                         ...baseOpts,
@@ -390,30 +409,12 @@
                 // f, g, h) Helper genérico apilado para Cursos, Asignaturas y Docentes
                 const renderStackedBar = (chartInst, canvas, dataMap) => {
                     let sorted = Object.entries(dataMap).sort((a, b) => b[1].Total - a[1]
-                        .Total);
+                    .Total);
                     return initOrUpdateChart(chartInst, canvas, {
                         type: 'bar',
                         data: {
                             labels: sorted.map(e => trunc(e[0], 25)),
-                            datasets: [{
-                                    label: 'Atrasos',
-                                    data: sorted.map(e => e[1].A),
-                                    backgroundColor: palette.atraso,
-                                    borderRadius: 4
-                                },
-                                {
-                                    label: 'Faltas',
-                                    data: sorted.map(e => e[1].F),
-                                    backgroundColor: palette.falta,
-                                    borderRadius: 4
-                                },
-                                {
-                                    label: 'Licencias',
-                                    data: sorted.map(e => e[1].L),
-                                    backgroundColor: palette.licencia,
-                                    borderRadius: 4
-                                }
-                            ]
+                            datasets: buildStackedDatasets(sorted, false, 4)
                         },
                         options: {
                             ...baseOpts,
@@ -490,28 +491,36 @@
                     data: "tipo",
                     className: "text-center align-middle",
                     render: function(data) {
-                        if (data === 'A')
+                        if (data === 'ATRASO')
                             return `<span class="badge bg-warning text-dark px-3 py-2 shadow-sm"><i class="fa-solid fa-duotone fa-hourglass-half me-1"></i> Atraso</span>`;
-                        if (data === 'F')
+                        if (data === 'FALTA')
                             return `<span class="badge bg-danger px-3 py-2 shadow-sm"><i class="fa-solid fa-duotone fa-times-circle me-1"></i> Falta</span>`;
-                        if (data === 'L')
+                        if (data === 'LICENCIA')
                             return `<span class="badge bg-info text-dark px-3 py-2 shadow-sm"><i class="fa-solid fa-duotone fa-file-certificate me-1"></i> Licencia</span>`;
+                        if (data === 'PERMISO')
+                            return `<span class="badge bg-primary px-3 py-2 shadow-sm"><i class="fa-solid fa-duotone fa-file-signature me-1"></i> Permiso</span>`;
                         return `<span class="badge bg-secondary px-3 py-2 shadow-sm">-</span>`;
                     }
                 },
                 {
                     data: "tiempo_atraso",
                     className: "text-center align-middle",
-                    render: (data, type, row) => (row.tipo === 'A' && data) ?
+                    render: (data, type, row) => (row.tipo === 'ATRASO' && data) ?
                         `<span class="text-danger fw-bold">${data} min</span>` :
                         '<span class="text-muted">-</span>'
                 },
                 {
                     data: null,
                     className: "align-middle",
-                    render: (data, type, row) => (row.tipo === 'L' && row.estudiante_licencia) ?
-                        `<span class="d-inline-block" style="max-width: 200px;" title="${row.estudiante_licencia.justificacion}">${row.estudiante_licencia.justificacion || 'Sin justificación'}</span>` :
-                        '<span class="text-muted text-center d-block">-</span>'
+                    render: function(data, type, row) {
+                        if (row.tipo === 'LICENCIA' && row.estudiante_licencia) {
+                            return `<span class="d-inline-block" style="max-width: 220px;" title="${row.estudiante_licencia.justificacion}">${row.estudiante_licencia.justificacion || 'Sin justificación'}</span>`;
+                        }
+                        if (row.tipo === 'PERMISO') {
+                            return `<span class="text-primary small fw-semibold"><i class="fa-duotone fa-building-columns me-1"></i> Permiso por instrucción académica</span>`;
+                        }
+                        return '<span class="text-muted text-center d-block">-</span>';
+                    }
                 }
             ]
         });
@@ -527,7 +536,6 @@
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.attributeName === "data-bs-theme") {
-                    // 1. Obtener los colores del nuevo tema asignado
                     const {
                         textColor,
                         gridColor
@@ -536,10 +544,8 @@
                         chartCursos, chartAsignaturas, chartDocentes
                     ];
 
-                    // 2. Iterar e inyectar el nuevo color en caliente a cada gráfico existente
                     charts.forEach(chart => {
                         if (chart) {
-                            // Etiquetas de los ejes X e Y y Cuadrículas
                             if (chart.options.scales?.x) {
                                 chart.options.scales.x.ticks.color = textColor;
                                 chart.options.scales.x.grid.color = gridColor;
@@ -548,16 +554,13 @@
                                 chart.options.scales.y.ticks.color = textColor;
                                 chart.options.scales.y.grid.color = gridColor;
                             }
-                            // Leyenda inferior
                             if (chart.options.plugins?.legend?.labels) {
                                 chart.options.plugins.legend.labels.color = textColor;
                             }
-                            // DataLabels flotantes (excepto Dona, que siempre usa texto blanco por contraste interno)
                             if (chart.config.type !== 'doughnut' && chart.options
                                 .plugins?.datalabels) {
                                 chart.options.plugins.datalabels.color = textColor;
                             }
-                            // Aplicar actualización visual
                             chart.update();
                         }
                     });
@@ -565,7 +568,6 @@
             });
         });
 
-        // Observamos el <html> porque Bootstrap 5 inyecta el `data-bs-theme` ahí al hacer clic en el toggle
         observer.observe(document.documentElement, {
             attributes: true,
             attributeFilter: ['data-bs-theme']

@@ -83,24 +83,24 @@ class EstudianteAsistencia extends Model
                 // 1. Conteo total
                 'detalles_estudiantes_asistencias',
 
-                // 2. Conteo de Presentes (P)
+                // 2. Detalle de conteo por tipo de asistencia
                 'detalles_estudiantes_asistencias as presentes_count' => function ($query) {
-                    $query->where('tipo', 'P');
+                    $query->where('tipo', 'PRESENTE');
                 },
-
-                // 3. Conteo de Atrasos (A)
                 'detalles_estudiantes_asistencias as atrasos_count' => function ($query) {
-                    $query->where('tipo', 'A');
+                    $query->where('tipo', 'ATRASO');
                 },
-
-                // 4. Conteo de Faltas (F)
                 'detalles_estudiantes_asistencias as faltas_count' => function ($query) {
-                    $query->where('tipo', 'F');
+                    $query->where('tipo', 'FALTA');
                 },
-
-                // 5. Conteo de Licencias (L)
                 'detalles_estudiantes_asistencias as licencias_count' => function ($query) {
-                    $query->where('tipo', 'L');
+                    $query->where('tipo', 'LICENCIA');
+                },
+                'detalles_estudiantes_asistencias as permisos_count' => function ($query) {
+                    $query->where('tipo', 'PERMISO');
+                },
+                'detalles_estudiantes_asistencias as otros_count' => function ($query) {
+                    $query->where('tipo', 'OTROS');
                 }
             ])
             // Ordenamiento compuesto respetando las relaciones
@@ -132,29 +132,28 @@ class EstudianteAsistencia extends Model
                 // 1. Conteo total
                 'detalles_estudiantes_asistencias',
 
-                // 2. Conteo de Presentes (P)
+                // 2. Detalle de conteo por tipo de asistencia
                 'detalles_estudiantes_asistencias as presentes_count' => function ($query) {
-                    $query->where('tipo', 'P');
+                    $query->where('tipo', 'PRESENTE');
                 },
-
-                // 3. Conteo de Atrasos (A)
                 'detalles_estudiantes_asistencias as atrasos_count' => function ($query) {
-                    $query->where('tipo', 'A');
+                    $query->where('tipo', 'ATRASO');
                 },
-
-                // 4. Conteo de Faltas (F)
                 'detalles_estudiantes_asistencias as faltas_count' => function ($query) {
-                    $query->where('tipo', 'F');
+                    $query->where('tipo', 'FALTA');
                 },
-
-                // 5. Conteo de Licencias (L)
                 'detalles_estudiantes_asistencias as licencias_count' => function ($query) {
-                    $query->where('tipo', 'L');
+                    $query->where('tipo', 'LICENCIA');
+                },
+                'detalles_estudiantes_asistencias as permisos_count' => function ($query) {
+                    $query->where('tipo', 'PERMISO');
+                },
+                'detalles_estudiantes_asistencias as otros_count' => function ($query) {
+                    $query->where('tipo', 'OTROS');
                 }
             ])
             ->when(
                 $filtros['nivel'] ?? null,
-                // Filtramos directamente gracias a los joins anidados
                 fn($q, $valor) => $q->where('asignaturas.id_nivel', $valor)
             )
             ->when(
@@ -173,6 +172,16 @@ class EstudianteAsistencia extends Model
     public function get_estudiante_asistencia($id_estudiante_asistencia)
     {
         return $this->with([
+            'detalles_estudiantes_asistencias' => function ($query) {
+                $query->select('detalles_estudiantes_asistencias.*')
+                    ->join('estudiantes', 'detalles_estudiantes_asistencias.id_estudiante', '=', 'estudiantes.id_estudiante')
+                    ->join('personas', 'estudiantes.id_persona', '=', 'personas.id_persona')
+                    ->orderBy('personas.apellido_paterno', 'ASC')
+                    ->orderBy('personas.apellido_materno', 'ASC')
+                    ->orderBy('personas.nombres', 'ASC');
+            },
+
+            // Las sub-relaciones se cargan normalmente
             'detalles_estudiantes_asistencias.estudiante:id_estudiante,id_persona,id_curso,estado',
             'detalles_estudiantes_asistencias.estudiante.persona:id_persona,id_colegio,apellido_paterno,apellido_materno,nombres,tipo_perfil,estado',
             'detalles_estudiantes_asistencias.estudiante.persona.usuario:id_usuario,id_persona,url_foto_perfil,estado',

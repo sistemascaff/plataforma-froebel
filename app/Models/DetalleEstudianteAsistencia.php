@@ -40,7 +40,7 @@ class DetalleEstudianteAsistencia extends Model
     }
 
     /**
-     * Obtiene el reporte plano de atrasos, faltas y licencias
+     * Obtiene el reporte plano de atrasos, faltas, licencias, permisos y otros
      * Soporta filtrado por nivel (Subdirector) y coordinación (Coordinador)
      */
     public function get_reporte_incidencias(array $filtros = [])
@@ -67,7 +67,7 @@ class DetalleEstudianteAsistencia extends Model
                 'estudiante_licencia'
             ])
             // Solo incidencias
-            ->whereIn('detalles_estudiantes_asistencias.tipo', ['A', 'F', 'L'])
+            ->whereIn('detalles_estudiantes_asistencias.tipo', ['ATRASO', 'FALTA', 'LICENCIA', 'PERMISO'])
 
             // ==========================================
             // FILTROS DINÁMICOS POR ROL

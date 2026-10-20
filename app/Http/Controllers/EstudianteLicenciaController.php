@@ -83,7 +83,8 @@ class EstudianteLicenciaController extends Controller
                     ->whereIn('id_estudiante_asistencia', $asistenciasAfectadas)
                     ->where('id_estudiante', $licencia->id_estudiante)
                     ->update([
-                        'tipo' => 'L',
+                        'tipo' => 'LICENCIA',
+                        'tiempo_atraso' => 0,
                         'id_estudiante_licencia' => $licencia->id_estudiante_licencia
                     ]);
             }
@@ -111,23 +112,69 @@ class EstudianteLicenciaController extends Controller
         // Autorización dinámica antes de modificar el registro
         $this->authorize('update', $licencia);
 
-        $licencia->id_estudiante = $request->id_estudiante;
-        $licencia->tipo = $request->tipo;
-        $licencia->justificacion = $request->justificacion;
-        $licencia->fecha_inicio  = $request->fecha_inicio;
-        $licencia->fecha_fin     = $request->fecha_fin;
-        $licencia->evidencia     = $request->evidencia;
+        DB::beginTransaction();
+        try {
+            // 1. Detectar si hubo un cambio en el rango de fechas
+            $fechasCambiaron = ($licencia->fecha_inicio != $request->fecha_inicio) || ($licencia->fecha_fin != $request->fecha_fin);
 
-        $licencia->modificado_por      = auth()->id();
-        $licencia->ip                  = $request->ip();
-        $licencia->dispositivo         = $request->userAgent();
-        $licencia->save();
+            // 2. Limpieza de historial previo (Efecto Retroactivo Inverso)
+            // Si las fechas cambian, reseteamos a FALTA todas las asistencias que tenían esta licencia en específico.
+            if ($fechasCambiaron) {
+                DB::table('detalles_estudiantes_asistencias')
+                    ->where('id_estudiante_licencia', $licencia->id_estudiante_licencia)
+                    ->update([
+                        'tipo' => 'FALTA',
+                        'tiempo_atraso' => 0,
+                        'id_estudiante_licencia' => null
+                    ]);
+            }
 
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'La licencia fue actualizada correctamente.',
-            'licencia' => $licencia
-        ]);
+            // 3. Actualizamos los datos del registro maestro de la Licencia
+            $licencia->id_estudiante = $request->id_estudiante;
+            $licencia->tipo = $request->tipo;
+            $licencia->justificacion = $request->justificacion;
+            $licencia->fecha_inicio  = $request->fecha_inicio;
+            $licencia->fecha_fin     = $request->fecha_fin;
+            $licencia->evidencia     = $request->evidencia;
+
+            $licencia->modificado_por      = auth()->id();
+            $licencia->ip                  = $request->ip();
+            $licencia->dispositivo         = $request->userAgent();
+            $licencia->save();
+
+            // 4. Efecto Retroactivo Normal: Buscar asistencias maestras que caigan dentro del NUEVO rango
+            $asistenciasAfectadas = DB::table('estudiantes_asistencias')
+                ->join('horarios_asignaturas', 'estudiantes_asistencias.id_horario_asignatura', '=', 'horarios_asignaturas.id_horario_asignatura')
+                ->whereRaw("TIMESTAMP(estudiantes_asistencias.fecha, horarios_asignaturas.hora_inicio) <= ?", [$licencia->fecha_fin])
+                ->whereRaw("TIMESTAMP(estudiantes_asistencias.fecha, horarios_asignaturas.hora_fin) >= ?", [$licencia->fecha_inicio])
+                ->pluck('estudiantes_asistencias.id_estudiante_asistencia');
+
+            // 5. Aplicar la Licencia a las asistencias afectadas del estudiante
+            if ($asistenciasAfectadas->isNotEmpty()) {
+                DB::table('detalles_estudiantes_asistencias')
+                    ->whereIn('id_estudiante_asistencia', $asistenciasAfectadas)
+                    ->where('id_estudiante', $licencia->id_estudiante)
+                    ->update([
+                        'tipo' => 'LICENCIA',
+                        'tiempo_atraso' => 0,
+                        'id_estudiante_licencia' => $licencia->id_estudiante_licencia
+                    ]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'La licencia fue actualizada y sus asistencias sincronizadas correctamente.',
+                'licencia' => $licencia
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Ocurrió un error crítico al actualizar la licencia: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function delete(Request $request, $id_estudiante_licencia)

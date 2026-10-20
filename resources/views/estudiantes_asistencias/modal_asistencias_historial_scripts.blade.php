@@ -55,26 +55,36 @@
                             let iconClass = '';
 
                             switch (tipo) {
-                                case 'P':
+                                case 'PRESENTE':
                                     badgeClass = 'bg-success';
                                     badgeText = 'Presente';
                                     iconClass = 'fa-check-circle';
                                     break;
-                                case 'A':
+                                case 'ATRASO':
                                     badgeClass = 'bg-warning text-dark';
                                     badgeText = atraso ? `Atraso (${atraso} min)` :
                                         'Atraso';
                                     iconClass = 'fa-hourglass-half';
                                     break;
-                                case 'F':
+                                case 'FALTA':
                                     badgeClass = 'bg-danger';
                                     badgeText = 'Falta';
                                     iconClass = 'fa-times-circle';
                                     break;
-                                case 'L':
+                                case 'LICENCIA':
                                     badgeClass = 'bg-info text-dark';
                                     badgeText = 'Licencia';
                                     iconClass = 'fa-file-certificate';
+                                    break;
+                                case 'PERMISO':
+                                    badgeClass = 'bg-primary';
+                                    badgeText = 'Permiso';
+                                    iconClass = 'fa-file-signature';
+                                    break;
+                                case 'OTROS':
+                                    badgeClass = 'bg-secondary';
+                                    badgeText = 'Otros';
+                                    iconClass = 'fa-calendar-star';
                                     break;
                                 default:
                                     badgeClass = 'bg-secondary';

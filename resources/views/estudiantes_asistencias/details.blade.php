@@ -69,19 +69,32 @@
                     </p>
                 </div>
             </div>
+
+            @if (!empty($estudiante_asistencia->justificacion_otros))
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <div class="alert alert-secondary mb-0 py-2">
+                            <i class="fa-duotone fa-file-certificate me-1"></i> **Asistencia Global por OTROS:**
+                            <span class="badge bg-dark">{{ $estudiante_asistencia->justificacion_otros }}</span>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 
     @php
         $totalEstudiantes = $estudiante_asistencia->detalles_estudiantes_asistencias->count();
-        $presentes = $estudiante_asistencia->detalles_estudiantes_asistencias->where('tipo', 'P')->count();
-        $atrasos = $estudiante_asistencia->detalles_estudiantes_asistencias->where('tipo', 'A')->count();
-        $faltas = $estudiante_asistencia->detalles_estudiantes_asistencias->where('tipo', 'F')->count();
-        $licencias = $estudiante_asistencia->detalles_estudiantes_asistencias->where('tipo', 'L')->count();
+        $presentes = $estudiante_asistencia->detalles_estudiantes_asistencias->where('tipo', 'PRESENTE')->count();
+        $atrasos = $estudiante_asistencia->detalles_estudiantes_asistencias->where('tipo', 'ATRASO')->count();
+        $faltas = $estudiante_asistencia->detalles_estudiantes_asistencias->where('tipo', 'FALTA')->count();
+        $licencias = $estudiante_asistencia->detalles_estudiantes_asistencias->where('tipo', 'LICENCIA')->count();
+        $permisos = $estudiante_asistencia->detalles_estudiantes_asistencias->where('tipo', 'PERMISO')->count();
+        $otros = $estudiante_asistencia->detalles_estudiantes_asistencias->where('tipo', 'OTROS')->count();
     @endphp
 
     <div class="row g-3 mb-4">
-        <div class="col-6 col-md">
+        <div class="col-6 col-md-2">
             <div class="card shadow-sm border-start border-4 border-secondary h-100">
                 <div class="card-body p-3 text-center">
                     <p class="text-muted fw-bold mb-1 fs-7"><i class="fa-duotone fa-users me-1"></i> Registrados</p>
@@ -89,7 +102,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-6 col-md">
+        <div class="col-6 col-md-2">
             <div class="card shadow-sm border-start border-4 border-success h-100">
                 <div class="card-body p-3 text-center">
                     <p class="text-muted fw-bold mb-1 fs-7"><i class="fa-duotone fa-user-check me-1"></i> Presentes</p>
@@ -97,7 +110,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-6 col-md">
+        <div class="col-6 col-md-2">
             <div class="card shadow-sm border-start border-4 border-warning h-100">
                 <div class="card-body p-3 text-center">
                     <p class="text-muted fw-bold mb-1 fs-7"><i class="fa-duotone fa-hourglass-half me-1"></i> Atrasos</p>
@@ -105,7 +118,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-6 col-md">
+        <div class="col-6 col-md-2">
             <div class="card shadow-sm border-start border-4 border-danger h-100">
                 <div class="card-body p-3 text-center">
                     <p class="text-muted fw-bold mb-1 fs-7"><i class="fa-duotone fa-user-xmark me-1"></i> Faltas</p>
@@ -113,12 +126,21 @@
                 </div>
             </div>
         </div>
-        <div class="col-6 col-md">
+        <div class="col-6 col-md-2">
             <div class="card shadow-sm border-start border-4 border-info h-100">
                 <div class="card-body p-3 text-center">
                     <p class="text-muted fw-bold mb-1 fs-7"><i class="fa-duotone fa-file-certificate me-1"></i> Licencias
                     </p>
                     <h3 class="fw-bold mb-0 text-info">{{ $licencias }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-2">
+            <div class="card shadow-sm border-start border-4 border-primary h-100">
+                <div class="card-body p-3 text-center">
+                    <p class="text-muted fw-bold mb-1 fs-7"><i class="fa-duotone fa-file-signature me-1"></i> Permisos /
+                        Otros</p>
+                    <h3 class="fw-bold mb-0 text-primary">{{ $permisos + $otros }}</h3>
                 </div>
             </div>
         </div>
@@ -140,7 +162,7 @@
                             <th class="text-center" style="width: 5%;">Perfil</th>
                             <th>Estudiante</th>
                             <th class="text-center">Curso</th>
-                            <th class="text-center" style="width: 18%;">Estado Registrado</th>
+                            <th class="text-center" style="width: 22%;">Estado Registrado</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -149,29 +171,36 @@
                                 $tipo = $detalle->tipo;
 
                                 $badgeClass = match ($tipo) {
-                                    'P' => 'bg-success',
-                                    'A' => 'bg-warning text-dark',
-                                    'F' => 'bg-danger',
-                                    'L' => 'bg-info text-dark',
+                                    'PRESENTE' => 'bg-success',
+                                    'ATRASO' => 'bg-warning text-dark',
+                                    'FALTA' => 'bg-danger',
+                                    'LICENCIA' => 'bg-info text-dark',
+                                    'PERMISO' => 'bg-primary',
+                                    'OTROS' => 'bg-secondary',
                                     default => 'bg-secondary',
                                 };
 
-                                // Verificamos si es Atraso y tiene minutos registrados para concatenarlos
                                 $tipoTexto = match ($tipo) {
-                                    'P' => 'Presente',
-                                    'A' => $detalle->tiempo_atraso
+                                    'PRESENTE' => 'Presente',
+                                    'ATRASO' => $detalle->tiempo_atraso
                                         ? 'Atraso (' . $detalle->tiempo_atraso . ' min)'
                                         : 'Atraso',
-                                    'F' => 'Falta',
-                                    'L' => 'Licencia',
+                                    'FALTA' => 'Falta',
+                                    'LICENCIA' => 'Licencia',
+                                    'PERMISO' => 'Permiso',
+                                    'OTROS' => 'Otros (' .
+                                        ($estudiante_asistencia->justificacion_otros ?? 'General') .
+                                        ')',
                                     default => 'Desconocido',
                                 };
 
                                 $tipoIcono = match ($tipo) {
-                                    'P' => 'fa-check-circle',
-                                    'A' => 'fa-hourglass-half',
-                                    'F' => 'fa-times-circle',
-                                    'L' => 'fa-file-certificate',
+                                    'PRESENTE' => 'fa-check-circle',
+                                    'ATRASO' => 'fa-hourglass-half',
+                                    'FALTA' => 'fa-times-circle',
+                                    'LICENCIA' => 'fa-file-certificate',
+                                    'PERMISO' => 'fa-file-signature',
+                                    'OTROS' => 'fa-calendar-star',
                                     default => 'fa-question-circle',
                                 };
                             @endphp
@@ -240,7 +269,7 @@
                 <div class="col-md-2">
                     <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-user-pen me-1"></i> Modificado Por:</p>
                     <p class="mb-0">
-                        {{ $estudiante_asistencia->modificado?->correo != null ? $estudiante_asistencia->modificado->correo : 'Sin modificar' }}
+                        {{ $estudiante_asistencia->modificado?->correo ?? 'Sin modificar' }}
                     </p>
                 </div>
                 <div class="col-md-2">

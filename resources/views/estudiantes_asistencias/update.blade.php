@@ -68,6 +68,13 @@
         </div>
     </div>
 
+    @php
+        // Determinamos si la asistencia actual está en modo "OTROS"
+        $esModoOtrosInicial =
+            !empty($estudiante_asistencia->justificacion_otros) ||
+            $estudiante_asistencia->detalles_estudiantes_asistencias->contains('tipo', 'OTROS');
+    @endphp
+
     <form id="form-asistencia">
         <input type="hidden" name="id_lista_asignatura" value="{{ $estudiante_asistencia->id_lista_asignatura }}">
         <input type="hidden" name="id_estudiante_asistencia"
@@ -76,11 +83,11 @@
         <div class="card shadow-sm mb-4">
             <div class="card-header p-3 d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0 text-info">
-                    <i class="fa-duotone fa-clock-desk me-1"></i> Modificar Horario y Fecha de Clase
+                    <i class="fa-duotone fa-clock-desk me-1"></i> Modificar Horario, Fecha y Modalidad de Clase
                 </h5>
             </div>
             <div class="card-body">
-                <div class="row g-3">
+                <div class="row g-3 align-items-end">
                     <div class="col-md-4">
                         <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-calendar-days me-1"></i> Fecha de la
                             clase:</p>
@@ -92,7 +99,6 @@
                         <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-clock me-1"></i> Horario de la clase:</p>
                         <select class="form-select" name="id_horario" id="id_horario_asignatura" required>
                             @foreach ($horarios as $horario)
-                                <!-- Agregamos data-dia con el valor numérico de la BD -->
                                 <option value="{{ $horario->id_horario_asignatura }}"
                                     data-dia="{{ $horario->pivot->dia_semana }}"
                                     {{ $estudiante_asistencia->id_horario_asignatura == $horario->id_horario_asignatura ? 'selected' : '' }}>
@@ -105,6 +111,55 @@
                                 </option>
                             @endforeach
                         </select>
+                    </div>
+
+                    <!-- Interruptor para Modo Global "OTROS" -->
+                    <div class="col-md-4">
+                        <div
+                            class="form-check form-switch p-2 border rounded bg-body-tertiary d-flex align-items-center justify-content-between">
+                            <label class="form-check-label fw-bold text-secondary mb-0 me-2" for="switch_modo_otros"
+                                style="cursor: pointer;">
+                                <i class="fa-duotone fa-calendar-star me-1"></i> Marcar clase como "OTROS"
+                            </label>
+                            <input class="form-check-input ms-0 fs-5" type="checkbox" role="switch" id="switch_modo_otros"
+                                style="cursor: pointer;" {{ $esModoOtrosInicial ? 'checked' : '' }}>
+                        </div>
+                    </div>
+
+                    <!-- Contenedor de Justificación para "OTROS" -->
+                    <div class="col-md-12" id="contenedor_justificacion_otros"
+                        style="display: {{ $esModoOtrosInicial ? 'block' : 'none' }};">
+                        <div class="alert alert-secondary mb-0 border-secondary shadow-sm">
+                            <div class="row g-2 align-items-center">
+                                <div class="col-md-6">
+                                    <label for="justificacion_otros" class="form-label fw-bold mb-1">
+                                        <i class="fa-duotone fa-file-certificate me-1"></i> Justificación para asistencia
+                                        tipo "OTROS" (Obligatorio):
+                                    </label>
+                                    <select class="form-select" name="justificacion_otros" id="justificacion_otros"
+                                        {{ $esModoOtrosInicial ? 'required' : '' }}>
+                                        <option value="" disabled
+                                            {{ empty($estudiante_asistencia->justificacion_otros) ? 'selected' : '' }}>
+                                            Seleccione el motivo de la actividad...
+                                        </option>
+                                        <option value="ACTIVIDAD CURRICULAR"
+                                            {{ $estudiante_asistencia->justificacion_otros === 'ACTIVIDAD CURRICULAR' ? 'selected' : '' }}>
+                                            ACTIVIDAD CURRICULAR
+                                        </option>
+                                        <option value="ACTIVIDAD EXTRACURRICULAR"
+                                            {{ $estudiante_asistencia->justificacion_otros === 'ACTIVIDAD EXTRACURRICULAR' ? 'selected' : '' }}>
+                                            ACTIVIDAD EXTRACURRICULAR
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 text-muted small mt-3 mt-md-4">
+                                    <i class="fa-duotone fa-circle-info me-1"></i>
+                                    Al mantener activa esta opción, todos los estudiantes (excepto aquellos con
+                                    <strong>Licencia</strong> vigente) serán registrados automáticamente con el estado
+                                    <strong>OTROS</strong>.
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -147,6 +202,16 @@
                                         $tieneLicencia = !is_null($licencia);
                                         $tipoActual = $detalle->tipo;
                                         $tiempoAtrasoActual = $detalle->tiempo_atraso ?? '';
+
+                                        // Si estaba en modo OTROS y el docente desmarca el switch en el frontend, por defecto el radio "PRESENTE" quedará preseleccionado
+                                        $tipoRadioSeleccionado = in_array($tipoActual, [
+                                            'PRESENTE',
+                                            'ATRASO',
+                                            'FALTA',
+                                            'PERMISO',
+                                        ])
+                                            ? $tipoActual
+                                            : 'PRESENTE';
                                     @endphp
                                     <tr>
                                         <td class="text-center align-middle">{{ $loop->index + 1 }}</td>
@@ -172,9 +237,8 @@
                                                     <i class="fa-solid fa-duotone fa-clock-rotate-left"></i>
                                                 </button>
                                             </div>
-                                            <br>
                                             @if ($tieneLicencia)
-                                                <div class="mt-1">
+                                                <div class="mt-2">
                                                     <span class="badge bg-info text-dark mb-1">Licencia:
                                                         {{ ucwords(str_replace('_', ' ', $licencia->tipo)) }}
                                                         -
@@ -191,77 +255,115 @@
                                                 value="{{ $estudiante->id_estudiante }}">
 
                                             @if ($tieneLicencia)
-                                                <span class="badge bg-info tipo">Licencia</span>
+                                                <span class="badge bg-info text-dark tipo">Licencia</span>
                                                 <input type="hidden"
                                                     name="estudiantes[{{ $index }}][id_estudiante_licencia]"
                                                     value="{{ $licencia->id_estudiante_licencia }}">
                                                 <input type="hidden" name="estudiantes[{{ $index }}][tipo]"
-                                                    value="L">
+                                                    value="LICENCIA">
                                             @else
                                                 @php
                                                     $badgeClass = match ($tipoActual) {
-                                                        'P' => 'bg-success',
-                                                        'A' => 'bg-warning',
-                                                        'F' => 'bg-danger',
+                                                        'PRESENTE' => 'bg-success',
+                                                        'ATRASO' => 'bg-warning text-dark',
+                                                        'FALTA' => 'bg-danger',
+                                                        'PERMISO' => 'bg-primary',
+                                                        'OTROS' => 'bg-secondary',
                                                         default => 'bg-success',
                                                     };
 
                                                     $badgeText = match ($tipoActual) {
-                                                        'P' => 'Presente',
-                                                        'A' => 'Atraso',
-                                                        'F' => 'Falta',
+                                                        'PRESENTE' => 'Presente',
+                                                        'ATRASO' => 'Atraso',
+                                                        'FALTA' => 'Falta',
+                                                        'PERMISO' => 'Permiso',
+                                                        'OTROS' => 'Otros',
                                                         default => 'Presente',
                                                     };
                                                 @endphp
                                                 <span class="badge {{ $badgeClass }} tipo"
                                                     id="badge_tipo_{{ $index }}">{{ $badgeText }}</span>
+
+                                                <!-- Input oculto exclusivo para cuando el modo global OTROS está activo -->
+                                                <input type="hidden" class="input-hidden-otros"
+                                                    name="estudiantes[{{ $index }}][tipo]"
+                                                    id="input_otros_{{ $index }}" value="OTROS"
+                                                    {{ $esModoOtrosInicial ? '' : 'disabled' }}>
                                             @endif
                                         </td>
                                         <td class="text-center align-middle">
                                             @if ($tieneLicencia)
                                                 <span class="text-muted">No se puede modificar</span>
                                             @else
-                                                <div class="d-flex justify-content-center align-items-center gap-2">
+                                                <div class="d-flex justify-content-center align-items-center gap-2 contenedor-acciones-fila"
+                                                    id="acciones_fila_{{ $index }}"
+                                                    style="{{ $esModoOtrosInicial ? 'display: none !important;' : '' }}">
                                                     <div class="btn-group shadow-sm" role="group">
+                                                        <!-- PRESENTE -->
                                                         <input type="radio" class="btn-check radio-asistencia"
                                                             name="estudiantes[{{ $index }}][tipo]"
-                                                            id="presente_{{ $index }}" value="P" required
-                                                            {{ $tipoActual === 'P' ? 'checked' : '' }}
+                                                            id="presente_{{ $index }}" value="PRESENTE" required
+                                                            {{ $tipoRadioSeleccionado === 'PRESENTE' ? 'checked' : '' }}
+                                                            {{ $esModoOtrosInicial ? 'disabled' : '' }}
                                                             data-index="{{ $index }}">
                                                         <label class="btn btn-outline-success"
                                                             for="presente_{{ $index }}"
                                                             title="Marcar como presente"><i
                                                                 class="fa fa-solid fa-duotone fa-check-circle"></i></label>
 
+                                                        <!-- ATRASO -->
                                                         <input type="radio" class="btn-check radio-asistencia"
                                                             name="estudiantes[{{ $index }}][tipo]"
-                                                            id="atraso_{{ $index }}" value="A" required
-                                                            {{ $tipoActual === 'A' ? 'checked' : '' }}
+                                                            id="atraso_{{ $index }}" value="ATRASO" required
+                                                            {{ $tipoRadioSeleccionado === 'ATRASO' ? 'checked' : '' }}
+                                                            {{ $esModoOtrosInicial ? 'disabled' : '' }}
                                                             data-index="{{ $index }}">
                                                         <label class="btn btn-outline-warning"
                                                             for="atraso_{{ $index }}"
                                                             title="Marcar como atraso"><i
                                                                 class="fa fa-solid fa-duotone fa-hourglass-half"></i></label>
 
+                                                        <!-- FALTA -->
                                                         <input type="radio" class="btn-check radio-asistencia"
                                                             name="estudiantes[{{ $index }}][tipo]"
-                                                            id="falta_{{ $index }}" value="F" required
-                                                            {{ $tipoActual === 'F' ? 'checked' : '' }}
+                                                            id="falta_{{ $index }}" value="FALTA" required
+                                                            {{ $tipoRadioSeleccionado === 'FALTA' ? 'checked' : '' }}
+                                                            {{ $esModoOtrosInicial ? 'disabled' : '' }}
                                                             data-index="{{ $index }}">
                                                         <label class="btn btn-outline-danger"
                                                             for="falta_{{ $index }}" title="Marcar como falta"><i
                                                                 class="fa fa-solid fa-duotone fa-times-circle"></i></label>
+
+                                                        <!-- PERMISO -->
+                                                        <input type="radio" class="btn-check radio-asistencia"
+                                                            name="estudiantes[{{ $index }}][tipo]"
+                                                            id="permiso_{{ $index }}" value="PERMISO" required
+                                                            {{ $tipoRadioSeleccionado === 'PERMISO' ? 'checked' : '' }}
+                                                            {{ $esModoOtrosInicial ? 'disabled' : '' }}
+                                                            data-index="{{ $index }}">
+                                                        <label class="btn btn-outline-primary"
+                                                            for="permiso_{{ $index }}"
+                                                            title="Marcar como permiso"><i
+                                                                class="fa fa-solid fa-duotone fa-file-signature"></i></label>
                                                     </div>
 
-                                                    <input type="number" class="form-control form-control-sm shadow-sm"
+                                                    <input type="number"
+                                                        class="form-control form-control-sm shadow-sm input-tiempo-atraso"
                                                         name="estudiantes[{{ $index }}][tiempo_atraso]"
                                                         id="tiempo_atraso_{{ $index }}" min="1"
                                                         max="60"
-                                                        value="{{ $tipoActual === 'A' ? $tiempoAtrasoActual : '' }}"
+                                                        value="{{ !$esModoOtrosInicial && $tipoActual === 'ATRASO' ? $tiempoAtrasoActual : '' }}"
                                                         placeholder="Min." title="Minutos de atraso"
-                                                        style="display: {{ $tipoActual === 'A' ? 'block' : 'none' }}; width: 70px;"
-                                                        {{ $tipoActual === 'A' ? 'required' : '' }}>
+                                                        style="display: {{ !$esModoOtrosInicial && $tipoActual === 'ATRASO' ? 'block' : 'none' }}; width: 70px;"
+                                                        {{ !$esModoOtrosInicial && $tipoActual === 'ATRASO' ? 'required' : '' }}>
                                                 </div>
+
+                                                <!-- Etiqueta informativa cuando el modo OTROS está activo -->
+                                                <span class="text-muted small etiqueta-modo-otros"
+                                                    id="etiqueta_otros_{{ $index }}"
+                                                    style="display: {{ $esModoOtrosInicial ? 'inline-block' : 'none' }};">
+                                                    <i class="fa-duotone fa-lock me-1"></i> Bloqueado por modo OTROS
+                                                </span>
                                             @endif
                                         </td>
                                     </tr>
@@ -270,7 +372,7 @@
                         </table>
                     </div>
                     <div class="d-flex justify-content-end mt-3">
-                        <button type="submit" class="btn btn-warning shadow-sm text-white fw-bold" id="btn-guardar">
+                        <button type="submit" class="btn btn-warning shadow-sm text-dark" id="btn-guardar">
                             <i class="fa-solid fa-duotone fa-floppy-disk me-1"></i>Actualizar Asistencia
                         </button>
                     </div>

@@ -53,8 +53,8 @@ class DocenteValidation extends FormRequest
             'id_nivel'                  => ['nullable', 'integer', 'exists:niveles,id_nivel'],
             'id_coordinacion'           => ['nullable', 'integer', 'exists:coordinaciones,id_coordinacion'],
             'especialidad'              => ['nullable', 'string', 'max:45'],
-            'grado_estudios'            => ['required', 'string', 'max:45'],
-            'domicilio'                 => ['required', 'string', 'max:250'],
+            'grado_estudios'            => ['nullable', 'string', 'max:45'],
+            'domicilio'                 => ['nullable', 'string', 'max:250'],
 
             // --- Usuario ---
             'correo'                    => ['required', 'email', 'max:60', $correoUnico],
@@ -97,9 +97,7 @@ class DocenteValidation extends FormRequest
             'id_coordinacion.integer'           => 'La coordinación debe ser un valor entero válido.',
             'id_coordinacion.exists'            => 'La coordinación seleccionada no existe.',
             'especialidad.max'                  => 'La especialidad no puede superar los 45 caracteres.',
-            'grado_estudios.required'           => 'El grado de estudios es obligatorio.',
             'grado_estudios.max'                => 'El grado de estudios no puede superar los 45 caracteres.',
-            'domicilio.required'                => 'El domicilio es obligatorio.',
             'domicilio.max'                     => 'El domicilio no puede superar los 250 caracteres.',
 
             // Usuario

@@ -231,8 +231,6 @@ class EstudianteAsistenciaController extends Controller
             $filtros['docente'] = Auth::user()->persona?->docente?->id_docente;
         }
 
-
-
         $reporte_incidencias = (new DetalleEstudianteAsistencia())->get_reporte_incidencias($filtros);
 
         return response()->json([
@@ -263,12 +261,35 @@ class EstudianteAsistenciaController extends Controller
             'id_lista_asignatura' => 'required|integer|exists:listas_asignaturas,id_lista_asignatura',
             'id_horario' => 'required|integer|exists:horarios_asignaturas,id_horario_asignatura',
             'fecha' => "required|date|after_or_equal:{$anio_actual}-02-01|before_or_equal:today",
+            'justificacion_otros' => 'nullable|string|in:ACTIVIDAD CURRICULAR,ACTIVIDAD EXTRACURRICULAR',
             'estudiantes' => 'required|array|min:1',
             'estudiantes.*.id_estudiante' => 'required|integer|exists:estudiantes,id_estudiante',
-            'estudiantes.*.tipo' => 'required|string|in:P,F,A,L',
+            'estudiantes.*.tipo' => 'required|string|in:PRESENTE,FALTA,ATRASO,LICENCIA,PERMISO,OTROS',
             'estudiantes.*.tiempo_atraso' => 'nullable|integer|min:0|max:60',
             'estudiantes.*.id_estudiante_licencia' => 'nullable|integer|exists:estudiantes_licencias,id_estudiante_licencia',
         ]);
+
+        // Validación de Regla de Negocio para "OTROS"
+        $tiposEnviados = collect($request->estudiantes)->pluck('tipo');
+        $esModoOtros = $tiposEnviados->contains('OTROS') || $request->filled('justificacion_otros');
+
+        if ($esModoOtros) {
+            if (!$request->filled('justificacion_otros')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Debe seleccionar una justificación obligatoria (ACTIVIDAD CURRICULAR o ACTIVIDAD EXTRACURRICULAR) cuando el tipo de asistencia es OTROS.'
+                ], 422);
+            }
+
+            // En modo OTROS no pueden existir PRESENTES, FALTAS, ATRASOS ni PERMISOS mezclados (solo OTROS y LICENCIA por prioridad)
+            $tiposInvalidosEnOtros = $tiposEnviados->diff(['OTROS', 'LICENCIA']);
+            if ($tiposInvalidosEnOtros->isNotEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cuando la asistencia es de tipo OTROS, engloba a toda la clase y no puede combinarse con Presentes, Faltas, Atrasos o Permisos.'
+                ], 422);
+            }
+        }
 
         // 1. Validación de Duplicidad (uk_asistencia)
         $existeAsistencia = EstudianteAsistencia::where('id_lista_asignatura', $request->id_lista_asignatura)
@@ -297,9 +318,10 @@ class EstudianteAsistenciaController extends Controller
             // 4. Inserción de la Tabla Cabecera (Maestro)
             $asistencia = new EstudianteAsistencia();
             $asistencia->id_lista_asignatura = $request->id_lista_asignatura;
-            $asistencia->id_horario_asignatura = $request->id_horario; // Mapeado correctamente al esquema DB
+            $asistencia->id_horario_asignatura = $request->id_horario;
             $asistencia->fecha = $request->fecha;
-            $asistencia->creado_por = auth()->id(); // Utilizando la fachada Auth nativa
+            $asistencia->justificacion_otros = $esModoOtros ? $request->justificacion_otros : null;
+            $asistencia->creado_por = auth()->id();
             $asistencia->ip = $request->ip();
             $asistencia->dispositivo = $request->userAgent();
             $asistencia->save();
@@ -315,7 +337,8 @@ class EstudianteAsistenciaController extends Controller
                     continue;
                 }
 
-                $tipoAsistencia = $estudianteReq['tipo'];
+                // Si la clase fue declarada como OTROS, por defecto el alumno es OTROS (salvo que tenga licencia)
+                $tipoAsistencia = $esModoOtros ? 'OTROS' : $estudianteReq['tipo'];
                 $idLicencia = $estudianteReq['id_estudiante_licencia'] ?? null;
                 $tiempoAtraso = $estudianteReq['tiempo_atraso'] ?? 0;
 
@@ -326,15 +349,18 @@ class EstudianteAsistenciaController extends Controller
                     ->where('fecha_fin', '>=', $inicioClase)
                     ->first();
 
-                // Regla de Negocio: La licencia anula cualquier envío manual del profesor
+                // Regla de Negocio: LICENCIA tiene prioridad absoluta sobre cualquier otro estado (incluido OTROS y PERMISO)
                 if ($licenciaAprobada) {
-                    $tipoAsistencia = 'L';
+                    $tipoAsistencia = 'LICENCIA';
                     $idLicencia = $licenciaAprobada->id_estudiante_licencia;
-                    $tiempoAtraso = 0; // Se anula el atraso si hay licencia
+                    $tiempoAtraso = 0;
+                } else {
+                    // Si no tiene licencia activa, nos aseguramos de limpiar cualquier id_estudiante_licencia residual
+                    $idLicencia = null;
                 }
 
-                // Consistencia de datos: Forzar 0 si el tipo final no es un Atraso ('A')
-                if ($tipoAsistencia !== 'A') {
+                // Consistencia de datos: Forzar 0 si el tipo final no es un Atraso ('ATRASO')
+                if ($tipoAsistencia !== 'ATRASO') {
                     $tiempoAtraso = 0;
                 }
 
@@ -384,21 +410,40 @@ class EstudianteAsistenciaController extends Controller
             'id_estudiante_asistencia' => 'required|integer|exists:estudiantes_asistencias,id_estudiante_asistencia',
             'id_horario' => 'required|integer|exists:horarios_asignaturas,id_horario_asignatura',
             'fecha' => "required|date|after_or_equal:{$anio_actual}-02-01|before_or_equal:today",
+            'justificacion_otros' => 'nullable|string|in:ACTIVIDAD CURRICULAR,ACTIVIDAD EXTRACURRICULAR',
             'estudiantes' => 'required|array|min:1',
             'estudiantes.*.id_estudiante' => 'required|integer|exists:estudiantes,id_estudiante',
-            'estudiantes.*.tipo' => 'required|string|in:P,F,A,L',
+            'estudiantes.*.tipo' => 'required|string|in:PRESENTE,FALTA,ATRASO,LICENCIA,PERMISO,OTROS',
             'estudiantes.*.tiempo_atraso' => 'nullable|integer|min:0|max:60',
             'estudiantes.*.id_estudiante_licencia' => 'nullable|integer|exists:estudiantes_licencias,id_estudiante_licencia',
         ]);
 
-        // 1. Obtener la asistencia actual para tener el id_lista_asignatura base
-        $asistencia = EstudianteAsistencia::findOrFail($id_estudiante_asistencia);
+        // Validación de Regla de Negocio para "OTROS"
+        $tiposEnviados = collect($request->estudiantes)->pluck('tipo');
+        $esModoOtros = $tiposEnviados->contains('OTROS') || $request->filled('justificacion_otros');
 
-        // 2. Validación de Duplicidad excluyendo el registro actual
+        if ($esModoOtros) {
+            if (!$request->filled('justificacion_otros')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Debe seleccionar una justificación obligatoria (ACTIVIDAD CURRICULAR o ACTIVIDAD EXTRACURRICULAR) cuando el tipo de asistencia es OTROS.'
+                ], 422);
+            }
+
+            $tiposInvalidosEnOtros = $tiposEnviados->diff(['OTROS', 'LICENCIA']);
+            if ($tiposInvalidosEnOtros->isNotEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cuando la asistencia es de tipo OTROS, engloba a toda la clase y no puede combinarse con Presentes, Faltas, Atrasos o Permisos.'
+                ], 422);
+            }
+        }
+
+        // 1. Validación de Duplicidad excluyendo el registro actual
         $existeAsistencia = EstudianteAsistencia::where('id_lista_asignatura', $asistencia->id_lista_asignatura)
             ->where('id_horario_asignatura', $request->id_horario)
             ->where('fecha', $request->fecha)
-            ->where('id_estudiante_asistencia', '!=', $id_estudiante_asistencia) // Exclusión clave
+            ->where('id_estudiante_asistencia', '!=', $id_estudiante_asistencia)
             ->exists();
 
         if ($existeAsistencia) {
@@ -410,31 +455,32 @@ class EstudianteAsistenciaController extends Controller
 
         DB::beginTransaction();
         try {
-            // 3. Seguridad: Validar que los estudiantes pertenecen realmente a la lista
+            // 2. Seguridad: Validar que los estudiantes pertenecen realmente a la lista
             $lista = ListaAsignatura::with('estudiantes')->findOrFail($asistencia->id_lista_asignatura);
             $estudiantesValidos = $lista->estudiantes->pluck('id_estudiante')->toArray();
 
-            // 4. Preparar variables para el cruce de fechas con licencias
+            // 3. Preparar variables para el cruce de fechas con licencias
             $horario = HorarioAsignatura::findOrFail($request->id_horario);
             $inicioClase = Carbon::parse($request->fecha . ' ' . $horario->hora_inicio);
             $finClase = Carbon::parse($request->fecha . ' ' . $horario->hora_fin);
 
-            // 5. Actualización de la Tabla Cabecera (Maestro)
+            // 4. Actualización de la Tabla Cabecera (Maestro)
             $asistencia->id_horario_asignatura = $request->id_horario;
             $asistencia->fecha = $request->fecha;
-            $asistencia->modificado_por = auth()->id(); // Campos de auditoría (modificado)
+            $asistencia->justificacion_otros = $esModoOtros ? $request->justificacion_otros : null;
+            $asistencia->modificado_por = auth()->id();
             $asistencia->ip = $request->ip();
             $asistencia->dispositivo = $request->userAgent();
             $asistencia->save();
 
-            // 6. Eliminar detalles anteriores (para reinsertar limpios)
+            // 5. Eliminar detalles anteriores (para reinsertar limpios)
             DB::table('detalles_estudiantes_asistencias')
                 ->where('id_estudiante_asistencia', $asistencia->id_estudiante_asistencia)
                 ->delete();
 
             $detallesAsistencia = [];
 
-            // 7. Procesamiento y Sobreescritura Automática de Detalles
+            // 6. Procesamiento y Sobreescritura Automática de Detalles
             foreach ($request->estudiantes as $estudianteReq) {
                 $idEstudiante = $estudianteReq['id_estudiante'];
 
@@ -443,7 +489,7 @@ class EstudianteAsistenciaController extends Controller
                     continue;
                 }
 
-                $tipoAsistencia = $estudianteReq['tipo'];
+                $tipoAsistencia = $esModoOtros ? 'OTROS' : $estudianteReq['tipo'];
                 $idLicencia = $estudianteReq['id_estudiante_licencia'] ?? null;
                 $tiempoAtraso = $estudianteReq['tiempo_atraso'] ?? 0;
 
@@ -454,15 +500,17 @@ class EstudianteAsistenciaController extends Controller
                     ->where('fecha_fin', '>=', $inicioClase)
                     ->first();
 
-                // Regla de Negocio: La licencia anula cualquier envío manual del profesor
+                // Regla de Negocio: LICENCIA tiene prioridad absoluta sobre cualquier otro estado
                 if ($licenciaAprobada) {
-                    $tipoAsistencia = 'L';
+                    $tipoAsistencia = 'LICENCIA';
                     $idLicencia = $licenciaAprobada->id_estudiante_licencia;
-                    $tiempoAtraso = 0; // Se anula el atraso si hay licencia
+                    $tiempoAtraso = 0;
+                } else {
+                    $idLicencia = null;
                 }
 
-                // Consistencia de datos: Forzar 0 si el tipo final no es un Atraso ('A')
-                if ($tipoAsistencia !== 'A') {
+                // Consistencia de datos: Forzar 0 si el tipo final no es un Atraso ('ATRASO')
+                if ($tipoAsistencia !== 'ATRASO') {
                     $tiempoAtraso = 0;
                 }
 
@@ -475,7 +523,7 @@ class EstudianteAsistenciaController extends Controller
                 ];
             }
 
-            // 8. Inserción masiva de Nuevos Detalles
+            // 7. Inserción masiva de Nuevos Detalles
             DB::table('detalles_estudiantes_asistencias')->insert($detallesAsistencia);
 
             DB::commit();

@@ -1,42 +1,128 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
-        // --- 1. Lógica visual para los Badges de Estado y Tiempo de Atraso ---
+        // Función auxiliar para actualizar el badge y el campo de atraso según el radio seleccionado
+        function actualizarEstadoVisualFila(index, valor, enfocarInput = false) {
+            const badge = document.getElementById('badge_tipo_' + index);
+            const inputAtraso = document.getElementById('tiempo_atraso_' + index);
+
+            if (!badge) return;
+
+            if (valor === 'PRESENTE') {
+                badge.className = 'badge bg-success tipo';
+                badge.textContent = 'Presente';
+                if (inputAtraso) {
+                    inputAtraso.style.display = 'none';
+                    inputAtraso.required = false;
+                    inputAtraso.value = '';
+                }
+            } else if (valor === 'ATRASO') {
+                badge.className = 'badge bg-warning text-dark tipo';
+                badge.textContent = 'Atraso';
+                if (inputAtraso) {
+                    inputAtraso.style.display = 'block';
+                    inputAtraso.required = true;
+                    if (enfocarInput) inputAtraso.focus();
+                }
+            } else if (valor === 'FALTA') {
+                badge.className = 'badge bg-danger tipo';
+                badge.textContent = 'Falta';
+                if (inputAtraso) {
+                    inputAtraso.style.display = 'none';
+                    inputAtraso.required = false;
+                    inputAtraso.value = '';
+                }
+            } else if (valor === 'PERMISO') {
+                badge.className = 'badge bg-primary tipo';
+                badge.textContent = 'Permiso';
+                if (inputAtraso) {
+                    inputAtraso.style.display = 'none';
+                    inputAtraso.required = false;
+                    inputAtraso.value = '';
+                }
+            }
+        }
+
+        // --- 1. Lógica visual para los Badges de Estado Individuales y Tiempo de Atraso ---
         document.querySelectorAll('.radio-asistencia').forEach(radio => {
             radio.addEventListener('change', function() {
                 const index = this.dataset.index;
-                const badge = document.getElementById('badge_tipo_' + index);
-                const inputAtraso = document.getElementById('tiempo_atraso_' + index);
-
-                if (badge) {
-                    if (this.value === 'P') {
-                        badge.className = 'badge bg-success tipo';
-                        badge.textContent = 'Presente';
-                        if (inputAtraso) {
-                            inputAtraso.style.display = 'none';
-                            inputAtraso.required = false;
-                            inputAtraso.value = '';
-                        }
-                    } else if (this.value === 'A') {
-                        badge.className = 'badge bg-warning tipo';
-                        badge.textContent = 'Atraso';
-                        if (inputAtraso) {
-                            inputAtraso.style.display = 'block';
-                            inputAtraso.required = true;
-                            inputAtraso.focus();
-                        }
-                    } else if (this.value === 'F') {
-                        badge.className = 'badge bg-danger tipo';
-                        badge.textContent = 'Falta';
-                        if (inputAtraso) {
-                            inputAtraso.style.display = 'none';
-                            inputAtraso.required = false;
-                            inputAtraso.value = '';
-                        }
-                    }
-                }
+                actualizarEstadoVisualFila(index, this.value, true);
             });
         });
+
+        // --- 2. Lógica para el Interruptor Global "OTROS" ---
+        const switchModoOtros = document.getElementById('switch_modo_otros');
+        const contenedorJustificacion = document.getElementById('contenedor_justificacion_otros');
+        const selectJustificacion = document.getElementById('justificacion_otros');
+
+        if (switchModoOtros) {
+            switchModoOtros.addEventListener('change', function() {
+                const activarOtros = this.checked;
+
+                // Mostrar/ocultar selector de justificación y hacerlo obligatorio si corresponde
+                if (activarOtros) {
+                    contenedorJustificacion.style.display = 'block';
+                    selectJustificacion.required = true;
+                } else {
+                    contenedorJustificacion.style.display = 'none';
+                    selectJustificacion.required = false;
+                    selectJustificacion.value = '';
+                }
+
+                // Recorrer todos los inputs ocultos de modo OTROS (solo existen en filas SIN licencia)
+                document.querySelectorAll('.input-hidden-otros').forEach(inputOtros => {
+                    const index = inputOtros.id.replace('input_otros_', '');
+                    const badge = document.getElementById('badge_tipo_' + index);
+                    const contenedorAcciones = document.getElementById('acciones_fila_' +
+                    index);
+                    const etiquetaOtros = document.getElementById('etiqueta_otros_' + index);
+                    const inputAtraso = document.getElementById('tiempo_atraso_' + index);
+                    const radiosFila = document.querySelectorAll(
+                        `.radio-asistencia[data-index="${index}"]`);
+
+                    if (activarOtros) {
+                        // Habilitar el input hidden con value="OTROS" y deshabilitar los radios individuales
+                        inputOtros.disabled = false;
+                        radiosFila.forEach(r => r.disabled = true);
+
+                        // Ocultar y limpiar minutos de atraso si estuvieran abiertos
+                        if (inputAtraso) {
+                            inputAtraso.style.display = 'none';
+                            inputAtraso.required = false;
+                            inputAtraso.value = '';
+                        }
+
+                        // Actualizar el badge a OTROS y ocultar la botonera
+                        if (badge) {
+                            badge.className = 'badge bg-secondary tipo';
+                            badge.textContent = 'Otros';
+                        }
+                        if (contenedorAcciones) contenedorAcciones.style.setProperty('display',
+                            'none', 'important');
+                        if (etiquetaOtros) etiquetaOtros.style.display = 'inline-block';
+                    } else {
+                        // Deshabilitar el input hidden de OTROS y rehabilitar los radios individuales
+                        inputOtros.disabled = true;
+                        radiosFila.forEach(r => r.disabled = false);
+
+                        if (contenedorAcciones) contenedorAcciones.style.display = 'flex';
+                        if (etiquetaOtros) etiquetaOtros.style.display = 'none';
+
+                        // Restaurar el badge y estado según el radio que esté marcado (o marcar PRESENTE por defecto)
+                        let radioSeleccionado = document.querySelector(
+                            `.radio-asistencia[data-index="${index}"]:checked`);
+                        if (!radioSeleccionado) {
+                            radioSeleccionado = document.getElementById('presente_' + index);
+                            if (radioSeleccionado) radioSeleccionado.checked = true;
+                        }
+                        if (radioSeleccionado) {
+                            actualizarEstadoVisualFila(index, radioSeleccionado.value, false);
+                        }
+                    }
+                });
+            });
+        }
 
         // --- 3. Validación en tiempo real para el Tiempo de Atraso ---
         const Toast = Swal.mixin({
@@ -53,7 +139,7 @@
             }
         });
 
-        document.querySelectorAll('input[type="number"]').forEach(input => {
+        document.querySelectorAll('.input-tiempo-atraso').forEach(input => {
             input.addEventListener('change', function() {
                 let valor = parseInt(this.value);
 
@@ -69,25 +155,21 @@
             });
         });
 
-        // --- 2. Lógica AJAX y SweetAlert2 para la Actualización del Formulario ---
+        // --- 4. Lógica AJAX y SweetAlert2 para la Actualización del Formulario ---
         const formAsistencia = document.getElementById('form-asistencia');
 
         if (formAsistencia) {
             formAsistencia.addEventListener('submit', function(e) {
                 e.preventDefault();
 
-
                 // ====================================================================
-                // NUEVA VALIDACIÓN: Cruce de Fecha vs Día del Horario
+                // VALIDACIÓN 1: Cruce de Fecha vs Día del Horario
                 // ====================================================================
                 const inputFecha = document.getElementById('fecha').value;
                 const selectHorario = document.getElementById('id_horario_asignatura');
                 const opcionSeleccionada = selectHorario.options[selectHorario.selectedIndex];
 
-                // Obtenemos el día esperado de la base de datos
                 const diaHorario = parseInt(opcionSeleccionada.getAttribute('data-dia'));
-
-                // Obtenemos el día real de la fecha seleccionada usando Moment.js (1=Lunes, 7=Domingo)
                 const diaFecha = moment(inputFecha).isoWeekday();
 
                 if (diaFecha !== diaHorario) {
@@ -98,7 +180,21 @@
                         text: 'El día de la fecha seleccionada no coincide con el día de la semana del horario elegido.',
                         confirmButtonColor: '#d33'
                     });
-                    return; // Detenemos la ejecución de todo el script aquí mismo
+                    return;
+                }
+
+                // ====================================================================
+                // VALIDACIÓN 2: Justificación obligatoria cuando Modo "OTROS" está activo
+                // ====================================================================
+                if (switchModoOtros && switchModoOtros.checked && !selectJustificacion.value) {
+                    Swal.fire({
+                        theme: localStorage.getItem('theme') || 'dark',
+                        icon: 'warning',
+                        title: 'Justificación Requerida',
+                        text: 'Debe seleccionar el motivo (ACTIVIDAD CURRICULAR o ACTIVIDAD EXTRACURRICULAR) para actualizar la asistencia como OTROS.',
+                        confirmButtonColor: '#3085d6'
+                    });
+                    return;
                 }
                 // ====================================================================
 

@@ -24,10 +24,12 @@
                 }
             },
             rowCallback: function(row, data, index) {
-                // Comparamos que sean iguales y (opcionalmente) que haya al menos 1 registrado para no pintar filas vacías
-                if (data.detalles_estudiantes_asistencias_count > 0 &&
-                    data.detalles_estudiantes_asistencias_count == data.presentes_count) {
-                    $(row).addClass('table-success');
+                if (data.detalles_estudiantes_asistencias_count > 0) {
+                    if (data.detalles_estudiantes_asistencias_count === data.presentes_count) {
+                        $(row).addClass('table-success');
+                    } else if (data.otros_count > 0) {
+                        $(row).addClass('table-secondary');
+                    }
                 }
             },
             columns: [{
@@ -69,7 +71,9 @@
                 {
                     data: "presentes_count",
                     render: function(data, type, row, meta) {
-                        return `<span class="badge bg-success">${data}</span>` || 0;
+                        return data > 0 ?
+                            `<span class="badge bg-success">${data}</span>` :
+                            `<span class="text-muted">0</span>`;
                     }
                 },
                 {
@@ -94,6 +98,27 @@
                         return data > 0 ?
                             `<span class="badge bg-info">${data}</span>` :
                             `<span class="text-muted">0</span>`;
+                    }
+                },
+                {
+                    data: "permisos_count",
+                    className: "text-center",
+                    render: function(data, type, row, meta) {
+                        return data > 0 ?
+                            `<span class="badge bg-primary">${data}</span>` :
+                            `<span class="text-muted">0</span>`;
+                    }
+                },
+                {
+                    data: "otros_count",
+                    className: "text-center",
+                    render: function(data, type, row, meta) {
+                        if (data > 0) {
+                            const motivo = row.justificacion_otros ?
+                                ` title="${row.justificacion_otros}"` : '';
+                            return `<span class="badge bg-secondary"${motivo}>${data}</span>`;
+                        }
+                        return `<span class="text-muted">0</span>`;
                     }
                 },
                 {

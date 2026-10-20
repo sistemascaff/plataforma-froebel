@@ -78,7 +78,8 @@
                         <option value="">Todos</option>
                         @if (isset($docentes))
                             @foreach ($docentes as $docente)
-                                <option value="{{ $docente->id_docente }}">{{ $docente->persona?->nombres_apellidos }}</option>
+                                <option value="{{ $docente->id_docente }}">{{ $docente->persona?->nombres_apellidos }}
+                                </option>
                             @endforeach
                         @endif
                     </select>
@@ -127,13 +128,23 @@
                 </div>
             </div>
         </div>
+        <div class="col-6 col-md">
+            <div class="card shadow-sm border-start border-4 border-primary h-100">
+                <div class="card-body p-3 text-center">
+                    <p class="text-muted fw-bold mb-1 fs-7"><i class="fa-duotone fa-file-signature me-1"></i> Permisos
+                    </p>
+                    <h3 class="fw-bold mb-0 text-primary" id="kpi-permisos">0</h3>
+                </div>
+            </div>
+        </div>
         <div class="col-12 col-md-3">
             <div class="card shadow-sm border-start border-4 border-warning h-100">
                 <div class="card-body p-3 text-center">
                     <p class="text-muted fw-bold mb-1 fs-7"><i class="fa-duotone fa-clock-rotate-left me-1"></i> Atrasos
                         (Tiempos)</p>
                     <h5 class="fw-bold mb-0">
-                        <i class="fa-solid fa-duotone fa-sigma"></i>: <span id="kpi-minutos-total" class="text-danger">0</span> min
+                        <i class="fa-solid fa-duotone fa-sigma"></i>: <span id="kpi-minutos-total"
+                            class="text-danger">0</span> min
                         <span class="fs-6 text-muted ms-2 fw-normal">(x̄: <span id="kpi-minutos-promedio">0</span>
                             min)</span>
                     </h5>
