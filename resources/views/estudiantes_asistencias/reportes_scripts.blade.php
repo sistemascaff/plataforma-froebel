@@ -106,8 +106,6 @@
         // Inicialización de la Tabla
         let tablaReportes = $("#dataTable").DataTable({
             processing: true,
-            @include('components.datatables.datatables_global_properties')
-            @include('components.datatables.datatables_language_property'),
             ajax: {
                 url: "{{ route('estudiantes_asistencias.listar_reporte_incidencias') }}",
                 type: "GET",
@@ -522,7 +520,8 @@
                         return '<span class="text-muted text-center d-block">-</span>';
                     }
                 }
-            ]
+            ],
+            ...dtDefaults,
         });
 
         $("#btn-filtrar").on("click", function(e) {

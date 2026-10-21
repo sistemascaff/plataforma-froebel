@@ -225,15 +225,13 @@
                 targets: [3, 4, 5, 13],
                 width: '500px',
             }, ],
+            ...dtDefaults,
+            // Ajustes específicos para ver todas las columnas sin que se colapse automáticamente por responsividad, que sobreescriben a la constante dtDefaults.
+            pageLength: 10,
             responsive: false,
             lengthChange: true,
             autoWidth: false,
             scrollX: true,
-            colReorder: true,
-            order: [],
-            pageLength: 10,
-            /* @include('components.datatables.datatables_global_properties') */
-            @include('components.datatables.datatables_language_property')
         });
 
         $(document).on('click', '.btn-agregar', function() {

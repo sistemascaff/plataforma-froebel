@@ -223,76 +223,13 @@
                     visible: false
                 }
             ],
+            ...dtDefaults,
+            // Ajustes específicos para ver todas las columnas sin que se colapse automáticamente por responsividad, que sobreescriben a la constante dtDefaults.
+            pageLength: 25,
             responsive: false,
             lengthChange: true,
             autoWidth: false,
             scrollX: true,
-            colReorder: true,
-            order: [],
-            pageLength: 25,
-            dom: 'Blfrtip',
-            buttons: [{
-                    extend: 'copy',
-                    className: 'btn btn-secondary',
-                    exportOptions: {
-                        columns: ':visible'
-                    }
-                },
-                {
-                    extend: 'csv',
-                    className: 'btn btn-success',
-                    exportOptions: {
-                        columns: ':visible'
-                    }
-                },
-                {
-                    extend: 'excel',
-                    className: 'btn btn-success',
-                    exportOptions: {
-                        columns: ':visible',
-                        stripHtml: false, // Evita que DataTables elimine el HTML prematuramente
-                        format: {
-                            body: function(data, row, column, node) {
-                                if (typeof data === 'string') {
-                                    data = data.replace(/<br\s*\/?>/ig,
-                                    '\n'); // Convierte <br> a \n
-                                    data = data.replace(/<[^>]*>?/gm,
-                                    ''); // Limpia el resto de etiquetas HTML
-                                }
-                                return data;
-                            }
-                        }
-                    }
-                },
-                {
-                    extend: 'pdf',
-                    className: 'btn btn-danger',
-                    exportOptions: {
-                        columns: ':visible',
-                        stripHtml: false, // Evita que DataTables elimine el HTML prematuramente
-                        format: {
-                            body: function(data, row, column, node) {
-                                if (typeof data === 'string') {
-                                    data = data.replace(/<br\s*\/?>/ig,
-                                    '\n'); // Convierte <br> a \n
-                                    data = data.replace(/<[^>]*>?/gm,
-                                    ''); // Limpia el resto de etiquetas HTML
-                                }
-                                return data;
-                            }
-                        }
-                    }
-                },
-                {
-                    extend: 'colvis',
-                    className: 'btn btn-info'
-                },
-                {
-                    extend: 'searchBuilder',
-                    className: 'btn btn-warning'
-                }
-            ],
-            @include('components.datatables.datatables_language_property')
         }).buttons().container().appendTo('#dataTable-export-buttons-container');
 
         function actualizarEstadisticas() {

@@ -244,25 +244,20 @@
     <script>
         $(document).ready(function() {
             var tablaAsignaturas = $("#asignaturas").DataTable({
-                @include('components.datatables.datatables_global_properties')
-                @include('components.datatables.datatables_language_property')
+                ...dtDefaults,
             });
 
             var tablaAsistencias = $("#tabla-asistencias").DataTable({
-                @include('components.datatables.datatables_global_properties')
-                @include('components.datatables.datatables_language_property')
+                ...dtDefaults,
             });
 
             var tablaLicencias = $("#tabla-licencias").DataTable({
-                @include('components.datatables.datatables_global_properties')
-                @include('components.datatables.datatables_language_property')
+                ...dtDefaults,
             });
 
             var tablaPrestamos = $("#tabla-prestamos-libros").DataTable({
-                @include('components.datatables.datatables_global_properties')
-                @include('components.datatables.datatables_language_property')
+                ...dtDefaults,
                 // Ordenar por préstamo más reciente
-                ,
                 "order": [
                     [1, "desc"]
                 ]

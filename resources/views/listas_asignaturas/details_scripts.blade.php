@@ -13,8 +13,8 @@
 
         // ─── Inicializar DataTable ──────────────────────────────────────────────
         let dtEstudiantes = $("#estudiantes").DataTable({
-            @include('components.datatables.datatables_global_properties')
-            @include('components.datatables.datatables_language_property'),
+            ...dtDefaults,
+            pageLength: -1,
             columnDefs: [{
                     orderable: false,
                     targets: [1, 5]
@@ -28,8 +28,7 @@
 
         // ─── Inicializar DataTable de asistencias ────────────────────────────────
         $("#asistencias").DataTable({
-            @include('components.datatables.datatables_global_properties')
-            @include('components.datatables.datatables_language_property')
+            ...dtDefaults,
         });
 
         // Auto-enumerar la primera columna (#)
@@ -284,8 +283,7 @@
         @if ($lista_asignatura->asignatura->tipo_bloque === 'mixto')
             // Inicializar DataTable dentro del modal de cursos
             let dtCursos = $("#tabla-cursos-importar").DataTable({
-                @include('components.datatables.datatables_global_properties')
-                @include('components.datatables.datatables_language_property'),
+                ...dtDefaults,
                 paging: false,
                 columnDefs: [{
                         orderable: false,

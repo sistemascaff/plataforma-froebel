@@ -289,8 +289,7 @@
                     }
                 }
             ],
-            @include('components.datatables.datatables_global_properties')
-            @include('components.datatables.datatables_language_property')
+            ...dtDefaults,
         }).buttons().container().appendTo('#dataTable-export-buttons-container');
 
         $("#btn-filtrar").on("click", function(e) {

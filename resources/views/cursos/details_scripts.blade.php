@@ -1,8 +1,7 @@
 <script>
     $(document).ready(function() {
         let dtEstudiantes = $("#estudiantes").DataTable({
-            @include('components.datatables.datatables_global_properties')
-            @include('components.datatables.datatables_language_property'),
+            ...dtDefaults,
             columnDefs: [{
                     orderable: false,
                     targets: [1, 9]

@@ -2,7 +2,7 @@
     $(document).ready(function() {
         // Inicializamos DataTable para el modal (opcional, pero mantiene el diseño corporativo)
         let tablaHistorial = $('#tabla-historial').DataTable({
-            @include('components.datatables.datatables_language_property'),
+            ...dtLanguage,
             pageLength: 10,
             lengthChange: false,
             searching: false,

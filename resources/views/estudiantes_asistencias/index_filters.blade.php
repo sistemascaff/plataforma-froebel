@@ -7,7 +7,7 @@
     <div class="card-body">
         <div class="row g-3 align-items-end">
             <div class="col-md-3">
-                <label for="id_nivel" class="form-label text-muted fw-bold">Nivel:</label>
+                <label for="filter_id_nivel" class="form-label text-muted fw-bold">Nivel:</label>
                 <select class="form-select" id="filter_id_nivel">
                     <option value="">Todos</option>
                     @foreach ($niveles as $nivel)
@@ -16,7 +16,7 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="id_coordinacion" class="form-label text-muted fw-bold">Coordinación:</label>
+                <label for="filter_id_coordinacion" class="form-label text-muted fw-bold">Coordinación:</label>
                 <select class="form-select" id="filter_id_coordinacion">
                     <option value="">Todos</option>
                     @foreach ($coordinaciones as $coordinacion)
@@ -26,7 +26,7 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="id_curso" class="form-label text-muted fw-bold">Docente:</label>
+                <label for="filter_id_docente" class="form-label text-muted fw-bold">Docente:</label>
                 <select class="form-select" id="filter_id_docente">
                     <option value="">Todos</option>
                     @foreach ($docentes as $docente)

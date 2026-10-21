@@ -92,8 +92,7 @@
     <script>
         $(document).ready(function() {
             $(".dataTable").DataTable({
-                @include('components.datatables.datatables_global_properties')
-                @include('components.datatables.datatables_language_property')
+                ...dtDefaults,
             });
         });
     </script>

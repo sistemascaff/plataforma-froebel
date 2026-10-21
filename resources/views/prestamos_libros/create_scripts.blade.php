@@ -214,8 +214,7 @@
             colReorder: true,
             order: [],
             pageLength: 10,
-            /* @include('components.datatables.datatables_global_properties') */
-            @include('components.datatables.datatables_language_property')
+            ...dtLanguage,
         });
 
         $(document).on('click', '.btn-agregar', function() {

@@ -19,5 +19,7 @@
 <script src="{{ asset('/public/dependencies/chart.js-4.5.1/chartjs-plugin-datalabels@2.0.0.js') }}"></script>
 <!-- SheetJS -->
 <script src="{{ asset('/public/dependencies/xlsx/xlsx.full.min.js') }}"></script>
+<!-- Archivo de propiedades por defecto de datatables -->
+<script src="{{ asset('/public/datatables_defaults.js') }}"></script>
 <!-- Custom JS -->
 <script src="{{ asset('/public/custom.js') }}"></script>
