@@ -1,6 +1,10 @@
 <script>
     const AUTH_PERFIL = '{{ Auth::user()->persona?->tipo_perfil }}';
     const ES_ADMINISTRADOR = AUTH_PERFIL === 'ADMINISTRADOR';
+    const ROLES_PERMITIDOS = ['SECRETARIA ACADEMICA'];
+    const PUEDE_CREAR = ROLES_PERMITIDOS.includes(AUTH_PERFIL) || ES_ADMINISTRADOR;
+    const PUEDE_EDITAR = ROLES_PERMITIDOS.includes(AUTH_PERFIL) || ES_ADMINISTRADOR;
+    const PUEDE_ELIMINAR = ROLES_PERMITIDOS.includes(AUTH_PERFIL) || ES_ADMINISTRADOR;
 
     // Variables globales para gráficos
     let chartCursos, chartTipos;
@@ -129,20 +133,29 @@
                     gridColor
                 } = getThemeColors();
 
+                // 1. Contadores
                 let kpiTotal = 0;
+                let kpiProgramadas = 0;
                 let kpiVigentes = 0;
+                let kpiFinalizadas = 0;
+
                 let objCursos = {};
                 let objTipos = {};
-                const fechaActual = moment();
+                const hoy = moment();
 
                 // Extracción y agrupación de datos filtrados
                 filteredData.forEach(row => {
                     kpiTotal++;
 
-                    // Validación de vigencia
+                    // 2. Validación de estados con la nueva lógica
                     const fechaInicio = moment(row.fecha_inicio);
                     const fechaFin = moment(row.fecha_fin);
-                    if (fechaActual.isBetween(fechaInicio, fechaFin, undefined, '[]')) {
+
+                    if (hoy.isBefore(fechaInicio)) {
+                        kpiProgramadas++;
+                    } else if (hoy.isAfter(fechaFin)) {
+                        kpiFinalizadas++;
+                    } else {
                         kpiVigentes++;
                     }
 
@@ -159,11 +172,13 @@
                     objTipos[tipoFormateado] = (objTipos[tipoFormateado] || 0) + 1;
                 });
 
-                // Actualizar tarjetas HTML
+                // 3. Actualizar tarjetas HTML con los IDs correspondientes
                 $('#kpi-total').text(kpiTotal);
+                $('#kpi-programadas').text(kpiProgramadas);
                 $('#kpi-vigentes').text(kpiVigentes);
+                $('#kpi-finalizadas').text(kpiFinalizadas);
 
-                // Configuración estándar para los gráficos
+                // Configuración estándar para los gráficos (Sin cambios)
                 const baseOpts = {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -203,13 +218,12 @@
 
                 const sortObjectDesc = (obj) => Object.entries(obj).sort((a, b) => b[1] - a[1]);
 
-                // Renderizar gráfico de cursos
+                // Renderizar gráfico de cursos (Sin cambios)
                 let sortedCursos = sortObjectDesc(objCursos);
                 chartCursos = initOrUpdateChart(chartCursos, 'chart-cursos', {
                     type: 'bar',
                     data: {
-                        labels: sortedCursos.map(e => e[
-                            0]), // Aquí se muestra el nombre completo
+                        labels: sortedCursos.map(e => e[0]),
                         datasets: [{
                             data: sortedCursos.map(e => e[1]),
                             backgroundColor: '#0dcaf0',
@@ -219,7 +233,7 @@
                     options: baseOpts
                 });
 
-                // Renderizar gráfico de tipos/motivos
+                // Renderizar gráfico de tipos/motivos (Sin cambios)
                 let sortedTipos = sortObjectDesc(objTipos);
                 chartTipos = initOrUpdateChart(chartTipos, 'chart-tipos', {
                     type: 'bar',
@@ -277,12 +291,20 @@
                 {
                     data: null,
                     render: function(data, type, row) {
+                        const hoy = moment();
                         const fecha_inicio = moment(row.fecha_inicio);
                         const fecha_fin = moment(row.fecha_fin);
-                        const esta_vigente = moment().isBetween(fecha_inicio, fecha_fin,
-                            undefined, '[]');
-                        return esta_vigente ? `<span class="badge bg-success">VIGENTE</span>` :
-                            `<span class="badge bg-danger">NO VIGENTE</span>`;
+
+                        if (hoy.isBefore(fecha_inicio)) {
+                            // El momento actual es ANTES de la fecha de inicio
+                            return `<span class="badge bg-info">PROGRAMADA</span>`;
+                        } else if (hoy.isAfter(fecha_fin)) {
+                            // El momento actual es DESPUÉS de la fecha de fin
+                            return `<span class="badge bg-danger">FINALIZADA</span>`;
+                        } else {
+                            // El momento actual está ENTRE la fecha de inicio y fin (inclusive)
+                            return `<span class="badge bg-success">VIGENTE</span>`;
+                        }
                     }
                 },
                 {
@@ -346,17 +368,27 @@
                     data: null,
                     orderable: false,
                     searchable: false,
+                    visible: PUEDE_EDITAR,
                     render: function(data, type, row) {
-                        return `
-                            <div class="btn-group" role="group">
-                                <button class="btn btn-sm btn-warning btn-editar" data-id="${row.id_estudiante_licencia}">
+                        let botones = `<div class="btn-group" role="group">`;
+
+                        if (PUEDE_EDITAR) {
+                            botones +=
+                                `<button class="btn btn-sm btn-warning btn-editar" data-id="${row.id_estudiante_licencia}">
                                     <i class="fa-solid fa-duotone fa-pen-to-square"></i>
-                                </button>
-                                <button class="btn btn-sm btn-danger btn-eliminar" data-id="${row.id_estudiante_licencia}">
+                                </button>`
+                        }
+
+                        if (PUEDE_ELIMINAR) {
+                            botones +=
+                                `<button class="btn btn-sm btn-danger btn-eliminar" data-id="${row.id_estudiante_licencia}">
                                     <i class="fa-solid fa-duotone fa-trash"></i>
-                                </button>
-                            </div>
-                        `;
+                                </button>`
+                        }
+
+                        botones += `</div>`;
+
+                        return botones;
                     }
                 }
             ],
@@ -391,7 +423,7 @@
             const id = $(this).data('id');
 
             $.get("{{ route('estudiantes_licencias.index') . '/' }}" + id, function(
-            estudiante_licencia) {
+                estudiante_licencia) {
                 $('#form-crear-o-editar input[name="id_estudiante_licencia"]').val(
                     estudiante_licencia.data.id_estudiante_licencia);
 

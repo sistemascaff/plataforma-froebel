@@ -7,7 +7,7 @@
     <div class="card-body">
         <div class="row g-3 align-items-end">
             <div class="col-md-3">
-                <label for="id_nivel" class="form-label text-muted fw-bold">Nivel:</label>
+                <label for="filter_id_nivel" class="form-label text-muted fw-bold">Nivel:</label>
                 <select class="form-select" id="filter_id_nivel">
                     <option value="">Todos</option>
                     @foreach ($niveles as $nivel)
@@ -16,7 +16,7 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="id_coordinacion" class="form-label text-muted fw-bold">Coordinación:</label>
+                <label for="filter_id_coordinacion" class="form-label text-muted fw-bold">Coordinación:</label>
                 <select class="form-select" id="filter_id_coordinacion">
                     <option value="">Todos</option>
                     @foreach ($coordinaciones as $coordinacion)
@@ -26,7 +26,7 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="id_curso" class="form-label text-muted fw-bold">Curso:</label>
+                <label for="filter_id_curso" class="form-label text-muted fw-bold">Curso:</label>
                 <select class="form-select" id="filter_id_curso">
                     <option value="">Todos</option>
                     @foreach ($cursos as $curso)
@@ -35,7 +35,7 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="id_curso" class="form-label text-muted fw-bold">Tipo de calificación:</label>
+                <label for="filter_tipo_calificacion" class="form-label text-muted fw-bold">Tipo de calificación:</label>
                 <select class="form-select" id="filter_tipo_calificacion">
                     <option value="">Todos</option>
                     <option value="cualitativa">CUALITATIVA</option>
@@ -43,7 +43,7 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="id_curso" class="form-label text-muted fw-bold">Tipo de bloque:</label>
+                <label for="filter_tipo_bloque" class="form-label text-muted fw-bold">Tipo de bloque:</label>
                 <select class="form-select" id="filter_tipo_bloque">
                     <option value="">Todos</option>
                     <option value="curso">CURSO</option>
@@ -51,7 +51,7 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="id_curso" class="form-label text-muted fw-bold">Docente:</label>
+                <label for="filter_id_docente" class="form-label text-muted fw-bold">Docente:</label>
                 <select class="form-select" id="filter_id_docente">
                     <option value="">Todos</option>
                     @foreach ($docentes as $docente)

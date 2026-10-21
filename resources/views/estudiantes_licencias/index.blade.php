@@ -5,10 +5,12 @@
         <h1 class="text-info fw-bold mb-0">
             <i class="fa-solid fa-duotone fa-file-medical me-2"></i>{{ $head_title }}
         </h1>
-        <button type="button" class="btn btn-success shadow-sm btn-crear" data-bs-toggle="modal"
+        @can('create', App\Models\EstudianteLicencia::class)
+            <button type="button" class="btn btn-success shadow-sm btn-crear" data-bs-toggle="modal"
             data-bs-target="#modal-formulario">
             <i class="fa-solid fa-duotone fa-plus me-1"></i> Registrar licencia
         </button>
+        @endcan
     </div>
 
     @include('estudiantes_licencias.index_filters')
@@ -25,30 +27,60 @@
 
         <div class="row g-3">
             <!-- Total Registros -->
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-sm-6 col-lg-3">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body d-flex align-items-center p-3">
-                        <div class="p-3 rounded bg-info bg-opacity-10 text-info me-3">
+                        <div class="p-3 rounded bg-primary bg-opacity-10 text-primary me-3">
                             <i class="fa-duotone fa-file-medical fa-2xl"></i>
                         </div>
                         <div>
                             <span class="text-muted small d-block mb-1">Total Registros</span>
-                            <h3 id="kpi-total" class="fw-bold m-0 text-info">0</h3>
+                            <h3 id="kpi-total" class="fw-bold m-0 text-primary">0</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Licencias Programadas -->
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex align-items-center p-3">
+                        <div class="p-3 rounded bg-info bg-opacity-10 text-info me-3">
+                            <i class="fa-duotone fa-calendar-clock fa-2xl"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small d-block mb-1">Programadas</span>
+                            <h3 id="kpi-programadas" class="fw-bold m-0 text-info">0</h3>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Licencias Vigentes -->
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-sm-6 col-lg-3">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body d-flex align-items-center p-3">
                         <div class="p-3 rounded bg-success bg-opacity-10 text-success me-3">
                             <i class="fa-duotone fa-calendar-check fa-2xl"></i>
                         </div>
                         <div>
-                            <span class="text-muted small d-block mb-1">Licencias Vigentes</span>
+                            <span class="text-muted small d-block mb-1">Vigentes</span>
                             <h3 id="kpi-vigentes" class="fw-bold m-0 text-success">0</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Licencias Finalizadas -->
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex align-items-center p-3">
+                        <div class="p-3 rounded bg-danger bg-opacity-10 text-danger me-3">
+                            <i class="fa-duotone fa-calendar-xmark fa-2xl"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small d-block mb-1">Finalizadas</span>
+                            <h3 id="kpi-finalizadas" class="fw-bold m-0 text-danger">0</h3>
                         </div>
                     </div>
                 </div>

@@ -157,3 +157,8 @@ const dtDefaults = {
     ...dtGlobalConfig,
     ...dtLanguage
 };
+
+// Indicación a DataTable sobre los formatos esperados para reconocer las fechas y horas como date y datetime con moment.js
+DataTable.datetime('DD/MM/YYYY HH:mm:ss');
+DataTable.datetime('DD/MM/YYYY HH:mm');
+DataTable.datetime('DD/MM/YYYY');
