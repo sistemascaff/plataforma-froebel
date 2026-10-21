@@ -1,4 +1,6 @@
 <script>
+    const AUTH_PERFIL = '{{ Auth::user()->persona?->tipo_perfil }}';
+    
     $(document).ready(function() {
         $("#dataTable").DataTable({
             processing: true,
@@ -43,6 +45,7 @@
                 },
                 {
                     data: "docente.persona.nombres_apellidos",
+                    visible: AUTH_PERFIL !== 'DOCENTE',
                     render: function(data, type, row) {
                         return data ? `${data}` : '<span class="text-danger"><i class="fa-duotone fa-triangle-exclamation"></i> Sin asignar</span>';
                     }

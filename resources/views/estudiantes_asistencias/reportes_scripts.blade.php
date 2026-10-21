@@ -1,4 +1,6 @@
 <script>
+    const AUTH_PERFIL = '{{ Auth::user()->persona?->tipo_perfil }}';
+
     Chart.register(ChartDataLabels);
 
     // --- NUEVO PLUGIN PARA TOTALES EN BARRAS APILADAS ---
@@ -480,6 +482,7 @@
                 {
                     data: null,
                     className: "align-middle",
+                    visible: AUTH_PERFIL !== 'DOCENTE',
                     render: (data, type, row) => row.estudiante_asistencia?.lista_asignatura
                         ?.docente?.persona ?
                         `${row.estudiante_asistencia.lista_asignatura.docente.persona.nombres_apellidos}` :

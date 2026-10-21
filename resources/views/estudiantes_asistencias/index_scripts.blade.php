@@ -1,4 +1,6 @@
 <script>
+    const AUTH_PERFIL = '{{ Auth::user()->persona?->tipo_perfil }}';
+
     $(document).ready(function() {
         $('#filter_id_docente').select2({
             language: "es",
@@ -55,6 +57,7 @@
                 },
                 {
                     data: "lista_asignatura.docente.persona.nombres_apellidos",
+                    visible: AUTH_PERFIL !== 'DOCENTE',
                 },
                 {
                     data: "lista_asignatura.periodo",
@@ -123,6 +126,7 @@
                 },
                 {
                     data: "estado",
+                    visible: false, //aún no se pueden eliminar asistencias
                     render: function(data, type, row) {
                         if (data == 1) {
                             return '<span class="badge bg-success">ACTIVO</span>';
