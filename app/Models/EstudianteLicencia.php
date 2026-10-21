@@ -64,6 +64,7 @@ class EstudianteLicencia extends Model
             ->join('cursos', 'estudiantes.id_curso', '=', 'cursos.id_curso')
             ->join('grados', 'cursos.id_grado', '=', 'grados.id_grado')
             ->join('niveles', 'grados.id_nivel', '=', 'niveles.id_nivel')
+            ->join('paralelos', 'cursos.id_paralelo', '=', 'paralelos.id_paralelo')
             ->with([
                 'estudiante:id_estudiante,id_persona,id_curso,estado',
                 'estudiante.persona:id_persona,id_colegio,apellido_paterno,apellido_materno,nombres,estado',
@@ -75,8 +76,24 @@ class EstudianteLicencia extends Model
             ])
             ->when(
                 $filtros['nivel'] ?? null,
-                // Filtramos directamente gracias a los joins
+                // Como ya se hizo el join con niveles se puede filtrar directamente en lugar de usar whereHas (y también es más rápido)
                 fn($q, $valor) => $q->where('niveles.id_nivel', $valor)
+            )
+            ->when(
+                $filtros['grado'] ?? null,
+                fn($q, $valor) => $q->where('grados.id_grado', $valor)
+            )
+            ->when(
+                $filtros['curso'] ?? null,
+                fn($q, $valor) => $q->where('cursos.id_curso', $valor)
+            )
+            ->when(
+                $filtros['paralelo'] ?? null,
+                fn($q, $valor) => $q->where('paralelos.id_paralelo', $valor)
+            )
+            ->when(
+                isset($filtros['estado']),
+                fn($q) => $q->where('estudiantes_licencias.estado', $filtros['estado'])
             )
             ->orderBy('estudiantes_licencias.id_estudiante_licencia', 'DESC')
             ->get();

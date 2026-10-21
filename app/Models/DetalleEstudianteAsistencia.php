@@ -59,12 +59,16 @@ class DetalleEstudianteAsistencia extends Model
 
             // Eager Loading para la vista/Excel
             ->with([
-                'estudiante_asistencia.horario_asignatura',
-                'estudiante.curso',
-                'estudiante.persona',
-                'estudiante_asistencia.lista_asignatura.asignatura',
-                'estudiante_asistencia.lista_asignatura.docente.persona',
-                'estudiante_licencia'
+                'estudiante_asistencia:id_estudiante_asistencia,id_lista_asignatura,id_horario_asignatura,fecha,justificacion_otros,estado',
+                'estudiante_asistencia.horario_asignatura:id_horario_asignatura,id_nivel,id_gestion,denominacion,hora_inicio,hora_fin,estado',
+                'estudiante.curso:id_curso,id_grado,id_paralelo,curso,estado',
+                'estudiante:id_estudiante,id_persona,id_curso,estado',
+                'estudiante.persona:id_persona,id_colegio,apellido_paterno,apellido_materno,nombres',
+                'estudiante_asistencia.lista_asignatura:id_lista_asignatura,id_asignatura,id_periodo,id_docente,estado',
+                'estudiante_asistencia.lista_asignatura.asignatura:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',
+                'estudiante_asistencia.lista_asignatura.docente:id_docente,id_persona,id_nivel,id_coordinacion,estado',
+                'estudiante_asistencia.lista_asignatura.docente.persona:id_persona,id_colegio,apellido_paterno,apellido_materno,nombres',
+                'estudiante_licencia:id_estudiante_licencia,id_estudiante,tipo,justificacion,fecha_inicio,fecha_fin,evidencia,solicitado_por,estado'
             ])
             // Solo incidencias
             ->whereIn('detalles_estudiantes_asistencias.tipo', ['ATRASO', 'FALTA', 'LICENCIA', 'PERMISO'])

@@ -26,11 +26,13 @@
 
                     <div class="row g-3">
                         <div class="col-sm-6">
-                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-feather-pointed me-1"></i> Autor</p>
+                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-feather-pointed me-1"></i> Autor
+                            </p>
                             <p class="fs-5 mb-0" id="autor">{{ $libro->autor }}</p>
                         </div>
                         <div class="col-sm-6">
-                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-tags me-1"></i> Categoría / Género</p>
+                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-tags me-1"></i> Categoría /
+                                Género</p>
                             <p class="fs-5 mb-0" id="categoria">{{ $libro->categoria }}</p>
                         </div>
                     </div>
@@ -38,7 +40,8 @@
                     <hr class="my-4 text-muted">
 
                     <div>
-                        <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-align-left me-1"></i> Descripción o Resumen</p>
+                        <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-align-left me-1"></i> Descripción o
+                            Resumen</p>
                         <p class="fs-6 mb-0 text-break text-muted text-opacity-75" id="descripcion">
                             {{ $libro->descripcion ?: 'Sin descripción registrada en el sistema.' }}
                         </p>
@@ -57,11 +60,13 @@
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-6">
-                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-barcode me-1"></i> Código Único</p>
+                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-barcode me-1"></i> Código Único
+                            </p>
                             <p class="fs-5 fw-bold text-info mb-0" id="codigo">{{ $libro->codigo }}</p>
                         </div>
                         <div class="col-6">
-                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-calendar me-1"></i> Año Edición</p>
+                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-calendar me-1"></i> Año Edición
+                            </p>
                             <p class="fs-5 mb-0" id="anio">{{ $libro->anio }}</p>
                         </div>
                         <div class="col-6">
@@ -69,30 +74,36 @@
                             <p class="fs-6 mb-0" id="editorial">{{ $libro->editorial }}</p>
                         </div>
                         <div class="col-6">
-                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-book-medical me-1"></i> Presentación</p>
+                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-book-medical me-1"></i>
+                                Presentación</p>
                             <p class="fs-6 mb-0" id="presentacion">{{ $libro->presentacion }}</p>
                         </div>
                         <div class="col-6">
-                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-hand-holding-dollar me-1"></i> Costo Unitario</p>
+                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-hand-holding-dollar me-1"></i>
+                                Costo Unitario</p>
                             <p class="fs-6 mb-0 text-success fw-bold" id="costo">{{ $libro->costo }}</p>
                         </div>
                         <div class="col-6">
-                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-boxes-packing me-1"></i> Adquisición</p>
-                            <p class="fs-6 mb-0" id="adquisicion">{{ $libro->adquisicion == 1 ? 'COMPRA' : 'DONACIÓN' }}</p>
+                            <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-boxes-packing me-1"></i>
+                                Adquisición</p>
+                            <p class="fs-6 mb-0" id="adquisicion">{{ $libro->adquisicion == 1 ? 'COMPRA' : 'DONACIÓN' }}
+                            </p>
                         </div>
                     </div>
 
                     <hr class="my-3 text-muted">
 
                     <div class="mb-3">
-                        <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-circle-exclamation me-1"></i> Observación Interna</p>
+                        <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-circle-exclamation me-1"></i>
+                            Observación Interna</p>
                         <p class="fs-6 mb-0 text-warning" id="observacion">
                             {{ $libro->observacion ?: 'Ninguna observación física sobre este ejemplar.' }}
                         </p>
                     </div>
 
                     <div>
-                        <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-calendar-check me-1"></i> Ingreso a Cooperativa</p>
+                        <p class="text-muted small fw-bold mb-1"><i class="fa-solid fa-calendar-check me-1"></i> Ingreso a
+                            Cooperativa</p>
                         <p class="fs-6 mb-0 text-secondary" id="fecha_ingreso_cooperativa">
                             {{ date('d/m/Y', strtotime($libro->fecha_ingreso_cooperativa)) }}
                         </p>
@@ -136,7 +147,8 @@
                                 <td class="align-middle">{{ date('d/m/Y', strtotime($prestamo->fecha_devolucion)) }}</td>
                                 <td class="align-middle">
                                     @if ($prestamo->pivot->fecha_retorno)
-                                        <span class="text-success fw-bold">{{ date('d/m/Y H:i', strtotime($prestamo->pivot->fecha_retorno)) }}</span>
+                                        <span
+                                            class="text-success fw-bold">{{ date('d/m/Y H:i', strtotime($prestamo->pivot->fecha_retorno)) }}</span>
                                     @else
                                         <span class="badge bg-danger">AÚN PRESTADO</span>
                                     @endif
@@ -172,19 +184,55 @@
                 dom: 'Blfrtip',
                 buttons: [{
                         extend: 'copy',
-                        className: 'btn btn-secondary'
+                        className: 'btn btn-secondary',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
                     },
                     {
                         extend: 'csv',
-                        className: 'btn btn-success'
+                        className: 'btn btn-success',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
                     },
                     {
                         extend: 'excel',
-                        className: 'btn btn-success'
+                        className: 'btn btn-success',
+                        exportOptions: {
+                            columns: ':visible',
+                            stripHtml: false, // Evita que DataTables elimine el HTML prematuramente
+                            format: {
+                                body: function(data, row, column, node) {
+                                    if (typeof data === 'string') {
+                                        data = data.replace(/<br\s*\/?>/ig,
+                                        '\n'); // Convierte <br> a \n
+                                        data = data.replace(/<[^>]*>?/gm,
+                                        ''); // Limpia el resto de etiquetas HTML
+                                    }
+                                    return data;
+                                }
+                            }
+                        }
                     },
                     {
                         extend: 'pdf',
-                        className: 'btn btn-danger'
+                        className: 'btn btn-danger',
+                        exportOptions: {
+                            columns: ':visible',
+                            stripHtml: false, // Evita que DataTables elimine el HTML prematuramente
+                            format: {
+                                body: function(data, row, column, node) {
+                                    if (typeof data === 'string') {
+                                        data = data.replace(/<br\s*\/?>/ig,
+                                        '\n'); // Convierte <br> a \n
+                                        data = data.replace(/<[^>]*>?/gm,
+                                        ''); // Limpia el resto de etiquetas HTML
+                                    }
+                                    return data;
+                                }
+                            }
+                        }
                     },
                     {
                         extend: 'colvis',
@@ -193,7 +241,7 @@
                     {
                         extend: 'searchBuilder',
                         className: 'btn btn-warning'
-                    },
+                    }
                 ],
                 @include('components.datatables.datatables_language_property')
             });

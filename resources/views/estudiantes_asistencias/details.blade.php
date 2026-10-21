@@ -93,54 +93,103 @@
         $otros = $estudiante_asistencia->detalles_estudiantes_asistencias->where('tipo', 'OTROS')->count();
     @endphp
 
-    <div class="row g-3 mb-4">
-        <div class="col-6 col-md-2">
-            <div class="card shadow-sm border-start border-4 border-secondary h-100">
-                <div class="card-body p-3 text-center">
-                    <p class="text-muted fw-bold mb-1 fs-7"><i class="fa-duotone fa-users me-1"></i> Registrados</p>
-                    <h3 class="fw-bold mb-0 text-secondary">{{ $totalEstudiantes }}</h3>
-                </div>
+    <div class="card p-3 mb-4 shadow-sm">
+        <div class="row align-items-center mb-3">
+            <div class="col-12">
+                <h5 class="fw-bold m-0 text-uppercase tracking-wider small text-muted">
+                    <i class="fa-solid fa-chart-simple me-2 text-info"></i>Resumen de Asistencia
+                </h5>
             </div>
         </div>
-        <div class="col-6 col-md-2">
-            <div class="card shadow-sm border-start border-4 border-success h-100">
-                <div class="card-body p-3 text-center">
-                    <p class="text-muted fw-bold mb-1 fs-7"><i class="fa-duotone fa-user-check me-1"></i> Presentes</p>
-                    <h3 class="fw-bold mb-0 text-success">{{ $presentes }}</h3>
+
+        <div class="row g-3">
+            <!-- Registrados -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex align-items-center p-3">
+                        <div class="p-3 rounded bg-secondary bg-opacity-10 text-secondary me-3">
+                            <i class="fa-duotone fa-users fa-2xl"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small d-block mb-1">Registrados</span>
+                            <h3 class="fw-bold m-0 text-secondary">{{ $totalEstudiantes }}</h3>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-6 col-md-2">
-            <div class="card shadow-sm border-start border-4 border-warning h-100">
-                <div class="card-body p-3 text-center">
-                    <p class="text-muted fw-bold mb-1 fs-7"><i class="fa-duotone fa-hourglass-half me-1"></i> Atrasos</p>
-                    <h3 class="fw-bold mb-0 text-warning">{{ $atrasos }}</h3>
+
+            <!-- Presentes -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex align-items-center p-3">
+                        <div class="p-3 rounded bg-success bg-opacity-10 text-success me-3">
+                            <i class="fa-duotone fa-user-check fa-2xl"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small d-block mb-1">Presentes</span>
+                            <h3 class="fw-bold m-0 text-success">{{ $presentes }}</h3>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-6 col-md-2">
-            <div class="card shadow-sm border-start border-4 border-danger h-100">
-                <div class="card-body p-3 text-center">
-                    <p class="text-muted fw-bold mb-1 fs-7"><i class="fa-duotone fa-user-xmark me-1"></i> Faltas</p>
-                    <h3 class="fw-bold mb-0 text-danger">{{ $faltas }}</h3>
+
+            <!-- Atrasos -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex align-items-center p-3">
+                        <div class="p-3 rounded bg-warning bg-opacity-10 text-warning me-3">
+                            <i class="fa-duotone fa-hourglass-half fa-2xl"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small d-block mb-1">Atrasos</span>
+                            <h3 class="fw-bold m-0 text-warning">{{ $atrasos }}</h3>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-6 col-md-2">
-            <div class="card shadow-sm border-start border-4 border-info h-100">
-                <div class="card-body p-3 text-center">
-                    <p class="text-muted fw-bold mb-1 fs-7"><i class="fa-duotone fa-file-certificate me-1"></i> Licencias
-                    </p>
-                    <h3 class="fw-bold mb-0 text-info">{{ $licencias }}</h3>
+
+            <!-- Faltas -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex align-items-center p-3">
+                        <div class="p-3 rounded bg-danger bg-opacity-10 text-danger me-3">
+                            <i class="fa-duotone fa-user-xmark fa-2xl"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small d-block mb-1">Faltas</span>
+                            <h3 class="fw-bold m-0 text-danger">{{ $faltas }}</h3>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-6 col-md-2">
-            <div class="card shadow-sm border-start border-4 border-primary h-100">
-                <div class="card-body p-3 text-center">
-                    <p class="text-muted fw-bold mb-1 fs-7"><i class="fa-duotone fa-file-signature me-1"></i> Permisos /
-                        Otros</p>
-                    <h3 class="fw-bold mb-0 text-primary">{{ $permisos + $otros }}</h3>
+
+            <!-- Licencias -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex align-items-center p-3">
+                        <div class="p-3 rounded bg-info bg-opacity-10 text-info me-3">
+                            <i class="fa-duotone fa-file-certificate fa-2xl"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small d-block mb-1">Licencias</span>
+                            <h3 class="fw-bold m-0 text-info">{{ $licencias }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Permisos u Otros -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex align-items-center p-3">
+                        <div class="p-3 rounded bg-primary bg-opacity-10 text-primary me-3">
+                            <i class="fa-duotone fa-file-signature fa-2xl"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small d-block mb-1">Permisos u Otros</span>
+                            <h3 class="fw-bold m-0 text-primary">{{ $permisos + $otros }}</h3>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

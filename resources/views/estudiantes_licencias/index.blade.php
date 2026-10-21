@@ -11,6 +11,79 @@
         </button>
     </div>
 
+    @include('estudiantes_licencias.index_filters')
+
+    {{-- A) TARJETAS DE MÉTRICAS --}}
+    <div class="card p-3 mb-4 shadow-sm">
+        <div class="row align-items-center mb-3">
+            <div class="col-12">
+                <h5 class="fw-bold m-0 text-uppercase tracking-wider small text-muted">
+                    <i class="fa-solid fa-chart-simple me-2 text-info"></i>Estadísticas de Licencias
+                </h5>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <!-- Total Registros -->
+            <div class="col-12 col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex align-items-center p-3">
+                        <div class="p-3 rounded bg-info bg-opacity-10 text-info me-3">
+                            <i class="fa-duotone fa-file-medical fa-2xl"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small d-block mb-1">Total Registros</span>
+                            <h3 id="kpi-total" class="fw-bold m-0 text-info">0</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Licencias Vigentes -->
+            <div class="col-12 col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex align-items-center p-3">
+                        <div class="p-3 rounded bg-success bg-opacity-10 text-success me-3">
+                            <i class="fa-duotone fa-calendar-check fa-2xl"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small d-block mb-1">Licencias Vigentes</span>
+                            <h3 id="kpi-vigentes" class="fw-bold m-0 text-success">0</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- DASHBOARD DE GRÁFICOS --}}
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-transparent p-3">
+                    <h6 class="fw-bold m-0 text-primary"><i class="fa-duotone fa-chalkboard-user me-1"></i> Por Curso</h6>
+                </div>
+                <div class="card-body">
+                    <div style="position: relative; height: 300px; width: 100%;">
+                        <canvas id="chart-cursos"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-transparent p-3">
+                    <h6 class="fw-bold m-0 text-primary"><i class="fa-duotone fa-tags me-1"></i> Por Motivo (Tipo)</h6>
+                </div>
+                <div class="card-body">
+                    <div style="position: relative; height: 300px; width: 100%;">
+                        <canvas id="chart-tipos"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="card shadow-sm mb-4">
         <div class="card-header p-3 d-flex justify-content-between align-items-center">
             <p class="mb-0">Seleccione una opción para <i class="fa-solid fa-duotone fa-file-export mx-1"></i> exportar o
@@ -30,6 +103,8 @@
                             <th>Fechas (Inicio - Fin)</th>
                             <th>Justificación</th>
                             <th>Evidencia</th>
+                            <th>Vigencia</th>
+                            <th>Solicitado por</th>
                             <th class="text-center">Estado</th>
                             <th>F. Registro</th>
                             <th>F. Actualización</th>

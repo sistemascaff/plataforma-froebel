@@ -5,7 +5,8 @@ colReorder: true,
 order: [],
 pageLength: 100,
 dom: 'Blfrtip',
-buttons: [{
+buttons: [
+    {
         extend: 'copy',
         className: 'btn btn-secondary',
         exportOptions: {
@@ -23,14 +24,34 @@ buttons: [{
         extend: 'excel',
         className: 'btn btn-success',
         exportOptions: {
-            columns: ':visible'
+            columns: ':visible',
+            stripHtml: false, // Evita que DataTables elimine el HTML prematuramente
+            format: {
+                body: function (data, row, column, node) {
+                    if (typeof data === 'string') {
+                        data = data.replace(/<br\s*\/?>/ig, '\n'); // Convierte <br> a \n
+                        data = data.replace(/<[^>]*>?/gm, '');     // Limpia el resto de etiquetas HTML
+                    }
+                    return data;
+                }
+            }
         }
     },
     {
         extend: 'pdf',
         className: 'btn btn-danger',
         exportOptions: {
-            columns: ':visible'
+            columns: ':visible',
+            stripHtml: false, // Evita que DataTables elimine el HTML prematuramente
+            format: {
+                body: function (data, row, column, node) {
+                    if (typeof data === 'string') {
+                        data = data.replace(/<br\s*\/?>/ig, '\n'); // Convierte <br> a \n
+                        data = data.replace(/<[^>]*>?/gm, '');     // Limpia el resto de etiquetas HTML
+                    }
+                    return data;
+                }
+            }
         }
     },
     {
@@ -40,5 +61,5 @@ buttons: [{
     {
         extend: 'searchBuilder',
         className: 'btn btn-warning'
-    },
+    }
 ],

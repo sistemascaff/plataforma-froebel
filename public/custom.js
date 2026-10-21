@@ -12,10 +12,8 @@ window.Helpers.abreviarCurso = function (cadena) {
 
     // Casos especiales
     const especiales = {
-        'JARDIN MATERNAL ROT': 'JMR',
-        'JARDIN MATERNAL WEISS': 'JMW',
-        'JARDIN INFANTIL ROT': 'JIR',
-        'JARDIN INFANTIL WEISS': 'JIW',
+        'JARDIN MATERNAL': 'JM',
+        'JARDIN INFANTIL': 'JI',
         'TALLER INICIAL ROT': 'TIR',
         'TALLER INICIAL WEISS': 'TIW',
         'PRE KINDER ROT': 'PKR',
@@ -56,6 +54,26 @@ window.Helpers.abreviarCurso = function (cadena) {
     return curso + nivel + paralelo;
 };
 
+window.actualizarTemaSelect2 = function () {
+    const esOscuro = localStorage.getItem('theme') === 'dark';
+    const clasesOscuras = 'bg-dark text-white';
+
+    // 1. Actualizar las cajas de selección visibles en el formulario
+    let $selecciones = $('.select2-selection');
+
+    // 2. Actualizar las listas desplegables (dropdowns)
+    // Usamos un selector amplio porque los dropdowns suelen inyectarse al final del <body> o en el modal
+    let $desplegables = $('.select2-dropdown');
+
+    if (esOscuro) {
+        $selecciones.addClass(clasesOscuras);
+        $desplegables.addClass(clasesOscuras);
+    } else {
+        $selecciones.removeClass(clasesOscuras);
+        $desplegables.removeClass(clasesOscuras);
+    }
+};
+
 // ─── TEMAS ─────────────────────────────────────────
 $(document).ready(function () {
     // Obtener elementos
@@ -86,6 +104,11 @@ $(document).ready(function () {
 
         // Guardar preferencia en localStorage
         localStorage.setItem('theme', theme);
+
+        // Actualizar clases de los Select2 dinámicamente
+        if (typeof window.actualizarTemaSelect2 === 'function') {
+            window.actualizarTemaSelect2();
+        }
     }
 
     // Cargar tema guardado al cargar la página

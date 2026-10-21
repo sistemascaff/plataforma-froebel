@@ -1,6 +1,56 @@
 <script>
     Chart.register(ChartDataLabels);
 
+    // --- NUEVO PLUGIN PARA TOTALES EN BARRAS APILADAS ---
+    const stackedTotalsPlugin = {
+        id: 'stackedTotals',
+        afterDatasetsDraw: (chart) => {
+            if (chart.config.type !== 'bar') return;
+
+            const {
+                ctx,
+                options,
+                data
+            } = chart;
+            const isHorizontal = options.indexAxis === 'y';
+            const {
+                textColor
+            } = getThemeColors();
+
+            ctx.save();
+            ctx.fillStyle = textColor;
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = isHorizontal ? 'left' : 'center';
+            ctx.textBaseline = isHorizontal ? 'middle' : 'bottom';
+
+            data.labels.forEach((label, i) => {
+                let total = 0;
+                let lastMeta = null;
+
+                // Sumar los datos de cada dataset para esta columna/fila
+                data.datasets.forEach((dataset, j) => {
+                    const meta = chart.getDatasetMeta(j);
+                    if (!meta.hidden && dataset.data[i]) {
+                        total += dataset.data[i];
+                        lastMeta = meta.data[i]; // Guardar la coordenada del último segmento
+                    }
+                });
+
+                // Dibujar el total si existe
+                if (total > 0 && lastMeta) {
+                    if (isHorizontal) {
+                        ctx.fillText(total, lastMeta.x + 6, lastMeta.y); // +6px a la derecha
+                    } else {
+                        ctx.fillText(total, lastMeta.x, lastMeta.y - 6); // -6px hacia arriba
+                    }
+                }
+            });
+            ctx.restore();
+        }
+    };
+
+    Chart.register(stackedTotalsPlugin);
+
     // Variables globales de gráficos
     let chartProporcion, chartFechas, chartHorarios, chartRanking, chartCursos, chartAsignaturas, chartDocentes;
 
@@ -137,7 +187,8 @@
                     let estudiante = row.estudiante?.persona ?
                         row.estudiante.persona.apellidos_nombres :
                         'Desc.';
-                    let curso = row.estudiante?.curso?.curso || 'Desc.';
+                    let curso = row.estudiante?.curso?.curso ? window.Helpers.abreviarCurso(
+                        row.estudiante?.curso?.curso) : 'Desc.';
                     let asignatura = row.estudiante_asistencia?.lista_asignatura?.asignatura
                         ?.asignatura || 'Desc.';
                     let docente = row.estudiante_asistencia?.lista_asignatura?.docente
@@ -190,6 +241,12 @@
                 const baseOpts = {
                     responsive: true,
                     maintainAspectRatio: false,
+                    layout: {
+                        padding: {
+                            top: 20,
+                            right: 30
+                        }
+                    },
                     plugins: {
                         legend: {
                             labels: {
@@ -201,8 +258,7 @@
                             font: {
                                 weight: 'bold'
                             },
-                            formatter: v => v > 0 ? v :
-                                '' // Oculta ceros para no saturar visualmente
+                            formatter: v => v > 0 ? v : ''
                         }
                     },
                     scales: {
@@ -259,6 +315,47 @@
                     }
                 ];
 
+                // --- Extensión específica para Gráficos de Barras Apiladas ---
+                const stackedOpts = {
+                    ...baseOpts,
+                    scales: {
+                        x: {
+                            ...baseOpts.scales.x,
+                            stacked: true
+                        },
+                        y: {
+                            ...baseOpts.scales.y,
+                            stacked: true
+                        }
+                    }
+                };
+
+                // Helpers de utilidades
+                const trunc = (str, n) => str.length > n ? str.substring(0, n) + '...' : str;
+
+                // Helper para ordenar por Total y extraer un Top N
+                const getTopEntries = (dataMap, limit = undefined) => {
+                    let sorted = Object.entries(dataMap).sort((a, b) => b[1].Total - a[1]
+                        .Total);
+                    return limit ? sorted.slice(0, limit) : sorted;
+                };
+
+                // Helper unificado para renderizar CUALQUIER gráfico de barras apiladas
+                const renderStackedBar = (chartInst, canvasId, labelsArray, datasetData,
+                    isObjValues, indexAxis = 'x') => {
+                    return initOrUpdateChart(chartInst, canvasId, {
+                        type: 'bar',
+                        data: {
+                            labels: labelsArray.map(l => trunc(l, 50)),
+                            datasets: buildStackedDatasets(datasetData, isObjValues, 4)
+                        },
+                        options: {
+                            ...stackedOpts,
+                            indexAxis: indexAxis
+                        }
+                    });
+                };
+
                 // b) Proporción General (Dona)
                 chartProporcion = initOrUpdateChart(chartProporcion, 'chart-proporcion', {
                     type: 'doughnut',
@@ -266,7 +363,8 @@
                         labels: ['Atrasos', 'Faltas', 'Licencias', 'Permisos'],
                         datasets: [{
                             data: [kpiAtrasos, kpiFaltas, kpiLicencias,
-                                kpiPermisos],
+                                kpiPermisos
+                            ],
                             backgroundColor: [palette.atraso, palette.falta, palette
                                 .licencia, palette.permiso
                             ],
@@ -329,125 +427,27 @@
                     }
                 });
 
-                // d) Barras Apiladas por Horario
+                // d) Barras Apiladas por Horario (Orden cronológico especial)
                 let keysHorarios = Object.keys(objHorarios).sort();
-                let valoresHorarios = keysHorarios.map(h => objHorarios[h]);
-                chartHorarios = initOrUpdateChart(chartHorarios, 'chart-horarios', {
-                    type: 'bar',
-                    data: {
-                        labels: keysHorarios,
-                        datasets: buildStackedDatasets(valoresHorarios, true, 0)
-                    },
-                    options: {
-                        ...baseOpts,
-                        scales: {
-                            x: {
-                                stacked: true,
-                                ticks: {
-                                    color: textColor
-                                },
-                                grid: {
-                                    color: gridColor
-                                }
-                            },
-                            y: {
-                                stacked: true,
-                                ticks: {
-                                    color: textColor,
-                                    precision: 0
-                                },
-                                grid: {
-                                    color: gridColor
-                                },
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                });
+                chartHorarios = renderStackedBar(chartHorarios, 'chart-horarios', keysHorarios,
+                    keysHorarios.map(h => objHorarios[h]), true, 'x');
 
-                const trunc = (str, n) => str.length > n ? str.substring(0, n) + '...' : str;
+                // e) Rankings y Cursos (Ordenados por volumen de incidencias)
+                const topEstudiantes = getTopEntries(objEstudiantes, 20);
+                chartRanking = renderStackedBar(chartRanking, 'chart-ranking', topEstudiantes.map(
+                    e => e[0]), topEstudiantes, false, 'x');
 
-                // e) Ranking Top 20 Estudiantes (Barras Horizontales Apiladas)
-                let topEst = Object.entries(objEstudiantes)
-                    .sort((a, b) => b[1].Total - a[1].Total)
-                    .slice(0, 20);
+                const topDocentes = getTopEntries(objDocentes, 20);
+                chartDocentes = renderStackedBar(chartDocentes, 'chart-docentes', topDocentes.map(
+                    e => e[0]), topDocentes, false, 'x');
 
-                chartRanking = initOrUpdateChart(chartRanking, 'chart-ranking', {
-                    type: 'bar',
-                    data: {
-                        labels: topEst.map(e => trunc(e[0], 25)),
-                        datasets: buildStackedDatasets(topEst, false, 2)
-                    },
-                    options: {
-                        ...baseOpts,
-                        indexAxis: 'y', // Barra horizontal
-                        scales: {
-                            x: {
-                                stacked: true,
-                                ticks: {
-                                    color: textColor,
-                                    precision: 0
-                                },
-                                grid: {
-                                    color: gridColor
-                                },
-                                beginAtZero: true
-                            },
-                            y: {
-                                stacked: true,
-                                ticks: {
-                                    color: textColor
-                                },
-                                grid: {
-                                    color: gridColor
-                                }
-                            }
-                        }
-                    }
-                });
-
-                // f, g, h) Helper genérico apilado para Cursos, Asignaturas y Docentes
-                const renderStackedBar = (chartInst, canvas, dataMap) => {
-                    let sorted = Object.entries(dataMap).sort((a, b) => b[1].Total - a[1]
-                    .Total);
-                    return initOrUpdateChart(chartInst, canvas, {
-                        type: 'bar',
-                        data: {
-                            labels: sorted.map(e => trunc(e[0], 25)),
-                            datasets: buildStackedDatasets(sorted, false, 4)
-                        },
-                        options: {
-                            ...baseOpts,
-                            scales: {
-                                x: {
-                                    stacked: true,
-                                    ticks: {
-                                        color: textColor
-                                    },
-                                    grid: {
-                                        color: gridColor
-                                    }
-                                },
-                                y: {
-                                    stacked: true,
-                                    ticks: {
-                                        color: textColor,
-                                        precision: 0
-                                    },
-                                    grid: {
-                                        color: gridColor
-                                    },
-                                    beginAtZero: true
-                                }
-                            }
-                        }
-                    });
-                };
-
-                chartCursos = renderStackedBar(chartCursos, 'chart-cursos', objCursos);
+                const topAsignaturas = getTopEntries(objAsignaturas, 30);
                 chartAsignaturas = renderStackedBar(chartAsignaturas, 'chart-asignaturas',
-                    objAsignaturas);
-                chartDocentes = renderStackedBar(chartDocentes, 'chart-docentes', objDocentes);
+                    topAsignaturas.map(e => e[0]), topAsignaturas, false, 'x');
+
+                const topCursos = getTopEntries(objCursos); // Sin límite para mostrar todos
+                chartCursos = renderStackedBar(chartCursos, 'chart-cursos', topCursos.map(e => e[
+                    0]), topCursos, false, 'x');
             },
             columns: [{
                     data: null,

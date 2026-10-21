@@ -22,7 +22,17 @@
                     </div>
 
                     <div class="row mb-3">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                            <label for="solicitado_por" class="form-label">Solicitado por <span
+                                    class="text-danger">*</span></label>
+                            <select class="form-select" id="solicitado_por" name="solicitado_por" required>
+                                <option value="">Seleccione...</option>
+                                <option value="PADRE">Padre</option>
+                                <option value="MADRE">Madre</option>
+                                <option value="TUTOR">Tutor</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
                             <label for="tipo" class="form-label">Motivo de la Licencia <span
                                     class="text-danger">*</span></label>
                             <select class="form-select" id="tipo" name="tipo" required>
@@ -38,13 +48,13 @@
                                 <option value="otras_causas_justificadas">Otras Causas Justificadas</option>
                             </select>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="fecha_inicio" class="form-label">Fecha y Hora Inicio <span
                                     class="text-danger">*</span></label>
                             <input type="datetime-local" class="form-control" id="fecha_inicio" name="fecha_inicio"
                                 required>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="fecha_fin" class="form-label">Fecha y Hora Fin <span
                                     class="text-danger">*</span></label>
                             <input type="datetime-local" class="form-control" id="fecha_fin" name="fecha_fin" required>

@@ -226,19 +226,55 @@
             dom: 'Blfrtip',
             buttons: [{
                     extend: 'copy',
-                    className: 'btn btn-secondary'
+                    className: 'btn btn-secondary',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
                 },
                 {
                     extend: 'csv',
-                    className: 'btn btn-success'
+                    className: 'btn btn-success',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
                 },
                 {
                     extend: 'excel',
-                    className: 'btn btn-success'
+                    className: 'btn btn-success',
+                    exportOptions: {
+                        columns: ':visible',
+                        stripHtml: false, // Evita que DataTables elimine el HTML prematuramente
+                        format: {
+                            body: function(data, row, column, node) {
+                                if (typeof data === 'string') {
+                                    data = data.replace(/<br\s*\/?>/ig,
+                                    '\n'); // Convierte <br> a \n
+                                    data = data.replace(/<[^>]*>?/gm,
+                                    ''); // Limpia el resto de etiquetas HTML
+                                }
+                                return data;
+                            }
+                        }
+                    }
                 },
                 {
                     extend: 'pdf',
-                    className: 'btn btn-danger'
+                    className: 'btn btn-danger',
+                    exportOptions: {
+                        columns: ':visible',
+                        stripHtml: false, // Evita que DataTables elimine el HTML prematuramente
+                        format: {
+                            body: function(data, row, column, node) {
+                                if (typeof data === 'string') {
+                                    data = data.replace(/<br\s*\/?>/ig,
+                                    '\n'); // Convierte <br> a \n
+                                    data = data.replace(/<[^>]*>?/gm,
+                                    ''); // Limpia el resto de etiquetas HTML
+                                }
+                                return data;
+                            }
+                        }
+                    }
                 },
                 {
                     extend: 'colvis',
@@ -247,7 +283,7 @@
                 {
                     extend: 'searchBuilder',
                     className: 'btn btn-warning'
-                },
+                }
             ],
             /* @include('components.datatables.datatables_global_properties') */
             @include('components.datatables.datatables_language_property')
@@ -266,7 +302,7 @@
             $('#descripcion').val('');
             $('#form-crear-o-editar select[name="adquisicion"]').val(1).trigger('change');
             $('#form-crear-o-editar input[name="fecha_ingreso_cooperativa"]').val(
-            '{{ date('Y-m-d') }}');
+                '{{ date('Y-m-d') }}');
             $('#observacion').val('');
 
             const titleElement = document.getElementById('modal-formulario-titulo');
@@ -291,8 +327,10 @@
                 $('#form-crear-o-editar input[name="anio"]').val(libro.data.anio);
                 $('#form-crear-o-editar input[name="costo"]').val(libro.data.costo);
                 $('#descripcion').val(libro.data.descripcion);
-                $('#form-crear-o-editar select[name="adquisicion"]').val(libro.data.adquisicion).trigger('change');
-                $('#form-crear-o-editar input[name="fecha_ingreso_cooperativa"]').val(libro.data.fecha_ingreso_cooperativa);
+                $('#form-crear-o-editar select[name="adquisicion"]').val(libro.data.adquisicion)
+                    .trigger('change');
+                $('#form-crear-o-editar input[name="fecha_ingreso_cooperativa"]').val(libro.data
+                    .fecha_ingreso_cooperativa);
                 $('#observacion').val(libro.data.observacion);
 
                 const titleElement = document.getElementById('modal-formulario-titulo');
