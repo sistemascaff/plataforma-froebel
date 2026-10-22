@@ -85,31 +85,13 @@ class Estudiante extends Model
             ->join('paralelos', 'cursos.id_paralelo', '=', 'paralelos.id_paralelo')
             ->with([
                 'persona.usuario',
-                'curso',
+                'curso:id_curso,id_grado,id_paralelo,curso,estado',
+                'curso.grado:id_grado,id_nivel,grado,posicion_ordinal',
+                'curso.grado.nivel:id_nivel,nivel,posicion_ordinal',
+
                 'creado:id_usuario,correo',
                 'modificado:id_usuario,correo',
                 'eliminado:id_usuario,correo'
-            ])
-            ->orderBy('niveles.posicion_ordinal', 'ASC')
-            ->orderBy('grados.posicion_ordinal', 'ASC')
-            ->orderBy('cursos.curso', 'ASC')
-            ->orderBy('personas.apellido_paterno', 'ASC')
-            ->orderBy('personas.nombres', 'ASC')
-            ->get();
-    }
-
-    public function get_all_estudiantes_asignaturas()
-    {
-        return $this::select('estudiantes.id_estudiante','estudiantes.id_persona','estudiantes.id_curso') // Evita colisión de columnas
-            ->join('personas', 'estudiantes.id_persona', '=', 'personas.id_persona')
-            ->join('cursos', 'estudiantes.id_curso', '=', 'cursos.id_curso')
-            ->join('grados', 'cursos.id_grado', '=', 'grados.id_grado')
-            ->join('niveles', 'grados.id_nivel', '=', 'niveles.id_nivel')
-            ->join('paralelos', 'cursos.id_paralelo', '=', 'paralelos.id_paralelo')
-            ->with([
-                'persona:id_persona,id_colegio,apellido_paterno,apellido_materno,nombres,estado',
-                'persona.usuario:id_usuario,id_persona,correo',
-                'curso:id_curso,curso',
             ])
             ->orderBy('niveles.posicion_ordinal', 'ASC')
             ->orderBy('grados.posicion_ordinal', 'ASC')
@@ -130,6 +112,9 @@ class Estudiante extends Model
             ->with([
                 'persona.usuario',
                 'curso:id_curso,id_grado,id_paralelo,curso,estado',
+                'curso.grado:id_grado,id_nivel,grado,posicion_ordinal',
+                'curso.grado.nivel:id_nivel,nivel,posicion_ordinal',
+
                 'creado:id_usuario,correo',
                 'modificado:id_usuario,correo',
                 'eliminado:id_usuario,correo'
@@ -155,6 +140,27 @@ class Estudiante extends Model
                 isset($filtros['estado']),
                 fn($q) => $q->where('estudiantes.estado', $filtros['estado'])
             )
+            ->orderBy('niveles.posicion_ordinal', 'ASC')
+            ->orderBy('grados.posicion_ordinal', 'ASC')
+            ->orderBy('cursos.curso', 'ASC')
+            ->orderBy('personas.apellido_paterno', 'ASC')
+            ->orderBy('personas.nombres', 'ASC')
+            ->get();
+    }
+
+    public function get_all_estudiantes_asignaturas()
+    {
+        return $this::select('estudiantes.id_estudiante','estudiantes.id_persona','estudiantes.id_curso') // Evita colisión de columnas
+            ->join('personas', 'estudiantes.id_persona', '=', 'personas.id_persona')
+            ->join('cursos', 'estudiantes.id_curso', '=', 'cursos.id_curso')
+            ->join('grados', 'cursos.id_grado', '=', 'grados.id_grado')
+            ->join('niveles', 'grados.id_nivel', '=', 'niveles.id_nivel')
+            ->join('paralelos', 'cursos.id_paralelo', '=', 'paralelos.id_paralelo')
+            ->with([
+                'persona:id_persona,id_colegio,apellido_paterno,apellido_materno,nombres,estado',
+                'persona.usuario:id_usuario,id_persona,correo',
+                'curso:id_curso,curso',
+            ])
             ->orderBy('niveles.posicion_ordinal', 'ASC')
             ->orderBy('grados.posicion_ordinal', 'ASC')
             ->orderBy('cursos.curso', 'ASC')

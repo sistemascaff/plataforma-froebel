@@ -7,7 +7,41 @@
     const PUEDE_CREAR_LICENCIAS = ROLES_PERMITIDOS.includes(AUTH_PERFIL) || ES_ADMINISTRADOR;
     const URL_BASE = "{{ URL::to('/') }}";
 
+    // Variables globales para gráficos
+    let chartNiveles, chartCursos;
+
+    function getThemeColors() {
+        const temaPreferido = localStorage.getItem('theme') || document.documentElement.getAttribute('data-bs-theme') ||
+            'light';
+        return {
+            textColor: temaPreferido === 'dark' ? '#f8f9fa' : '#212529',
+            gridColor: temaPreferido === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+        };
+    }
+
+    function initOrUpdateChart(chartInstance, canvasId, configOptions) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        if (chartInstance) {
+            chartInstance.data = configOptions.data;
+            chartInstance.options = configOptions.options;
+            chartInstance.update();
+            return chartInstance;
+        }
+        return new Chart(ctx, configOptions);
+    }
+
     $(document).ready(function() {
+        // Aseguramos el registro global del plugin para los porcentajes/cantidades
+        if (typeof ChartDataLabels !== 'undefined') {
+            Chart.register(ChartDataLabels);
+        }
+
+        // Redimensionar gráficos al cambiar de pestaña para evitar que se vean colapsados
+        $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
+            if (chartNiveles) chartNiveles.resize();
+            if (chartCursos) chartCursos.resize();
+        });
+
         $('#filter_id_grado, #filter_id_curso').select2({
             language: "es",
             dropdownCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
@@ -48,6 +82,157 @@
                 error: function(xhr, error, thrown) {
                     console.error("Error al cargar los datos:", error);
                 }
+            },
+            drawCallback: function(settings) {
+                let api = this.api();
+                let filteredData = api.rows({
+                    search: 'applied'
+                }).data().toArray();
+                const {
+                    textColor,
+                    gridColor
+                } = getThemeColors();
+
+                let kpiTotal = 0;
+                let objNiveles = {};
+                let objCursos = {};
+
+                // 1. Agrupación matemática y extracción de pos_ordinales
+                filteredData.forEach(row => {
+                    kpiTotal++;
+
+                    // --- Manejo del Nivel ---
+                    let nivelStr = row.curso?.grado?.nivel?.nivel || 'Sin Nivel';
+                    let nivelOrdinal = row.curso?.grado?.nivel?.posicion_ordinal || 0;
+
+                    if (!objNiveles[nivelStr]) {
+                        objNiveles[nivelStr] = {
+                            count: 0,
+                            ordinal: nivelOrdinal
+                        };
+                    }
+                    objNiveles[nivelStr].count++;
+
+                    // --- Manejo del Curso ---
+                    let cursoStr = row.curso?.curso ? window.Helpers.abreviarCurso(row.curso
+                        ?.curso) : 'Desconocido';
+                    let gradoOrdinal = row.curso?.grado?.posicion_ordinal || 0;
+
+                    // Llave de ordenamiento: Nivel -> Grado -> Nombre de curso
+                    let cursoOrdinalKey =
+                        `${String(nivelOrdinal).padStart(3, '0')}-${String(gradoOrdinal).padStart(3, '0')}-${cursoStr}`;
+
+                    if (!objCursos[cursoStr]) {
+                        objCursos[cursoStr] = {
+                            count: 0,
+                            sortKey: cursoOrdinalKey
+                        };
+                    }
+                    objCursos[cursoStr].count++;
+                });
+
+                // 2. Ordenamiento Ascendente
+                let sortedNiveles = Object.entries(objNiveles).sort((a, b) => a[1].ordinal - b[1]
+                    .ordinal);
+                let sortedCursos = Object.entries(objCursos).sort((a, b) => a[1].sortKey
+                    .localeCompare(b[1].sortKey));
+
+                // 3. Actualizar Tarjetas
+                $('#kpi-total').text(kpiTotal);
+
+                $('.dynamic-kpi').remove(); // Limpiar niveles anteriores
+                const themeColors = ['info', 'success', 'warning', 'secondary', 'danger'];
+
+                sortedNiveles.forEach((item, idx) => {
+                    let color = themeColors[idx % themeColors.length];
+                    let cardHtml = `
+                        <div class="col-12 col-sm-6 col-lg-3 dynamic-kpi">
+                            <div class="card h-100 shadow-sm">
+
+                                <div class="card-body d-flex align-items-center p-3">
+                                    <div class="p-3 rounded bg-${color} bg-opacity-10 text-${color} me-3">
+                                        <i class="fa-duotone fa-stairs me-1"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted small d-block mb-1">${item[0]}</span>
+                                        <h3 id="kpi-total" class="fw-bold m-0 text-${color}">${item[1].count}</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                    $('#kpi-container').append(cardHtml);
+                });
+
+                // 4. Opciones base de gráficos (Con DataLabels activado encima de la barra)
+                const baseOpts = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        datalabels: {
+                            color: textColor,
+                            anchor: 'end', // Ancla al final de la barra
+                            align: 'top', // Lo muestra arriba de la barra
+                            font: {
+                                weight: 'bold',
+                                size: 13
+                            },
+                            formatter: v => v > 0 ? v : ''
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: textColor
+                            },
+                            grid: {
+                                color: gridColor
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: textColor,
+                                precision: 0
+                            },
+                            grid: {
+                                color: gridColor
+                            },
+                            beginAtZero: true,
+                            grace: '10%' // Añade un 10% de altura extra para que el DataLabel no se corte
+                        }
+                    }
+                };
+
+                // 5. Renderizar Gráfico de Niveles
+                chartNiveles = initOrUpdateChart(chartNiveles, 'chart-niveles', {
+                    type: 'bar',
+                    data: {
+                        labels: sortedNiveles.map(e => e[0]),
+                        datasets: [{
+                            data: sortedNiveles.map(e => e[1].count),
+                            backgroundColor: '#0dcaf0',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: baseOpts
+                });
+
+                // 6. Renderizar Gráfico de Cursos
+                chartCursos = initOrUpdateChart(chartCursos, 'chart-cursos', {
+                    type: 'bar',
+                    data: {
+                        labels: sortedCursos.map(e => e[0].length > 15 ? e[0].substring(0,
+                            15) + '...' : e[0]),
+                        datasets: [{
+                            data: sortedCursos.map(e => e[1].count),
+                            backgroundColor: '#198754',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: baseOpts
+                });
             },
             columns: [{
                     data: null,
@@ -522,6 +707,41 @@
                     });
                 }
             });
+        });
+
+        // ─── Observador Dinámico de Tema ────────────────────────────────────────────
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === "data-bs-theme") {
+                    const {
+                        textColor,
+                        gridColor
+                    } = getThemeColors();
+                    const charts = [chartNiveles, chartCursos];
+
+                    charts.forEach(chart => {
+                        if (chart) {
+                            if (chart.options.scales?.x) {
+                                chart.options.scales.x.ticks.color = textColor;
+                                chart.options.scales.x.grid.color = gridColor;
+                            }
+                            if (chart.options.scales?.y) {
+                                chart.options.scales.y.ticks.color = textColor;
+                                chart.options.scales.y.grid.color = gridColor;
+                            }
+                            if (chart.options.plugins?.datalabels) {
+                                chart.options.plugins.datalabels.color = textColor;
+                            }
+                            chart.update();
+                        }
+                    });
+                }
+            });
+        });
+
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['data-bs-theme']
         });
 
     });
