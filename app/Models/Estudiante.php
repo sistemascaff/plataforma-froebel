@@ -98,6 +98,27 @@ class Estudiante extends Model
             ->get();
     }
 
+    public function get_all_estudiantes_asignaturas()
+    {
+        return $this::select('estudiantes.id_estudiante','estudiantes.id_persona','estudiantes.id_curso') // Evita colisión de columnas
+            ->join('personas', 'estudiantes.id_persona', '=', 'personas.id_persona')
+            ->join('cursos', 'estudiantes.id_curso', '=', 'cursos.id_curso')
+            ->join('grados', 'cursos.id_grado', '=', 'grados.id_grado')
+            ->join('niveles', 'grados.id_nivel', '=', 'niveles.id_nivel')
+            ->join('paralelos', 'cursos.id_paralelo', '=', 'paralelos.id_paralelo')
+            ->with([
+                'persona:id_persona,id_colegio,apellido_paterno,apellido_materno,nombres,estado',
+                'persona.usuario:id_usuario,id_persona,correo',
+                'curso:id_curso,curso',
+            ])
+            ->orderBy('niveles.posicion_ordinal', 'ASC')
+            ->orderBy('grados.posicion_ordinal', 'ASC')
+            ->orderBy('cursos.curso', 'ASC')
+            ->orderBy('personas.apellido_paterno', 'ASC')
+            ->orderBy('personas.nombres', 'ASC')
+            ->get();
+    }
+
     public function get_estudiantes(array $filtros = [])
     {
         return $this::select('estudiantes.*')

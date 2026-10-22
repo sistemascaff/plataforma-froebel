@@ -2,38 +2,42 @@
     $(document).ready(function() {
         const URL_BASE = "{{ URL::to('/') }}";
         const ID_LISTA_ASIGNATURA = {{ $lista_asignatura->id_lista_asignatura }};
-        const TIPO_BLOQUE = "{{ $lista_asignatura->asignatura->tipo_bloque }}";
+        const ES_MIXTO = "{{ $lista_asignatura->asignatura->tipo_bloque }}" === 'mixto';
 
-        // ─── Arreglo dinámico de estudiantes actuales ─────────────────────────
-        let estudiantesLista = [
+        // ─── Estado Inicial y Actual de Estudiantes ──────────────────────────────
+        const estudiantesOriginal = [
             @foreach ($lista_asignatura->estudiantes as $estudiante)
                 {{ $estudiante->id_estudiante }},
             @endforeach
         ];
+        let estudiantesLista = [...estudiantesOriginal];
 
-        // ─── Inicializar DataTable ──────────────────────────────────────────────
+        // Guardamos copia de las filas originales para poder "Deshacer" sin recargar
+        const htmlFilasOriginales = $('#estudiantes tbody').html();
+
+        // ─── Configuración de Columnas según Tipo de Bloque ──────────────────────
+        const colIdxNum = ES_MIXTO ? 1 : 0;
+        const colNoOrdenables = ES_MIXTO ? [0, 2, 6] : [1, 5];
+        const colNoBuscables = ES_MIXTO ? [0, 1, 2, 6] : [0, 1, 5];
+
+        // ─── Inicializar DataTable de Estudiantes ────────────────────────────────
         let dtEstudiantes = $("#estudiantes").DataTable({
             ...dtDefaults,
             pageLength: -1,
             columnDefs: [{
                     orderable: false,
-                    targets: [1, 5]
-                }, // Deshabilita orden en Foto y Acciones
+                    targets: colNoOrdenables
+                },
                 {
                     searchable: false,
-                    targets: [0, 1, 5]
+                    targets: colNoBuscables
                 }
             ]
         });
 
-        // ─── Inicializar DataTable de asistencias ────────────────────────────────
-        $("#asistencias").DataTable({
-            ...dtDefaults,
-        });
-
-        // Auto-enumerar la primera columna (#)
+        // Auto-enumerar la columna (#) dinámicamente
         dtEstudiantes.on('order.dt search.dt draw.dt', function() {
-            dtEstudiantes.column(0, {
+            dtEstudiantes.column(colIdxNum, {
                 search: 'applied',
                 order: 'applied'
             }).nodes().each(function(cell, i) {
@@ -41,13 +45,26 @@
             });
         }).draw();
 
-        // ─── Modal Automático ──────────────────────────────────────────────────
+        // ─── Inicializar DataTable de Asistencias ────────────────────────────────
+        let dtAsistencias = $("#asistencias").DataTable({
+            ...dtDefaults,
+        });
+
+        // Ajustar columnas de DataTables al cambiar de pestaña (evita desalineación de headers)
+        $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function() {
+            $.fn.dataTable.tables({
+                visible: true,
+                api: true
+            }).columns.adjust();
+        });
+
+        // ─── Modal Automático de Sincronización ──────────────────────────────────
         @if (!empty($cambios) && count($cambios) > 0)
             const modalCambios = new bootstrap.Modal(document.getElementById('modalCambios'));
             modalCambios.show();
         @endif
 
-        // ─── Utilidad: Toast para notificaciones rápidas ────────────────────────────
+        // ─── Utilidad: Toast para notificaciones rápidas ─────────────────────────
         const Toast = Swal.mixin({
             toast: true,
             position: 'top-end',
@@ -57,7 +74,7 @@
             theme: localStorage.getItem('theme') || 'dark'
         });
 
-        // ─── Funciones para copiar al portapapeles ──────────────────────────────────
+        // ─── Copiar Nombre y Correo al Portapapeles ──────────────────────────────
         $('#estudiantes tbody').on('click', '.btn-copiar-nombre', function() {
             let texto = $(this).data('nombre');
             navigator.clipboard.writeText(texto).then(() => {
@@ -78,156 +95,263 @@
             });
         });
 
-        // ─── Lógica Exclusiva para Bloques Mixtos ──────────────────────────────
+        // =========================================================================
+        // LÓGICA EXCLUSIVA PARA BLOQUES MIXTOS
+        // =========================================================================
         @if ($lista_asignatura->asignatura->tipo_bloque === 'mixto')
 
-            let modoEdicion = false;
+            let catalogoEstudiantes = {};
 
-            // 1. Activar / Desactivar Modo Edición
-            $('#btn-toggle-edicion').click(function() {
-                modoEdicion = !modoEdicion;
-
-                if (modoEdicion) {
-                    // Activar
-                    $(this).html('<i class="fa-solid fa-duotone fa-times me-1"></i> Cancelar Edición')
-                        .removeClass('btn-warning').addClass('btn-secondary');
-                    $('#panel-edicion').slideDown();
-                    $('.btn-remover').prop('disabled', false); // Habilitar basureros
-                    $('#btn-guardar-estudiantes').prop('disabled', false);
-                } else {
-                    // Cancelar: Recargar página para restaurar tabla original (rollback visual)
-                    location.reload();
-                }
-            });
-
-            // 2. Select2 de Estudiantes
+            // 1. Inicializar Select2 Múltiple
             $('#estudiante').select2({
                 width: '100%',
                 language: "es",
+                placeholder: "Buscar y seleccionar uno o varios estudiantes...",
+                allowClear: true,
+                closeOnSelect: false, // Permite elegir varios sin que se cierre el desplegable
                 dropdownCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
                 selectionCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
             });
 
-            function recargarEstudiantesSelect() {
+            // 2. Cargar catálogo de estudiantes y sincronizar opciones disponibles
+            function cargarCatalogoEstudiantes() {
                 $.ajax({
-                    url: "{{ route('estudiantes.listar') }}",
+                    url: "{{ route('estudiantes.listar.asignaturas') }}",
                     type: "GET",
                     dataType: "json",
                     success: function(response) {
-                        let $select = $("#estudiante");
-                        $select.empty().append(
-                            '<option value="">-- Seleccione un estudiante --</option>');
-
+                        catalogoEstudiantes = {};
                         $.each(response.data, function(i, est) {
-                            if (est.estado == '0') return; // Omitir inactivos
-
-                            let nombre = est.persona.apellidos_nombres;
-                            let correo = est.persona.usuario.correo;
-                            let curso = est.curso ? est.curso.curso : 'Sin Curso';
-                            let foto = est.persona.usuario.url_foto_perfil ?
-                                `${URL_BASE}/${est.persona.usuario.url_foto_perfil}` :
-                                `${URL_BASE}/public/img/user.png`;
-
-                            $select.append(`
-                                    <option value="${est.id_estudiante}" 
-                                            data-nombre="${nombre}" 
-                                            data-correo="${correo}" 
-                                            data-curso="${curso}" 
-                                            data-foto="${foto}">
-                                        ${nombre} - ${correo} - ${curso}
-                                    </option>
-                                `);
+                            if (est.estado == '0') return;
+                            catalogoEstudiantes[est.id_estudiante] = {
+                                id: est.id_estudiante,
+                                nombre: est.persona.apellidos_nombres,
+                                correo: est.persona.usuario.correo,
+                                curso: est.curso ? est.curso.curso : 'Sin Curso',
+                                foto: est.persona.usuario.url_foto_perfil ?
+                                    `${URL_BASE}/${est.persona.usuario.url_foto_perfil}` :
+                                    `${URL_BASE}/public/img/user.png`
+                            };
                         });
+                        sincronizarOpcionesSelect();
                     }
                 });
             }
-            recargarEstudiantesSelect();
 
-            // 3. Añadir a la tabla (DOM + Array)
+            // Deshabilita en el Select2 los estudiantes que ya están en la tabla
+            function sincronizarOpcionesSelect() {
+                let $select = $("#estudiante");
+                let seleccionadosActuales = $select.val() || [];
+                $select.empty();
+
+                Object.values(catalogoEstudiantes).forEach(est => {
+                    let yaEnLista = estudiantesLista.includes(est.id);
+                    let texto =
+                        `${est.nombre} (${est.curso}) - ${est.correo}${yaEnLista ? ' [Ya en lista]' : ''}`;
+                    let option = new Option(texto, est.id, false, false);
+                    if (yaEnLista) {
+                        $(option).prop('disabled', true);
+                    }
+                    $select.append(option);
+                });
+
+                // Mantener seleccionados solo los que aún no están en la lista
+                let seleccionadosValidos = seleccionadosActuales.filter(id => !estudiantesLista.includes(
+                    parseInt(id)));
+                $select.val(seleccionadosValidos).trigger('change');
+            }
+
+            cargarCatalogoEstudiantes();
+
+            // 3. Evaluar si hay diferencias respecto a la lista original (Dirty Check)
+            function evaluarEstadoCambios() {
+                $('#badge-total-estudiantes').text(estudiantesLista.length);
+
+                let agregados = estudiantesLista.filter(id => !estudiantesOriginal.includes(id));
+                let eliminados = estudiantesOriginal.filter(id => !estudiantesLista.includes(id));
+                let hayCambios = agregados.length > 0 || eliminados.length > 0;
+
+                const $barra = $('#barra-cambios-pendientes');
+                if (hayCambios) {
+                    let detalles = [];
+                    if (agregados.length > 0) detalles.push(
+                        `<span class="badge bg-success">+${agregados.length} agregado(s)</span>`);
+                    if (eliminados.length > 0) detalles.push(
+                        `<span class="badge bg-danger">-${eliminados.length} quitado(s)</span>`);
+                    $('#resumen-cambios').html(detalles.join(' '));
+                    $barra.removeClass('d-none').addClass('d-flex');
+                } else {
+                    $barra.removeClass('d-flex').addClass('d-none');
+                }
+
+                sincronizarOpcionesSelect();
+                actualizarBotonSeleccionMasiva();
+            }
+
+            // 4. Agregar uno o varios estudiantes desde el Select2 Múltiple
             $('#btn-agregar-estudiante').click(function() {
-                let idSelect = $('#estudiante').val();
+                let seleccionados = $('#estudiante').val(); // Retorna array de IDs en Select2 multiple
 
-                if (!idSelect) {
-                    Swal.fire({
-                        theme: localStorage.getItem('theme') || 'dark',
+                if (!seleccionados || seleccionados.length === 0) {
+                    Toast.fire({
                         icon: 'warning',
-                        title: 'Atención',
-                        text: 'Debes seleccionar un estudiante de la lista.'
+                        title: 'Selecciona al menos un estudiante'
                     });
                     return;
                 }
 
-                let idEstudiante = parseInt(idSelect);
+                let agregadosCount = 0;
 
-                if (estudiantesLista.includes(idEstudiante)) {
-                    Swal.fire({
-                        theme: localStorage.getItem('theme') || 'dark',
-                        icon: 'info',
-                        title: 'Aviso',
-                        text: 'El estudiante ya se encuentra en la lista.',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                    return;
-                }
+                seleccionados.forEach(idStr => {
+                    let idEstudiante = parseInt(idStr);
+                    if (estudiantesLista.includes(idEstudiante)) return;
 
-                // Obtener datos del option seleccionado
-                let $op = $('#estudiante option:selected');
-                let imgHtml =
-                    `<img class="rounded shadow-sm" src="${$op.data('foto')}" alt="Foto" style="width:35px; height:35px; object-fit:cover;">`;
-                let nombreFormat = `<span class="fw-bold">${$op.data('nombre')}</span>`;
-                let btnRemover =
-                    `<button type="button" class="btn btn-danger btn-sm btn-remover" data-id="${idEstudiante}" data-bs-toggle="tooltip" title="Remover de la lista"><i class="fa-duotone fa-trash"></i></button>`;
+                    let est = catalogoEstudiantes[idEstudiante];
+                    if (!est) return;
 
-                // Agregar al array maestro
-                estudiantesLista.push(idEstudiante);
+                    estudiantesLista.push(idEstudiante);
+                    agregadosCount++;
 
-                // Agregar a DataTables
-                let nodoFila = dtEstudiantes.row.add([
-                    '', // El número se autocalcula en el draw
-                    imgHtml,
-                    nombreFormat,
-                    $op.data('correo'),
-                    $op.data('curso'),
-                    btnRemover
-                ]).draw(false).node();
+                    let checkHtml =
+                        `<input class="form-check-input check-estudiante" type="checkbox" value="${est.id}">`;
+                    let imgHtml =
+                        `<img class="rounded shadow-sm zoomable-image" src="${est.foto}" alt="Foto" style="width:35px; height:35px; object-fit:cover;">`;
+                    let accionesHtml = `
+                        <div class="d-flex gap-1 justify-content-center align-items-center">
+                            <button type="button" class="btn btn-outline-secondary btn-sm btn-copiar-nombre" data-nombre="${est.nombre}" data-bs-toggle="tooltip" title="Copiar nombre completo">
+                                <i class="fa-duotone fa-user-tag"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-info btn-sm btn-copiar-correo" data-correo="${est.correo}" data-bs-toggle="tooltip" title="Copiar correo electrónico">
+                                <i class="fa-duotone fa-envelope"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-danger btn-sm btn-remover" data-id="${est.id}" data-bs-toggle="tooltip" title="Quitar de la lista">
+                                <i class="fa-duotone fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
 
-                $(nodoFila).attr('id', 'fila-' + idEstudiante).addClass(
-                    'table-success'); // Efecto visual
+                    let nodoFila = dtEstudiantes.row.add([
+                        checkHtml,
+                        '',
+                        imgHtml,
+                        est.nombre,
+                        est.correo,
+                        est.curso,
+                        accionesHtml
+                    ]).draw(false).node();
 
-                // Resetear Select2
+                    $(nodoFila)
+                        .attr('id', 'fila-' + est.id)
+                        .attr('data-id', est.id)
+                        .addClass('table-success');
+
+                    $('td:eq(0), td:eq(1), td:eq(2), td:eq(6)', nodoFila).addClass(
+                        'text-center align-middle');
+                    $('td:eq(3)', nodoFila).addClass('align-middle fw-bold');
+                    $('td:eq(4), td:eq(5)', nodoFila).addClass('align-middle');
+                });
+
                 $('#estudiante').val(null).trigger('change');
+                evaluarEstadoCambios();
 
-                // Reinicializar tooltips (Bootstrap 5)
-                $('[data-bs-toggle="tooltip"]').tooltip();
+                if (agregadosCount > 0) {
+                    Toast.fire({
+                        icon: 'success',
+                        title: `${agregadosCount} estudiante(s) añadido(s) a la tabla`
+                    });
+                }
             });
 
-            // 4. Remover de la tabla (DOM + Array)
+            // 5. Quitar estudiante individualmente
             $('#estudiantes tbody').on('click', '.btn-remover', function() {
-                let idRemover = parseInt($(this).data('id'));
+                let $btn = $(this);
+                $btn.tooltip('hide');
+                let idRemover = parseInt($btn.data('id'));
 
-                // Sacar del array
                 estudiantesLista = estudiantesLista.filter(id => id !== idRemover);
+                dtEstudiantes.row($btn.closest('tr')).remove().draw(false);
 
-                // Sacar del DataTable
-                dtEstudiantes.row($(this).parents('tr')).remove().draw(false);
+                evaluarEstadoCambios();
             });
 
-            // 5. Guardar Cambios (AJAX BULK UPDATE)
+            // 6. Selección Masiva de Estudiantes para Quitar
+            function actualizarBotonSeleccionMasiva() {
+                let totalMarcados = dtEstudiantes.$('.check-estudiante:checked').length;
+                let totalFilas = dtEstudiantes.$('.check-estudiante').length;
+
+                $('#count-seleccionados').text(totalMarcados);
+                if (totalMarcados > 0) {
+                    $('#btn-remover-seleccionados').removeClass('d-none');
+                } else {
+                    $('#btn-remover-seleccionados').addClass('d-none');
+                }
+
+                $('#check-todos-estudiantes').prop('checked', totalFilas > 0 && totalMarcados === totalFilas);
+            }
+
+            $('#check-todos-estudiantes').on('change', function() {
+                let isChecked = $(this).is(':checked');
+                dtEstudiantes.$('.check-estudiante').prop('checked', isChecked);
+                actualizarBotonSeleccionMasiva();
+            });
+
+            $('#estudiantes tbody').on('change', '.check-estudiante', function() {
+                actualizarBotonSeleccionMasiva();
+            });
+
+            $('#btn-remover-seleccionados').click(function() {
+                let $marcados = dtEstudiantes.$('.check-estudiante:checked');
+                let cantidad = $marcados.length;
+                if (cantidad === 0) return;
+
+                $marcados.each(function() {
+                    let idRemover = parseInt($(this).val());
+                    estudiantesLista = estudiantesLista.filter(id => id !== idRemover);
+                    dtEstudiantes.row($(this).closest('tr')).remove();
+                });
+
+                dtEstudiantes.draw(false);
+                $('#check-todos-estudiantes').prop('checked', false);
+                evaluarEstadoCambios();
+
+                Toast.fire({
+                    icon: 'info',
+                    title: `${cantidad} estudiante(s) quitado(s) de la tabla`
+                });
+            });
+
+            // 7. Deshacer Cambios sin recargar la página
+            $('#btn-deshacer-cambios').click(function() {
+                estudiantesLista = [...estudiantesOriginal];
+                dtEstudiantes.clear();
+                $('#estudiantes tbody').html(htmlFilasOriginales);
+
+                // Re-incorporar filas originales a DataTables
+                dtEstudiantes.rows.add($('#estudiantes tbody tr')).draw();
+                $('#check-todos-estudiantes').prop('checked', false);
+                evaluarEstadoCambios();
+
+                Toast.fire({
+                    icon: 'info',
+                    title: 'Cambios descartados'
+                });
+            });
+
+            // 8. Guardar Cambios (AJAX PUT)
             $('#btn-guardar-estudiantes').click(function() {
                 const btn = $(this);
 
                 Swal.fire({
                     theme: localStorage.getItem('theme') || 'dark',
                     title: 'Confirmar guardado',
-                    text: `Se actualizará la lista con un total de ${estudiantesLista.length} estudiantes. ¿Deseas continuar?`,
+                    html: `Se actualizará la lista mixta con un total de <b>${estudiantesLista.length} estudiantes</b>.<br>¿Deseas guardar los cambios?`,
                     icon: 'question',
                     showCancelButton: true,
-                    confirmButtonText: '<i class="fa-solid fa-check"></i> Sí, guardar',
-                    cancelButtonText: 'Cancelar'
+                    confirmButtonText: '<i class="fa-solid fa-check me-1"></i> Sí, guardar',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true
                 }).then((result) => {
                     if (result.isConfirmed) {
-
                         btn.prop('disabled', true).html(
                             '<i class="fa-solid fa-spinner fa-spin me-1"></i> Guardando...');
 
@@ -240,7 +364,7 @@
                             },
                             data: {
                                 id_lista_asignatura: ID_LISTA_ASIGNATURA,
-                                estudiantes: estudiantesLista // Se envía el array limpio
+                                estudiantes: estudiantesLista
                             },
                             success: function(response) {
                                 Swal.fire({
@@ -250,16 +374,16 @@
                                     html: response.message,
                                     icon: 'success'
                                 }).then(() => {
-                                    location
-                                        .reload(); // Recargar para volver al estado de solo lectura y limpiar CSS
+                                    location.reload();
                                 });
                             },
                             error: function(xhr) {
                                 let respuesta = xhr.responseJSON || {
                                     message: "Error inesperado"
                                 };
-                                let errorHtml = respuesta.errors ? Object.values(
-                                        respuesta.errors).flat().join('<br>') :
+                                let errorHtml = respuesta.errors ?
+                                    Object.values(respuesta.errors).flat().join(
+                                        '<br>') :
                                     respuesta.message;
 
                                 Swal.fire({
@@ -271,17 +395,14 @@
                                 });
                                 btn.prop('disabled', false).html(
                                     '<i class="fa-solid fa-duotone fa-floppy-disk me-1"></i> Guardar Cambios'
-                                );
+                                    );
                             }
                         });
                     }
                 });
             });
-        @endif
 
-        // ─── Lógica para Importación Masiva por Cursos ──────────────────────────
-        @if ($lista_asignatura->asignatura->tipo_bloque === 'mixto')
-            // Inicializar DataTable dentro del modal de cursos
+            // ─── Lógica para Importación Masiva por Cursos ────────────────────────
             let dtCursos = $("#tabla-cursos-importar").DataTable({
                 ...dtDefaults,
                 paging: false,
@@ -296,18 +417,14 @@
                 ]
             });
 
-            // Seleccionar / Deseleccionar todos los cursos
             $('#check-todos-cursos').on('change', function() {
                 let isChecked = $(this).is(':checked');
-                // Afecta a los checkboxes incluso si están filtrados
                 dtCursos.$('.check-curso').prop('checked', isChecked);
             });
 
-            // Envío del Formulario de Cursos
             $('#form-importar-cursos').on('submit', function(e) {
                 e.preventDefault();
 
-                // Obtenemos los valores de los checkboxes marcados en el DataTable
                 let cursosSeleccionados = [];
                 dtCursos.$('.check-curso:checked').each(function() {
                     cursosSeleccionados.push($(this).val());
@@ -325,7 +442,6 @@
 
                 const n = cursosSeleccionados.length;
 
-                // Confirmación antes de proceder
                 Swal.fire({
                     theme: localStorage.getItem('theme') || 'dark',
                     icon: 'question',
@@ -364,14 +480,13 @@
                             html: response.message,
                             icon: 'success'
                         }).then(() => {
-                            location
-                        .reload(); // Recarga para renderizar a los nuevos estudiantes
+                            location.reload();
                         });
                     },
                     error: function(xhr) {
                         btn.prop('disabled', false).html(
                             '<i class="fa-solid fa-duotone fa-check me-1"></i> Incorporar a la Lista'
-                        );
+                            );
                         let respuesta = xhr.responseJSON || {
                             message: "Error inesperado"
                         };

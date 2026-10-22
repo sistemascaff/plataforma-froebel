@@ -104,6 +104,13 @@ class EstudianteController extends Controller
         return response()->json(['data' => $estudiantes]);
     }
 
+    public function listar_para_asignaturas()
+    {
+        $estudiantes = (new Estudiante())->get_all_estudiantes_asignaturas();
+
+        return response()->json(['data' => $estudiantes]);
+    }
+
     public function mostrar(Request $request)
     {
         $estudiante = (new Estudiante())->get_estudiante($request->estudiante);

@@ -1,5 +1,20 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Obtener el día actual del sistema (1 = Lunes, 7 = Domingo)
+        const diaActual = moment().isoWeekday();
+        const selectHorario = document.getElementById('id_horario_asignatura');
+
+        if (selectHorario) {
+            // Buscar la primera opción cuyo atributo data-dia coincida con hoy
+            const opcionCoincidente = Array.from(selectHorario.options).find(
+                opcion => parseInt(opcion.getAttribute('data-dia')) === diaActual
+            );
+
+            // Si existe una coincidencia, asignarla como seleccionada
+            if (opcionCoincidente) {
+                selectHorario.value = opcionCoincidente.value;
+            }
+        }
 
         // Función auxiliar para actualizar el badge y el campo de atraso según el radio seleccionado
         function actualizarEstadoVisualFila(index, valor) {
@@ -75,7 +90,7 @@
                     const index = inputOtros.id.replace('input_otros_', '');
                     const badge = document.getElementById('badge_tipo_' + index);
                     const contenedorAcciones = document.getElementById('acciones_fila_' +
-                    index);
+                        index);
                     const etiquetaOtros = document.getElementById('etiqueta_otros_' + index);
                     const inputAtraso = document.getElementById('tiempo_atraso_' + index);
                     const radiosFila = document.querySelectorAll(

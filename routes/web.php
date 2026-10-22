@@ -123,7 +123,8 @@ Route::middleware(['session.acceso'])->group(function () {
         });
 
         Route::controller(EstudianteController::class)->group(function () {
-            Route::get('estudiantes/{estudiante}/asistencias', 'mostrar_asistencias')->name('estudiantes.mostrar_asistencias');
+            Route::get('estudiantes/listar/asignaturas', 'listar_para_asignaturas')->name('estudiantes.listar.asignaturas');
+            Route::get('estudiantes/{estudiante}/asistencias', 'mostrar_asistencias')->name('estudiantes.mostrar.asistencias');
         });
 
         Route::controller(ListaAsignaturaController::class)->group(function () {

@@ -26,6 +26,20 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="fecha_inicio" class="form-label">Fecha de inicio <span
+                                class="text-danger">*</span></label>
+                        <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio"
+                            value="{{ date('Y-m-d') }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="fecha_fin" class="form-label">Fecha de fin <span
+                                class="text-danger">*</span></label>
+                        <input type="date" class="form-control" id="fecha_fin" name="fecha_fin"
+                            value="{{ date('Y-m-d') }}" required>
+                    </div>
+
+                    <div class="mb-3">
                         <label for="gestion" class="form-label">Gestión <span class="text-danger">*</span></label>
                         <select class="form-select" id="gestion" name="id_gestion" required>
                             <option value="" disabled selected>Seleccione una gestión</option>

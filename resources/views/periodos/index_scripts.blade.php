@@ -20,9 +20,24 @@
                 },
                 {
                     data: "periodo",
+                    render: function(data, type, row) {
+                        return `<span class="badge bg-light text-dark">${data}</span>`;
+                    }
                 },
                 {
                     data: "posicion_ordinal",
+                },
+                {
+                    data: "fecha_inicio",
+                    render: function(data, type, row) {
+                        return data ? moment(data).format('DD/MM/YYYY') : '';
+                    }
+                },
+                {
+                    data: "fecha_fin",
+                    render: function(data, type, row) {
+                        return data ? moment(data).format('DD/MM/YYYY') : '';
+                    }
                 },
                 {
                     data: "gestion.anio",
@@ -115,6 +130,8 @@
             $('#form-crear-o-editar input[name="id_periodo"]').val(0);
             $('#form-crear-o-editar input[name="periodo"]').val('');
             $('#form-crear-o-editar input[name="posicion_ordinal"]').val('');
+            $('#form-crear-o-editar input[name="fecha_inicio"]').val(moment().format('YYYY-MM-DD'));
+            $('#form-crear-o-editar input[name="fecha_fin"]').val(moment().format('YYYY-MM-DD'));
             $('#form-crear-o-editar select[name="id_gestion"]').val('');
 
             const titleElement = document.getElementById('modal-formulario-titulo');
@@ -130,8 +147,12 @@
                 $('#form-crear-o-editar input[name="periodo"]').val(periodo.data.periodo);
                 $('#form-crear-o-editar input[name="posicion_ordinal"]').val(periodo.data
                     .posicion_ordinal);
+                $('#form-crear-o-editar input[name="fecha_inicio"]').val(periodo.data
+                    .fecha_inicio);
+                $('#form-crear-o-editar input[name="fecha_fin"]').val(periodo.data
+                    .fecha_fin);
                 $('#form-crear-o-editar select[name="id_gestion"]').val(periodo.data
-                .id_gestion);
+                    .id_gestion);
 
                 const titleElement = document.getElementById('modal-formulario-titulo');
                 titleElement.innerHTML =

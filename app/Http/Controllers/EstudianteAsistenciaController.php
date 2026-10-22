@@ -251,22 +251,47 @@ class EstudianteAsistenciaController extends Controller
 
     public function create(Request $request)
     {
-        $lista = ListaAsignatura::findOrFail($request->id_lista_asignatura);
+        // Precargamos la relación 'periodo' para obtener fecha_inicio y fecha_fin
+        $lista = ListaAsignatura::with('periodo')->findOrFail($request->id_lista_asignatura);
 
         $this->authorize('create', [EstudianteAsistencia::class, $lista]);
 
-        $anio_actual = date('Y');
+        $periodo = $lista->periodo;
+
+        if ($periodo->estado !== 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede crear asistencias cuyo periodo no está activo.'
+            ], 422);
+        }
+
+        // Validación de integridad: el periodo debe contar con fechas configuradas
+        if (!$periodo || !$periodo->fecha_inicio || !$periodo->fecha_fin) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El periodo académico asociado a esta lista no tiene configuradas sus fechas de inicio y fin.'
+            ], 422);
+        }
 
         $request->validate([
             'id_lista_asignatura' => 'required|integer|exists:listas_asignaturas,id_lista_asignatura',
             'id_horario' => 'required|integer|exists:horarios_asignaturas,id_horario_asignatura',
-            'fecha' => "required|date|after_or_equal:{$anio_actual}-02-01|before_or_equal:today",
+            'fecha' => [
+                'required',
+                'date',
+                'before_or_equal:today',
+                'after_or_equal:' . $periodo->fecha_inicio,
+                'before_or_equal:' . $periodo->fecha_fin,
+            ],
             'justificacion_otros' => 'nullable|string|in:ACTIVIDAD CURRICULAR,ACTIVIDAD EXTRACURRICULAR',
             'estudiantes' => 'required|array|min:1',
             'estudiantes.*.id_estudiante' => 'required|integer|exists:estudiantes,id_estudiante',
             'estudiantes.*.tipo' => 'required|string|in:PRESENTE,FALTA,ATRASO,LICENCIA,PERMISO,OTROS',
             'estudiantes.*.tiempo_atraso' => 'nullable|integer|min:0|max:60',
             'estudiantes.*.id_estudiante_licencia' => 'nullable|integer|exists:estudiantes_licencias,id_estudiante_licencia',
+        ], [
+            'fecha.after_or_equal' => "La fecha seleccionada no puede ser anterior al inicio del periodo ({$periodo->periodo}: {$periodo->fecha_inicio}).",
+            'fecha.before_or_equal' => "La fecha seleccionada debe estar dentro del periodo ({$periodo->periodo}: hasta {$periodo->fecha_fin}) y no superar la fecha actual.",
         ]);
 
         // Validación de Regla de Negocio para "OTROS"
@@ -307,7 +332,7 @@ class EstudianteAsistenciaController extends Controller
         DB::beginTransaction();
         try {
             // 2. Seguridad: Validar que los estudiantes pertenecen realmente a la lista
-            $lista = ListaAsignatura::with('estudiantes')->findOrFail($request->id_lista_asignatura);
+            $lista->loadMissing('estudiantes');
             $estudiantesValidos = $lista->estudiantes->pluck('id_estudiante')->toArray();
 
             // 3. Preparar variables para el cruce de fechas con licencias
@@ -395,11 +420,26 @@ class EstudianteAsistenciaController extends Controller
 
     public function update(Request $request, $id_estudiante_asistencia)
     {
-        $asistencia = EstudianteAsistencia::findOrFail($id_estudiante_asistencia);
+        // Cargamos la asistencia junto con su lista y el periodo correspondiente
+        $asistencia = EstudianteAsistencia::with('lista_asignatura.periodo')->findOrFail($id_estudiante_asistencia);
 
         $this->authorize('update', $asistencia);
 
-        $anio_actual = date('Y');
+        $periodo = $asistencia->lista_asignatura?->periodo;
+
+        if ($periodo->estado !== 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede modificar asistencias cuyo periodo no está activo.'
+            ], 422);
+        }
+
+        if (!$periodo || !$periodo->fecha_inicio || !$periodo->fecha_fin) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El periodo académico asociado a esta asistencia no tiene configuradas sus fechas de inicio y fin.'
+            ], 422);
+        }
 
         // Para que la validación funcione correctamente, agregamos el id_estudiante_asistencia al request
         $request->merge([
@@ -409,13 +449,22 @@ class EstudianteAsistenciaController extends Controller
         $request->validate([
             'id_estudiante_asistencia' => 'required|integer|exists:estudiantes_asistencias,id_estudiante_asistencia',
             'id_horario' => 'required|integer|exists:horarios_asignaturas,id_horario_asignatura',
-            'fecha' => "required|date|after_or_equal:{$anio_actual}-02-01|before_or_equal:today",
+            'fecha' => [
+                'required',
+                'date',
+                'before_or_equal:today',
+                'after_or_equal:' . $periodo->fecha_inicio,
+                'before_or_equal:' . $periodo->fecha_fin,
+            ],
             'justificacion_otros' => 'nullable|string|in:ACTIVIDAD CURRICULAR,ACTIVIDAD EXTRACURRICULAR',
             'estudiantes' => 'required|array|min:1',
             'estudiantes.*.id_estudiante' => 'required|integer|exists:estudiantes,id_estudiante',
             'estudiantes.*.tipo' => 'required|string|in:PRESENTE,FALTA,ATRASO,LICENCIA,PERMISO,OTROS',
             'estudiantes.*.tiempo_atraso' => 'nullable|integer|min:0|max:60',
             'estudiantes.*.id_estudiante_licencia' => 'nullable|integer|exists:estudiantes_licencias,id_estudiante_licencia',
+        ], [
+            'fecha.after_or_equal' => "La fecha seleccionada no puede ser anterior al inicio del periodo ({$periodo->periodo}: {$periodo->fecha_inicio}).",
+            'fecha.before_or_equal' => "La fecha seleccionada debe estar dentro del periodo ({$periodo->periodo}: hasta {$periodo->fecha_fin}) y no superar la fecha actual.",
         ]);
 
         // Validación de Regla de Negocio para "OTROS"

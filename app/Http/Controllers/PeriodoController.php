@@ -41,6 +41,8 @@ class PeriodoController extends Controller
         $periodo = new Periodo();
         $periodo->periodo = $request->periodo;
         $periodo->posicion_ordinal = $request->posicion_ordinal;
+        $periodo->fecha_inicio = $request->fecha_inicio;
+        $periodo->fecha_fin = $request->fecha_fin;
         $periodo->id_gestion = $request->id_gestion;
         $periodo->creado_por = auth()->id();
         $periodo->ip = $request->ip();
@@ -59,6 +61,8 @@ class PeriodoController extends Controller
         $periodo = (new Periodo())->get_periodo($id_periodo);
         $periodo->periodo = $request->periodo;
         $periodo->posicion_ordinal = $request->posicion_ordinal;
+        $periodo->fecha_inicio = $request->fecha_inicio;
+        $periodo->fecha_fin = $request->fecha_fin;
         $periodo->id_gestion = $request->id_gestion;
         $periodo->modificado_por = auth()->id();
         $periodo->ip = $request->ip();

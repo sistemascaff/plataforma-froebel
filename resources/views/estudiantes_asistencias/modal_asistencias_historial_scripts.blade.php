@@ -19,7 +19,7 @@
             btn.html('<i class="fa-solid fa-spinner fa-spin"></i>').prop('disabled', true);
 
             // Construir la URL dinámicamente usando la ruta de Laravel
-            let url = "{{ route('estudiantes.mostrar_asistencias', ':id') }}".replace(':id',
+            let url = "{{ route('estudiantes.mostrar.asistencias', ':id') }}".replace(':id',
                 idEstudiante);
 
             $.ajax({

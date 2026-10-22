@@ -24,6 +24,8 @@
                 <th>#</th>
                 <th>Periodo</th>
                 <th>P. Ordinal</th>
+                <th>Fecha de inicio</th>
+                <th>Fecha de fin</th>
                 <th>Gestión</th>
                 <th>Estado</th>
                 <th>F. Registro</th>
