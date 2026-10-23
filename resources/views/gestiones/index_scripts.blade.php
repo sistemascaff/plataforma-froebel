@@ -1,7 +1,5 @@
 <script>
     $(document).ready(function() {
-        anioActual = new Date().getFullYear();
-
         $("#dataTable").DataTable({
             processing: true,
             ajax: {
@@ -22,6 +20,12 @@
                 },
                 {
                     data: "anio",
+                },
+                {
+                    data: "limite_periodos",
+                },
+                {
+                    data: "limite_dimensiones",
                 },
                 {
                     data: "periodos",
@@ -139,7 +143,9 @@
 
         $(document).on('click', '.btn-crear', function() {
             $('#form-crear-o-editar input[name="id_gestion"]').val(0);
-            $('#form-crear-o-editar input[name="anio"]').val(anioActual);
+            $('#form-crear-o-editar input[name="anio"]').val(moment().format('YYYY'));
+            $('#form-crear-o-editar input[name="limite_periodos"]').val(3);
+            $('#form-crear-o-editar input[name="limite_dimensiones"]').val(4);
 
             const titleElement = document.getElementById('modal-formulario-titulo');
             titleElement.innerHTML = '<i class="fa-solid fa-duotone fa-plus"></i> CREAR GESTIÓN';
@@ -154,6 +160,8 @@
             $.get("{{ route('gestiones.index') . '/' }}" + id, function(gestion) {
                 $('#form-crear-o-editar input[name="id_gestion"]').val(gestion.data.id_gestion);
                 $('#form-crear-o-editar input[name="anio"]').val(gestion.data.anio);
+                $('#form-crear-o-editar input[name="limite_periodos"]').val(gestion.data.limite_periodos);
+                $('#form-crear-o-editar input[name="limite_dimensiones"]').val(gestion.data.limite_dimensiones);
 
                 const titleElement = document.getElementById('modal-formulario-titulo');
                 titleElement.innerHTML =

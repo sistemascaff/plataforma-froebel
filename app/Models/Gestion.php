@@ -81,7 +81,7 @@ class Gestion extends Model
 
             'horarios_asignaturas:id_horario_asignatura,id_nivel,id_gestion,denominacion,hora_inicio,hora_fin,estado',
             'horarios_asignaturas.nivel:id_nivel,nivel,posicion_ordinal,estado',
-            'periodos:id_periodo,id_gestion,periodo,posicion_ordinal,estado',
+            'periodos:id_periodo,id_gestion,periodo,posicion_ordinal,fecha_inicio,fecha_fin,estado',
             'dimensiones:id_dimension,id_gestion,dimension,posicion_ordinal,puntaje_maximo,tipo_calculo,estado',
 
             'creado:id_usuario,correo',

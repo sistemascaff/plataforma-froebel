@@ -109,13 +109,17 @@
                     render: function(data, type, row) {
                         return `
                             <div class="btn-group" role="group" aria-label="Acciones">
+                                <button type="button" class="btn btn-success btn-sm btn-clonar" 
+                                        data-id="${row.id_periodo}" data-toggle="tooltip" title="Clonar propiedades">
+                                    <i class="fa-duotone fa-solid fa-clone"></i>
+                                </button>
                                 <button type="button" class="btn btn-warning btn-sm btn-editar" 
                                     data-id="${row.id_periodo}" data-toggle="tooltip" title="Editar">
                                     <i class="fa-duotone fa-solid fa-edit"></i>
                                 </button>
                                 <button type="button" class="btn btn-${row.estado == 1 ? 'danger' : 'success'} btn-sm btn-cambiar-estado" 
                                     data-id="${row.id_periodo}" data-estado="${row.estado}" data-nombre="${row.periodo}" 
-                                    data-toggle="tooltip" title="${row.estado == 1 ? 'Deshabilitar' : 'Habilitar'}">
+                                    data-toggle="tooltip" title="${row.estado == 1 ? 'Archivar' : 'Desarchivar'}">
                                     <i class="fa-duotone fa-solid fa-toggle-${row.estado == 1 ? 'off' : 'on'}"></i>
                                 </button>
                             </div>
@@ -157,6 +161,28 @@
                 const titleElement = document.getElementById('modal-formulario-titulo');
                 titleElement.innerHTML =
                     '<i class="fa-solid fa-duotone fa-edit"></i> EDITAR PERIODO';
+                $('#modal-formulario').modal('show');
+            });
+        });
+
+        $(document).on('click', '.btn-clonar', function() {
+            const id = $(this).data('id');
+
+            $.get("{{ route('periodos.index') . '/' }}" + id, function(periodo) {
+                $('#form-crear-o-editar input[name="id_periodo"]').val(0);
+                $('#form-crear-o-editar input[name="periodo"]').val(periodo.data.periodo);
+                $('#form-crear-o-editar input[name="posicion_ordinal"]').val(periodo.data
+                    .posicion_ordinal);
+                $('#form-crear-o-editar input[name="fecha_inicio"]').val(periodo.data
+                    .fecha_inicio);
+                $('#form-crear-o-editar input[name="fecha_fin"]').val(periodo.data
+                    .fecha_fin);
+                $('#form-crear-o-editar select[name="id_gestion"]').val(periodo.data
+                    .id_gestion);
+
+                const titleElement = document.getElementById('modal-formulario-titulo');
+                titleElement.innerHTML =
+                    '<i class="fa-solid fa-duotone fa-edit"></i> CLONAR PROPIEDADES DEL PERIODO';
                 $('#modal-formulario').modal('show');
             });
         });

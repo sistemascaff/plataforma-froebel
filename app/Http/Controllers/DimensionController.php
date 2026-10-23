@@ -38,6 +38,16 @@ class DimensionController extends Controller
 
     public function create(DimensionValidation $request)
     {
+        $gestion = (new Gestion())->get_gestion($request->id_gestion);
+
+        // Si la cantidad de dimensiones de la gestión es mayor o igual al límite, cancela la operación.
+        if (count($gestion->dimensiones) >= $gestion->limite_dimensiones) {
+            return response()->json([
+                'success' => false,
+                'message' => "Ya se ha creado la cantidad máxima de dimensiones (<b>{$gestion->limite_dimensiones}</b>) de la Gestión <b class=\"text-primary\">{$gestion->anio}</b>."
+            ], 422);
+        }
+        
         $dimension = new Dimension();
         $dimension->dimension = $request->dimension;
         $dimension->posicion_ordinal = $request->posicion_ordinal;
@@ -63,7 +73,7 @@ class DimensionController extends Controller
         $dimension->posicion_ordinal = $request->posicion_ordinal;
         $dimension->puntaje_maximo = $request->puntaje_maximo;
         $dimension->tipo_calculo = $request->tipo_calculo;
-        $dimension->id_gestion = $request->id_gestion;
+        // No se modifica la gestión de la dimensión
         $dimension->modificado_por = auth()->id();
         $dimension->ip = $request->ip();
         $dimension->dispositivo = $request->userAgent();

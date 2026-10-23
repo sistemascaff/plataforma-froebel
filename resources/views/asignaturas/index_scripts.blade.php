@@ -314,7 +314,7 @@
 
                 const titleElement = document.getElementById('modal-formulario-titulo');
                 titleElement.innerHTML =
-                    '<i class="fa-solid fa-duotone fa-plus"></i> CLONAR ASIGNATURA';
+                    '<i class="fa-solid fa-duotone fa-plus"></i> CLONAR PROPIEDADES DE LA ASIGNATURA';
                 $('#modal-formulario').modal('show');
             });
         });

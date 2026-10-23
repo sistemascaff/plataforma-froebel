@@ -57,7 +57,7 @@ class Dimension extends Model
     public function get_dimension($id_dimension)
     {
         return $this->with([
-            'gestion:id_gestion,anio,estado',
+            'gestion:id_gestion,anio,limite_dimensiones,estado',
 
             'creado:id_usuario,correo',
             'modificado:id_usuario,correo',

@@ -17,6 +17,18 @@
                         <input type="number" class="form-control" id="anio" name="anio" min="2000"
                             max="2050" step="1" required>
                     </div>
+
+                    <div class="mb-3">
+                        <label for="limite_periodos" class="form-label">Límite de periodos <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="limite_periodos" name="limite_periodos" min="1"
+                            max="5" step="1" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="limite_dimensiones" class="form-label">Límite de dimensiones <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="limite_dimensiones" name="limite_dimensiones" min="1"
+                            max="5" step="1" required>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">

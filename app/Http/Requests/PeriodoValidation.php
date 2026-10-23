@@ -34,7 +34,7 @@ class PeriodoValidation extends FormRequest
                     ->where('id_gestion', $this->input('id_gestion'))
                     ->ignore($this->route('periodo'), 'id_periodo'),
             ],
-            'posicion_ordinal' => 'required|integer|min:1|max:4',
+            'posicion_ordinal' => 'required|integer|min:1|max:5',
             'id_gestion' => 'required|exists:gestiones,id_gestion',
 
             'fecha_inicio' => [
@@ -98,7 +98,7 @@ class PeriodoValidation extends FormRequest
             'posicion_ordinal.required' => 'La posición ordinal es obligatoria.',
             'posicion_ordinal.integer' => 'La posición ordinal debe ser un número entero.',
             'posicion_ordinal.min' => 'La posición ordinal debe ser al menos 1.',
-            'posicion_ordinal.max' => 'La posición ordinal no puede ser mayor a 4.',
+            'posicion_ordinal.max' => 'La posición ordinal no puede ser mayor a 5.',
 
             'id_gestion.required' => 'Debe seleccionar una gestión.',
             'id_gestion.exists' => 'La gestión seleccionada no existe.',

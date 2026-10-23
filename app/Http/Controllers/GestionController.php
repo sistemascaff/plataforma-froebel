@@ -46,6 +46,8 @@ class GestionController extends Controller
     {
         $gestion = new Gestion();
         $gestion->anio = $request->anio;
+        $gestion->limite_periodos = $request->limite_periodos;
+        $gestion->limite_dimensiones = $request->limite_dimensiones;
         $gestion->creado_por = auth()->id();
         $gestion->ip = $request->ip();
         $gestion->dispositivo = $request->userAgent();
@@ -62,6 +64,8 @@ class GestionController extends Controller
     {
         $gestion = (new Gestion())->get_gestion($id_gestion);
         $gestion->anio = $request->anio;
+        $gestion->limite_periodos = $request->limite_periodos;
+        $gestion->limite_dimensiones = $request->limite_dimensiones;
         $gestion->modificado_por = auth()->id();
         $gestion->ip = $request->ip();
         $gestion->dispositivo = $request->userAgent();

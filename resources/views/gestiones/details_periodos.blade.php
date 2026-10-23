@@ -14,6 +14,8 @@
                     <th class="text-center" style="width: 5%;">#</th>
                     <th>Periodo</th>
                     <th>Posición ordinal</th>
+                    <th>Fecha de inicio</th>
+                    <th>Fecha de fin</th>
                     <th class="text-center">Estado</th>
                 </tr>
             </thead>
@@ -21,8 +23,12 @@
                 @foreach ($gestion->periodos as $periodo)
                     <tr>
                         <td class="text-center align-middle">{{ $loop->index + 1 }}</td>
-                        <td class="align-middle fw-bold">{{ $periodo->periodo }}</td>
+                        <td class="align-middle">
+                            <span class="badge bg-light text-dark">{{ $periodo->periodo }}</span>
+                        </td>
                         <td class="align-middle">{{ $periodo->posicion_ordinal }}</td>
+                        <td>{{ date('d/m/Y', strtotime($periodo->fecha_inicio)) }}</td>
+                        <td>{{ date('d/m/Y', strtotime($periodo->fecha_fin)) }}</td>
                         <td class="text-center align-middle">
                             @php
                                 $periodoEstado = match ($periodo->estado) {

@@ -38,6 +38,16 @@ class PeriodoController extends Controller
 
     public function create(PeriodoValidation $request)
     {
+        $gestion = (new Gestion())->get_gestion($request->id_gestion);
+
+        // Si la cantidad de periodos de la gestión es mayor o igual al límite, cancela la operación.
+        if (count($gestion->periodos) >= $gestion->limite_periodos) {
+            return response()->json([
+                'success' => false,
+                'message' => "Ya se ha creado la cantidad máxima de periodos (<b>{$gestion->limite_periodos}</b>) de la Gestión <b class=\"text-primary\">{$gestion->anio}</b>."
+            ], 422);
+        }
+
         $periodo = new Periodo();
         $periodo->periodo = $request->periodo;
         $periodo->posicion_ordinal = $request->posicion_ordinal;
@@ -63,7 +73,7 @@ class PeriodoController extends Controller
         $periodo->posicion_ordinal = $request->posicion_ordinal;
         $periodo->fecha_inicio = $request->fecha_inicio;
         $periodo->fecha_fin = $request->fecha_fin;
-        $periodo->id_gestion = $request->id_gestion;
+        // No se modifica la gestión del periodo
         $periodo->modificado_por = auth()->id();
         $periodo->ip = $request->ip();
         $periodo->dispositivo = $request->userAgent();

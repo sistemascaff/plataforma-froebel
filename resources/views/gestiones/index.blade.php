@@ -19,6 +19,8 @@
             <tr>
                 <th>#</th>
                 <th>Año</th>
+                <th>Límite de periodos</th>
+                <th>Límite de dimensiones</th>
                 <th>Periodos</th>
                 <th>Dimensiones</th>
                 <th>Estado</th>

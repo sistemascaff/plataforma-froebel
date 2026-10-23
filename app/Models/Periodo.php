@@ -58,7 +58,7 @@ class Periodo extends Model
     public function get_periodo($id_periodo)
     {
         return $this->with([
-            'gestion:id_gestion,anio,estado',
+            'gestion:id_gestion,anio,limite_periodos,estado',
 
             'creado:id_usuario,correo',
             'modificado:id_usuario,correo',
