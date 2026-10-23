@@ -34,12 +34,18 @@
                 },
                 {
                     data: "materia.abreviatura",
+                    render: function(data){
+                        return `<b>${data}</b>`
+                    }
                 },
                 {
                     data: "area.area",
                 },
                 {
                     data: "area.abreviatura",
+                    render: function(data){
+                        return `<b>${data}</b>`
+                    }
                 },
                 {
                     data: "gestion.anio",

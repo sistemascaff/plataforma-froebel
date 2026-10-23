@@ -56,7 +56,7 @@
                         <span class="fw-bold">{{ $estudiante->persona->usuario->correo }}</span>
                     </li>
 
-                    @if (Auth::user()->persona?->tipo_perfil === 'ADMINISTRADOR')
+                    @if (in_array(Auth::user()->persona?->tipo_perfil, ['ADMINISTRADOR', 'SECRETARIA ACADEMICA']))
                         <li class="list-group-item flex-column align-items-start border-warning border-start border-4">
                             <div class="d-flex justify-content-between w-100 mb-1">
                                 <span class="text-muted">Contraseña:</span>
@@ -64,7 +64,7 @@
                                     class="fw-bold text-muted">{{ helper_decrypt($estudiante->persona->usuario->contrasenha) }}</span>
                             </div>
                             <small class="text-warning-emphasis"><i class="fa-solid fa-duotone fa-circle-info"></i> Visible
-                                solo para ADMINISTRADOR</small>
+                                solo para ADMINISTRADOR y SECRETARÍA ACADÉMICA</small>
                         </li>
                     @endif
 
@@ -186,31 +186,43 @@
                 <div class="card-header border-bottom-0 pt-3 pb-0">
                     <ul class="nav nav-tabs" id="estudianteTabs" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active fw-bold text-info" id="asignaturas-tab" data-bs-toggle="tab"
+                            <button class="nav-link fw-bold py-3 px-4 active" id="asignaturas-tab" data-bs-toggle="tab"
                                 data-bs-target="#asignaturas-pane" type="button" role="tab"
                                 aria-controls="asignaturas-pane" aria-selected="true">
                                 <i class="fa-solid fa-duotone fa-book-open-reader me-2"></i>Asignaturas
+                                <span class="badge bg-primary ms-2" id="badge-total-asignaturas">
+                                    {{ count($estudiante->listas_asignaturas) }}
+                                </span>
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link fw-bold text-info" id="asistencias-tab" data-bs-toggle="tab"
+                            <button class="nav-link fw-bold py-3 px-4" id="asistencias-tab" data-bs-toggle="tab"
                                 data-bs-target="#asistencias-pane" type="button" role="tab"
                                 aria-controls="asistencias-pane" aria-selected="false">
                                 <i class="fa-solid fa-duotone fa-clipboard-user me-2"></i>Asistencias
+                                <span class="badge bg-success ms-2" id="badge-total-asistencias">
+                                    {{ count($estudiante->estudiantes_asistencias) }}
+                                </span>
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link fw-bold text-info" id="licencias-tab" data-bs-toggle="tab"
+                            <button class="nav-link fw-bold py-3 px-4" id="licencias-tab" data-bs-toggle="tab"
                                 data-bs-target="#licencias-pane" type="button" role="tab"
                                 aria-controls="licencias-pane" aria-selected="false">
                                 <i class="fa-solid fa-duotone fa-file-certificate me-2"></i>Licencias
+                                <span class="badge bg-info text-dark ms-2" id="badge-total-licencias">
+                                    {{ count($estudiante->estudiantes_licencias) }}
+                                </span>
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link fw-bold text-info" id="prestamos-libros-tab" data-bs-toggle="tab"
+                            <button class="nav-link fw-bold py-3 px-4" id="prestamos-libros-tab" data-bs-toggle="tab"
                                 data-bs-target="#prestamos-libros-pane" type="button" role="tab"
                                 aria-controls="prestamos-libros-pane" aria-selected="false">
                                 <i class="fa-solid fa-duotone fa-book-open me-2"></i>Préstamos de Libros
+                                <span class="badge bg-primary ms-2" id="badge-total-prestamos-libros">
+                                    {{ count($estudiante->persona->prestamos) }}
+                                </span>
                             </button>
                         </li>
                     </ul>

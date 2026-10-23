@@ -23,7 +23,7 @@
                     <th class="text-center">Licencias</th>
                     <th class="text-center">Permisos</th>
                     <th class="text-center">Otros</th>
-                    <th class="text-center">Estado</th>
+                    {{-- <th class="text-center">Estado</th> --}}
                     <th class="text-center" style="width: 10%;">Acciones</th>
                 </tr>
             </thead>
@@ -92,11 +92,11 @@
                                 {{ $estudiante_asistencia->otros_count }}
                             </span>
                         </td>
-                        <td class="text-center align-middle">
+                        {{-- <td class="text-center align-middle">
                             <span class="badge {{ $estudianteAsistenciaEstadoClass }}">
                                 {{ $estudianteAsistenciaEstadoTexto }}
                             </span>
-                        </td>
+                        </td> --}}
                         <td class="text-center align-middle">
                             <div class="btn-group" role="group">
                                 <a class="btn btn-info btn-sm"

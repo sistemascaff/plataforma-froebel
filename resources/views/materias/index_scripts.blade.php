@@ -23,6 +23,9 @@
                 },
                 {
                     data: "abreviatura",
+                    render: function(data){
+                        return `<b>${data}</b>`
+                    }
                 },
                 {
                     data: "posicion_ordinal",

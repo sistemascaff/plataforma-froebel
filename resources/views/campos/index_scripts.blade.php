@@ -144,6 +144,15 @@
                 }
             ],
             ...dtDefaults,
+            // Ajustes específicos para ver todas las columnas sin que se colapse automáticamente por responsividad, que sobreescriben a la constante dtDefaults.
+            responsive: false,
+            lengthChange: true,
+            autoWidth: false,
+            scrollX: true,
+            columnDefs: [{
+                targets: [3, 4],
+                width: '500px',
+            }, ],
         }).buttons().container().appendTo('#dataTable-export-buttons-container');
 
         $(document).on('click', '.btn-crear', function() {
