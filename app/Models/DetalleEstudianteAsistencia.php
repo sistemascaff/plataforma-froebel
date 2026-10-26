@@ -59,7 +59,7 @@ class DetalleEstudianteAsistencia extends Model
 
             // Eager Loading para la vista/Excel
             ->with([
-                'estudiante_asistencia:id_estudiante_asistencia,id_lista_asignatura,id_horario_asignatura,fecha,justificacion_otros,estado',
+                'estudiante_asistencia:id_estudiante_asistencia,id_lista_asignatura,id_horario_asignatura,fecha,justificacion_otros,es_horario_no_regular,estado',
                 'estudiante_asistencia.horario_asignatura:id_horario_asignatura,id_nivel,id_gestion,denominacion,hora_inicio,hora_fin,estado',
                 'estudiante.curso:id_curso,id_grado,id_paralelo,curso,estado',
                 'estudiante:id_estudiante,id_persona,id_curso,estado',

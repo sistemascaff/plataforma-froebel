@@ -251,8 +251,8 @@ class EstudianteAsistenciaController extends Controller
 
     public function create(Request $request)
     {
-        // Precargamos la relación 'periodo' para obtener fecha_inicio y fecha_fin
-        $lista = ListaAsignatura::with('periodo')->findOrFail($request->id_lista_asignatura);
+        // Precargamos la relación 'periodo' y 'asignatura' para validaciones de integridad
+        $lista = ListaAsignatura::with(['periodo', 'asignatura'])->findOrFail($request->id_lista_asignatura);
 
         $this->authorize('create', [EstudianteAsistencia::class, $lista]);
 
@@ -276,6 +276,7 @@ class EstudianteAsistenciaController extends Controller
         $request->validate([
             'id_lista_asignatura' => 'required|integer|exists:listas_asignaturas,id_lista_asignatura',
             'id_horario' => 'required|integer|exists:horarios_asignaturas,id_horario_asignatura',
+            'es_horario_no_regular' => 'nullable|boolean',
             'fecha' => [
                 'required',
                 'date',
@@ -293,6 +294,33 @@ class EstudianteAsistenciaController extends Controller
             'fecha.after_or_equal' => "La fecha seleccionada no puede ser anterior al inicio del periodo ({$periodo->periodo}: {$periodo->fecha_inicio}).",
             'fecha.before_or_equal' => "La fecha seleccionada debe estar dentro del periodo ({$periodo->periodo}: hasta {$periodo->fecha_fin}) y no superar la fecha actual.",
         ]);
+
+        $esHorarioNoRegular = $request->boolean('es_horario_no_regular');
+        $horario = HorarioAsignatura::findOrFail($request->id_horario);
+
+        // Validación de integridad del horario seleccionado (Regular vs No Regular)
+        if ($esHorarioNoRegular) {
+            if ((int) $horario->id_nivel !== (int) $lista->asignatura->id_nivel) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El horario no regular seleccionado no pertenece al nivel académico de la asignatura.'
+                ], 422);
+            }
+        } else {
+            $diaSemanaFecha = Carbon::parse($request->fecha)->dayOfWeekIso; // 1 = Lunes, 7 = Domingo
+            $perteneceHorarioRegular = DB::table('detalles_horarios_asignaturas')
+                ->where('id_asignatura', $lista->id_asignatura)
+                ->where('id_horario_asignatura', $request->id_horario)
+                ->where('dia_semana', $diaSemanaFecha)
+                ->exists();
+
+            if (!$perteneceHorarioRegular) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El horario seleccionado no corresponde al horario regular de la asignatura para el día de la fecha indicada.'
+                ], 422);
+            }
+        }
 
         // Validación de Regla de Negocio para "OTROS"
         $tiposEnviados = collect($request->estudiantes)->pluck('tipo');
@@ -336,7 +364,6 @@ class EstudianteAsistenciaController extends Controller
             $estudiantesValidos = $lista->estudiantes->pluck('id_estudiante')->toArray();
 
             // 3. Preparar variables para el cruce de fechas con licencias
-            $horario = HorarioAsignatura::findOrFail($request->id_horario);
             $inicioClase = Carbon::parse($request->fecha . ' ' . $horario->hora_inicio);
             $finClase = Carbon::parse($request->fecha . ' ' . $horario->hora_fin);
 
@@ -344,6 +371,7 @@ class EstudianteAsistenciaController extends Controller
             $asistencia = new EstudianteAsistencia();
             $asistencia->id_lista_asignatura = $request->id_lista_asignatura;
             $asistencia->id_horario_asignatura = $request->id_horario;
+            $asistencia->es_horario_no_regular = $esHorarioNoRegular ? 1 : null;
             $asistencia->fecha = $request->fecha;
             $asistencia->justificacion_otros = $esModoOtros ? $request->justificacion_otros : null;
             $asistencia->creado_por = auth()->id();
@@ -420,8 +448,8 @@ class EstudianteAsistenciaController extends Controller
 
     public function update(Request $request, $id_estudiante_asistencia)
     {
-        // Cargamos la asistencia junto con su lista y el periodo correspondiente
-        $asistencia = EstudianteAsistencia::with('lista_asignatura.periodo')->findOrFail($id_estudiante_asistencia);
+        // Cargamos la asistencia junto con su lista, asignatura y el periodo correspondiente
+        $asistencia = EstudianteAsistencia::with(['lista_asignatura.periodo', 'lista_asignatura.asignatura'])->findOrFail($id_estudiante_asistencia);
 
         $this->authorize('update', $asistencia);
 
@@ -449,6 +477,7 @@ class EstudianteAsistenciaController extends Controller
         $request->validate([
             'id_estudiante_asistencia' => 'required|integer|exists:estudiantes_asistencias,id_estudiante_asistencia',
             'id_horario' => 'required|integer|exists:horarios_asignaturas,id_horario_asignatura',
+            'es_horario_no_regular' => 'nullable|boolean',
             'fecha' => [
                 'required',
                 'date',
@@ -466,6 +495,34 @@ class EstudianteAsistenciaController extends Controller
             'fecha.after_or_equal' => "La fecha seleccionada no puede ser anterior al inicio del periodo ({$periodo->periodo}: {$periodo->fecha_inicio}).",
             'fecha.before_or_equal' => "La fecha seleccionada debe estar dentro del periodo ({$periodo->periodo}: hasta {$periodo->fecha_fin}) y no superar la fecha actual.",
         ]);
+
+        $esHorarioNoRegular = $request->boolean('es_horario_no_regular');
+        $horario = HorarioAsignatura::findOrFail($request->id_horario);
+        $asignatura = $asistencia->lista_asignatura->asignatura;
+
+        // Validación de integridad del horario seleccionado (Regular vs No Regular)
+        if ($esHorarioNoRegular) {
+            if ((int) $horario->id_nivel !== (int) $asignatura->id_nivel) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El horario no regular seleccionado no pertenece al nivel académico de la asignatura.'
+                ], 422);
+            }
+        } else {
+            $diaSemanaFecha = Carbon::parse($request->fecha)->dayOfWeekIso;
+            $perteneceHorarioRegular = DB::table('detalles_horarios_asignaturas')
+                ->where('id_asignatura', $asignatura->id_asignatura)
+                ->where('id_horario_asignatura', $request->id_horario)
+                ->where('dia_semana', $diaSemanaFecha)
+                ->exists();
+
+            if (!$perteneceHorarioRegular) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El horario seleccionado no corresponde al horario regular de la asignatura para el día de la fecha indicada.'
+                ], 422);
+            }
+        }
 
         // Validación de Regla de Negocio para "OTROS"
         $tiposEnviados = collect($request->estudiantes)->pluck('tipo');
@@ -509,12 +566,12 @@ class EstudianteAsistenciaController extends Controller
             $estudiantesValidos = $lista->estudiantes->pluck('id_estudiante')->toArray();
 
             // 3. Preparar variables para el cruce de fechas con licencias
-            $horario = HorarioAsignatura::findOrFail($request->id_horario);
             $inicioClase = Carbon::parse($request->fecha . ' ' . $horario->hora_inicio);
             $finClase = Carbon::parse($request->fecha . ' ' . $horario->hora_fin);
 
             // 4. Actualización de la Tabla Cabecera (Maestro)
             $asistencia->id_horario_asignatura = $request->id_horario;
+            $asistencia->es_horario_no_regular = $esHorarioNoRegular ? 1 : null;
             $asistencia->fecha = $request->fecha;
             $asistencia->justificacion_otros = $esModoOtros ? $request->justificacion_otros : null;
             $asistencia->modificado_por = auth()->id();

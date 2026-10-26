@@ -285,7 +285,7 @@
 
                 // Helper para generar los 4 datasets apilados (Atrasos, Faltas, Licencias, Permisos)
                 const buildStackedDatasets = (entriesArray, isObjectValues = false, radius =
-                4) => [{
+                    4) => [{
                         label: 'Atrasos',
                         data: entriesArray.map(item => isObjectValues ? item.ATRASO : item[1]
                             .ATRASO),
@@ -461,8 +461,31 @@
                 },
                 {
                     data: "estudiante_asistencia.horario_asignatura.hora_inicio",
-                    className: "align-middle text-muted",
-                    render: data => data ? moment(data, 'HH:mm:ss').format('HH:mm') : ''
+                    className: "align-middle",
+                    createdCell: function(td, cellData, rowData, row, col) {
+                        if (rowData.estudiante_asistencia.es_horario_no_regular === 1) {
+                            $(td).addClass('table-info');
+                        }
+                    },
+                    render: function(data, type, row, meta) {
+                        if (!data) return '';
+
+                        const esHorarioNoRegular = row.estudiante_asistencia
+                            .es_horario_no_regular === 1;
+                        const textoHorario = moment(data, 'HH:mm:ss').format('HH:mm');
+
+                        if (esHorarioNoRegular) {
+                            return `
+                                <b>${textoHorario}</b>
+                                <br>
+                                <span class="badge bg-info text-dark ms-1 shadow-sm">
+                                    <i class="fa-solid fa-duotone fa-clock me-1"></i>No regular
+                                </span>
+                            `;
+                        }
+
+                        return textoHorario;
+                    }
                 },
                 {
                     data: "estudiante.curso.curso",
@@ -515,7 +538,22 @@
                     className: "align-middle",
                     render: function(data, type, row) {
                         if (row.tipo === 'LICENCIA' && row.estudiante_licencia) {
-                            return `<span class="d-inline-block" style="max-width: 220px;" title="${row.estudiante_licencia.justificacion}">${row.estudiante_licencia.justificacion || 'Sin justificación'}</span>`;
+                            const l = row.estudiante_licencia;
+                            const urlEvidencia = l.evidencia;
+                            const btnEvidencia = urlEvidencia ? `
+                            <br>
+                            <a href="${urlEvidencia}" target="_blank"
+                                class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip"
+                                title="Abrir archivo en Google Drive">
+                                <i class="fa-brands fa-google-drive"></i> Ver
+                            </a>` : '';
+                            return `
+                                <span class="d-inline-block" style="max-width: 220px;"
+                                    title="${l.justificacion}">
+                                    ${l.justificacion || 'Sin justificación'}
+                                </span>
+                                ${btnEvidencia}
+                            `;
                         }
                         if (row.tipo === 'PERMISO') {
                             return `<span class="text-primary small fw-semibold"><i class="fa-duotone fa-building-columns me-1"></i> Permiso por instrucción académica</span>`;

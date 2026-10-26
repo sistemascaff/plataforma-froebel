@@ -75,15 +75,19 @@
             </div>
             <div class="card-body">
                 <div class="row g-3 align-items-end">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-calendar-days me-1"></i> Fecha de la
                             clase:
                         </p>
                         <input type="date" class="form-control" name="fecha" id="fecha"
-                            min="{{ date('Y-02-01') }}" max="{{ date('Y-m-d') }}" value="{{ date('Y-m-d') }}" required>
+                            min="{{ $lista_asignatura->periodo->fecha_inicio ?? date('Y-02-01') }}"
+                            max="{{ date('Y-m-d') }}" value="{{ date('Y-m-d') }}" required>
                     </div>
-                    <div class="col-md-4">
-                        <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-clock me-1"></i> Horario de la clase:</p>
+
+                    <div class="col-md-3">
+                        <p class="mb-1 text-muted fw-bold" id="label_horario_clase">
+                            <i class="fa-duotone fa-clock me-1"></i> Horario de la clase:
+                        </p>
                         <select class="form-select" name="id_horario" id="id_horario_asignatura" required>
                             @foreach ($horarios as $horario)
                                 <option value="{{ $horario->id_horario_asignatura }}"
@@ -97,8 +101,22 @@
                         </select>
                     </div>
 
+                    <!-- Interruptor para Horario No Regular -->
+                    <div class="col-md-3">
+                        <div
+                            class="form-check form-switch p-2 border rounded bg-body-tertiary d-flex align-items-center justify-content-between">
+                            <label class="form-check-label fw-bold text-warning-emphasis mb-0 me-2"
+                                for="switch_horario_no_regular" style="cursor: pointer;">
+                                <i class="fa-duotone fa-clock-exclamation me-1"></i> Horario no regular
+                            </label>
+                            <input class="form-check-input ms-0 fs-5" type="checkbox" role="switch"
+                                name="es_horario_no_regular" id="switch_horario_no_regular" value="1"
+                                style="cursor: pointer;">
+                        </div>
+                    </div>
+
                     <!-- Interruptor para Modo Global "OTROS" -->
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div
                             class="form-check form-switch p-2 border rounded bg-body-tertiary d-flex align-items-center justify-content-between">
                             <label class="form-check-label fw-bold text-secondary mb-0 me-2" for="switch_modo_otros"
@@ -107,6 +125,16 @@
                             </label>
                             <input class="form-check-input ms-0 fs-5" type="checkbox" role="switch" id="switch_modo_otros"
                                 style="cursor: pointer;">
+                        </div>
+                    </div>
+
+                    <!-- Aviso informativo para Horario No Regular (Oculto por defecto) -->
+                    <div class="col-md-12" id="contenedor_aviso_no_regular" style="display: none;">
+                        <div class="alert alert-warning mb-0 border-warning shadow-sm py-2">
+                            <i class="fa-duotone fa-circle-exclamation me-1"></i>
+                            <strong>Modo Horario No Regular activo:</strong> Se muestran todos los periodos del nivel
+                            <strong>{{ $lista_asignatura->asignatura->nivel->nivel }}</strong> y se omite la validación de
+                            día de la semana respecto a la fecha seleccionada.
                         </div>
                     </div>
 
@@ -206,6 +234,13 @@
                                                         {{ date('d/m/Y H:i', strtotime($licencia->fecha_inicio)) }}</span>
                                                     <span class="badge bg-danger">Hasta
                                                         {{ date('d/m/Y H:i', strtotime($licencia->fecha_fin)) }}</span>
+                                                    @if ($licencia->evidencia)
+                                                        <a href="{{ $licencia->evidencia }}" target="_blank"
+                                                            class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip"
+                                                            title="Abrir archivo en Google Drive">
+                                                            <i class="fa-brands fa-google-drive"></i> Ver
+                                                        </a>
+                                                    @endif
                                                 </div>
                                             @endif
                                         </td>

@@ -272,6 +272,13 @@
                                                 {{ date('d/m/Y H:i', strtotime($detalle->estudiante_licencia->fecha_inicio)) }}</span>
                                             <span class="badge bg-danger">Hasta
                                                 {{ date('d/m/Y H:i', strtotime($detalle->estudiante_licencia->fecha_fin)) }}</span>
+                                            @if ($detalle->estudiante_licencia->evidencia)
+                                                <a href="{{ $detalle->estudiante_licencia->evidencia }}" target="_blank"
+                                                    class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip"
+                                                    title="Abrir archivo en Google Drive">
+                                                    <i class="fa-brands fa-google-drive"></i> Ver
+                                                </a>
+                                            @endif
                                         </div>
                                     @endif
                                 </td>

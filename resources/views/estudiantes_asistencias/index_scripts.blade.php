@@ -49,8 +49,29 @@
                 },
                 {
                     data: "horario_asignatura",
+                    createdCell: function(td, cellData, rowData, row, col) {
+                        if (rowData.es_horario_no_regular === 1) {
+                            $(td).addClass('table-info');
+                        }
+                    },
                     render: function(data, type, row, meta) {
-                        return `${data.denominacion} (${data.hora_inicio} - ${data.hora_fin})`
+                        if (!data) return '';
+
+                        const esHorarioNoRegular = row.es_horario_no_regular === 1;
+                        const textoHorario =
+                            `${data.denominacion} (${data.hora_inicio} - ${data.hora_fin})`;
+
+                        if (esHorarioNoRegular) {
+                            return `
+                                <b>${textoHorario}</b>
+                                <br>
+                                <span class="badge bg-info text-dark ms-1 shadow-sm">
+                                    <i class="fa-solid fa-duotone fa-clock me-1"></i>No regular
+                                </span>
+                            `;
+                        }
+
+                        return textoHorario;
                     }
                 },
                 {

@@ -81,18 +81,17 @@
                         if (!data || data.length === 0) return "-";
                         if (row.estado == 0) return '<span class="text-muted small">N/A</span>';
 
+                        const fechaDevolucion = moment(row.fecha_devolucion).startOf('day');
+
                         return data.map((libro, index) => {
-                            const fechaDevolucion = new Date(row.fecha_devolucion);
                             const fechaRetorno = libro.pivot.fecha_retorno;
                             let diasAtraso = 0;
                             let mensaje = "";
                             let clase = "";
 
                             if (!fechaRetorno) {
-                                const hoy = new Date();
-                                const diferenciaMilisegundos = hoy - fechaDevolucion;
-                                diasAtraso = Math.floor(diferenciaMilisegundos / (1000 *
-                                    60 * 60 * 24));
+                                const hoy = moment().startOf('day');
+                                diasAtraso = hoy.diff(fechaDevolucion, 'days');
 
                                 if (diasAtraso > 0) {
                                     mensaje = `${diasAtraso} días retraso`;
@@ -105,15 +104,14 @@
                                     clase = "text-primary";
                                 }
                             } else {
-                                const fechaRetornoDate = new Date(fechaRetorno);
-                                const diferenciaMilisegundos = fechaRetornoDate -
-                                    fechaDevolucion;
-                                diasAtraso = Math.floor(diferenciaMilisegundos / (1000 *
-                                    60 * 60 * 24));
+                                const retorno = moment(fechaRetorno).startOf('day');
+                                diasAtraso = retorno.diff(fechaDevolucion, 'days');
+
                                 mensaje = diasAtraso > 0 ?
                                     `${diasAtraso} d. con retraso` : "A tiempo";
                                 clase = diasAtraso > 0 ? "text-danger" : "text-success";
                             }
+
                             return `<small class="text-muted">${index + 1}.</small> <span class="${clase}">${mensaje}</span>`;
                         }).join("<br>");
                     }

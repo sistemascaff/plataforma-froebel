@@ -41,14 +41,21 @@
                             0 => 'INACTIVO',
                             default => 'DESCONOCIDO',
                         };
+                        $esHorarioNoRegular = $estudiante_asistencia->es_horario_no_regular === 1;
                     @endphp
                     <tr
                         class="{{ $estudiante_asistencia->detalles_estudiantes_asistencias_count === $estudiante_asistencia->presentes_count ? 'table-success' : ($estudiante_asistencia->otros_count > 0 ? 'table-secondary' : '') }}">
                         <td class="text-center align-middle">{{ $loop->index + 1 }}</td>
                         <td class="align-middle">
                             {{ date('d/m/Y', strtotime($estudiante_asistencia->fecha)) }}</td>
-                        <td class="align-middle">
+                        <td class="align-middle {{ $esHorarioNoRegular ? ' table-info' : '' }}">
                             {{ "{$estudiante_asistencia->horario_asignatura->denominacion} ({$estudiante_asistencia->horario_asignatura->hora_inicio} - {$estudiante_asistencia->horario_asignatura->hora_fin})" }}
+                            @if ($esHorarioNoRegular)
+                                <br>
+                                <span class="badge bg-info text-dark ms-1 shadow-sm">
+                                    <i class="fa-solid fa-duotone fa-clock me-1"></i>No regular
+                                </span>
+                            @endif
                         </td>
                         <td class="text-center align-middle">
                             <span class="badge bg-primary">

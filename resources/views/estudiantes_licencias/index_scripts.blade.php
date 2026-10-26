@@ -326,7 +326,6 @@
                 },
                 {
                     data: "fecha_registro",
-                    visible: ES_ADMINISTRADOR,
                     render: data => data ? moment(data).format('DD/MM/YYYY HH:mm:ss') : ''
                 },
                 {

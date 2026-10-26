@@ -1,19 +1,126 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Obtener el día actual del sistema (1 = Lunes, 7 = Domingo)
-        const diaActual = moment().isoWeekday();
+        const idNivelAsignatura = {{ $lista_asignatura->asignatura->id_nivel }};
         const selectHorario = document.getElementById('id_horario_asignatura');
+        const switchHorarioNoRegular = document.getElementById('switch_horario_no_regular');
+        const contenedorAvisoNoRegular = document.getElementById('contenedor_aviso_no_regular');
 
-        if (selectHorario) {
-            // Buscar la primera opción cuyo atributo data-dia coincida con hoy
+        // Respaldo de las opciones de horarios regulares renderizadas desde Blade
+        const opcionesHorariosRegularesHTML = selectHorario ? selectHorario.innerHTML : '';
+        let horariosNivelCache = null;
+
+        // Función para autoseleccionar el horario regular que coincida con el día de la fecha elegida
+        function preseleccionarHorarioRegularPorDia() {
+            if (!selectHorario || (switchHorarioNoRegular && switchHorarioNoRegular.checked)) return;
+
+            const inputFechaVal = document.getElementById('fecha')?.value;
+            const diaObjetivo = inputFechaVal ? moment(inputFechaVal).isoWeekday() : moment().isoWeekday();
+
             const opcionCoincidente = Array.from(selectHorario.options).find(
-                opcion => parseInt(opcion.getAttribute('data-dia')) === diaActual
+                opcion => parseInt(opcion.getAttribute('data-dia')) === diaObjetivo
             );
 
-            // Si existe una coincidencia, asignarla como seleccionada
             if (opcionCoincidente) {
                 selectHorario.value = opcionCoincidente.value;
             }
+        }
+
+        // Autoseleccionar al iniciar
+        preseleccionarHorarioRegularPorDia();
+
+        // Si cambia la fecha y está en modo regular, sugerir automáticamente el horario de ese día
+        const inputFechaElem = document.getElementById('fecha');
+        if (inputFechaElem) {
+            inputFechaElem.addEventListener('change', preseleccionarHorarioRegularPorDia);
+        }
+
+        // --- Lógica para el Interruptor "Horario No Regular" ---
+        function renderizarOpcionesNoRegulares(horarios) {
+            selectHorario.innerHTML = '';
+
+            if (horarios.length === 0) {
+                const opt = document.createElement('option');
+                opt.value = '';
+                opt.disabled = true;
+                opt.selected = true;
+                opt.textContent = 'No hay horarios activos para este nivel';
+                selectHorario.appendChild(opt);
+                return;
+            }
+
+            horarios.forEach(h => {
+                const horaInicio = h.hora_inicio ? h.hora_inicio.substring(0, 5) : '';
+                const horaFin = h.hora_fin ? h.hora_fin.substring(0, 5) : '';
+                const opt = document.createElement('option');
+                opt.value = h.id_horario_asignatura;
+                opt.textContent = `${h.denominacion} (${horaInicio} - ${horaFin}) - [NO REGULAR]`;
+                selectHorario.appendChild(opt);
+            });
+        }
+
+        if (switchHorarioNoRegular && selectHorario) {
+            switchHorarioNoRegular.addEventListener('change', function() {
+                if (this.checked) {
+                    if (contenedorAvisoNoRegular) contenedorAvisoNoRegular.style.display = 'block';
+
+                    // Si ya cargamos los horarios del nivel previamente, usamos la caché
+                    if (horariosNivelCache !== null) {
+                        renderizarOpcionesNoRegulares(horariosNivelCache);
+                        return;
+                    }
+
+                    selectHorario.disabled = true;
+                    selectHorario.innerHTML =
+                    '<option value="">Cargando horarios del nivel...</option>';
+
+                    fetch("{{ route('horarios_asignaturas.listar') }}", {
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(res => {
+                            const lista = res.data || [];
+
+                            // Filtrar horarios activos del mismo nivel y excluir recesos/recreos
+                            horariosNivelCache = lista.filter(h => {
+                                const desc = (h.denominacion || '').toLowerCase();
+                                const esReceso = desc.includes('receso') || desc.includes(
+                                    'recreo');
+                                return h.id_nivel == idNivelAsignatura && h.estado == 1 && !
+                                    esReceso;
+                            });
+
+                            // Orden cronológico por hora_inicio
+                            horariosNivelCache.sort((a, b) => a.hora_inicio.localeCompare(b
+                                .hora_inicio));
+
+                            renderizarOpcionesNoRegulares(horariosNivelCache);
+                        })
+                        .catch(err => {
+                            console.error('Error al cargar horarios del nivel:', err);
+                            Swal.fire({
+                                theme: localStorage.getItem('theme') || 'dark',
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'No se pudieron cargar los horarios del nivel.'
+                            });
+                            // Revertir switch en caso de fallo de red
+                            this.checked = false;
+                            if (contenedorAvisoNoRegular) contenedorAvisoNoRegular.style.display =
+                                'none';
+                            selectHorario.innerHTML = opcionesHorariosRegularesHTML;
+                            preseleccionarHorarioRegularPorDia();
+                        })
+                        .finally(() => {
+                            selectHorario.disabled = false;
+                        });
+                } else {
+                    if (contenedorAvisoNoRegular) contenedorAvisoNoRegular.style.display = 'none';
+                    selectHorario.innerHTML = opcionesHorariosRegularesHTML;
+                    preseleccionarHorarioRegularPorDia();
+                }
+            });
         }
 
         // Función auxiliar para actualizar el badge y el campo de atraso según el radio seleccionado
@@ -142,28 +249,41 @@
             formAsistencia.addEventListener('submit', function(e) {
                 e.preventDefault(); // Evitamos la recarga tradicional
 
+                const esNoRegular = switchHorarioNoRegular && switchHorarioNoRegular.checked;
+
                 // ====================================================================
-                // VALIDACIÓN 1: Cruce de Fecha vs Día del Horario
+                // VALIDACIÓN 1: Cruce de Fecha vs Día del Horario (Solo si es horario regular)
                 // ====================================================================
-                const inputFecha = document.getElementById('fecha').value;
-                const selectHorario = document.getElementById('id_horario_asignatura');
-                const opcionSeleccionada = selectHorario.options[selectHorario.selectedIndex];
+                if (!esNoRegular) {
+                    const inputFecha = document.getElementById('fecha').value;
+                    const opcionSeleccionada = selectHorario.options[selectHorario.selectedIndex];
 
-                // Obtenemos el día esperado de la base de datos
-                const diaHorario = parseInt(opcionSeleccionada.getAttribute('data-dia'));
+                    if (!opcionSeleccionada) {
+                        Swal.fire({
+                            theme: localStorage.getItem('theme') || 'dark',
+                            icon: 'warning',
+                            title: 'Horario requerido',
+                            text: 'Seleccione un horario válido para continuar.'
+                        });
+                        return;
+                    }
 
-                // Obtenemos el día real de la fecha seleccionada usando Moment.js (1=Lunes, 7=Domingo)
-                const diaFecha = moment(inputFecha).isoWeekday();
+                    // Obtenemos el día esperado de la base de datos
+                    const diaHorario = parseInt(opcionSeleccionada.getAttribute('data-dia'));
 
-                if (diaFecha !== diaHorario) {
-                    Swal.fire({
-                        theme: localStorage.getItem('theme') || 'dark',
-                        icon: 'error',
-                        title: 'Discrepancia de Horario',
-                        text: 'El día de la fecha seleccionada no coincide con el día de la semana del horario elegido.',
-                        confirmButtonColor: '#d33'
-                    });
-                    return; // Detenemos la ejecución de todo el script aquí mismo
+                    // Obtenemos el día real de la fecha seleccionada usando Moment.js (1=Lunes, 7=Domingo)
+                    const diaFecha = moment(inputFecha).isoWeekday();
+
+                    if (diaFecha !== diaHorario) {
+                        Swal.fire({
+                            theme: localStorage.getItem('theme') || 'dark',
+                            icon: 'error',
+                            title: 'Discrepancia de Horario',
+                            text: 'El día de la fecha seleccionada no coincide con el día de la semana del horario elegido. Si es una clase extraordinaria, active la opción "Horario no regular".',
+                            confirmButtonColor: '#d33'
+                        });
+                        return; // Detenemos la ejecución
+                    }
                 }
 
                 // ====================================================================

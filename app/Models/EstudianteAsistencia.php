@@ -186,7 +186,7 @@ class EstudianteAsistencia extends Model
             'detalles_estudiantes_asistencias.estudiante.persona:id_persona,id_colegio,apellido_paterno,apellido_materno,nombres,tipo_perfil,estado',
             'detalles_estudiantes_asistencias.estudiante.persona.usuario:id_usuario,id_persona,url_foto_perfil,estado',
             'detalles_estudiantes_asistencias.estudiante.curso:id_curso,id_grado,id_paralelo,curso,estado',
-            'detalles_estudiantes_asistencias.estudiante_licencia:id_estudiante_licencia,id_estudiante,tipo,justificacion,fecha_inicio,fecha_fin,estado',
+            'detalles_estudiantes_asistencias.estudiante_licencia:id_estudiante_licencia,id_estudiante,tipo,justificacion,fecha_inicio,fecha_fin,evidencia,estado',
 
             'lista_asignatura:id_lista_asignatura,id_asignatura,id_periodo,id_docente,estado',
             'lista_asignatura.asignatura:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',
