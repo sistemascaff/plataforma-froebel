@@ -324,7 +324,7 @@ class ListaAsignaturaController extends Controller
         ]);
 
         // Regla especial fuera de la política: Los docentes no pueden modificar el docente asignado a la lista
-        if(Auth::user()->persona?->tipo_perfil === 'DOCENTE') {
+        if (Auth::user()->persona?->tipo_perfil === 'DOCENTE') {
             return response()->json([
                 'success' => false,
                 'message' => 'Acceso denegado: Los docentes no pueden modificar el docente asignado a la lista.'
@@ -442,6 +442,38 @@ class ListaAsignaturaController extends Controller
         return response()->json([
             'success' => true,
             'message' => $mensaje
+        ]);
+    }
+
+    public function mi_horario()
+    {
+        $id_docente = Auth::user()->persona?->docente?->id_docente;
+
+        if (!$id_docente) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El usuario no tiene un perfil de docente asignado.'
+            ], 403);
+        }
+
+        $now = now();
+        $fecha_hoy = $now->format('Y-m-d');
+        
+        // La semana inicia en Lunes
+        $inicio_semana = $now->copy()->startOfWeek()->format('Y-m-d');
+        $fin_semana = $now->copy()->endOfWeek()->format('Y-m-d');
+
+        $listas = (new ListaAsignatura())->get_horario_semanal_docente($id_docente, $fecha_hoy, $inicio_semana, $fin_semana);
+
+        // Obtenemos el nombre del periodo si hay listas, de lo contrario mostramos un fallback
+        $periodo_actual = $listas->first()?->periodo?->periodo ?? 'SIN PERIODO ACTIVO';
+
+        return response()->json([
+            'success'             => true,
+            'fecha_hoy'           => $fecha_hoy,
+            'fecha_inicio_semana' => $inicio_semana,
+            'periodo_actual'      => $periodo_actual,
+            'data'                => $listas
         ]);
     }
 }

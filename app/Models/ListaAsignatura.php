@@ -194,4 +194,33 @@ class ListaAsignatura extends Model
             'eliminado:id_usuario,correo'
         ])->findOrFail($id_lista_asignatura);
     }
+
+    /**
+     * Obtiene las clases asignadas a un docente con sus horarios 
+     * y verifica si ya se tomó asistencia en la semana actual, 
+     * asegurando que la fecha pertenezca al periodo en curso.
+     */
+    public function get_horario_semanal_docente(int $id_docente, string $fecha_hoy, string $inicio_semana, string $fin_semana)
+    {
+        return $this::where('id_docente', $id_docente)
+            ->whereHas('periodo', function ($q) use ($fecha_hoy) {
+                $q->where('estado', 1)
+                    ->whereDate('fecha_inicio', '<=', $fecha_hoy)
+                    ->whereDate('fecha_fin', '>=', $fecha_hoy);
+            })
+            ->where('estado', 1)
+            ->with([
+                'asignatura:id_asignatura,asignatura,tipo_bloque,estado',
+                'asignatura.horarios_asignaturas' => function ($q) {
+                    $q->where('estado', 1)->orderBy('hora_inicio', 'ASC');
+                },
+                'estudiantes_asistencias' => function ($q) use ($inicio_semana, $fin_semana) {
+                    // Traemos TODAS las asistencias de la semana actual
+                    $q->whereBetween('fecha', [$inicio_semana, $fin_semana])
+                        ->select('id_estudiante_asistencia', 'id_lista_asignatura', 'id_horario_asignatura', 'fecha');
+                },
+                'periodo:id_periodo,id_gestion,periodo,estado' // Aseguramos traer el periodo para la vista
+            ])
+            ->get();
+    }
 }
