@@ -107,7 +107,7 @@
                             class="form-check form-switch p-2 border rounded bg-body-tertiary d-flex align-items-center justify-content-between">
                             <label class="form-check-label fw-bold text-warning-emphasis mb-0 me-2"
                                 for="switch_horario_no_regular" style="cursor: pointer;">
-                                <i class="fa-duotone fa-clock-exclamation me-1"></i> Horario no regular
+                                <i class="fa-duotone fa-clock me-1"></i> Horario no regular
                             </label>
                             <input class="form-check-input ms-0 fs-5" type="checkbox" role="switch"
                                 name="es_horario_no_regular" id="switch_horario_no_regular" value="1"

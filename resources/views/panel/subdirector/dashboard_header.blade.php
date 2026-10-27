@@ -12,12 +12,14 @@
         </li>
         <li class="nav-item mx-1">
             <a class="nav-link {{ request()->is('estudiantes_asistencias') ? 'active' : '' }}" aria-current="page"
-                href="{{ route('estudiantes_asistencias.index') }}"><i class="fa-solid fa-duotone fa-clipboard-list-check"></i>
+                href="{{ route('estudiantes_asistencias.index') }}"><i
+                    class="fa-solid fa-duotone fa-clipboard-list-check"></i>
                 Asistencias</a>
         </li>
         <li class="nav-item mx-1">
-            <a class="nav-link {{ request()->is('estudiantes') ? 'active' : '' }}" aria-current="page"
-                href="{{ route('estudiantes.index') }}"><i class="fa-solid fa-duotone fa-user-graduate"></i>
+            <a class="nav-link {{ request()->is('estudiantes') || request()->is('estudiantes/*') ? 'active' : '' }}"
+                aria-current="page" href="{{ route('estudiantes.index') }}"><i
+                    class="fa-solid fa-duotone fa-user-graduate"></i>
                 Estudiantes</a>
         </li>
         <li class="nav-item mx-1">

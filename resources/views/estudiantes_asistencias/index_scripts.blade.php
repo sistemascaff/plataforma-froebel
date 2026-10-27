@@ -37,18 +37,21 @@
             },
             columns: [{
                     data: null,
+                    className: "align-middle",
                     render: function(data, type, row, meta) {
                         return meta.row + 1; // número de iteración
                     }
                 },
                 {
                     data: "fecha",
+                    className: "align-middle",
                     render: function(data, type, row) {
                         return data ? moment(data).format('DD/MM/YYYY') : '-';
                     }
                 },
                 {
                     data: "horario_asignatura",
+                    className: "align-middle",
                     createdCell: function(td, cellData, rowData, row, col) {
                         if (rowData.es_horario_no_regular === 1) {
                             $(td).addClass('table-info');
@@ -76,25 +79,30 @@
                 },
                 {
                     data: "lista_asignatura.asignatura.asignatura",
+                    className: "align-middle",
                 },
                 {
                     data: "lista_asignatura.docente.persona.nombres_apellidos",
+                    className: "align-middle",
                     visible: AUTH_PERFIL !== 'DOCENTE',
                 },
                 {
                     data: "lista_asignatura.periodo",
+                    className: "align-middle",
                     render: function(data, type, row, meta) {
                         return `${data.gestion.anio} - ${data.periodo}`
                     }
                 },
                 {
                     data: "detalles_estudiantes_asistencias_count",
+                    className: "text-center align-middle",
                     render: function(data, type, row, meta) {
                         return `<span class="badge bg-primary">${data}</span>` || 0;
                     }
                 },
                 {
                     data: "presentes_count",
+                    className: "text-center align-middle",
                     render: function(data, type, row, meta) {
                         return data > 0 ?
                             `<span class="badge bg-success">${data}</span>` :
@@ -103,6 +111,7 @@
                 },
                 {
                     data: "atrasos_count",
+                    className: "text-center align-middle",
                     render: function(data, type, row, meta) {
                         return data > 0 ?
                             `<span class="badge bg-warning text-dark">${data}</span>` :
@@ -111,6 +120,7 @@
                 },
                 {
                     data: "faltas_count",
+                    className: "text-center align-middle",
                     render: function(data, type, row, meta) {
                         return data > 0 ?
                             `<span class="badge bg-danger">${data}</span>` :
@@ -119,6 +129,7 @@
                 },
                 {
                     data: "licencias_count",
+                    className: "text-center align-middle",
                     render: function(data, type, row, meta) {
                         return data > 0 ?
                             `<span class="badge bg-info">${data}</span>` :
@@ -127,7 +138,7 @@
                 },
                 {
                     data: "permisos_count",
-                    className: "text-center",
+                    className: "text-center align-middle",
                     render: function(data, type, row, meta) {
                         return data > 0 ?
                             `<span class="badge bg-primary">${data}</span>` :
@@ -136,7 +147,7 @@
                 },
                 {
                     data: "otros_count",
-                    className: "text-center",
+                    className: "text-center align-middle",
                     render: function(data, type, row, meta) {
                         if (data > 0) {
                             const motivo = row.justificacion_otros ?
