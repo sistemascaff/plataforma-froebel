@@ -186,6 +186,7 @@ Route::middleware(['session.acceso'])->group(function () {
         Route::controller(PersonaController::class)->group(function () {
             Route::get('personas', 'view_index')->name('personas.index');
             Route::get('personas/listar', 'listar')->name('personas.listar');
+            Route::get('personas/listar_cumpleanhos', 'listar_cumpleanhos')->name('personas.listar_cumpleanhos');
             Route::get('personas/{persona}', 'mostrar')->name('personas.mostrar');
             Route::post('personas', 'create')->name('personas.create');
             Route::put('personas/{persona}', 'update')->name('personas.update');

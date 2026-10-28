@@ -56,7 +56,7 @@ class PersonaController extends Controller
     public function listar()
     {
         $tipo_perfil = Auth::user()->persona?->tipo_perfil;
-        // La función get_personal() se salta la convención de nombres debido a que exceptúa los tipos de perfil que ya tienen sus módulos dedicados (DIRECTOR DE NIVEL, COORDINADOR, DOCENTE = Módulo de gestión de docentes) y ESTUDIANTE, por ende solo recupera a las demás personas que también son parte del personal administrativo y académico de la institución. 
+        // La función get_personal() se salta la convención de nombres debido a que exceptúa los tipos de perfil que ya tienen sus módulos dedicados ([DIRECTOR DE NIVEL, COORDINADOR, DOCENTE] = Módulo de gestión de docentes) y ESTUDIANTE, por ende solo recupera a las demás personas que también son parte del personal administrativo y académico de la institución. 
         $personas = (new Persona())->get_personal();
 
         // Solo si el usuario es un administrador, iterar sobre la colección para descifrar la contraseña
@@ -82,6 +82,50 @@ class PersonaController extends Controller
         $personas = (new Persona())->get_all_personas_biblioteca();
         return response()->json([
             'data' => $personas
+        ]);
+    }
+
+    public function listar_cumpleanhos(Request $request)
+    {
+        $filtros = [];
+        $now = now();
+
+        if ($request->filled('tipo_perfil')) {
+            $filtros['tipo_perfil'] = $request->tipo_perfil;
+        }
+
+        // Array estructurado para añadir 'SOCIO', 'PPFF', etc., en el futuro
+        if ($request->boolean('solo_personal')) {
+            $filtros['excluir_perfiles'] = ['ESTUDIANTE'];
+        }
+
+        $periodo = $request->input('periodo', 'hoy');
+
+        switch ($periodo) {
+            case 'hoy':
+                $filtros['dia'] = $now->day;
+                $filtros['mes'] = $now->month;
+                break;
+
+            case 'esta_semana':
+                $inicioSemana = $now->copy()->startOfWeek();
+                $finSemana    = $now->copy()->endOfWeek();
+
+                $filtros['md_inicio'] = $inicioSemana->format('m-d');
+                $filtros['md_fin']    = $finSemana->format('m-d');
+                break;
+
+            case 'este_mes':
+                $filtros['solo_mes'] = $now->month;
+                break;
+        }
+
+        $personas = (new Persona())->get_all_personas_cumpleanhos($filtros);
+
+        return response()->json([
+            'success' => true,
+            'periodo' => $periodo,
+            'data'    => $personas
         ]);
     }
 

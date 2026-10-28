@@ -46,6 +46,9 @@
             @endif
         </div>
     </div>
+
+    {{-- Tarjeta de Cumpleaños --}}
+    @include('panel.admin_super.dashboard_lista_cumpleanhos_card')
 @endsection
 
 @section('scripts')
