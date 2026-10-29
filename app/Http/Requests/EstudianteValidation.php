@@ -58,7 +58,7 @@ class EstudianteValidation extends FormRequest
             'telefono'                  => ['nullable', 'string', 'max:20'],
 
             // --- Estudiante ---
-            'id_curso'                  => ['nullable', 'integer', 'exists:cursos,id_curso'],
+            'id_curso'                  => ['required', 'integer', 'exists:cursos,id_curso'],
             'nacimiento_pais'           => ['nullable', 'string', 'max:45'],
             'nacimiento_departamento'   => ['nullable', 'string', 'max:45'],
             'nacimiento_provincia'      => ['nullable', 'string', 'max:45'],
@@ -75,7 +75,7 @@ class EstudianteValidation extends FormRequest
             'confirmar_contrasenha'     => $isUpdate
                 ? ['nullable', 'string', 'same:contrasenha']
                 : ['required', 'string', 'same:contrasenha'],
-            'foto_perfil'               => ['nullable', 'image', 'mimes:jpg,png', 'max:2048'],
+            'foto_perfil'               => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
     }
 
@@ -105,6 +105,7 @@ class EstudianteValidation extends FormRequest
             'telefono.max'                      => 'El teléfono no puede superar los 20 caracteres.',
 
             // Estudiante
+            'id_curso.required'                 => 'El curso es obligatorio.',
             'id_curso.integer'                  => 'El curso debe ser un valor entero válido.',
             'id_curso.exists'                   => 'El curso seleccionado no existe.',
             'nacimiento_pais.max'               => 'El país de nacimiento no puede superar los 45 caracteres.',
@@ -126,7 +127,7 @@ class EstudianteValidation extends FormRequest
             'confirmar_contrasenha.required'    => 'La confirmación de contraseña es obligatoria.',
             'confirmar_contrasenha.same'        => 'Las contraseñas no coinciden.',
             'foto_perfil.image'                 => 'El archivo debe ser una imagen.',
-            'foto_perfil.mimes'                 => 'La imagen debe ser de tipo JPG o PNG.',
+            'foto_perfil.mimes'                 => 'La imagen debe ser de tipo JPG, PNG o WEBP.',
             'foto_perfil.max'                   => 'La imagen no puede superar los 2 MB.',
         ];
     }

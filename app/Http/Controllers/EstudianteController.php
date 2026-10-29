@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 
@@ -180,10 +181,30 @@ class EstudianteController extends Controller
             // Si se sube una foto de perfil, se guarda el nombre del archivo en el campo correspondiente
             if ($request->hasFile('foto_perfil')) {
                 $foto = $request->file('foto_perfil');
-                $nombreArchivo = 'estudiante_' . $persona->id_persona . '_' . Str::random(32) . '.' . $foto->getClientOriginalExtension();
-                $foto->storeAs('public/fotos_perfil/estudiantes', $nombreArchivo);
+                $nombreArchivo = 'estudiante_' . $persona->id_persona . '_' . Str::random(32) . '.webp';
+                $rutaDestino = 'public/fotos_perfil/estudiantes/' . $nombreArchivo;
 
-                $usuario->url_foto_perfil = 'public/storage/fotos_perfil/estudiantes/' . $nombreArchivo;
+                // Cargar la imagen en memoria y convertirla
+                $contenido = file_get_contents($foto->getRealPath());
+                $imagenGd = imagecreatefromstring($contenido);
+
+                if ($imagenGd !== false) {
+                    // Preservar transparencia si proviene de un PNG/WebP
+                    imagepalettetotruecolor($imagenGd);
+                    imagealphablending($imagenGd, true);
+                    imagesavealpha($imagenGd, true);
+
+                    // Capturar el stream en formato WebP con calidad 80 (ajustable de 0 a 100)
+                    ob_start();
+                    imagewebp($imagenGd, null, 80);
+                    $webpContenido = ob_get_clean();
+                    imagedestroy($imagenGd);
+
+                    // Guardar mediante el Storage de Laravel
+                    Storage::put($rutaDestino, $webpContenido);
+
+                    $usuario->url_foto_perfil = 'public/storage/fotos_perfil/estudiantes/' . $nombreArchivo;
+                }
             } else {
                 $usuario->url_foto_perfil = 'public/img/user.png';
             }
@@ -259,13 +280,39 @@ class EstudianteController extends Controller
                 $usuario->contrasenha = helper_encrypt($request->contrasenha);
             }
 
-            // Si se sube una nueva foto de perfil, se guarda el nombre del archivo en el campo correspondiente
+            // Si se sube una nueva foto de perfil
             if ($request->hasFile('foto_perfil')) {
-                $foto = $request->file('foto_perfil');
-                $nombreArchivo = 'estudiante_' . $persona->id_persona . '_' . Str::random(32) . '.' . $foto->getClientOriginalExtension();
-                $foto->storeAs('public/fotos_perfil/estudiantes', $nombreArchivo);
+                // Eliminar la foto anterior del disco si existe y no es la predeterminada
+                if ($usuario->url_foto_perfil && $usuario->url_foto_perfil !== 'public/img/user.png') {
+                    $archivoViejo = str_replace('public/storage/', 'public/', $usuario->url_foto_perfil);
+                    Storage::delete($archivoViejo);
+                }
 
-                $usuario->url_foto_perfil = 'public/storage/fotos_perfil/estudiantes/' . $nombreArchivo;
+                $foto = $request->file('foto_perfil');
+                $nombreArchivo = 'estudiante_' . $persona->id_persona . '_' . Str::random(32) . '.webp';
+                $rutaDestino = 'public/fotos_perfil/estudiantes/' . $nombreArchivo;
+
+                // Cargar la imagen en memoria y convertirla
+                $contenido = file_get_contents($foto->getRealPath());
+                $imagenGd = imagecreatefromstring($contenido);
+
+                if ($imagenGd !== false) {
+                    // Preservar transparencia si proviene de un PNG/WebP
+                    imagepalettetotruecolor($imagenGd);
+                    imagealphablending($imagenGd, true);
+                    imagesavealpha($imagenGd, true);
+
+                    // Capturar el stream en formato WebP con calidad 80 (ajustable de 0 a 100)
+                    ob_start();
+                    imagewebp($imagenGd, null, 80);
+                    $webpContenido = ob_get_clean();
+                    imagedestroy($imagenGd);
+
+                    // Guardar mediante el Storage de Laravel
+                    Storage::put($rutaDestino, $webpContenido);
+
+                    $usuario->url_foto_perfil = 'public/storage/fotos_perfil/estudiantes/' . $nombreArchivo;
+                }
             }
 
             $usuario->modificado_por = auth()->id();
