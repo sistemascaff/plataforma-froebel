@@ -445,9 +445,15 @@ class ListaAsignaturaController extends Controller
         ]);
     }
 
-    public function mi_horario()
+    public function horario_docente(Request $request)
     {
-        $id_docente = Auth::user()->persona?->docente?->id_docente;
+        $tipo_perfil = Auth::user()->persona?->tipo_perfil;
+
+        if ($tipo_perfil === 'DOCENTE') {
+            $id_docente = Auth::user()->persona?->docente?->id_docente;
+        } else {
+            $id_docente = $request->id_docente;
+        }
 
         if (!$id_docente) {
             return response()->json([
@@ -458,7 +464,7 @@ class ListaAsignaturaController extends Controller
 
         $now = now();
         $fecha_hoy = $now->format('Y-m-d');
-        
+
         // La semana inicia en Lunes
         $inicio_semana = $now->copy()->startOfWeek()->format('Y-m-d');
         $fin_semana = $now->copy()->endOfWeek()->format('Y-m-d');

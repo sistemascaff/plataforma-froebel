@@ -16,12 +16,14 @@
             const inputFechaVal = document.getElementById('fecha')?.value;
             const diaObjetivo = inputFechaVal ? moment(inputFechaVal).isoWeekday() : moment().isoWeekday();
 
-            const opcionCoincidente = Array.from(selectHorario.options).find(
+            // Filtramos TODAS las opciones que coincidan con el día (por si hay 2 bloques el mismo día)
+            const opcionesDelDia = Array.from(selectHorario.options).filter(
                 opcion => parseInt(opcion.getAttribute('data-dia')) === diaObjetivo
             );
 
-            if (opcionCoincidente) {
-                selectHorario.value = opcionCoincidente.value;
+            if (opcionesDelDia.length > 0) {
+                // Seleccionamos directamente el nodo de la opción (evita el bug de values duplicados)
+                opcionesDelDia[0].selected = true;
             }
         }
 
@@ -71,7 +73,7 @@
 
                     selectHorario.disabled = true;
                     selectHorario.innerHTML =
-                    '<option value="">Cargando horarios del nivel...</option>';
+                        '<option value="">Cargando horarios del nivel...</option>';
 
                     fetch("{{ route('horarios_asignaturas.listar') }}", {
                             headers: {

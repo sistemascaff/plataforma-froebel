@@ -313,7 +313,9 @@
                         const labels = {
                             'PADRE': 'Padre',
                             'MADRE': 'Madre',
-                            'TUTOR': 'Tutor'
+                            'TUTOR': 'Tutor',
+                            'DIRECCIÓN': 'Dirección',
+                            'PROFESOR ENCARGADO': 'Profesor encargado'
                         };
                         return labels[data] || data;
                     }

@@ -30,6 +30,8 @@
                                 <option value="PADRE">Padre</option>
                                 <option value="MADRE">Madre</option>
                                 <option value="TUTOR">Tutor</option>
+                                <option value="DIRECCIÓN">Dirección</option>
+                                <option value="PROFESOR ENCARGADO">Profesor encargado</option>
                             </select>
                         </div>
                         <div class="col-md-3">

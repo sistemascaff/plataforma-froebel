@@ -21,7 +21,7 @@
             6: 'SÁBADO'
         };
 
-        fetch("{{ route('listas_asignaturas.mi_horario') }}", {
+        fetch("{{ route('listas_asignaturas.horario_docente') }}", {
                 headers: {
                     'Accept': 'application/json'
                 }
