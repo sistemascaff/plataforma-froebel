@@ -9,40 +9,13 @@
     // Variables globales para gráficos
     let chartCursos, chartTipos;
 
-    function getThemeColors() {
-        const temaPreferido = localStorage.getItem('theme') || document.documentElement.getAttribute('data-bs-theme') ||
-            'light';
-        return {
-            textColor: temaPreferido === 'dark' ? '#f8f9fa' : '#212529',
-            gridColor: temaPreferido === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
-        };
-    }
-
-    function initOrUpdateChart(chartInstance, canvasId, configOptions) {
-        const ctx = document.getElementById(canvasId).getContext('2d');
-        if (chartInstance) {
-            chartInstance.data = configOptions.data;
-            chartInstance.options = configOptions.options;
-            chartInstance.update();
-            return chartInstance;
-        }
-        return new Chart(ctx, configOptions);
-    }
-
     $(document).ready(function() {
-        // --- Registro de complementos de Chart.js si se usa ---
-        if (typeof ChartDataLabels !== 'undefined') {
-            Chart.register(ChartDataLabels);
-        }
-
-
-        // --- Inicialización de select2 específica para esta vista, debido a que si se inicializan por separado se rompe. ---
+        // --- Inicialización de select2 específica para esta vista ---
         $('#filter_id_grado, #filter_id_curso, .select2').each(function() {
             let $select = $(this);
 
-            // 1. Definimos la configuración base que comparten todos
             let configuracion = {
-                width: '100%', // Agregado para evitar problemas de renderizado invisible
+                width: '100%',
                 language: "es",
                 dropdownCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' :
                     '',
@@ -50,12 +23,10 @@
                     ''
             };
 
-            // 2. Evaluamos la condición: ¿tiene la clase .select2?
             if ($select.hasClass('select2')) {
                 configuracion.dropdownParent = $('#modal-formulario');
             }
 
-            // 3. Inicializamos Select2 con la configuración resultante
             $select.select2(configuracion);
         });
 
@@ -70,7 +41,6 @@
                     $select.append('<option value="">-- Seleccione a un estudiante --</option>');
 
                     $.each(response.data, function(i, estudiante) {
-                        // Omitir estudiantes inactivos
                         if (estudiante.estado == '0') return;
 
                         let fila =
@@ -81,23 +51,16 @@
                         );
                     });
 
-                    // ====================================================================
                     // Apertura automática del modal desde redirección
-                    // ====================================================================
                     const urlParams = new URLSearchParams(window.location.search);
                     const idEstudianteUrl = urlParams.get('id_estudiante');
 
                     if (idEstudianteUrl) {
-                        // 1. Ejecutar la misma lógica de reseteo y apertura del modal
-                        $('.btn-crear')
-                            .click(); // 2. Sobrescribir el valor del select con el ID recibido en la URL
+                        $('.btn-crear').click();
                         $('#form-crear-o-editar select[name="id_estudiante"]').val(idEstudianteUrl)
                             .trigger('change');
-
-                        // 3. Limpiar la barra de direcciones para que no se vuelva a abrir el modal si el usuario presiona F5
                         window.history.replaceState({}, document.title, window.location.pathname);
                     }
-                    // ====================================================================
                 }
             });
         }
@@ -128,10 +91,6 @@
                 let filteredData = api.rows({
                     search: 'applied'
                 }).data().toArray();
-                const {
-                    textColor,
-                    gridColor
-                } = getThemeColors();
 
                 // 1. Contadores
                 let kpiTotal = 0;
@@ -147,7 +106,7 @@
                 filteredData.forEach(row => {
                     kpiTotal++;
 
-                    // 2. Validación de estados con la nueva lógica
+                    // 2. Validación de estados
                     const fechaInicio = moment(row.fecha_inicio);
                     const fechaFin = moment(row.fecha_fin);
 
@@ -178,47 +137,9 @@
                 $('#kpi-vigentes').text(kpiVigentes);
                 $('#kpi-finalizadas').text(kpiFinalizadas);
 
-                // Configuración estándar para los gráficos (Sin cambios)
-                const baseOpts = {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        datalabels: {
-                            color: textColor,
-                            font: {
-                                weight: 'bold'
-                            },
-                            formatter: v => v > 0 ? v : ''
-                        }
-                    },
-                    scales: {
-                        x: {
-                            ticks: {
-                                color: textColor
-                            },
-                            grid: {
-                                color: gridColor
-                            }
-                        },
-                        y: {
-                            ticks: {
-                                color: textColor,
-                                precision: 0
-                            },
-                            grid: {
-                                color: gridColor
-                            },
-                            beginAtZero: true
-                        }
-                    }
-                };
-
                 const sortObjectDesc = (obj) => Object.entries(obj).sort((a, b) => b[1] - a[1]);
 
-                // Renderizar gráfico de cursos (Sin cambios)
+                // 4. Renderizar gráfico de cursos (con cantidades encima de las barras)
                 let sortedCursos = sortObjectDesc(objCursos);
                 chartCursos = initOrUpdateChart(chartCursos, 'chart-cursos', {
                     type: 'bar',
@@ -226,14 +147,14 @@
                         labels: sortedCursos.map(e => e[0]),
                         datasets: [{
                             data: sortedCursos.map(e => e[1]),
-                            backgroundColor: '#0dcaf0',
+                            backgroundColor: chartPalettes.ui.info,
                             borderRadius: 4
                         }]
                     },
-                    options: baseOpts
+                    options: ChartDefaults.getBarOptions()
                 });
 
-                // Renderizar gráfico de tipos/motivos (Sin cambios)
+                // 5. Renderizar gráfico de tipos/motivos (con cantidades encima de las barras)
                 let sortedTipos = sortObjectDesc(objTipos);
                 chartTipos = initOrUpdateChart(chartTipos, 'chart-tipos', {
                     type: 'bar',
@@ -241,11 +162,11 @@
                         labels: sortedTipos.map(e => e[0]),
                         datasets: [{
                             data: sortedTipos.map(e => e[1]),
-                            backgroundColor: '#0d6efd',
+                            backgroundColor: chartPalettes.ui.primary,
                             borderRadius: 4
                         }]
                     },
-                    options: baseOpts
+                    options: ChartDefaults.getBarOptions()
                 });
             },
             columns: [{
@@ -296,13 +217,10 @@
                         const fecha_fin = moment(row.fecha_fin);
 
                         if (hoy.isBefore(fecha_inicio)) {
-                            // El momento actual es ANTES de la fecha de inicio
                             return `<span class="badge bg-info">PROGRAMADA</span>`;
                         } else if (hoy.isAfter(fecha_fin)) {
-                            // El momento actual es DESPUÉS de la fecha de fin
                             return `<span class="badge bg-danger">FINALIZADA</span>`;
                         } else {
-                            // El momento actual está ENTRE la fecha de inicio y fin (inclusive)
                             return `<span class="badge bg-success">VIGENTE</span>`;
                         }
                     }
@@ -403,11 +321,8 @@
 
         $(document).on('click', '.btn-crear', function() {
             $('#form-crear-o-editar input[name="id_estudiante_licencia"]').val(0);
-
-            // 1. Nos aseguramos de HABILITAR el select al crear
             $('#form-crear-o-editar select[name="id_estudiante"]').prop('disabled', false).val('')
                 .trigger('change');
-
             $('#form-crear-o-editar select[name="tipo"]').val('').trigger('change');
             $('#form-crear-o-editar input[name="fecha_inicio"]').val('');
             $('#form-crear-o-editar input[name="fecha_fin"]').val('');
@@ -428,7 +343,6 @@
                 $('#form-crear-o-editar input[name="id_estudiante_licencia"]').val(
                     estudiante_licencia.data.id_estudiante_licencia);
 
-                // 2. Asignamos el valor y DESHABILITAMOS el select para evitar cambios
                 $('#form-crear-o-editar select[name="id_estudiante"]')
                     .val(estudiante_licencia.data.id_estudiante)
                     .trigger('change')
@@ -466,20 +380,18 @@
             btn.prop('disabled', true).html(
                 '<i class="fa-solid fa-duotone fa-spinner fa-spin"></i> Guardando...');
 
-            // 3. Habilitar temporalmente para que serialize() pueda capturar el id_estudiante
             let selectEstudiante = $('#form-crear-o-editar select[name="id_estudiante"]');
             let estabaDeshabilitado = selectEstudiante.prop('disabled');
             if (estabaDeshabilitado) selectEstudiante.prop('disabled', false);
 
             let formData = $(this).serialize();
 
-            // 4. Restaurar el estado deshabilitado inmediatamente después de serializar
             if (estabaDeshabilitado) selectEstudiante.prop('disabled', true);
 
             $.ajax({
                 url: url,
                 type: method,
-                data: formData, // Usamos la variable ya serializada
+                data: formData,
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
@@ -531,8 +443,7 @@
                 if (result.isConfirmed) {
                     $.ajax({
                         url: `{{ route('estudiantes_licencias.delete', ':id') }}`
-                            .replace(':id',
-                                id),
+                            .replace(':id', id),
                         type: 'PATCH',
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -559,40 +470,6 @@
                     });
                 }
             });
-        });
-
-        // ----------------------------------------------------------------------
-        // OBSERVADOR DINÁMICO DE TEMA 
-        // ----------------------------------------------------------------------
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.attributeName === "data-bs-theme") {
-                    const {
-                        textColor,
-                        gridColor
-                    } = getThemeColors();
-                    const charts = [chartCursos, chartTipos];
-
-                    charts.forEach(chart => {
-                        if (chart) {
-                            if (chart.options.scales?.x) {
-                                chart.options.scales.x.ticks.color = textColor;
-                                chart.options.scales.x.grid.color = gridColor;
-                            }
-                            if (chart.options.scales?.y) {
-                                chart.options.scales.y.ticks.color = textColor;
-                                chart.options.scales.y.grid.color = gridColor;
-                            }
-                            chart.update();
-                        }
-                    });
-                }
-            });
-        });
-
-        observer.observe(document.documentElement, {
-            attributes: true,
-            attributeFilter: ['data-bs-theme']
         });
     });
 </script>

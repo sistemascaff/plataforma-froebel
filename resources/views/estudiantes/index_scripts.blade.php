@@ -10,38 +10,7 @@
     // Variables globales para gráficos
     let chartNiveles, chartCursos;
 
-    function getThemeColors() {
-        const temaPreferido = localStorage.getItem('theme') || document.documentElement.getAttribute('data-bs-theme') ||
-            'light';
-        return {
-            textColor: temaPreferido === 'dark' ? '#f8f9fa' : '#212529',
-            gridColor: temaPreferido === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
-        };
-    }
-
-    function initOrUpdateChart(chartInstance, canvasId, configOptions) {
-        const ctx = document.getElementById(canvasId).getContext('2d');
-        if (chartInstance) {
-            chartInstance.data = configOptions.data;
-            chartInstance.options = configOptions.options;
-            chartInstance.update();
-            return chartInstance;
-        }
-        return new Chart(ctx, configOptions);
-    }
-
     $(document).ready(function() {
-        // Aseguramos el registro global del plugin para los porcentajes/cantidades
-        if (typeof ChartDataLabels !== 'undefined') {
-            Chart.register(ChartDataLabels);
-        }
-
-        // Redimensionar gráficos al cambiar de pestaña para evitar que se vean colapsados
-        $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
-            if (chartNiveles) chartNiveles.resize();
-            if (chartCursos) chartCursos.resize();
-        });
-
         $('#filter_id_grado, #filter_id_curso').select2({
             language: "es",
             dropdownCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
@@ -88,10 +57,6 @@
                 let filteredData = api.rows({
                     search: 'applied'
                 }).data().toArray();
-                const {
-                    textColor,
-                    gridColor
-                } = getThemeColors();
 
                 let kpiTotal = 0;
                 let objNiveles = {};
@@ -148,7 +113,6 @@
                     let cardHtml = `
                         <div class="col-12 col-sm-6 col-lg-3 dynamic-kpi">
                             <div class="card h-100 shadow-sm">
-
                                 <div class="card-body d-flex align-items-center p-3">
                                     <div class="p-3 rounded bg-${color} bg-opacity-10 text-${color} me-3">
                                         <i class="fa-duotone fa-stairs me-1"></i>
@@ -163,63 +127,21 @@
                     $('#kpi-container').append(cardHtml);
                 });
 
-                // 4. Opciones base de gráficos (Con DataLabels activado encima de la barra)
-                const baseOpts = {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        datalabels: {
-                            color: textColor,
-                            anchor: 'end', // Ancla al final de la barra
-                            align: 'top', // Lo muestra arriba de la barra
-                            font: {
-                                weight: 'bold',
-                                size: 13
-                            },
-                            formatter: v => v > 0 ? v : ''
-                        }
-                    },
-                    scales: {
-                        x: {
-                            ticks: {
-                                color: textColor
-                            },
-                            grid: {
-                                color: gridColor
-                            }
-                        },
-                        y: {
-                            ticks: {
-                                color: textColor,
-                                precision: 0
-                            },
-                            grid: {
-                                color: gridColor
-                            },
-                            beginAtZero: true,
-                            grace: '10%' // Añade un 10% de altura extra para que el DataLabel no se corte
-                        }
-                    }
-                };
-
-                // 5. Renderizar Gráfico de Niveles
+                // 4. Renderizar Gráfico de Niveles
                 chartNiveles = initOrUpdateChart(chartNiveles, 'chart-niveles', {
                     type: 'bar',
                     data: {
                         labels: sortedNiveles.map(e => e[0]),
                         datasets: [{
                             data: sortedNiveles.map(e => e[1].count),
-                            backgroundColor: '#0dcaf0',
+                            backgroundColor: chartPalettes.ui.info,
                             borderRadius: 4
                         }]
                     },
-                    options: baseOpts
+                    options: ChartDefaults.getBarOptions()
                 });
 
-                // 6. Renderizar Gráfico de Cursos
+                // 5. Renderizar Gráfico de Cursos
                 chartCursos = initOrUpdateChart(chartCursos, 'chart-cursos', {
                     type: 'bar',
                     data: {
@@ -227,11 +149,11 @@
                             15) + '...' : e[0]),
                         datasets: [{
                             data: sortedCursos.map(e => e[1].count),
-                            backgroundColor: '#198754',
+                            backgroundColor: chartPalettes.ui.success,
                             borderRadius: 4
                         }]
                     },
-                    options: baseOpts
+                    options: ChartDefaults.getBarOptions()
                 });
             },
             columns: [{
@@ -519,12 +441,10 @@
             form.find('input[name="salud_alergias"]').val('');
             $('#salud_datos').val('');
 
-
             document.getElementById('modal-formulario-titulo').innerHTML =
                 '<i class="fa-solid fa-duotone fa-plus"></i> CREAR ESTUDIANTE';
             $('#modal-formulario').modal('show');
         });
-
 
         // ─── EDITAR ──────────────────────────────────────────────────────────────────
         $(document).on('click', '.btn-editar', function() {
@@ -582,7 +502,6 @@
                 $('#modal-formulario').modal('show');
             });
         });
-
 
         // ─── GUARDAR (crear o editar) ────────────────────────────────────────────────
         $(document).on('click', '#btn-guardar', function() {
@@ -655,7 +574,6 @@
             });
         });
 
-
         // ─── CAMBIAR ESTADO ──────────────────────────────────────────────────────────
         $(document).on('click', '.btn-cambiar-estado', function() {
             const id = $(this).data('id');
@@ -708,41 +626,5 @@
                 }
             });
         });
-
-        // ─── Observador Dinámico de Tema ────────────────────────────────────────────
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.attributeName === "data-bs-theme") {
-                    const {
-                        textColor,
-                        gridColor
-                    } = getThemeColors();
-                    const charts = [chartNiveles, chartCursos];
-
-                    charts.forEach(chart => {
-                        if (chart) {
-                            if (chart.options.scales?.x) {
-                                chart.options.scales.x.ticks.color = textColor;
-                                chart.options.scales.x.grid.color = gridColor;
-                            }
-                            if (chart.options.scales?.y) {
-                                chart.options.scales.y.ticks.color = textColor;
-                                chart.options.scales.y.grid.color = gridColor;
-                            }
-                            if (chart.options.plugins?.datalabels) {
-                                chart.options.plugins.datalabels.color = textColor;
-                            }
-                            chart.update();
-                        }
-                    });
-                }
-            });
-        });
-
-        observer.observe(document.documentElement, {
-            attributes: true,
-            attributeFilter: ['data-bs-theme']
-        });
-
     });
 </script>

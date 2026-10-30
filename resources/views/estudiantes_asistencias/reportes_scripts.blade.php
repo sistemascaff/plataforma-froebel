@@ -1,90 +1,8 @@
 <script>
     const AUTH_PERFIL = '{{ Auth::user()->persona?->tipo_perfil }}';
 
-    Chart.register(ChartDataLabels);
-
-    // --- NUEVO PLUGIN PARA TOTALES EN BARRAS APILADAS ---
-    const stackedTotalsPlugin = {
-        id: 'stackedTotals',
-        afterDatasetsDraw: (chart) => {
-            if (chart.config.type !== 'bar') return;
-
-            const {
-                ctx,
-                options,
-                data
-            } = chart;
-            const isHorizontal = options.indexAxis === 'y';
-            const {
-                textColor
-            } = getThemeColors();
-
-            ctx.save();
-            ctx.fillStyle = textColor;
-            ctx.font = 'bold 12px Arial';
-            ctx.textAlign = isHorizontal ? 'left' : 'center';
-            ctx.textBaseline = isHorizontal ? 'middle' : 'bottom';
-
-            data.labels.forEach((label, i) => {
-                let total = 0;
-                let lastMeta = null;
-
-                // Sumar los datos de cada dataset para esta columna/fila
-                data.datasets.forEach((dataset, j) => {
-                    const meta = chart.getDatasetMeta(j);
-                    if (!meta.hidden && dataset.data[i]) {
-                        total += dataset.data[i];
-                        lastMeta = meta.data[i]; // Guardar la coordenada del último segmento
-                    }
-                });
-
-                // Dibujar el total si existe
-                if (total > 0 && lastMeta) {
-                    if (isHorizontal) {
-                        ctx.fillText(total, lastMeta.x + 6, lastMeta.y); // +6px a la derecha
-                    } else {
-                        ctx.fillText(total, lastMeta.x, lastMeta.y - 6); // -6px hacia arriba
-                    }
-                }
-            });
-            ctx.restore();
-        }
-    };
-
-    Chart.register(stackedTotalsPlugin);
-
     // Variables globales de gráficos
     let chartProporcion, chartFechas, chartHorarios, chartRanking, chartCursos, chartAsignaturas, chartDocentes;
-
-    // Función para resolver colores según el tema activo en el DOM (o localStorage)
-    function getThemeColors() {
-        const temaPreferido = localStorage.getItem('theme') || document.documentElement.getAttribute('data-bs-theme') ||
-            'light';
-        return {
-            textColor: temaPreferido === 'dark' ? '#f8f9fa' : '#212529',
-            gridColor: temaPreferido === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
-        };
-    }
-
-    // Colores semánticos de las 4 incidencias
-    const palette = {
-        atraso: '#ffc107', // Warning
-        falta: '#dc3545', // Danger
-        licencia: '#0dcaf0', // Info
-        permiso: '#0d6efd' // Primary
-    };
-
-    // Función core para construir o actualizar un gráfico
-    function initOrUpdateChart(chartInstance, canvasId, configOptions) {
-        const ctx = document.getElementById(canvasId).getContext('2d');
-        if (chartInstance) {
-            chartInstance.data = configOptions.data;
-            chartInstance.options = configOptions.options;
-            chartInstance.update();
-            return chartInstance;
-        }
-        return new Chart(ctx, configOptions);
-    }
 
     $(document).ready(function() {
         $('#id_docente, #id_curso').select2({
@@ -92,17 +10,6 @@
             language: "es",
             dropdownCssClass: localStorage.getItem('theme') === 'dark' ? 'bg-dark text-white' : '',
             selectionCssClass: localStorage.getItem('theme') === 'dark' ? 'bg-dark text-white' : '',
-        });
-
-        // Reajustar gráficos al cambiar de pestaña en Bootstrap (previene canvas comprimidos)
-        $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
-            if (chartProporcion) chartProporcion.resize();
-            if (chartFechas) chartFechas.resize();
-            if (chartHorarios) chartHorarios.resize();
-            if (chartRanking) chartRanking.resize();
-            if (chartCursos) chartCursos.resize();
-            if (chartAsignaturas) chartAsignaturas.resize();
-            if (chartDocentes) chartDocentes.resize();
         });
 
         // Inicialización de la Tabla
@@ -128,10 +35,6 @@
                 let filteredData = api.rows({
                     search: 'applied'
                 }).data().toArray();
-                const {
-                    textColor,
-                    gridColor
-                } = getThemeColors();
 
                 // 1. Variables de agrupación
                 let kpiAtrasos = 0,
@@ -237,98 +140,37 @@
                 $('#kpi-minutos-promedio').text(kpiAtrasos > 0 ? (sumaMins / kpiAtrasos).toFixed(
                     1) : 0);
 
-                // --- Opciones Globales Base para Gráficos ---
-                const baseOpts = {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    layout: {
-                        padding: {
-                            top: 20,
-                            right: 30
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: textColor
-                            }
-                        },
-                        datalabels: {
-                            color: textColor,
-                            font: {
-                                weight: 'bold'
-                            },
-                            formatter: v => v > 0 ? v : ''
-                        }
-                    },
-                    scales: {
-                        x: {
-                            ticks: {
-                                color: textColor
-                            },
-                            grid: {
-                                color: gridColor
-                            }
-                        },
-                        y: {
-                            ticks: {
-                                color: textColor,
-                                precision: 0
-                            },
-                            grid: {
-                                color: gridColor
-                            },
-                            beginAtZero: true
-                        }
-                    }
-                };
-
                 // Helper para generar los 4 datasets apilados (Atrasos, Faltas, Licencias, Permisos)
                 const buildStackedDatasets = (entriesArray, isObjectValues = false, radius =
-                    4) => [{
+                4) => [{
                         label: 'Atrasos',
                         data: entriesArray.map(item => isObjectValues ? item.ATRASO : item[1]
                             .ATRASO),
-                        backgroundColor: palette.atraso,
+                        backgroundColor: chartPalettes.incidencias.atraso,
                         borderRadius: radius
                     },
                     {
                         label: 'Faltas',
                         data: entriesArray.map(item => isObjectValues ? item.FALTA : item[1]
                             .FALTA),
-                        backgroundColor: palette.falta,
+                        backgroundColor: chartPalettes.incidencias.falta,
                         borderRadius: radius
                     },
                     {
                         label: 'Licencias',
                         data: entriesArray.map(item => isObjectValues ? item.LICENCIA : item[1]
                             .LICENCIA),
-                        backgroundColor: palette.licencia,
+                        backgroundColor: chartPalettes.incidencias.licencia,
                         borderRadius: radius
                     },
                     {
                         label: 'Permisos',
                         data: entriesArray.map(item => isObjectValues ? item.PERMISO : item[1]
                             .PERMISO),
-                        backgroundColor: palette.permiso,
+                        backgroundColor: chartPalettes.incidencias.permiso,
                         borderRadius: radius
                     }
                 ];
-
-                // --- Extensión específica para Gráficos de Barras Apiladas ---
-                const stackedOpts = {
-                    ...baseOpts,
-                    scales: {
-                        x: {
-                            ...baseOpts.scales.x,
-                            stacked: true
-                        },
-                        y: {
-                            ...baseOpts.scales.y,
-                            stacked: true
-                        }
-                    }
-                };
 
                 // Helpers de utilidades
                 const trunc = (str, n) => str.length > n ? str.substring(0, n) + '...' : str;
@@ -336,7 +178,7 @@
                 // Helper para ordenar por Total y extraer un Top N
                 const getTopEntries = (dataMap, limit = undefined) => {
                     let sorted = Object.entries(dataMap).sort((a, b) => b[1].Total - a[1]
-                        .Total);
+                    .Total);
                     return limit ? sorted.slice(0, limit) : sorted;
                 };
 
@@ -349,10 +191,9 @@
                             labels: labelsArray.map(l => trunc(l, 50)),
                             datasets: buildStackedDatasets(datasetData, isObjValues, 4)
                         },
-                        options: {
-                            ...stackedOpts,
-                            indexAxis: indexAxis
-                        }
+                        options: ChartDefaults.getStackedBarOptions({
+                            indexAxis
+                        })
                     });
                 };
 
@@ -363,36 +204,17 @@
                         labels: ['Atrasos', 'Faltas', 'Licencias', 'Permisos'],
                         datasets: [{
                             data: [kpiAtrasos, kpiFaltas, kpiLicencias,
-                                kpiPermisos
-                            ],
-                            backgroundColor: [palette.atraso, palette.falta, palette
-                                .licencia, palette.permiso
+                                kpiPermisos],
+                            backgroundColor: [
+                                chartPalettes.incidencias.atraso,
+                                chartPalettes.incidencias.falta,
+                                chartPalettes.incidencias.licencia,
+                                chartPalettes.incidencias.permiso
                             ],
                             borderWidth: 0
                         }]
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    color: textColor
-                                }
-                            },
-                            datalabels: {
-                                color: '#fff',
-                                font: {
-                                    weight: 'bold',
-                                    size: 14
-                                },
-                                textShadowBlur: 4,
-                                textShadowColor: 'rgba(0,0,0,0.8)',
-                                formatter: val => val > 0 ? val : ''
-                            }
-                        }
-                    }
+                    options: ChartDefaults.getDoughnutOptions()
                 });
 
                 // c) Evolución por Fechas (Líneas)
@@ -405,26 +227,13 @@
                         datasets: [{
                             label: 'Incidencias',
                             data: keysFechas.map(k => objFechas[k]),
-                            borderColor: '#0d6efd',
+                            borderColor: chartPalettes.ui.primary,
                             backgroundColor: 'rgba(13, 110, 253, 0.2)',
                             fill: true,
                             tension: 0.3
                         }]
                     },
-                    options: {
-                        ...baseOpts,
-                        plugins: {
-                            ...baseOpts.plugins,
-                            datalabels: {
-                                align: 'top',
-                                color: textColor,
-                                font: {
-                                    weight: 'bold'
-                                },
-                                formatter: v => v > 0 ? v : ''
-                            }
-                        }
-                    }
+                    options: ChartDefaults.getLineOptions()
                 });
 
                 // d) Barras Apiladas por Horario (Orden cronológico especial)
@@ -568,49 +377,6 @@
         $("#btn-filtrar").on("click", function(e) {
             e.preventDefault();
             tablaReportes.ajax.reload();
-        });
-
-        // ----------------------------------------------------------------------
-        // OBSERVADOR DINÁMICO DE TEMA (Actualización en tiempo real sin recargar)
-        // ----------------------------------------------------------------------
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.attributeName === "data-bs-theme") {
-                    const {
-                        textColor,
-                        gridColor
-                    } = getThemeColors();
-                    const charts = [chartProporcion, chartFechas, chartHorarios, chartRanking,
-                        chartCursos, chartAsignaturas, chartDocentes
-                    ];
-
-                    charts.forEach(chart => {
-                        if (chart) {
-                            if (chart.options.scales?.x) {
-                                chart.options.scales.x.ticks.color = textColor;
-                                chart.options.scales.x.grid.color = gridColor;
-                            }
-                            if (chart.options.scales?.y) {
-                                chart.options.scales.y.ticks.color = textColor;
-                                chart.options.scales.y.grid.color = gridColor;
-                            }
-                            if (chart.options.plugins?.legend?.labels) {
-                                chart.options.plugins.legend.labels.color = textColor;
-                            }
-                            if (chart.config.type !== 'doughnut' && chart.options
-                                .plugins?.datalabels) {
-                                chart.options.plugins.datalabels.color = textColor;
-                            }
-                            chart.update();
-                        }
-                    });
-                }
-            });
-        });
-
-        observer.observe(document.documentElement, {
-            attributes: true,
-            attributeFilter: ['data-bs-theme']
         });
     });
 </script>

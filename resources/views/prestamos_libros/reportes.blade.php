@@ -159,7 +159,8 @@
             <h5 class="mb-0 fw-bold text-info">2. Libros Más Prestados</h5>
         </div>
         <div class="card-body">
-            <div class="border border-info rounded mb-4 p-3">
+            
+            <div style="position: relative; height: 450px; width: 100%;">
                 <canvas id="chart-libros-mas-prestados"></canvas>
             </div>
 
@@ -199,7 +200,7 @@
             <h5 class="mb-0 fw-bold text-info">3. Préstamos por Categoría</h5>
         </div>
         <div class="card-body">
-            <div class="border border-info rounded mb-4 p-3">
+            <div style="position: relative; height: 450px; width: 100%;">
                 <canvas id="chart-prestamos-por-categoria"></canvas>
             </div>
 
@@ -237,7 +238,7 @@
             <h5 class="mb-0 fw-bold text-info">4. Préstamos por Curso</h5>
         </div>
         <div class="card-body">
-            <div class="border border-info rounded mb-4 p-3">
+            <div style="position: relative; height: 450px; width: 100%;">
                 <canvas id="chart-prestamos-por-curso"></canvas>
             </div>
 
@@ -275,7 +276,7 @@
             <h5 class="mb-0 fw-bold text-info">5. Préstamos por Tipo de Perfil</h5>
         </div>
         <div class="card-body">
-            <div class="border border-info rounded mb-4 p-3">
+            <div style="position: relative; height: 450px; width: 100%;">
                 <canvas id="chart-prestamos-por-tipo-perfil"></canvas>
             </div>
 
@@ -313,7 +314,7 @@
             <h5 class="mb-0 fw-bold text-info">6. Préstamos por Persona</h5>
         </div>
         <div class="card-body">
-            <div class="border border-info rounded mb-4 p-3">
+            <div style="position: relative; height: 450px; width: 100%;">
                 <canvas id="chart-prestamos-por-persona"></canvas>
             </div>
 
@@ -432,7 +433,7 @@
                 ({{ date('d/m/Y') }})</h5>
         </div>
         <div class="card-body">
-            <div class="border border-info rounded mb-4 p-3">
+            <div style="position: relative; height: 450px; width: 100%;">
                 <canvas id="chart-relacion-prestamos-devoluciones"></canvas>
             </div>
 

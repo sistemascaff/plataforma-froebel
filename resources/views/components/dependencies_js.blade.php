@@ -17,6 +17,8 @@
 <!-- Chart.JS -->
 <script src="{{ asset('/public/dependencies/chart.js-4.5.1/chart.min.js') }}"></script>
 <script src="{{ asset('/public/dependencies/chart.js-4.5.1/chartjs-plugin-datalabels@2.0.0.js') }}"></script>
+<!-- Archivo de propiedades por defecto de chart.js -->
+<script src="{{ asset('/public/chartjs_defaults.js') }}"></script>
 <!-- SheetJS -->
 <script src="{{ asset('/public/dependencies/xlsx/xlsx.full.min.js') }}"></script>
 <!-- Archivo de propiedades por defecto de datatables -->
