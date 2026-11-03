@@ -69,10 +69,10 @@
                                 <td>{{ $lista_asignatura->estudiantes_asistencias_count ?? 0 }}</td>
                                 <td class="text-center">
                                     <div class="btn-group" role="group">
-                                        <a class="btn btn-info btn-sm"
+                                        <a class="btn btn-primary btn-sm"
                                             href="{{ route('listas_asignaturas.detalles', $lista_asignatura->id_lista_asignatura) }}"
                                             data-bs-toggle="tooltip" title="Detalles de la lista">
-                                            <i class="fa-duotone fa-solid fa-eye"></i>
+                                            <i class="fa-duotone fa-solid fa-list me-1"></i>Ver detalles
                                         </a>
                                         {{-- Si el usuario es un docente no puede editar el docente --}}
                                         @if (Auth::user()->persona->tipo_perfil != 'DOCENTE')
@@ -80,7 +80,7 @@
                                                 data-id-docente="{{ $lista_asignatura->id_docente }}"
                                                 data-id-lista="{{ $lista_asignatura->id_lista_asignatura }}"
                                                 data-bs-toggle="tooltip" title="Editar docente">
-                                                <i class="fa-duotone fa-solid fa-edit"></i>
+                                                <i class="fa-duotone fa-solid fa-edit me-1"></i>Editar docente
                                             </button>
                                         @endif
                                     </div>

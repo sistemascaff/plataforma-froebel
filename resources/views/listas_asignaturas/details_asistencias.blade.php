@@ -105,16 +105,16 @@
                             </span>
                         </td> --}}
                         <td class="text-center align-middle">
-                            <div class="btn-group" role="group">
-                                <a class="btn btn-info btn-sm"
+                            <div class="d-flex gap-1 justify-content-center align-items-center" role="group">
+                                <a class="btn btn-primary btn-sm"
                                     href="{{ route('estudiantes_asistencias.detalles', $estudiante_asistencia->id_estudiante_asistencia) }}"
                                     target="_blank" rel="noopener noreferrer" data-bs-toggle="tooltip" title="Detalles">
-                                    <i class="fa-duotone fa-solid fa-eye"></i>
+                                    <i class="fa-duotone fa-solid fa-list me-1"></i>Ver detalles
                                 </a>
                                 <a class="btn btn-warning btn-sm"
                                     href="{{ route('estudiantes_asistencias.editar', $estudiante_asistencia->id_estudiante_asistencia) }}"
                                     target="_blank" rel="noopener noreferrer" data-bs-toggle="tooltip" title="Editar">
-                                    <i class="fa-duotone fa-solid fa-edit"></i>
+                                    <i class="fa-duotone fa-solid fa-edit me-1"></i>Editar
                                 </a>
                             </div>
                         </td>
