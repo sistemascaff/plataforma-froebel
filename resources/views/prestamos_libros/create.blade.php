@@ -6,7 +6,7 @@
             <i class="fa-solid fa-duotone fa-books fa-rotate-270 me-2"></i>{{ $head_title }}
         </h1>
         <a class="btn btn-secondary" href="{{ route('prestamos_libros.index') }}">
-            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver
+            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i>Volver
         </a>
     </div>
 
@@ -91,7 +91,7 @@
         </div>
         <div class="card-footer text-end">
             <button type="button" class="btn btn-primary" id="btn-guardar">
-                <i class="fa-solid fa-duotone fa-floppy-disk me-1"></i> Guardar Préstamo
+                <i class="fa-solid fa-duotone fa-floppy-disk me-1"></i>Guardar Préstamo
             </button>
         </div>
     </div>

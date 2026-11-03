@@ -6,7 +6,7 @@
             <i class="fa-solid fa-duotone fa-chart-pie me-2"></i>Reportes y Métricas de Asistencias
         </h1>
         <a class="btn btn-secondary shadow-sm" href="{{ route('estudiantes_asistencias.index') }}">
-            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver
+            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i>Volver
         </a>
     </div>
 
@@ -25,7 +25,7 @@
     <div class="card shadow-sm mb-4">
         <div class="card-header p-3">
             <h5 class="fw-bold mb-0 text-primary">
-                <i class="fa-duotone fa-filter me-1"></i> Filtros de Búsqueda
+                <i class="fa-duotone fa-filter me-1"></i>Filtros de Búsqueda
             </h5>
         </div>
         <div class="card-body">
@@ -86,7 +86,7 @@
                 </div>
                 <div class="col-md-3">
                     <button type="button" class="btn btn-primary w-100 shadow-sm" id="btn-filtrar">
-                        <i class="fa-duotone fa-search me-1"></i> Filtrar
+                        <i class="fa-duotone fa-search me-1"></i>Filtrar
                     </button>
                 </div>
             </div>

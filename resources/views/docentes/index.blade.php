@@ -6,7 +6,7 @@
         </h1>
         <button type="button" class="btn btn-success shadow-sm btn-crear" data-bs-toggle="modal"
             data-bs-target="#modal-formulario">
-            <i class="fa-solid fa-duotone fa-plus me-1"></i> Crear docente
+            <i class="fa-solid fa-duotone fa-plus me-1"></i>Crear docente
         </button>
     </div>
 

@@ -42,7 +42,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary shadow-sm" data-bs-dismiss="modal">
-                    <i class="fa-solid fa-duotone fa-times me-1"></i> Cerrar
+                    <i class="fa-solid fa-duotone fa-times me-1"></i>Cerrar
                 </button>
             </div>
         </div>

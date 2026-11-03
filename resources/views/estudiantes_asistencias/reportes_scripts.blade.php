@@ -325,13 +325,13 @@
                     className: "text-center align-middle",
                     render: function(data) {
                         if (data === 'ATRASO')
-                            return `<span class="badge bg-warning text-dark px-3 py-2 shadow-sm"><i class="fa-solid fa-duotone fa-hourglass-half me-1"></i> Atraso</span>`;
+                            return `<span class="badge bg-warning text-dark px-3 py-2 shadow-sm"><i class="fa-solid fa-duotone fa-hourglass-half me-1"></i>Atraso</span>`;
                         if (data === 'FALTA')
-                            return `<span class="badge bg-danger px-3 py-2 shadow-sm"><i class="fa-solid fa-duotone fa-times-circle me-1"></i> Falta</span>`;
+                            return `<span class="badge bg-danger px-3 py-2 shadow-sm"><i class="fa-solid fa-duotone fa-times-circle me-1"></i>Falta</span>`;
                         if (data === 'LICENCIA')
-                            return `<span class="badge bg-info text-dark px-3 py-2 shadow-sm"><i class="fa-solid fa-duotone fa-file-certificate me-1"></i> Licencia</span>`;
+                            return `<span class="badge bg-info text-dark px-3 py-2 shadow-sm"><i class="fa-solid fa-duotone fa-file-certificate me-1"></i>Licencia</span>`;
                         if (data === 'PERMISO')
-                            return `<span class="badge bg-primary px-3 py-2 shadow-sm"><i class="fa-solid fa-duotone fa-file-signature me-1"></i> Permiso</span>`;
+                            return `<span class="badge bg-primary px-3 py-2 shadow-sm"><i class="fa-solid fa-duotone fa-file-signature me-1"></i>Permiso</span>`;
                         return `<span class="badge bg-secondary px-3 py-2 shadow-sm">-</span>`;
                     }
                 },
@@ -339,8 +339,7 @@
                     data: "tiempo_atraso",
                     className: "text-center align-middle",
                     render: (data, type, row) => (row.tipo === 'ATRASO' && data) ?
-                        `<span class="text-danger fw-bold">${data} min</span>` :
-                        '<span class="text-muted">-</span>'
+                        `<span class="text-danger fw-bold">${data} min</span>` : ''
                 },
                 {
                     data: null,
@@ -365,9 +364,9 @@
                             `;
                         }
                         if (row.tipo === 'PERMISO') {
-                            return `<span class="text-primary small fw-semibold"><i class="fa-duotone fa-building-columns me-1"></i> Permiso por instrucción académica</span>`;
+                            return `<span class="text-primary fw-semibold">Permiso</span>`;
                         }
-                        return '<span class="text-muted text-center d-block">-</span>';
+                        return '';
                     }
                 }
             ],

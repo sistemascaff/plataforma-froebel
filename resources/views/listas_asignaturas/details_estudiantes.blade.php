@@ -7,7 +7,7 @@
                 <div class="row g-3 align-items-end">
                     <div class="col-lg-7">
                         <label for="estudiante" class="form-label fw-bold text-info mb-1">
-                            <i class="fa-duotone fa-user-plus me-1"></i> Agregar Estudiantes (Búsqueda
+                            <i class="fa-duotone fa-user-plus me-1"></i>Agregar Estudiantes (Búsqueda
                             Múltiple)
                         </label>
                         <select class="form-select" id="estudiante" multiple="multiple" style="width: 100%;"></select>
@@ -15,11 +15,11 @@
                     <div class="col-lg-5 d-flex flex-wrap gap-2">
                         <button type="button" class="btn btn-success shadow-sm flex-grow-1"
                             id="btn-agregar-estudiante">
-                            <i class="fa-solid fa-duotone fa-plus me-1"></i> Añadir Seleccionados
+                            <i class="fa-solid fa-duotone fa-plus me-1"></i>Añadir Seleccionados
                         </button>
                         <button type="button" class="btn btn-outline-primary shadow-sm" data-bs-toggle="modal"
                             data-bs-target="#modalImportarCursos">
-                            <i class="fa-solid fa-duotone fa-file-import me-1"></i> Importar Cursos
+                            <i class="fa-solid fa-duotone fa-file-import me-1"></i>Importar Cursos
                         </button>
                     </div>
                 </div>
@@ -38,10 +38,10 @@
             </div>
             <div class="d-flex gap-2">
                 <button type="button" class="btn btn-sm btn-outline-dark" id="btn-deshacer-cambios">
-                    <i class="fa-solid fa-rotate-left me-1"></i> Deshacer
+                    <i class="fa-solid fa-rotate-left me-1"></i>Deshacer
                 </button>
                 <button type="button" class="btn btn-sm btn-primary fw-bold shadow-sm" id="btn-guardar-estudiantes">
-                    <i class="fa-solid fa-duotone fa-floppy-disk me-1"></i> Guardar Cambios
+                    <i class="fa-solid fa-duotone fa-floppy-disk me-1"></i>Guardar Cambios
                 </button>
             </div>
         </div>
@@ -51,7 +51,7 @@
             <div class="d-flex align-items-center gap-2">
                 <button type="button" class="btn btn-outline-danger btn-sm shadow-sm d-none"
                     id="btn-remover-seleccionados">
-                    <i class="fa-duotone fa-trash-can me-1"></i> Quitar seleccionados (<span
+                    <i class="fa-duotone fa-trash-can me-1"></i>Quitar seleccionados (<span
                         id="count-seleccionados">0</span>)
                 </button>
             </div>

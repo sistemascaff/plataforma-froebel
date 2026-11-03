@@ -1,11 +1,11 @@
 <div class="tab-pane fade" id="tab-asistencias" role="tabpanel" aria-labelledby="asistencias-tab">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="fw-bold mb-0 text-info">
-            <i class="fa-duotone fa-calendar-check me-1"></i> Historial de Clases y Asistencias
+            <i class="fa-duotone fa-calendar-check me-1"></i>Historial de Clases y Asistencias
         </h5>
         <a class="btn btn-success shadow-sm"
             href="{{ route('estudiantes_asistencias.crear', $lista_asignatura->id_lista_asignatura) }}">
-            <i class="fa-solid fa-duotone fa-plus me-1"></i> Crear asistencia
+            <i class="fa-solid fa-duotone fa-plus me-1"></i>Crear asistencia
         </a>
     </div>
 

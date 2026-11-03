@@ -100,9 +100,9 @@ class PersonaController extends Controller
             $filtros['excluir_perfiles'] = ['ESTUDIANTE'];
         }
 
-        $periodo = $request->input('periodo', 'hoy');
+        $rango_fechas = $request->input('rango_fechas', 'hoy');
 
-        switch ($periodo) {
+        switch ($rango_fechas) {
             case 'hoy':
                 $filtros['dia'] = $now->day;
                 $filtros['mes'] = $now->month;
@@ -125,7 +125,7 @@ class PersonaController extends Controller
 
         return response()->json([
             'success' => true,
-            'periodo' => $periodo,
+            'rango_fechas' => $rango_fechas,
             'data'    => $personas
         ]);
     }

@@ -7,31 +7,31 @@
         </h1>
         <a class="btn btn-secondary shadow-sm"
             href="{{ route('listas_asignaturas.detalles', $estudiante_asistencia->id_lista_asignatura) }}">
-            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver a la Lista
+            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i>Volver a la Lista
         </a>
     </div>
 
     <div class="card shadow-sm mb-4">
         <div class="card-header p-3 d-flex justify-content-between align-items-center">
             <h5 class="fw-bold mb-0 text-primary">
-                <i class="fa-duotone fa-info-circle me-1"></i> Información Académica de la Asignatura
+                <i class="fa-duotone fa-info-circle me-1"></i>Información Académica de la Asignatura
             </h5>
             <span
                 class="badge {{ $estudiante_asistencia->lista_asignatura->asignatura->tipo_bloque === 'mixto' ? 'bg-warning text-dark' : 'bg-info' }} px-3 py-2 fs-6 shadow-sm">
-                <i class="fa-duotone fa-cubes me-1"></i> Bloque
+                <i class="fa-duotone fa-cubes me-1"></i>Bloque
                 {{ ucfirst($estudiante_asistencia->lista_asignatura->asignatura->tipo_bloque) }}
             </span>
         </div>
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-md-4">
-                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-book me-1"></i> Asignatura:</p>
+                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-book me-1"></i>Asignatura:</p>
                     <p class="mb-0 fs-6 fw-bold text-info">
                         {{ $estudiante_asistencia->lista_asignatura->asignatura->asignatura }}
                     </p>
                 </div>
                 <div class="col-md-4">
-                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-calendar me-1"></i> Gestión y Periodo:</p>
+                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-calendar me-1"></i>Gestión y Periodo:</p>
                     <p class="mb-0 fs-6">
                         {{ $estudiante_asistencia->lista_asignatura->periodo->gestion->anio }} -
                         {{ $estudiante_asistencia->lista_asignatura->periodo->periodo }}
@@ -54,7 +54,7 @@
                     </p>
                 </div>
                 <div class="col-md-4">
-                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-chalkboard-user me-1"></i> Docente Asignado:
+                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-chalkboard-user me-1"></i>Docente Asignado:
                     </p>
                     <p class="mb-0 fs-6">
                         @if ($estudiante_asistencia->lista_asignatura->docente)
@@ -86,13 +86,13 @@
         <div class="card shadow-sm mb-4">
             <div class="card-header p-3 d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0 text-info">
-                    <i class="fa-duotone fa-clock-desk me-1"></i> Modificar Horario, Fecha y Modalidad de Clase
+                    <i class="fa-duotone fa-clock-desk me-1"></i>Modificar Horario, Fecha y Modalidad de Clase
                 </h5>
             </div>
             <div class="card-body">
                 <div class="row g-3 align-items-end">
                     <div class="col-md-3">
-                        <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-calendar-days me-1"></i> Fecha de la
+                        <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-calendar-days me-1"></i>Fecha de la
                             clase:</p>
                         <input type="date" class="form-control" name="fecha" id="fecha"
                             min="{{ $estudiante_asistencia->lista_asignatura->periodo->fecha_inicio ?? date('Y-02-01') }}"
@@ -100,7 +100,7 @@
                     </div>
 
                     <div class="col-md-3">
-                        <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-clock me-1"></i> Horario de la clase:</p>
+                        <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-clock me-1"></i>Horario de la clase:</p>
                         <select class="form-select" name="id_horario" id="id_horario_asignatura" required>
                             @foreach ($horarios as $horario)
                                 <option value="{{ $horario->id_horario_asignatura }}"
@@ -123,7 +123,7 @@
                             class="form-check form-switch p-2 border rounded bg-body-tertiary d-flex align-items-center justify-content-between">
                             <label class="form-check-label fw-bold text-warning-emphasis mb-0 me-2"
                                 for="switch_horario_no_regular" style="cursor: pointer;">
-                                <i class="fa-duotone fa-clock me-1"></i> Horario no regular
+                                <i class="fa-duotone fa-clock me-1"></i>Horario no regular
                             </label>
                             <input class="form-check-input ms-0 fs-5" type="checkbox" role="switch"
                                 name="es_horario_no_regular" id="switch_horario_no_regular" value="1"
@@ -137,7 +137,7 @@
                             class="form-check form-switch p-2 border rounded bg-body-tertiary d-flex align-items-center justify-content-between">
                             <label class="form-check-label fw-bold text-secondary mb-0 me-2" for="switch_modo_otros"
                                 style="cursor: pointer;">
-                                <i class="fa-duotone fa-calendar-star me-1"></i> Marcar clase como "OTROS"
+                                <i class="fa-duotone fa-calendar-star me-1"></i>Marcar clase como "OTROS"
                             </label>
                             <input class="form-check-input ms-0 fs-5" type="checkbox" role="switch" id="switch_modo_otros"
                                 style="cursor: pointer;" {{ $esModoOtrosInicial ? 'checked' : '' }}>
@@ -162,7 +162,7 @@
                             <div class="row g-2 align-items-center">
                                 <div class="col-md-6">
                                     <label for="justificacion_otros" class="form-label fw-bold mb-1">
-                                        <i class="fa-duotone fa-file-certificate me-1"></i> Justificación para asistencia
+                                        <i class="fa-duotone fa-file-certificate me-1"></i>Justificación para asistencia
                                         tipo "OTROS" (Obligatorio):
                                     </label>
                                     <select class="form-select" name="justificacion_otros" id="justificacion_otros"
@@ -399,7 +399,7 @@
                                                 <span class="text-muted small etiqueta-modo-otros"
                                                     id="etiqueta_otros_{{ $index }}"
                                                     style="display: {{ $esModoOtrosInicial ? 'inline-block' : 'none' }};">
-                                                    <i class="fa-duotone fa-lock me-1"></i> Bloqueado por modo OTROS
+                                                    <i class="fa-duotone fa-lock me-1"></i>Bloqueado por modo OTROS
                                                 </span>
                                             @endif
                                         </td>

@@ -14,7 +14,7 @@
                 },
                 data: function(d) {
                     d.tipo_perfil = $('#filter_tipo_perfil').val();
-                    d.periodo = $('#filter_periodo').val();
+                    d.rango_fechas = $('#rango_fechas').val();
                     d.solo_personal = $('#filter_solo_personal').is(':checked') ? 1 : 0;
                 },
                 error: function(xhr, error, thrown) {

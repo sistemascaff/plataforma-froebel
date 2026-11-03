@@ -308,7 +308,7 @@ class ListaAsignaturaController extends Controller
         if (!empty($periodosReplicados)) {
             // Unimos los periodos con " y " (ej. "SEGUNDO TRIMESTRE y TERCER TRIMESTRE")
             $nombresPeriodos = implode(' y ', $periodosReplicados);
-            $mensajeFinal .= "<br><br><i class='fa-solid fa-clone text-info me-1'></i> Además, se han llenado automáticamente las listas de: {$nombresPeriodos}.";
+            $mensajeFinal .= "<br><br><i class='fa-solid fa-clone text-info me-1'></i>Además, se han llenado automáticamente las listas de: {$nombresPeriodos}.";
         }
 
         return response()->json([
@@ -436,7 +436,7 @@ class ListaAsignaturaController extends Controller
         $mensaje = "Se han incorporado exitosamente {$cantInsertados} estudiantes a la lista.";
         if (!empty($periodosReplicados)) {
             $nombresPeriodos = implode(' y ', $periodosReplicados);
-            $mensaje .= "<br><br><i class='fa-solid fa-clone text-info me-1'></i> Se actualizaron automáticamente las listas de: {$nombresPeriodos}.";
+            $mensaje .= "<br><br><i class='fa-solid fa-clone text-info me-1'></i>Además, se han llenado automáticamente las listas de: {$nombresPeriodos}.";
         }
 
         return response()->json([

@@ -60,7 +60,7 @@
                         if (esReceso) {
                             // Fila completa bloqueada para el receso
                             filaHTML += `<td colspan="6" class="bg-secondary-subtle text-secondary fw-bold align-middle" style="pointer-events:none;">
-                                            <i class="fa-duotone fa-mug-hot me-1"></i> ${horario.denominacion.toUpperCase()}
+                                            <i class="fa-duotone fa-mug-hot me-1"></i>${horario.denominacion.toUpperCase()}
                                          </td>`;
                         } else {
                             // Columnas de días interactivos (1=Lunes a 6=Sábado)

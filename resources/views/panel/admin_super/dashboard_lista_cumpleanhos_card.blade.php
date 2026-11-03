@@ -4,7 +4,7 @@
             {{-- Título --}}
             <div class="col-12 col-md-auto me-md-auto text-center text-md-start">
                 <h5 class="fw-bold mb-0 text-primary">
-                    <i class="fa-duotone fa-cake-candles me-1"></i> Lista de Cumpleaños
+                    <i class="fa-duotone fa-cake-candles me-1"></i>Lista de Cumpleaños
                 </h5>
             </div>
 

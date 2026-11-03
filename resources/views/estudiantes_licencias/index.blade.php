@@ -8,7 +8,7 @@
         @can('create', App\Models\EstudianteLicencia::class)
             <button type="button" class="btn btn-success shadow-sm btn-crear" data-bs-toggle="modal"
             data-bs-target="#modal-formulario">
-            <i class="fa-solid fa-duotone fa-plus me-1"></i> Registrar licencia
+            <i class="fa-solid fa-duotone fa-plus me-1"></i>Registrar licencia
         </button>
         @endcan
     </div>
@@ -93,7 +93,7 @@
         <div class="col-12 col-lg-6">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-transparent p-3">
-                    <h6 class="fw-bold m-0 text-primary"><i class="fa-duotone fa-chalkboard-user me-1"></i> Por Curso</h6>
+                    <h6 class="fw-bold m-0 text-primary"><i class="fa-duotone fa-chalkboard-user me-1"></i>Por Curso</h6>
                 </div>
                 <div class="card-body">
                     <div style="position: relative; height: 300px; width: 100%;">
@@ -105,7 +105,7 @@
         <div class="col-12 col-lg-6">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-transparent p-3">
-                    <h6 class="fw-bold m-0 text-primary"><i class="fa-duotone fa-tags me-1"></i> Por Motivo (Tipo)</h6>
+                    <h6 class="fw-bold m-0 text-primary"><i class="fa-duotone fa-tags me-1"></i>Por Motivo (Tipo)</h6>
                 </div>
                 <div class="card-body">
                     <div style="position: relative; height: 300px; width: 100%;">

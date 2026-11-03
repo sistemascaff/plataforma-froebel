@@ -63,9 +63,9 @@
 
                         return `
                             <div class="btn-group" role="group">
-                                <a class="btn btn-info btn-sm" href="${url_detalles}" target="_blank" rel="noopener noreferrer"
+                                <a class="btn btn-primary btn-sm" href="${url_detalles}" target="_blank" rel="noopener noreferrer"
                                     data-toggle="tooltip" title="Detalles">
-                                    <i class="fa-duotone fa-solid fa-eye"></i>
+                                    <i class="fa-duotone fa-solid fa-list-check me-1"></i>Ver detalles
                                 </a>
                             </div>`;
                     }

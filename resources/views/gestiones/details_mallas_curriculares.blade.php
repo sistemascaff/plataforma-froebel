@@ -4,7 +4,7 @@
             <i class="fa-solid fa-duotone fa-object-group me-2"></i>Mallas Curriculares
         </h5>
         <a class="btn btn-primary btn-sm shadow-sm" href="{{ route('mallas_curriculares.index') }}">
-            <i class="fa-solid fa-duotone fa-objects-column me-1"></i> Gestionar Mallas
+            <i class="fa-solid fa-duotone fa-objects-column me-1"></i>Gestionar Mallas
         </a>
     </div>
     <div class="alert border-info bg-info bg-opacity-10 text-info d-flex align-items-center mb-4 shadow-sm"

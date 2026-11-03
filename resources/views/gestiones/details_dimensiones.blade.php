@@ -4,7 +4,7 @@
             <i class="fa-solid fa-duotone fa-layer-group me-2"></i>Dimensiones de Evaluación
         </h5>
         <a class="btn btn-primary btn-sm shadow-sm" href="{{ route('dimensiones.index') }}">
-            <i class="fa-solid fa-duotone fa-layer-plus me-1"></i> Gestionar Dimensiones
+            <i class="fa-solid fa-duotone fa-layer-plus me-1"></i>Gestionar Dimensiones
         </a>
     </div>
     <div class="table-responsive">

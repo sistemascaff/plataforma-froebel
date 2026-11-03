@@ -54,10 +54,10 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary shadow-sm" data-bs-dismiss="modal">
-                        <i class="fa-solid fa-times me-1"></i> Cancelar
+                        <i class="fa-solid fa-times me-1"></i>Cancelar
                     </button>
                     <button type="submit" class="btn btn-success shadow-sm" id="btn-submit-importar-cursos">
-                        <i class="fa-solid fa-duotone fa-check me-1"></i> Incorporar a la Lista
+                        <i class="fa-solid fa-duotone fa-check me-1"></i>Incorporar a la Lista
                     </button>
                 </div>
             </form>

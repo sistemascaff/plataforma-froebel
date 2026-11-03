@@ -1,15 +1,15 @@
 <div class="card shadow-sm mb-4">
     <div class="card-header p-3">
         <h5 class="fw-bold mb-0 text-primary">
-            <i class="fa-duotone fa-filter me-1"></i> Filtros de Búsqueda
+            <i class="fa-duotone fa-filter me-1"></i>Filtros de Búsqueda
         </h5>
     </div>
     <div class="card-body">
         <div class="row g-3 align-items-end">
             <!-- Nuevo Filtro Periodo -->
             <div class="col-md-3">
-                <label for="filter_periodo" class="form-label text-muted fw-bold">Periodo:</label>
-                <select class="form-select" id="filter_periodo">
+                <label for="rango_fechas" class="form-label text-muted fw-bold">Rango de fechas:</label>
+                <select class="form-select" id="rango_fechas">
                     <option value="hoy">Hoy</option>
                     <option value="esta_semana">Esta Semana</option>
                     <option value="este_mes">Este Mes</option>
@@ -38,7 +38,7 @@
 
             <div class="col-md-2">
                 <button type="button" class="btn btn-primary w-100 shadow-sm" id="btn-filtrar">
-                    <i class="fa-duotone fa-search me-1"></i> Filtrar
+                    <i class="fa-duotone fa-search me-1"></i>Filtrar
                 </button>
             </div>
         </div>

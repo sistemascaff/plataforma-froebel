@@ -94,7 +94,7 @@
 
                             let badgeHTML = `
                                 <span class="badge ${badgeClass} px-3 py-2 shadow-sm w-100">
-                                    <i class="fa-solid fa-duotone ${iconClass} me-1"></i> ${badgeText}
+                                    <i class="fa-solid fa-duotone ${iconClass} me-1"></i>${badgeText}
                                 </span>`;
 
                             // Agregar fila al DataTable

@@ -9,7 +9,7 @@
         @can('create', App\Models\Asignatura::class)
             <button type="button" class="btn btn-success shadow-sm btn-crear" data-bs-toggle="modal"
                 data-bs-target="#modal-formulario">
-                <i class="fa-solid fa-duotone fa-plus me-1"></i> Crear asignatura
+                <i class="fa-solid fa-duotone fa-plus me-1"></i>Crear asignatura
             </button>
         @endcan
     </div>

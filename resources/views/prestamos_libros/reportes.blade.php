@@ -10,7 +10,7 @@
             <i class="fa-solid fa-duotone fa-chart-pie me-2"></i>Reportes de Biblioteca
         </h1>
         <a class="btn btn-secondary" href="{{ route('prestamos_libros.index') }}">
-            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver
+            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i>Volver
         </a>
     </div>
 
@@ -50,11 +50,11 @@
                         <div class="col-md-12 d-flex gap-2 mt-4">
                             <button type="submit" formaction="{{ route('prestamos_libros.reportes') }}"
                                 class="btn btn-info flex-grow-1">
-                                <i class="fa-solid fa-duotone fa-search me-1"></i> Generar Reporte
+                                <i class="fa-solid fa-duotone fa-search me-1"></i>Generar Reporte
                             </button>
                             <button type="submit" formaction="{{ route('prestamos_libros.reportes.imprimir') }}"
                                 formtarget="_blank" class="btn btn-primary flex-grow-1">
-                                <i class="fa-solid fa-duotone fa-print me-1"></i> Imprimir PDF
+                                <i class="fa-solid fa-duotone fa-print me-1"></i>Imprimir PDF
                             </button>
                         </div>
                     </form>

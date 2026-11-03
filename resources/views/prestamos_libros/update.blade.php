@@ -8,16 +8,16 @@
         
         <div class="d-flex gap-2">
             <a class="btn btn-secondary" href="{{ route('prestamos_libros.index') }}">
-                <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver
+                <i class="fa-solid fa-duotone fa-arrow-left me-1"></i>Volver
             </a>
             <a class="btn btn-primary" href="{{ route('prestamos_libros.imprimir', $prestamo_libro->id_prestamo_libro) }}" target="_blank" rel="noopener noreferrer">
-                <i class="fa-solid fa-duotone fa-print me-1"></i> Imprimir
+                <i class="fa-solid fa-duotone fa-print me-1"></i>Imprimir
             </a>
             <a class="btn btn-info" href="{{ route('prestamos_libros.detalles', $prestamo_libro->id_prestamo_libro) }}">
-                <i class="fa-solid fa-duotone fa-eye me-1"></i> Detalles
+                <i class="fa-solid fa-duotone fa-eye me-1"></i>Detalles
             </a>
             <button type="button" class="btn btn-danger" id="btnDelete" {{ $prestamo_libro->estado == 0 ? 'disabled' : '' }}>
-                <i class="fa-solid fa-duotone fa-file-xmark me-1"></i> Anular
+                <i class="fa-solid fa-duotone fa-file-xmark me-1"></i>Anular
             </button>
         </div>
     </div>
@@ -45,7 +45,7 @@
         <div class="card-header d-flex align-items-center justify-content-between">
             <h5 class="mb-0 fw-bold text-info"><i class="fa-solid fa-duotone fa-book-open-reader me-2"></i>2. Catálogo de Libros</h5>
             @if ($prestamo_libro->estado == 0)
-                <span class="badge bg-danger"><i class="fa-solid fa-triangle-exclamation me-1"></i> Préstamo Anulado</span>
+                <span class="badge bg-danger"><i class="fa-solid fa-triangle-exclamation me-1"></i>Préstamo Anulado</span>
             @endif
         </div>
         <div class="card-body">
@@ -143,7 +143,7 @@
         @if ($prestamo_libro->estado != 0)
             <div class="card-footer text-end">
                 <button type="button" class="btn btn-warning" id="btn-guardar">
-                    <i class="fa-solid fa-duotone fa-floppy-disk me-1"></i> Guardar Cambios
+                    <i class="fa-solid fa-duotone fa-floppy-disk me-1"></i>Guardar Cambios
                 </button>
             </div>
         @endif

@@ -18,13 +18,48 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 data: function(d) {
+                    d.rango_fechas = $('#filter_rango_fechas').val();
                     d.id_nivel = $('#filter_id_nivel').val();
                     d.id_coordinacion = $('#filter_id_coordinacion').val();
                     d.id_docente = $('#filter_id_docente').val();
+                    d.id_periodo = $('#filter_id_periodo').val();
                 },
                 error: function(xhr, error, thrown) {
                     console.error("Error al cargar los datos:", error);
                 }
+            },
+            drawCallback: function(settings) {
+                let api = this.api();
+                let filteredData = api.rows({
+                    search: 'applied'
+                }).data().toArray();
+
+                let kpiTotal = 0;
+                let kpiSinNovedad = 0;
+                let kpiOtros = 0;
+
+                filteredData.forEach(row => {
+                    kpiTotal++;
+
+                    const totalEstudiantes = parseInt(row
+                        .detalles_estudiantes_asistencias_count) || 0;
+                    const presentes = parseInt(row.presentes_count) || 0;
+                    const otros = parseInt(row.otros_count) || 0;
+
+                    // Misma regla de negocio que tu rowCallback
+                    if (totalEstudiantes > 0) {
+                        if (totalEstudiantes === presentes) {
+                            kpiSinNovedad++;
+                        } else if (otros > 0) {
+                            kpiOtros++;
+                        }
+                    }
+                });
+
+                // Actualización de contadores en el DOM
+                $('#kpi-total').text(kpiTotal);
+                $('#kpi-sin-novedad').text(kpiSinNovedad);
+                $('#kpi-otros').text(kpiOtros);
             },
             rowCallback: function(row, data, index) {
                 if (data.detalles_estudiantes_asistencias_count > 0) {
@@ -223,9 +258,9 @@
 
                         return `
                             <div class="btn-group" role="group">
-                                <a class="btn btn-info btn-sm" href="${url_detalles}" target="_blank" rel="noopener noreferrer"
+                                <a class="btn btn-primary btn-sm" href="${url_detalles}" target="_blank" rel="noopener noreferrer"
                                     data-toggle="tooltip" title="Detalles">
-                                    <i class="fa-duotone fa-solid fa-eye"></i>
+                                    <i class="fa-duotone fa-solid fa-list-check me-1"></i>Ver detalles
                                 </a>
                             </div>`;
                     }

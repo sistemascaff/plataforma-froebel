@@ -4,7 +4,7 @@
             <i class="fa-solid fa-duotone fa-clock me-2"></i>Horarios de Asignaturas
         </h5>
         <a class="btn btn-primary btn-sm shadow-sm" href="{{ route('horarios_asignaturas.index') }}">
-            <i class="fa-solid fa-duotone fa-clock-rotate-left me-1"></i> Gestionar Horarios
+            <i class="fa-solid fa-duotone fa-clock-rotate-left me-1"></i>Gestionar Horarios
         </a>
     </div>
     <div class="table-responsive">

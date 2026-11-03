@@ -9,12 +9,12 @@
         <div class="d-flex gap-2">
             <a class="btn btn-warning shadow-sm"
                 href="{{ route('estudiantes_asistencias.editar', $estudiante_asistencia->id_estudiante_asistencia) }}">
-                <i class="fa-solid fa-duotone fa-pen-to-square me-1"></i> Editar Asistencia
+                <i class="fa-solid fa-duotone fa-pen-to-square me-1"></i>Editar Asistencia
             </a>
 
             <a class="btn btn-secondary shadow-sm"
                 href="{{ route('listas_asignaturas.detalles', $estudiante_asistencia->id_lista_asignatura) }}">
-                <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver a la Lista
+                <i class="fa-solid fa-duotone fa-arrow-left me-1"></i>Volver a la Lista
             </a>
         </div>
     </div>
@@ -22,7 +22,7 @@
     <div class="card shadow-sm mb-4">
         <div class="card-header p-3 d-flex justify-content-between align-items-center">
             <h5 class="fw-bold mb-0 text-primary">
-                <i class="fa-duotone fa-circle-info me-1"></i> Información Académica de la Clase
+                <i class="fa-duotone fa-circle-info me-1"></i>Información Académica de la Clase
             </h5>
             <span class="badge bg-primary px-3 py-2 fs-6 shadow-sm">
                 <i class="fa-duotone fa-calendar-day me-1"></i>
@@ -33,13 +33,13 @@
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-md-3">
-                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-book me-1"></i> Asignatura:</p>
+                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-book me-1"></i>Asignatura:</p>
                     <p class="mb-0 fs-6 fw-bold text-info">
                         {{ $estudiante_asistencia->lista_asignatura->asignatura->asignatura }}
                     </p>
                 </div>
                 <div class="col-md-3">
-                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-chalkboard-user me-1"></i> Docente Asignado:
+                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-chalkboard-user me-1"></i>Docente Asignado:
                     </p>
                     <p class="mb-0 fs-6">
                         @if ($estudiante_asistencia->lista_asignatura->docente)
@@ -50,7 +50,7 @@
                     </p>
                 </div>
                 <div class="col-md-3">
-                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-clock me-1"></i> Horario:</p>
+                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-clock me-1"></i>Horario:</p>
                     <p class="mb-0 fs-6">
                         @if ($estudiante_asistencia->horario_asignatura)
                             {{ $estudiante_asistencia->horario_asignatura->denominacion }}
@@ -62,7 +62,7 @@
                     </p>
                 </div>
                 <div class="col-md-3">
-                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-calendar me-1"></i> Gestión y Periodo:</p>
+                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-calendar me-1"></i>Gestión y Periodo:</p>
                     <p class="mb-0 fs-6">
                         {{ $estudiante_asistencia->lista_asignatura->periodo->gestion->anio }} -
                         {{ $estudiante_asistencia->lista_asignatura->periodo->periodo }}
@@ -74,7 +74,7 @@
                 <div class="row mt-3">
                     <div class="col-md-12">
                         <div class="alert alert-secondary mb-0 py-2">
-                            <i class="fa-duotone fa-file-certificate me-1"></i> **Asistencia Global por OTROS:**
+                            <i class="fa-duotone fa-file-certificate me-1"></i>**Asistencia Global por OTROS:**
                             <span class="badge bg-dark">{{ $estudiante_asistencia->justificacion_otros }}</span>
                         </div>
                     </div>
@@ -290,7 +290,7 @@
                                 </td>
                                 <td class="text-center align-middle">
                                     <span class="badge {{ $badgeClass }} px-3 py-2 fs-6 shadow-sm">
-                                        <i class="fa-solid fa-duotone {{ $tipoIcono }} me-1"></i> {{ $tipoTexto }}
+                                        <i class="fa-solid fa-duotone {{ $tipoIcono }} me-1"></i>{{ $tipoTexto }}
                                     </span>
                                 </td>
                             </tr>
@@ -304,43 +304,43 @@
     <div class="card shadow-sm mb-4">
         <div class="card-header p-3">
             <h5 class="fw-bold mb-0 text-secondary">
-                <i class="fa-duotone fa-shield-check me-1"></i> Datos de Trazabilidad y Auditoría
+                <i class="fa-duotone fa-shield-check me-1"></i>Datos de Trazabilidad y Auditoría
             </h5>
         </div>
         <div class="card-body">
             <div class="row g-3 fs-7">
                 <div class="col-md-2">
-                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-user-pen me-1"></i> Registrado Por:</p>
+                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-user-pen me-1"></i>Registrado Por:</p>
                     <p class="mb-0">
                         {{ $estudiante_asistencia->creado->correo }}
                     </p>
                 </div>
                 <div class="col-md-2">
-                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-calendar-clock me-1"></i> Fecha y Hora
+                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-calendar-clock me-1"></i>Fecha y Hora
                         Registro:</p>
                     <p class="mb-0">
                         {{ date('d/m/Y H:i:s', strtotime($estudiante_asistencia->fecha_registro)) }}
                     </p>
                 </div>
                 <div class="col-md-2">
-                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-user-pen me-1"></i> Modificado Por:</p>
+                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-user-pen me-1"></i>Modificado Por:</p>
                     <p class="mb-0">
                         {{ $estudiante_asistencia->modificado?->correo ?? 'Sin modificar' }}
                     </p>
                 </div>
                 <div class="col-md-2">
-                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-calendar-clock me-1"></i> Fecha y Hora
+                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-calendar-clock me-1"></i>Fecha y Hora
                         Modificación:</p>
                     <p class="mb-0">
                         {{ $estudiante_asistencia->modificado?->correo != null ? date('d/m/Y H:i:s', strtotime($estudiante_asistencia->fecha_actualizacion)) : 'Sin modificar' }}
                     </p>
                 </div>
                 <div class="col-md-2">
-                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-network-wired me-1"></i> Dirección IP:</p>
+                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-network-wired me-1"></i>Dirección IP:</p>
                     <p class="mb-0"><code>{{ $estudiante_asistencia->ip ?? 'No registrada' }}</code></p>
                 </div>
                 <div class="col-md-2">
-                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-laptop-mobile me-1"></i> Dispositivo:</p>
+                    <p class="mb-1 text-muted fw-bold"><i class="fa-duotone fa-laptop-mobile me-1"></i>Dispositivo:</p>
                     <p class="mb-0 text-truncate" title="{{ $estudiante_asistencia->dispositivo }}">
                         {{ helper_recortar_texto($estudiante_asistencia->dispositivo ?? 'No registrado', 35) }}
                     </p>

@@ -12,6 +12,7 @@ use App\Models\EstudianteLicencia;
 use App\Models\ListaAsignatura;
 use App\Models\HorarioAsignatura;
 use App\Models\Nivel;
+use App\Models\Periodo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -28,6 +29,7 @@ class EstudianteAsistenciaController extends Controller
         $niveles = (new Nivel())->get_all_niveles();
         $coordinaciones = (new Coordinacion())->get_all_coordinaciones();
         $docentes = (new Docente())->get_all_docentes();
+        $periodos = (new Periodo())->get_all_periodos();
 
         return view('estudiantes_asistencias.index', [
             'head_title' => 'GESTIÓN DE ASISTENCIAS',
@@ -35,6 +37,7 @@ class EstudianteAsistenciaController extends Controller
             'niveles' => $niveles,
             'coordinaciones' => $coordinaciones,
             'docentes' => $docentes,
+            'periodos' => $periodos,
         ]);
     }
 
@@ -162,8 +165,29 @@ class EstudianteAsistenciaController extends Controller
         $tipo_perfil = Auth::user()->persona?->tipo_perfil;
         $filtros = [];
         $estudiantes_asistencias = null;
+        $now = now();
 
         // Filtros dinámicos (Desde la vista)
+        if ($request->filled('rango_fechas')) {
+            switch ($request->rango_fechas) {
+                case 'hoy':
+                    $filtros['fecha_exacta'] = $now->format('Y-m-d');
+                    break;
+
+                case 'esta_semana':
+                    // Rango de lunes a domingo de la semana en curso
+                    $filtros['fecha_inicio'] = $now->copy()->startOfWeek()->format('Y-m-d');
+                    $filtros['fecha_fin']    = $now->copy()->endOfWeek()->format('Y-m-d');
+                    break;
+
+                case 'este_mes':
+                    // Rango del primer al último día del mes en curso
+                    $filtros['fecha_inicio'] = $now->copy()->startOfMonth()->format('Y-m-d');
+                    $filtros['fecha_fin']    = $now->copy()->endOfMonth()->format('Y-m-d');
+                    break;
+            }
+        }
+
         if ($request->filled('id_nivel')) {
             $filtros['nivel'] = $request->id_nivel;
         }
@@ -172,6 +196,9 @@ class EstudianteAsistenciaController extends Controller
         }
         if ($request->filled('id_docente')) {
             $filtros['docente'] = $request->id_docente;
+        }
+        if ($request->filled('id_periodo')) {
+            $filtros['periodo'] = $request->id_periodo;
         }
 
         // Si el usuario tiene un perfil que requiere filtrado automático, aplicamos esos filtros

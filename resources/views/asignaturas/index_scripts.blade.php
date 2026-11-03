@@ -188,15 +188,15 @@
                         let botones = `<div class="btn-group" role="group">`;
 
                         botones += `
-                            <a class="btn btn-info btn-sm" href="${url_detalles}" data-toggle="tooltip" title="Detalles">
-                                <i class="fa-duotone fa-solid fa-eye"></i>
+                            <a class="btn btn-primary btn-sm" href="${url_detalles}" data-toggle="tooltip" title="Detalles">
+                                <i class="fa-duotone fa-solid fa-list me-1"></i>Ver detalles
                             </a>`;
 
                         if (PUEDE_EDITAR) {
                             botones += `
                                 <button type="button" class="btn btn-warning btn-sm btn-editar" 
                                         data-id="${row.id_asignatura}" data-toggle="tooltip" title="Editar">
-                                    <i class="fa-duotone fa-solid fa-edit"></i>
+                                    <i class="fa-duotone fa-solid fa-edit me-1"></i>Editar
                                 </button>`;
                         }
 
@@ -204,20 +204,20 @@
                             botones += `
                                 <button type="button" class="btn btn-success btn-sm btn-clonar" 
                                         data-id="${row.id_asignatura}" data-toggle="tooltip" title="Clonar propiedades">
-                                    <i class="fa-duotone fa-solid fa-clone"></i>
+                                    <i class="fa-duotone fa-solid fa-clone me-1"></i>Clonar
                                 </button>`;
                         }
 
                         if (PUEDE_ELIMINAR) {
                             let colorBtn = row.estado == 1 ? 'danger' : 'success';
                             let iconBtn = row.estado == 1 ? 'off' : 'on';
-                            let titleBtn = row.estado == 1 ? 'Deshabilitar' : 'Habilitar';
+                            let titleBtn = row.estado == 1 ? 'Archivar' : 'Desarchivar';
 
                             botones += `
                                 <button type="button" class="btn btn-${colorBtn} btn-sm btn-cambiar-estado" 
                                         data-id="${row.id_asignatura}" data-estado="${row.estado}" data-nombre="${row.asignatura}" 
                                         data-toggle="tooltip" title="${titleBtn}">
-                                    <i class="fa-duotone fa-solid fa-toggle-${iconBtn}"></i>
+                                    <i class="fa-duotone fa-solid fa-toggle-${iconBtn} me-1"></i>${titleBtn}
                                 </button>`;
                         }
 

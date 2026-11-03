@@ -152,6 +152,24 @@ class EstudianteAsistencia extends Model
                     $query->where('tipo', 'OTROS');
                 }
             ])
+            // ==========================================
+            // FILTROS DE RANGO DE FECHAS (ASISTENCIA)
+            // ==========================================
+            ->when(
+                $filtros['fecha_exacta'] ?? null,
+                fn($q, $fecha) => $q->whereDate('estudiantes_asistencias.fecha', $fecha)
+            )
+            ->when(
+                isset($filtros['fecha_inicio']) && isset($filtros['fecha_fin']),
+                fn($q) => $q->whereBetween('estudiantes_asistencias.fecha', [
+                    $filtros['fecha_inicio'],
+                    $filtros['fecha_fin']
+                ])
+            )
+
+            // ==========================================
+            // FILTROS ACADÉMICOS Y JERÁRQUICOS
+            // ==========================================
             ->when(
                 $filtros['nivel'] ?? null,
                 fn($q, $valor) => $q->where('asignaturas.id_nivel', $valor)
@@ -163,6 +181,10 @@ class EstudianteAsistencia extends Model
             ->when(
                 $filtros['docente'] ?? null,
                 fn($q, $valor) => $q->where('listas_asignaturas.id_docente', $valor)
+            )
+            ->when(
+                $filtros['periodo'] ?? null,
+                fn($q, $valor) => $q->where('listas_asignaturas.id_periodo', $valor)
             )
             ->orderBy('estudiantes_asistencias.fecha', 'DESC')
             ->orderBy('horarios_asignaturas.hora_inicio', 'ASC')

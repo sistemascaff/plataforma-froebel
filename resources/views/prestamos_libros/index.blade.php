@@ -11,10 +11,10 @@
         </div>
         <div class="d-flex flex-wrap gap-2">
             <a class="btn btn-success" href="{{ route('prestamos_libros.crear') }}">
-                <i class="fa-solid fa-duotone fa-plus me-1"></i> Crear préstamo
+                <i class="fa-solid fa-duotone fa-plus me-1"></i>Crear préstamo
             </a>
             <a class="btn btn-info text-white" href="{{ route('prestamos_libros.reportes') }}">
-                <i class="fa-solid fa-duotone fa-chart-column me-1"></i> Reportes
+                <i class="fa-solid fa-duotone fa-chart-column me-1"></i>Reportes
             </a>
         </div>
     </div>

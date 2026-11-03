@@ -49,7 +49,7 @@
                 {{-- Título --}}
                 <div class="col-12 col-md-auto me-md-auto text-center text-md-start">
                     <h5 class="fw-bold mb-0 text-primary">
-                        <i class="fa-duotone fa-calendar-week me-1"></i> Mi Horario Semanal
+                        <i class="fa-duotone fa-calendar-week me-1"></i>Mi Horario Semanal
                     </h5>
                 </div>
 

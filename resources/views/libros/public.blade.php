@@ -87,8 +87,8 @@
     <div class="card shadow-sm mb-4">
         <div class="card-body d-flex flex-wrap align-items-center gap-2 py-3">
             <p class="mb-0 text-muted fw-bold me-2">
-                <i class="fa-solid fa-duotone fa-file-export me-1"></i> Exportar o <i
-                    class="fa-solid fa-duotone fa-filter me-1"></i> Filtrar la tabla:
+                <i class="fa-solid fa-duotone fa-file-export me-1"></i>Exportar o <i
+                    class="fa-solid fa-duotone fa-filter me-1"></i>Filtrar la tabla:
             </p>
             <div id="dataTable-export-buttons-container" class="flex-grow-1"></div>
         </div>

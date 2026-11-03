@@ -4,7 +4,7 @@
             <i class="fa-solid fa-duotone fa-calendar-lines me-2"></i>Periodos Académicos
         </h5>
         <a class="btn btn-primary btn-sm shadow-sm" href="{{ route('periodos.index') }}">
-            <i class="fa-solid fa-duotone fa-calendar-alt me-1"></i> Gestionar Periodos
+            <i class="fa-solid fa-duotone fa-calendar-alt me-1"></i>Gestionar Periodos
         </a>
     </div>
     <div class="table-responsive">

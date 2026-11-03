@@ -8,7 +8,7 @@
         @can('create', App\Models\Estudiante::class)
             <button type="button" class="btn btn-success shadow-sm btn-crear" data-bs-toggle="modal"
                 data-bs-target="#modal-formulario">
-                <i class="fa-solid fa-duotone fa-plus me-1"></i> Crear estudiante
+                <i class="fa-solid fa-duotone fa-plus me-1"></i>Crear estudiante
             </button>
         @endcan
     </div>
@@ -20,19 +20,19 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link active fw-bold text-info" data-bs-toggle="tab" data-bs-target="#tab-tarjetas"
                 type="button" role="tab">
-                <i class="fa-solid fa-chart-pie me-1"></i> Resumen
+                <i class="fa-solid fa-chart-pie me-1"></i>Resumen
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link fw-bold text-info" data-bs-toggle="tab" data-bs-target="#tab-niveles" type="button"
                 role="tab">
-                <i class="fa-solid fa-stairs me-1"></i> Por Nivel
+                <i class="fa-solid fa-stairs me-1"></i>Por Nivel
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link fw-bold text-info" data-bs-toggle="tab" data-bs-target="#tab-cursos" type="button"
                 role="tab">
-                <i class="fa-solid fa-chalkboard-user me-1"></i> Por Curso
+                <i class="fa-solid fa-chalkboard-user me-1"></i>Por Curso
             </button>
         </li>
     </ul>

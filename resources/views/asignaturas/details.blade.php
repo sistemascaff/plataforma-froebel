@@ -108,7 +108,7 @@
                 <table class="table table-hover table-bordered mb-0 text-center align-middle" id="horarios-grid">
                     <thead>
                         <tr>
-                            <th style="width: 16%;" class="text-start ps-3"><i class="fa-duotone fa-clock me-1"></i> PERIODO
+                            <th style="width: 16%;" class="text-start ps-3"><i class="fa-duotone fa-clock me-1"></i>PERIODO
                             </th>
                             <th style="width: 14%;">LUNES</th>
                             <th style="width: 14%;">MARTES</th>
@@ -143,7 +143,7 @@
             <div class="row g-4 mt-1">
                 <div class="col-md-6">
                     <h6 class="text-muted fw-bold mb-3 border-bottom pb-2">
-                        <i class="fa-duotone fa-graduation-cap me-1"></i> Información Académica
+                        <i class="fa-duotone fa-graduation-cap me-1"></i>Información Académica
                     </h6>
                     <div class="row mb-2">
                         <div class="col-sm-5 fw-bold text-muted">Materia:</div>
@@ -181,7 +181,7 @@
 
                 <div class="col-md-6">
                     <h6 class="text-muted fw-bold mb-3 border-bottom pb-2">
-                        <i class="fa-duotone fa-sitemap me-1"></i> Ubicación y Estructura
+                        <i class="fa-duotone fa-sitemap me-1"></i>Ubicación y Estructura
                     </h6>
                     <div class="row mb-2">
                         <div class="col-sm-5 fw-bold text-muted">Aula:</div>

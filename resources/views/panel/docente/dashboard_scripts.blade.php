@@ -124,13 +124,13 @@
                                 let linkAsistencia = urlAsistenciaUpdate.replace(':id', item
                                     .asistenciaDia.id_estudiante_asistencia);
                                 btnAsistencia = `<a href="${linkAsistencia}" class="btn btn-sm btn-warning text-dark shadow-sm" title="Modificar Asistencia">
-                                    <i class="fa-solid fa-duotone fa-edit me-1"></i> Ver/Editar Asistencia
+                                    <i class="fa-solid fa-duotone fa-edit me-1"></i>Ver/Editar Asistencia
                                 </a>`;
                             } else {
                                 let linkAsistencia = urlAsistenciaCreate.replace(':id', item
                                     .lista.id_lista_asignatura);
                                 btnAsistencia = `<a href="${linkAsistencia}" class="btn btn-sm btn-success shadow-sm" title="Registrar Asistencia">
-                                    <i class="fa-solid fa-duotone fa-plus me-1"></i> Tomar Asistencia
+                                    <i class="fa-solid fa-duotone fa-plus me-1"></i>Tomar Asistencia
                                 </a>`;
                             }
 
@@ -152,7 +152,7 @@
                                 <td class="text-center align-middle">
                                     <div class="d-flex justify-content-center gap-2 flex-wrap">
                                         <a href="${linkLista}" class="btn btn-sm btn-primary shadow-sm" title="Ver información">
-                                            <i class="fa-solid fa-duotone fa-list-check me-1"></i> Ver lista
+                                            <i class="fa-solid fa-duotone fa-list-check me-1"></i>Ver lista
                                         </a>
                                         ${btnAsistencia}
                                     </div>
@@ -186,7 +186,7 @@
             .catch(error => {
                 console.error("Error cargando el horario:", error);
                 document.getElementById('cargandoHorario').innerHTML =
-                    `<p class="text-danger"><i class="fa-solid fa-server me-1"></i> Error al comunicarse con el servidor.</p>`;
+                    `<p class="text-danger"><i class="fa-solid fa-server me-1"></i>Error al comunicarse con el servidor.</p>`;
             });
     });
 </script>

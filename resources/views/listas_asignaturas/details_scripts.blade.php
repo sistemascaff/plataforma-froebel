@@ -347,13 +347,13 @@
                     html: `Se actualizará la lista mixta con un total de <b>${estudiantesLista.length} estudiantes</b>.<br>¿Deseas guardar los cambios?`,
                     icon: 'question',
                     showCancelButton: true,
-                    confirmButtonText: '<i class="fa-solid fa-check me-1"></i> Sí, guardar',
+                    confirmButtonText: '<i class="fa-solid fa-check me-1"></i>Sí, guardar',
                     cancelButtonText: 'Cancelar',
                     reverseButtons: true
                 }).then((result) => {
                     if (result.isConfirmed) {
                         btn.prop('disabled', true).html(
-                            '<i class="fa-solid fa-spinner fa-spin me-1"></i> Guardando...');
+                            '<i class="fa-solid fa-spinner fa-spin me-1"></i>Guardando...');
 
                         $.ajax({
                             url: "{{ route('listas_asignaturas.update', $lista_asignatura->id_lista_asignatura) }}",
@@ -394,7 +394,7 @@
                                     html: errorHtml
                                 });
                                 btn.prop('disabled', false).html(
-                                    '<i class="fa-solid fa-duotone fa-floppy-disk me-1"></i> Guardar Cambios'
+                                    '<i class="fa-solid fa-duotone fa-floppy-disk me-1"></i>Guardar Cambios'
                                     );
                             }
                         });
@@ -461,7 +461,7 @@
             function enviarImportacion(cursosSeleccionados) {
                 const btn = $('#btn-submit-importar-cursos');
                 btn.prop('disabled', true).html(
-                    '<i class="fa-solid fa-spinner fa-spin me-1"></i> Incorporando...');
+                    '<i class="fa-solid fa-spinner fa-spin me-1"></i>Incorporando...');
 
                 $.ajax({
                     url: "{{ route('listas_asignaturas.importar_cursos', $lista_asignatura->id_lista_asignatura) }}",
@@ -485,7 +485,7 @@
                     },
                     error: function(xhr) {
                         btn.prop('disabled', false).html(
-                            '<i class="fa-solid fa-duotone fa-check me-1"></i> Incorporar a la Lista'
+                            '<i class="fa-solid fa-duotone fa-check me-1"></i>Incorporar a la Lista'
                             );
                         let respuesta = xhr.responseJSON || {
                             message: "Error inesperado"

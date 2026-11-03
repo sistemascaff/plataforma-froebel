@@ -8,14 +8,14 @@
 
         <div class="d-flex gap-2">
             <a class="btn btn-secondary" href="{{ route('prestamos_libros.index') }}">
-                <i class="fa-solid fa-duotone fa-arrow-left me-1"></i> Volver
+                <i class="fa-solid fa-duotone fa-arrow-left me-1"></i>Volver
             </a>
             <a class="btn btn-primary" href="{{ route('prestamos_libros.imprimir', $prestamo_libro->id_prestamo_libro) }}"
                 target="_blank" rel="noopener noreferrer">
-                <i class="fa-solid fa-duotone fa-print me-1"></i> Imprimir
+                <i class="fa-solid fa-duotone fa-print me-1"></i>Imprimir
             </a>
             <a class="btn btn-warning" href="{{ route('prestamos_libros.editar', $prestamo_libro->id_prestamo_libro) }}">
-                <i class="fa-solid fa-duotone fa-edit me-1"></i> Editar
+                <i class="fa-solid fa-duotone fa-edit me-1"></i>Editar
             </a>
         </div>
     </div>
@@ -44,17 +44,17 @@
         <div class="card-body">
             <div class="row g-4">
                 <div class="col-md-5">
-                    <p class="text-muted mb-1 fw-bold"><i class="fa-solid fa-user-graduate me-1"></i> Prestatario</p>
+                    <p class="text-muted mb-1 fw-bold"><i class="fa-solid fa-user-graduate me-1"></i>Prestatario</p>
                     <p class="fs-5 mb-0 text-break" id="persona">
                         {{ "({$prestamo_libro->persona->tipo_perfil}) {$prestamo_libro->persona->apellidos_nombres}" }}
                     </p>
                 </div>
                 <div class="col-md-3">
-                    <p class="text-muted mb-1 fw-bold"><i class="fa-solid fa-chalkboard-user me-1"></i> Curso</p>
+                    <p class="text-muted mb-1 fw-bold"><i class="fa-solid fa-chalkboard-user me-1"></i>Curso</p>
                     <p class="fs-5 mb-0" id="curso">{{ $prestamo_libro->curso ?: 'N/A' }}</p>
                 </div>
                 <div class="col-md-4">
-                    <p class="text-muted mb-1 fw-bold"><i class="fa-solid fa-mobile-screen me-1"></i> Celular</p>
+                    <p class="text-muted mb-1 fw-bold"><i class="fa-solid fa-mobile-screen me-1"></i>Celular</p>
                     <p class="fs-5 mb-0" id="celular">{{ $prestamo_libro->celular ?? '-' }}</p>
                 </div>
             </div>
@@ -63,7 +63,7 @@
 
             <div class="row g-4">
                 <div class="col-md-12">
-                    <p class="text-muted mb-1 fw-bold"><i class="fa-solid fa-calendar-check me-1"></i> Fecha de Devolución
+                    <p class="text-muted mb-1 fw-bold"><i class="fa-solid fa-calendar-check me-1"></i>Fecha de Devolución
                         Estipulada</p>
                     <p
                         class="fs-5 mb-0 {{ strtotime($prestamo_libro->fecha_devolucion) < strtotime(date('Y-m-d')) && $prestamo_libro->estado != 0 ? 'text-danger fw-bold' : 'text-primary fw-bold' }}">
