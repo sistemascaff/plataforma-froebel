@@ -8,10 +8,11 @@
         <div class="row g-3 align-items-end">
             <!-- Nuevo Filtro Periodo -->
             <div class="col-md-3">
-                <label for="rango_fechas" class="form-label text-muted fw-bold">Rango de fechas:</label>
-                <select class="form-select" id="rango_fechas">
+                <label for="filter_rango_fechas" class="form-label text-muted fw-bold">Rango de fechas:</label>
+                <select class="form-select" id="filter_rango_fechas">
+                    <option value="">Todo</option>
                     <option value="hoy">Hoy</option>
-                    <option value="esta_semana">Esta Semana</option>
+                    <option value="esta_semana" selected>Esta Semana</option>
                     <option value="este_mes">Este Mes</option>
                 </select>
             </div>

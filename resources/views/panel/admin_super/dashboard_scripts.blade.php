@@ -14,7 +14,7 @@
                 },
                 data: function(d) {
                     d.tipo_perfil = $('#filter_tipo_perfil').val();
-                    d.rango_fechas = $('#rango_fechas').val();
+                    d.rango_fechas = $('#filter_rango_fechas').val();
                     d.solo_personal = $('#filter_solo_personal').is(':checked') ? 1 : 0;
                 },
                 error: function(xhr, error, thrown) {
@@ -32,6 +32,7 @@
             },
             columns: [{
                     data: null,
+                    className: "align-middle text-center",
                     render: function(data, type, row, meta) {
                         return meta.row + 1; // número de iteración
                     }
@@ -41,9 +42,11 @@
                 },
                 {
                     data: "tipo_perfil",
+                    className: "align-middle text-center",
                 },
                 {
                     data: "estudiante",
+                    className: "align-middle text-center",
                     render: function(data, type, row) {
                         return data ?
                             `<span class="badge bg-info text-dark">${data.curso.curso}</span>` :
@@ -52,8 +55,23 @@
                 },
                 {
                     data: "fecha_nacimiento",
+                    className: "align-middle text-center",
                     render: function(data, type, row) {
                         return data ? moment(data).format('DD/MM/YYYY') : '';
+                    }
+                },
+                {
+                    data: "fecha_nacimiento",
+                    className: "align-middle text-center",
+                    render: function(data, type, row) {
+                        if (!data) return '';
+
+                        // Calcula la edad que cumple/cumplió en el año actual
+                        const anioNacimiento = moment(data).year();
+                        const anioActual = moment().year();
+                        const edadCumplir = anioActual - anioNacimiento;
+
+                        return `<span class="badge bg-primary fs-6 shadow-sm">${edadCumplir}</span>`;
                     }
                 },
             ],

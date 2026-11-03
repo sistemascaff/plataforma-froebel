@@ -31,6 +31,7 @@
                         <th>Perfil</th>
                         <th>Curso</th>
                         <th>Fecha</th>
+                        <th>Cumple (años) {{ date('Y') }}</th>
                     </tr>
                 </thead>
                 <tbody>

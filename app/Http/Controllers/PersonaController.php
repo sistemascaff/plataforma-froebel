@@ -100,33 +100,36 @@ class PersonaController extends Controller
             $filtros['excluir_perfiles'] = ['ESTUDIANTE'];
         }
 
-        $rango_fechas = $request->input('rango_fechas', 'hoy');
+        // Si no se envía el parámetro o viene vacío ("Todos"), no se asigna filtro de fecha
+        $rango_fechas = $request->input('rango_fechas', null);
 
-        switch ($rango_fechas) {
-            case 'hoy':
-                $filtros['dia'] = $now->day;
-                $filtros['mes'] = $now->month;
-                break;
+        if (!empty($rango_fechas)) {
+            switch ($rango_fechas) {
+                case 'hoy':
+                    $filtros['dia'] = $now->day;
+                    $filtros['mes'] = $now->month;
+                    break;
 
-            case 'esta_semana':
-                $inicioSemana = $now->copy()->startOfWeek();
-                $finSemana    = $now->copy()->endOfWeek();
+                case 'esta_semana':
+                    $inicioSemana = $now->copy()->startOfWeek();
+                    $finSemana    = $now->copy()->endOfWeek();
 
-                $filtros['md_inicio'] = $inicioSemana->format('m-d');
-                $filtros['md_fin']    = $finSemana->format('m-d');
-                break;
+                    $filtros['md_inicio'] = $inicioSemana->format('m-d');
+                    $filtros['md_fin']    = $finSemana->format('m-d');
+                    break;
 
-            case 'este_mes':
-                $filtros['solo_mes'] = $now->month;
-                break;
+                case 'este_mes':
+                    $filtros['solo_mes'] = $now->month;
+                    break;
+            }
         }
 
         $personas = (new Persona())->get_all_personas_cumpleanhos($filtros);
 
         return response()->json([
-            'success' => true,
-            'rango_fechas' => $rango_fechas,
-            'data'    => $personas
+            'success'      => true,
+            'rango_fechas' => $rango_fechas ?? 'todos',
+            'data'         => $personas
         ]);
     }
 
