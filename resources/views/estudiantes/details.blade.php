@@ -247,6 +247,12 @@
                 </div>
             </div>
         </div>
+
+        <div class="col-12">
+            <!-- Tarjeta de Horario Semanal del Estudiante -->
+            @include('estudiantes.details_horario')
+        </div>
+
     </div>
 
     @include('components.app.img_modal')
@@ -284,4 +290,6 @@
             });
         });
     </script>
+
+    @include('estudiantes.details_horario_script')
 @endsection

@@ -6,6 +6,7 @@ use App\Models\Curso;
 use App\Models\DetalleListaAsignatura;
 use App\Models\Estudiante;
 use App\Models\ListaAsignatura;
+use App\Models\Periodo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,7 +21,7 @@ class ListaAsignaturaController extends Controller
         ]);
     }
 
-    public function view_details($id_lista_asignatura)
+    public function view_details(int $id_lista_asignatura)
     {
         // 1. Obtener la lista y cargar los estudiantes ordenados alfabéticamente
         $lista_asignatura = (new ListaAsignatura())->get_lista_asignatura($id_lista_asignatura);
@@ -350,7 +351,7 @@ class ListaAsignaturaController extends Controller
         ]);
     }
 
-    public function importar_cursos(Request $request, $id_lista_asignatura)
+    public function importar_cursos(Request $request, int $id_lista_asignatura)
     {
         $request->validate([
             'cursos' => 'required|array|min:1',
@@ -478,6 +479,50 @@ class ListaAsignaturaController extends Controller
             'success'             => true,
             'fecha_hoy'           => $fecha_hoy,
             'fecha_inicio_semana' => $inicio_semana,
+            'periodo_actual'      => $periodo_actual,
+            'data'                => $listas
+        ]);
+    }
+
+    public function horario_estudiante(Request $request)
+    {
+        $tipo_perfil = Auth::user()->persona?->tipo_perfil;
+
+        if ($tipo_perfil === 'ESTUDIANTE') {
+            $id_estudiante = Auth::user()->persona?->estudiante?->id_estudiante;
+        } else {
+            $id_estudiante = $request->id_estudiante;
+        }
+
+        if (!$id_estudiante) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El usuario no tiene un perfil de estudiante asignado o no se especificó un estudiante.'
+            ], 403);
+        }
+
+        $now = now();
+        $fecha_hoy = $now->format('Y-m-d');
+
+        // La semana inicia en Lunes
+        $inicio_semana = $now->copy()->startOfWeek()->format('Y-m-d');
+        $fin_semana = $now->copy()->endOfWeek()->format('Y-m-d');
+
+        $listas = (new ListaAsignatura())->get_horario_semanal_estudiante($id_estudiante, $fecha_hoy, $inicio_semana, $fin_semana);
+
+        // Obtenemos el periodo actual evaluando que $fecha_hoy esté entre fecha_inicio y fecha_fin
+        $periodo_actual = $listas->first()?->periodo?->periodo
+            ?? Periodo::where('estado', 1)
+            ->whereDate('fecha_inicio', '<=', $fecha_hoy)
+            ->whereDate('fecha_fin', '>=', $fecha_hoy)
+            ->value('periodo')
+            ?? 'SIN PERIODO ACTIVO';
+
+        return response()->json([
+            'success'             => true,
+            'fecha_hoy'           => $fecha_hoy,
+            'fecha_inicio_semana' => $inicio_semana,
+            'fin_semana'          => $fin_semana,
             'periodo_actual'      => $periodo_actual,
             'data'                => $listas
         ]);

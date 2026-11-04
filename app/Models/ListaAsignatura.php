@@ -132,7 +132,7 @@ class ListaAsignatura extends Model
             ->get();
     }
 
-    public function get_lista_asignatura($id_lista_asignatura)
+    public function get_lista_asignatura(int $id_lista_asignatura)
     {
         return $this->with([
             'asignatura:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',
@@ -220,6 +220,46 @@ class ListaAsignatura extends Model
                         ->select('id_estudiante_asistencia', 'id_lista_asignatura', 'id_horario_asignatura', 'fecha');
                 },
                 'periodo:id_periodo,id_gestion,periodo,estado' // Aseguramos traer el periodo para la vista
+            ])
+            ->get();
+    }
+
+    /**
+     * Obtiene las clases asignadas a un estudiante con sus horarios, docente
+     * y el estado de su asistencia personal en la semana actual,
+     * asegurando que la fecha pertenezca al periodo en curso.
+     */
+    public function get_horario_semanal_estudiante(int $id_estudiante, string $fecha_hoy, string $inicio_semana, string $fin_semana)
+    {
+        return $this::whereHas('estudiantes', function ($q) use ($id_estudiante) {
+            $q->where('estudiantes.id_estudiante', $id_estudiante);
+        })
+            ->whereHas('periodo', function ($q) use ($fecha_hoy) {
+                $q->where('estado', 1)
+                    ->whereDate('fecha_inicio', '<=', $fecha_hoy)
+                    ->whereDate('fecha_fin', '>=', $fecha_hoy);
+            })
+            ->where('estado', 1)
+            ->with([
+                'asignatura:id_asignatura,id_aula,asignatura,tipo_bloque,estado',
+                'asignatura.aula:id_aula,aula',
+                'asignatura.horarios_asignaturas' => function ($q) {
+                    $q->where('estado', 1)->orderBy('hora_inicio', 'ASC');
+                },
+                'docente:id_docente,id_persona,estado',
+                'docente.persona:id_persona,apellido_paterno,apellido_materno,nombres',
+                'estudiantes_asistencias' => function ($q) use ($inicio_semana, $fin_semana, $id_estudiante) {
+                    // Traemos las asistencias de la semana actual junto con el estado del estudiante
+                    $q->whereBetween('fecha', [$inicio_semana, $fin_semana])
+                        ->select('id_estudiante_asistencia', 'id_lista_asignatura', 'id_horario_asignatura', 'fecha')
+                        ->with([
+                            'detalles_estudiantes_asistencias' => function ($qDetalle) use ($id_estudiante) {
+                                $qDetalle->where('id_estudiante', $id_estudiante)
+                                    ->select('id_estudiante_asistencia', 'id_estudiante', 'tipo', 'tiempo_atraso', 'id_estudiante_licencia');
+                            }
+                        ]);
+                },
+                'periodo:id_periodo,id_gestion,periodo,fecha_inicio,fecha_fin,estado'
             ])
             ->get();
     }

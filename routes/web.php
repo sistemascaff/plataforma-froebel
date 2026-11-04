@@ -130,6 +130,7 @@ Route::middleware(['session.acceso'])->group(function () {
         Route::controller(ListaAsignaturaController::class)->group(function () {
             Route::get('listas_asignaturas', 'view_index')->name('listas_asignaturas.index');
             Route::get('listas_asignaturas/horario_docente', 'horario_docente')->name('listas_asignaturas.horario_docente');
+            Route::get('listas_asignaturas/horario_estudiante', 'horario_estudiante')->name('listas_asignaturas.horario_estudiante');
             Route::get('listas_asignaturas/listar', 'listar')->name('listas_asignaturas.listar');
             Route::get('listas_asignaturas/{lista_asignatura}', 'mostrar')->name('listas_asignaturas.mostrar');
             Route::get('listas_asignaturas/{lista_asignatura}/detalles', 'view_details')->name('listas_asignaturas.detalles');

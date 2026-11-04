@@ -45,19 +45,24 @@
                                 };
 
                                 $textoTipo = match ($tipo) {
-                                    'PRESENTE' => 'Presente',
                                     'ATRASO' => $asistencia->pivot->tiempo_atraso
-                                        ? 'Atraso (' . $asistencia->pivot->tiempo_atraso . ' min)'
-                                        : 'Atraso',
-                                    'FALTA' => 'Falta',
-                                    'LICENCIA' => 'Licencia',
-                                    'PERMISO' => 'Permiso',
-                                    'OTROS' => 'Otros',
-                                    default => 'Desconocido',
+                                        ? 'ATRASO (' . $asistencia->pivot->tiempo_atraso . ' min)'
+                                        : 'ATRASO',
+                                    default => $tipo,
+                                };
+
+                                $icon = match ($tipo) {
+                                    'PRESENTE' => '<i class="fa-solid fa-duotone fa-check-circle me-1"></i>',
+                                    'ATRASO' => '<i class="fa-solid fa-duotone fa-hourglass-half me-1"></i>',
+                                    'FALTA' => '<i class="fa-solid fa-duotone fa-times-circle me-1"></i>',
+                                    'LICENCIA' => '<i class="fa-solid fa-duotone fa-file-medical me-1"></i>',
+                                    'PERMISO' => '<i class="fa-solid fa-duotone fa-file-signature me-1"></i>',
+                                    'OTROS' => '<i class="fa-solid fa-duotone fa-calendar-star me-1"></i>',
+                                    default => '<i class="fa-solid fa-duotone fa-question-circle me-1"></i>',
                                 };
                             @endphp
-                            <span class="badge {{ $badgeClass }} px-3 py-2 shadow-sm">
-                                {{ $textoTipo }}
+                            <span class="badge {{ $badgeClass }}">
+                                {!! $icon !!}{{ $textoTipo }}
                             </span>
                         </td>
                     </tr>
