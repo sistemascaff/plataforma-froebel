@@ -294,14 +294,14 @@
                         if (PUEDE_EDITAR) {
                             botones +=
                                 `<button class="btn btn-sm btn-warning btn-editar" data-id="${row.id_estudiante_licencia}">
-                                    <i class="fa-solid fa-duotone fa-pen-to-square"></i>
+                                    <i class="fa-solid fa-duotone fa-edit me-1"></i>Editar
                                 </button>`
                         }
 
                         if (PUEDE_ELIMINAR) {
                             botones +=
                                 `<button class="btn btn-sm btn-danger btn-eliminar" data-id="${row.id_estudiante_licencia}">
-                                    <i class="fa-solid fa-duotone fa-trash"></i>
+                                    <i class="fa-solid fa-duotone fa-trash me-1"></i>Eliminar
                                 </button>`
                         }
 
@@ -312,6 +312,11 @@
                 }
             ],
             ...dtDefaults,
+            // Ajustes específicos para ver todas las columnas sin que se colapse automáticamente por responsividad, que sobreescriben a la constante dtDefaults.
+            responsive: false,
+            lengthChange: true,
+            autoWidth: false,
+            scrollX: true,
         }).buttons().container().appendTo('#dataTable-export-buttons-container');
 
         $("#btn-filtrar").on("click", function(e) {

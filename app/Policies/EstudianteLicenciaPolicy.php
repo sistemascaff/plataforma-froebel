@@ -31,7 +31,7 @@ class EstudianteLicenciaPolicy
         $perfil = $usuario->persona?->tipo_perfil;
 
         // Los roles de solo lectura permitidos por el middleware en web.php
-        return in_array($perfil, ['GERENTE GENERAL', 'DIRECTOR', 'DIRECTOR DE NIVEL']);
+        return in_array($perfil, ['GERENTE GENERAL', 'DIRECTOR', 'DIRECTOR DE NIVEL', 'REGENTE']);
     }
 
     /**
@@ -41,7 +41,7 @@ class EstudianteLicenciaPolicy
     {
         $perfil = $usuario->persona?->tipo_perfil;
 
-        return in_array($perfil, ['GERENTE GENERAL', 'DIRECTOR', 'DIRECTOR DE NIVEL']);
+        return in_array($perfil, ['GERENTE GENERAL', 'DIRECTOR', 'DIRECTOR DE NIVEL', 'REGENTE']);
     }
 
     /**

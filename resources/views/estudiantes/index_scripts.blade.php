@@ -163,6 +163,60 @@
                     }
                 },
                 {
+                    data: null,
+                    orderable: false,
+                    searchable: false,
+                    render: function(data, type, row) {
+                        const url_detalles = "{{ route('estudiantes.detalles', ':id') }}"
+                            .replace(':id', row.id_estudiante);
+                        const url_licencia =
+                            `{{ route('estudiantes_licencias.index') }}?id_estudiante=${row.id_estudiante}`;
+
+                        let botones = `<div class="btn-group" role="group">`;
+
+                        if (PUEDE_CREAR_LICENCIAS) {
+                            botones += `
+                            <a class="btn btn-info btn-sm" href="${url_licencia}" target="_blank" rel="noopener noreferrer"
+                                data-toggle="tooltip" title="Registrar licencia">
+                                <i class="fa-duotone fa-solid fa-file-medical me-1"></i>Crear licencia
+                            </a>`;
+                        }
+
+                        // El botón de detalles suele ser público/accesible por defecto
+                        botones += `
+                            <a class="btn btn-primary btn-sm" href="${url_detalles}" target="_blank" rel="noopener noreferrer"
+                                data-toggle="tooltip" title="Detalles">
+                                <i class="fa-duotone fa-solid fa-list me-1"></i>Detalles
+                            </a>`;
+
+                        if (PUEDE_EDITAR) {
+                            botones += `
+                            <button type="button" class="btn btn-warning btn-sm btn-editar"
+                                    data-id="${row.id_estudiante}" data-toggle="tooltip" title="Editar">
+                                <i class="fa-duotone fa-solid fa-edit me-1"></i>Editar
+                            </button>`;
+                        }
+
+                        if (PUEDE_ELIMINAR) {
+                            let colorBtn = row.estado == 1 ? 'danger' : 'success';
+                            let iconBtn = row.estado == 1 ? 'off' : 'on';
+                            let titleBtn = row.estado == 1 ? 'Archivar' : 'Desarchivar';
+
+                            botones += `
+                            <button type="button" class="btn btn-${colorBtn} btn-sm btn-cambiar-estado"
+                                    data-id="${row.id_estudiante}" data-estado="${row.estado}"
+                                    data-nombre="${row.persona.apellidos_nombres}"
+                                    data-toggle="tooltip" title="${titleBtn}">
+                                <i class="fa-duotone fa-solid fa-toggle-${iconBtn} me-1"></i>${titleBtn}
+                            </button>`;
+                        }
+
+                        botones += `</div>`;
+
+                        return botones;
+                    }
+                },
+                {
                     data: "curso.curso",
                     render: function(data) {
                         return `<span class="badge bg-info text-dark">${data}</span>`;
@@ -192,10 +246,12 @@
                     data: "persona.documento_identificacion"
                 },
                 {
-                    data: "persona.documento_complemento"
+                    data: "persona.documento_complemento",
+                    visible: ES_ADMINISTRADOR,
                 },
                 {
-                    data: "persona.documento_expedido"
+                    data: "persona.documento_expedido",
+                    visible: ES_ADMINISTRADOR,
                 },
                 {
                     data: "persona.fecha_nacimiento",
@@ -242,6 +298,7 @@
                 },
                 {
                     data: "persona.usuario.tiene_acceso",
+                    visible: ES_ADMINISTRADOR,
                     render: function(data) {
                         if (data == 1) return '<span class="badge bg-success">SI</span>';
                         if (data == 0) return '<span class="badge bg-danger">NO</span>';
@@ -340,63 +397,14 @@
                     render: function(data) {
                         return data || '-';
                     }
-                },
-                {
-                    data: null,
-                    orderable: false,
-                    searchable: false,
-                    render: function(data, type, row) {
-                        const url_detalles = "{{ route('estudiantes.detalles', ':id') }}"
-                            .replace(':id', row.id_estudiante);
-                        const url_licencia =
-                            `{{ route('estudiantes_licencias.index') }}?id_estudiante=${row.id_estudiante}`;
-
-                        let botones = `<div class="btn-group" role="group">`;
-
-                        if (PUEDE_CREAR_LICENCIAS) {
-                            botones += `
-                            <a class="btn btn-info btn-sm" href="${url_licencia}" target="_blank" rel="noopener noreferrer"
-                                data-toggle="tooltip" title="Registrar licencia">
-                                <i class="fa-duotone fa-solid fa-file-medical"></i>
-                            </a>`;
-                        }
-
-                        // El botón de detalles suele ser público/accesible por defecto
-                        botones += `
-                            <a class="btn btn-primary btn-sm" href="${url_detalles}" target="_blank" rel="noopener noreferrer"
-                                data-toggle="tooltip" title="Detalles">
-                                <i class="fa-duotone fa-solid fa-eye"></i>
-                            </a>`;
-
-                        if (PUEDE_EDITAR) {
-                            botones += `
-                            <button type="button" class="btn btn-warning btn-sm btn-editar"
-                                    data-id="${row.id_estudiante}" data-toggle="tooltip" title="Editar">
-                                <i class="fa-duotone fa-solid fa-edit"></i>
-                            </button>`;
-                        }
-
-                        if (PUEDE_ELIMINAR) {
-                            let colorBtn = row.estado == 1 ? 'danger' : 'success';
-                            let iconBtn = row.estado == 1 ? 'off' : 'on';
-                            let titleBtn = row.estado == 1 ? 'Archivar' : 'Activar';
-
-                            botones += `
-                            <button type="button" class="btn btn-${colorBtn} btn-sm btn-cambiar-estado"
-                                    data-id="${row.id_estudiante}" data-estado="${row.estado}"
-                                    data-nombre="${row.persona.apellidos_nombres}"
-                                    data-toggle="tooltip" title="${titleBtn}">
-                                <i class="fa-duotone fa-solid fa-toggle-${iconBtn}"></i>
-                            </button>`;
-                        }
-
-                        botones += `</div>`;
-
-                        return botones;
-                    }
                 }
             ],
             ...dtDefaults,
+            // Ajustes específicos para ver todas las columnas sin que se colapse automáticamente por responsividad, que sobreescriben a la constante dtDefaults.
+            responsive: false,
+            lengthChange: true,
+            autoWidth: false,
+            scrollX: true,
         }).buttons().container().appendTo('#dataTable-export-buttons-container');
 
         $("#btn-filtrar").on("click", function(e) {

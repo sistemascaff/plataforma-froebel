@@ -89,6 +89,7 @@
                     <thead>
                         <tr>
                             <th class="text-center">#</th>
+                            <th class="text-center">Acciones</th>
                             <th>Curso</th>
                             <th class="text-center">Foto de perfil</th>
                             <th>Ap. paterno</th>
@@ -124,7 +125,6 @@
                             <th>Archivado por</th>
                             <th>Ip</th>
                             <th>Dispositivo</th>
-                            <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
                 </table>

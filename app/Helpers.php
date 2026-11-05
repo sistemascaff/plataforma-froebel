@@ -73,6 +73,7 @@ if (! function_exists('helper_tipo_perfil_a_font_awesome_icono')) {
             'DIRECTOR DE NIVEL' => 'fa-chalkboard-user',
             'COORDINADOR' => 'fa-chalkboard-user',
             'DOCENTE' => 'fa-chalkboard-teacher',
+            'REGENTE' => 'fa-chalkboard-user',
             'TUTOR' => 'fa-people-roof', //nota: aquí se refiere tanto a socio o padre de familia o tutor*
             'ESTUDIANTE' => 'fa-user-graduate',
             default => 'fa-circle-question'

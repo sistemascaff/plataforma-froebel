@@ -37,31 +37,35 @@ class UsuarioController extends Controller
 
         if ($tipo_perfil === 'ADMINISTRADOR' || $tipo_perfil === 'GERENTE GENERAL') {
             return view('panel.admin_super.dashboard', [
-                'head_title' => 'PANEL DE ' . $tipo_perfil,
+                'head_title' => "PANEL DE {$tipo_perfil}",
             ]);
         } else if ($tipo_perfil === 'DIRECTOR') {
             return view('panel.director.dashboard', [
-                'head_title' => 'PANEL DE ' . $tipo_perfil,
+                'head_title' => "PANEL DE {$tipo_perfil}",
             ]);
         } else if ($tipo_perfil === 'SECRETARIA ACADEMICA') {
             return view('panel.secretaria_academica.dashboard', [
-                'head_title' => 'PANEL DE ' . $tipo_perfil,
+                'head_title' => "PANEL DE {$tipo_perfil}",
             ]);
         } else if ($tipo_perfil === 'BIBLIOTECARIA') {
             return view('panel.biblioteca.dashboard', [
-                'head_title' => 'PANEL DE ' . $tipo_perfil,
+                'head_title' => "PANEL DE {$tipo_perfil}",
             ]);
         } else if ($tipo_perfil === 'DIRECTOR DE NIVEL') {
             return view('panel.subdirector.dashboard', [
-                'head_title' => 'PANEL DE ' . $tipo_perfil,
+                'head_title' => "PANEL DE {$tipo_perfil}",
             ]);
         } else if ($tipo_perfil === 'COORDINADOR') {
             return view('panel.coordinador.dashboard', [
-                'head_title' => 'PANEL DE ' . $tipo_perfil,
+                'head_title' => "PANEL DE {$tipo_perfil}",
             ]);
         } else if ($tipo_perfil === 'DOCENTE') {
             return view('panel.docente.dashboard', [
-                'head_title' => 'PANEL DE ' . $tipo_perfil,
+                'head_title' => "PANEL DE {$tipo_perfil}",
+            ]);
+        } else if ($tipo_perfil === 'REGENTE') {
+            return view('panel.regente.dashboard', [
+                'head_title' => "PANEL DE {$tipo_perfil}",
             ]);
         } else {
             return redirect()->route('main.index');

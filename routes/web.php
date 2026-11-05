@@ -86,7 +86,7 @@ Route::middleware(['session.acceso'])->group(function () {
     // ==========================================
     // MÓDULO DE GESTIÓN ESTUDIANTIL Y LICENCIAS
     // ==========================================
-    Route::middleware(['perfil:ADMINISTRADOR,GERENTE GENERAL,SECRETARIA ACADEMICA,DIRECTOR,DIRECTOR DE NIVEL,COORDINADOR'])->group(function () {
+    Route::middleware(['perfil:ADMINISTRADOR,GERENTE GENERAL,SECRETARIA ACADEMICA,DIRECTOR,DIRECTOR DE NIVEL,COORDINADOR,REGENTE'])->group(function () {
         Route::controller(EstudianteController::class)->group(function () {
             Route::get('estudiantes', 'view_index')->name('estudiantes.index');
             Route::get('estudiantes/listar', 'listar')->name('estudiantes.listar');
@@ -104,6 +104,10 @@ Route::middleware(['session.acceso'])->group(function () {
             Route::post('estudiantes_licencias', 'create')->name('estudiantes_licencias.create');
             Route::put('estudiantes_licencias/{estudiante_licencia}', 'update')->name('estudiantes_licencias.update');
             Route::patch('estudiantes_licencias/{estudiante_licencia}', 'delete')->name('estudiantes_licencias.delete');
+        });
+
+        Route::controller(ListaAsignaturaController::class)->group(function () {
+            Route::get('listas_asignaturas/horario_estudiante', 'horario_estudiante')->name('listas_asignaturas.horario_estudiante');
         });
     });
 
@@ -130,13 +134,12 @@ Route::middleware(['session.acceso'])->group(function () {
         Route::controller(ListaAsignaturaController::class)->group(function () {
             Route::get('listas_asignaturas', 'view_index')->name('listas_asignaturas.index');
             Route::get('listas_asignaturas/horario_docente', 'horario_docente')->name('listas_asignaturas.horario_docente');
-            Route::get('listas_asignaturas/horario_estudiante', 'horario_estudiante')->name('listas_asignaturas.horario_estudiante');
             Route::get('listas_asignaturas/listar', 'listar')->name('listas_asignaturas.listar');
             Route::get('listas_asignaturas/{lista_asignatura}', 'mostrar')->name('listas_asignaturas.mostrar');
             Route::get('listas_asignaturas/{lista_asignatura}/detalles', 'view_details')->name('listas_asignaturas.detalles');
             Route::put('listas_asignaturas/{lista_asignatura}', 'update')->name('listas_asignaturas.update');
             Route::patch('listas_asignaturas/{lista_asignatura}/docente', 'actualizar_docente')->name('listas_asignaturas.actualizar_docente');
-            Route::post('listas_asignaturas/{lista_asignatura}/importar-cursos', 'importar_cursos')->name('listas_asignaturas.importar_cursos');
+            Route::post('listas_asignaturas/{lista_asignatura}/importar_cursos', 'importar_cursos')->name('listas_asignaturas.importar_cursos');
         });
 
         Route::controller(EstudianteAsistenciaController::class)->group(function () {
