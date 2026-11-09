@@ -6,7 +6,9 @@ use App\Models\Asignatura;
 use App\Models\Coordinacion;
 use App\Models\Curso;
 use App\Models\DetalleEstudianteAsistencia;
+use App\Models\DetalleListaAsignatura;
 use App\Models\Docente;
+use App\Models\Estudiante;
 use App\Models\EstudianteAsistencia;
 use App\Models\EstudianteLicencia;
 use App\Models\ListaAsignatura;
@@ -43,12 +45,118 @@ class EstudianteAsistenciaController extends Controller
 
     public function view_create($lista_asignatura)
     {
-        $lista_asignatura = (new ListaAsignatura())->get_lista_asignatura($lista_asignatura);
+        $id_lista_asignatura = $lista_asignatura;
+        $lista_asignatura = (new ListaAsignatura())->get_lista_asignatura($id_lista_asignatura);
 
         $this->authorize('create', [EstudianteAsistencia::class, $lista_asignatura]);
 
-        $estudiantes_licencias = [];
+        $asignatura = $lista_asignatura->asignatura;
+        $anio_gestion = $lista_asignatura->periodo->gestion->anio;
+        $anio_actual = date('Y');
 
+        $cambios = []; // Array para registrar los mensajes de cambios para el docente
+
+        // 1. Validar que la lista sea de la gestión actual y el periodo esté activo
+        if ($anio_gestion == $anio_actual && $lista_asignatura->periodo->estado == 1) {
+
+            // ====================================================================
+            // LÓGICA PARA BLOQUE: CURSO
+            // ====================================================================
+            if ($asignatura->tipo_bloque === 'curso' && !is_null($asignatura->id_curso)) {
+                // A.1 LIMPIEZA INACTIVOS
+                $inactivosAEliminar = DetalleListaAsignatura::with('estudiante.persona')
+                    ->where('id_lista_asignatura', $id_lista_asignatura)
+                    ->whereHas('estudiante', fn($q) => $q->where('estado', 0))
+                    ->get();
+
+                if ($inactivosAEliminar->isNotEmpty()) {
+                    foreach ($inactivosAEliminar as $detalle) {
+                        $persona = $detalle->estudiante->persona;
+                        $cambios[] = "<p class='text-danger mb-2'><i class='fa-solid fa-user-minus me-2'></i> Se ha retirado de la lista al estudiante <b>{$persona->apellidos_nombres}</b> (Retirado/Inactivo).</p>";
+                    }
+                    DetalleListaAsignatura::whereIn('id_estudiante', $inactivosAEliminar->pluck('id_estudiante'))
+                        ->where('id_lista_asignatura', $id_lista_asignatura)
+                        ->delete();
+                }
+
+                // A.2 LIMPIEZA AJENOS (Cambios de paralelo/curso)
+                $ajenosAEliminar = DetalleListaAsignatura::with('estudiante.persona', 'estudiante.curso')
+                    ->where('id_lista_asignatura', $id_lista_asignatura)
+                    ->whereHas('estudiante', fn($q) => $q->where('id_curso', '!=', $asignatura->id_curso))
+                    ->get();
+
+                if ($ajenosAEliminar->isNotEmpty()) {
+                    foreach ($ajenosAEliminar as $detalle) {
+                        $persona = $detalle->estudiante->persona;
+                        $cursoErroneo = $detalle->estudiante->curso->curso ?? 'Otro curso';
+                        $cambios[] = "<p class='text-danger mb-2'><i class='fa-solid fa-user-slash me-2'></i> Se ha retirado a <b>{$persona->apellidos_nombres}</b> porque ahora pertenece a <b>{$cursoErroneo}</b>.</p>";
+                    }
+                    DetalleListaAsignatura::whereIn('id_estudiante', $ajenosAEliminar->pluck('id_estudiante'))
+                        ->where('id_lista_asignatura', $id_lista_asignatura)
+                        ->delete();
+                }
+
+                // B. INSERCIÓN: IDs actuales en lista (limpios de inactivos y ajenos)
+                $estudiantesEnLista = DetalleListaAsignatura::where('id_lista_asignatura', $id_lista_asignatura)
+                    ->pluck('id_estudiante')
+                    ->toArray();
+
+                // C. FALTANTES: Agregar los que no estén y sigan activos en el curso actual
+                $estudiantesFaltantes = Estudiante::with('persona')
+                    ->where('id_curso', $asignatura->id_curso)
+                    ->where('estado', 1)
+                    ->whereNotIn('id_estudiante', $estudiantesEnLista)
+                    ->get();
+
+                if ($estudiantesFaltantes->isNotEmpty()) {
+                    $nuevosDetalles = [];
+                    foreach ($estudiantesFaltantes as $estudiante) {
+                        $persona = $estudiante->persona;
+                        $cambios[] = "<p class='text-success mb-2'><i class='fa-solid fa-user-plus me-2'></i> Se ha incorporado a la lista al estudiante <b>{$persona->apellidos_nombres}</b>.</p>";
+                        $nuevosDetalles[] = [
+                            'id_lista_asignatura' => $id_lista_asignatura,
+                            'id_estudiante'       => $estudiante->id_estudiante,
+                        ];
+                    }
+                    DetalleListaAsignatura::insert($nuevosDetalles);
+                }
+
+                // ====================================================================
+                // LÓGICA PARA BLOQUE: MIXTO
+                // ====================================================================
+            } elseif ($asignatura->tipo_bloque === 'mixto' && is_null($asignatura->id_curso)) {
+                // A. LIMPIEZA ÚNICAMENTE: Retirar estudiantes inactivos
+                $detallesAEliminar = DetalleListaAsignatura::with('estudiante.persona')
+                    ->where('id_lista_asignatura', $id_lista_asignatura)
+                    ->whereHas('estudiante', fn($q) => $q->where('estado', 0))
+                    ->get();
+
+                if ($detallesAEliminar->isNotEmpty()) {
+                    foreach ($detallesAEliminar as $detalle) {
+                        $persona = $detalle->estudiante->persona;
+                        $cambios[] = "<p class='text-danger mb-2'><i class='fa-solid fa-user-minus me-2'></i> Se ha retirado automáticamente de la lista mixta al estudiante <b>{$persona->apellidos_nombres}</b> (Retirado/Inactivo).</p>";
+                    }
+                    DetalleListaAsignatura::whereIn('id_estudiante', $detallesAEliminar->pluck('id_estudiante'))
+                        ->where('id_lista_asignatura', $id_lista_asignatura)
+                        ->delete();
+                }
+            }
+        }
+
+        // 2. Recargar siempre la relación de estudiantes con ordenamiento alfabético estricto
+        $lista_asignatura->load([
+            'estudiantes' => function ($query) {
+                $query->join('personas', 'estudiantes.id_persona', '=', 'personas.id_persona')
+                    ->orderBy('personas.apellido_paterno', 'asc')
+                    ->orderBy('personas.apellido_materno', 'asc')
+                    ->orderBy('personas.nombres', 'asc')
+                    ->select('estudiantes.*');
+            },
+            'estudiantes.persona.usuario',
+            'estudiantes.curso'
+        ]);
+
+        // 3. Obtener horarios de la asignatura
         $a = Asignatura::with([
             'horarios_asignaturas:id_horario_asignatura,id_nivel,id_gestion,denominacion,hora_inicio,hora_fin,estado',
             'horarios_asignaturas.gestion:id_gestion,anio,estado'
@@ -56,7 +164,9 @@ class EstudianteAsistenciaController extends Controller
 
         $horarios = $a->horarios_asignaturas;
 
-        // Obtener licencias vigentes en una sola consulta
+        // 4. Obtener licencias vigentes en una sola consulta (ya con la nómina sincronizada)
+        $estudiantes_licencias = [];
+
         if ($lista_asignatura->estudiantes->isNotEmpty()) {
             $estudiantesIds = $lista_asignatura->estudiantes->pluck('id_estudiante')->toArray();
 
@@ -79,6 +189,7 @@ class EstudianteAsistenciaController extends Controller
             'lista_asignatura' => $lista_asignatura,
             'estudiantes_licencias' => $estudiantes_licencias,
             'horarios' => $horarios,
+            'cambios' => $cambios,
         ]);
     }
 

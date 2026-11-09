@@ -11,6 +11,14 @@
         </a>
     </div>
 
+    @if (!empty($cambios) && count($cambios) > 0)
+        <div class="mb-3">
+            <button type="button" class="btn btn-warning shadow-sm" data-bs-toggle="modal" data-bs-target="#modalCambios">
+                <i class="fa-solid fa-triangle-exclamation me-2"></i>Ver cambios recientes en la lista
+            </button>
+        </div>
+    @endif
+
     <div class="card shadow-sm mb-4">
         <div class="card-header p-3 d-flex justify-content-between align-items-center">
             <h5 class="fw-bold mb-0 text-primary">
@@ -342,6 +350,11 @@
         @endif
     </form>
 
+    {{-- Modal de Cambios Automáticos --}}
+    @if (!empty($cambios) && count($cambios) > 0)
+        @include('listas_asignaturas.details_modal_cambios')
+    @endif
+
     @include('components.app.img_modal')
 
     @include('estudiantes_asistencias.modal_asistencias_historial')
@@ -358,4 +371,12 @@
     @include('estudiantes_asistencias.create_scripts')
 
     @include('estudiantes_asistencias.modal_asistencias_historial_scripts')
+
+    <script>
+        // ─── Modal Automático de Sincronización ──────────────────────────────────
+        @if (!empty($cambios) && count($cambios) > 0)
+            const modalCambios = new bootstrap.Modal(document.getElementById('modalCambios'));
+            modalCambios.show();
+        @endif
+    </script>
 @endsection

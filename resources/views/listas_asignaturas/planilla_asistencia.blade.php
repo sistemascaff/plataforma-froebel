@@ -32,7 +32,7 @@
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 small">
             <div>
                 <i class="fa-solid fa-duotone fa-circle-info me-1"></i>
-                <b>Simbología Oficial:</b>
+                <b>Simbología:</b>
                 <span class="badge bg-success ms-1">(.) Presente</span>
                 <span class="badge bg-danger ms-1">(F) Falta</span>
                 <span class="badge bg-warning text-dark ms-1">(A) Atraso</span>
