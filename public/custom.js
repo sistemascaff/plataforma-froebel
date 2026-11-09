@@ -1,3 +1,36 @@
+// Función para normalizar texto (quita acentos y convierte a minúsculas)
+function normalizarTexto(texto) {
+    if (!texto) return '';
+    return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+// Matcher personalizado para Select2
+// Para utilizar esto en cualquier Select2 se le debe pasar el parámetro {matcher: matchFlexible}
+function matchFlexible(params, data) {
+    // Si no hay término de búsqueda, retorna todas las opciones
+    if ($.trim(params.term) === '') {
+        return data;
+    }
+    
+    // Omitir si la opción no tiene texto
+    if (typeof data.text === 'undefined') {
+        return null;
+    }
+
+    let terminoBusqueda = normalizarTexto(params.term);
+    let textoOpcion = normalizarTexto(data.text);
+
+    // Dividir la búsqueda en palabras y validar que TODAS existan en el texto de la opción
+    let palabras = terminoBusqueda.split(' ').filter(p => p.length > 0);
+    let coincideTodas = palabras.every(palabra => textoOpcion.includes(palabra));
+
+    if (coincideTodas) {
+        return data;
+    }
+    
+    return null;
+}
+
 // Crear objeto global de Helpers ANTES del document.ready
 window.Helpers = window.Helpers || {};
 

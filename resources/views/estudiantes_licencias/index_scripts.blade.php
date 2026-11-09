@@ -20,7 +20,8 @@
                 dropdownCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' :
                     '',
                 selectionCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' :
-                    ''
+                    '',
+                matcher: matchFlexible,
             };
 
             if ($select.hasClass('select2')) {

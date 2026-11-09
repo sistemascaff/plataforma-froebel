@@ -111,6 +111,7 @@
                 closeOnSelect: false, // Permite elegir varios sin que se cierre el desplegable
                 dropdownCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
                 selectionCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
+                matcher: matchFlexible,
             });
 
             // 2. Cargar catálogo de estudiantes y sincronizar opciones disponibles

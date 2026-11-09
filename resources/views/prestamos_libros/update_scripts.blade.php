@@ -7,6 +7,7 @@
             language: "es",
             dropdownCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
             selectionCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
+            matcher: matchFlexible,
         });
 
         function recargarPersonasSelect(idSeleccionado = null) {
