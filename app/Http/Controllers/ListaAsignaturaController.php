@@ -7,6 +7,7 @@ use App\Models\DetalleListaAsignatura;
 use App\Models\Estudiante;
 use App\Models\ListaAsignatura;
 use App\Models\Periodo;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -525,6 +526,272 @@ class ListaAsignaturaController extends Controller
             'fin_semana'          => $fin_semana,
             'periodo_actual'      => $periodo_actual,
             'data'                => $listas
+        ]);
+    }
+
+    public function view_planilla_asistencia(Request $request, int $id_lista_asignatura)
+    {
+        // 1. Obtener la lista con metadatos institucionales y asistencias dentro del periodo
+        $lista_asignatura = (new ListaAsignatura())->get_datos_planilla_asistencia($id_lista_asignatura);
+
+        $this->authorize('view', $lista_asignatura);
+
+        $asignatura = $lista_asignatura->asignatura;
+        $anio_gestion = $lista_asignatura->periodo->gestion->anio;
+        $anio_actual = date('Y');
+
+        // 2. Sincronizar el padrón actual si es la gestión vigente y el periodo está activo
+        if ($anio_gestion == $anio_actual && $lista_asignatura->periodo->estado == 1) {
+            if ($asignatura->tipo_bloque === 'curso' && !is_null($asignatura->id_curso)) {
+                // Retirar inactivos o de otro curso de la lista actual
+                DetalleListaAsignatura::where('id_lista_asignatura', $id_lista_asignatura)
+                    ->whereHas('estudiante', function ($q) use ($asignatura) {
+                        $q->where('estado', 0)
+                            ->orWhere('id_curso', '!=', $asignatura->id_curso);
+                    })
+                    ->delete();
+
+                // Incorporar estudiantes activos faltantes del curso
+                $enListaIds = DetalleListaAsignatura::where('id_lista_asignatura', $id_lista_asignatura)
+                    ->pluck('id_estudiante')
+                    ->toArray();
+
+                $faltantesIds = Estudiante::where('id_curso', $asignatura->id_curso)
+                    ->where('estado', 1)
+                    ->whereNotIn('id_estudiante', $enListaIds)
+                    ->pluck('id_estudiante')
+                    ->toArray();
+
+                if (!empty($faltantesIds)) {
+                    $nuevos = array_map(fn($id_est) => [
+                        'id_lista_asignatura' => $id_lista_asignatura,
+                        'id_estudiante'       => $id_est,
+                    ], $faltantesIds);
+                    DetalleListaAsignatura::insert($nuevos);
+                }
+            } elseif ($asignatura->tipo_bloque === 'mixto' && is_null($asignatura->id_curso)) {
+                // En bloque mixto solo retiramos estudiantes inactivos (estado = 0)
+                DetalleListaAsignatura::where('id_lista_asignatura', $id_lista_asignatura)
+                    ->whereHas('estudiante', fn($q) => $q->where('estado', 0))
+                    ->delete();
+            }
+        }
+
+        // 3. Obtener IDs de estudiantes ACTUALMENTE inscritos en la lista
+        $idsActuales = DetalleListaAsignatura::where('id_lista_asignatura', $id_lista_asignatura)
+            ->pluck('id_estudiante')
+            ->toArray();
+        $mapaActuales = array_flip($idsActuales); // Búsqueda O(1)
+
+        // 4. Obtener IDs de estudiantes HISTÓRICOS (que tuvieron asistencias en este periodo y fueron retirados)
+        $asistencias = $lista_asignatura->estudiantes_asistencias;
+        $idsHistoricos = $asistencias->flatMap(function ($asistencia) {
+            return $asistencia->detalles_estudiantes_asistencias->pluck('id_estudiante');
+        })->unique()->values()->toArray();
+
+        // 5. Unión completa de estudiantes involucrados (Actuales + Retirados)
+        $todosLosIds = array_values(array_unique(array_merge($idsActuales, $idsHistoricos)));
+
+        // Consultar datos completos de todos los estudiantes involucrados ordenados alfabéticamente
+        $estudiantesInvolucrados = collect();
+        if (!empty($todosLosIds)) {
+            $estudiantesInvolucrados = Estudiante::select('estudiantes.*')
+                ->join('personas', 'estudiantes.id_persona', '=', 'personas.id_persona')
+                ->with([
+                    'persona:id_persona,apellido_paterno,apellido_materno,nombres,estado',
+                    'curso:id_curso,curso,estado'
+                ])
+                ->whereIn('estudiantes.id_estudiante', $todosLosIds)
+                ->orderBy('personas.apellido_paterno', 'ASC')
+                ->orderBy('personas.apellido_materno', 'ASC')
+                ->orderBy('personas.nombres', 'ASC')
+                ->get();
+        }
+
+        // 6. Construir encabezados multinivel (Meses -> Días/Horarios -> Fechas) y mapa O(1) de detalles
+        $mesesNombres = [
+            1 => 'ENERO',
+            2 => 'FEBRERO',
+            3 => 'MARZO',
+            4 => 'ABRIL',
+            5 => 'MAYO',
+            6 => 'JUNIO',
+            7 => 'JULIO',
+            8 => 'AGOSTO',
+            9 => 'SEPTIEMBRE',
+            10 => 'OCTUBRE',
+            11 => 'NOVIEMBRE',
+            12 => 'DICIEMBRE'
+        ];
+        $diasNombres = [
+            1 => 'LUNES',
+            2 => 'MARTES',
+            3 => 'MIÉRCOLES',
+            4 => 'JUEVES',
+            5 => 'VIERNES',
+            6 => 'SÁBADO',
+            7 => 'DOMINGO'
+        ];
+        $simbolosMapa = [
+            'PRESENTE' => '.',
+            'FALTA'    => 'F',
+            'ATRASO'   => 'A',
+            'LICENCIA' => 'L',
+            'PERMISO'  => 'P',
+            'OTROS'    => 'O',
+        ];
+
+        $columnasClases = [];
+        $agrupacionMeses = [];
+        $mapaDetalles = []; // $mapaDetalles[$id_estudiante][$id_estudiante_asistencia] = detalle
+
+        // Detectar si en una misma fecha hubo más de 1 asistencia para mostrar la denominación del bloque (ej. 1°, 4°)
+        $conteoPorFecha = $asistencias->groupBy('fecha')->map->count();
+
+        foreach ($asistencias as $asistencia) {
+            $carbonFecha = Carbon::parse($asistencia->fecha);
+            $numMes = (int) $carbonFecha->format('n');
+            $nombreMes = $mesesNombres[$numMes];
+            $nombreDia = $diasNombres[(int) $carbonFecha->format('N')];
+            $diaNumero = $carbonFecha->format('d');
+
+            $denominacionHorario = $asistencia->horario_asignatura?->denominacion ?? '';
+            $horaInicio = $asistencia->horario_asignatura
+                ? substr($asistencia->horario_asignatura->hora_inicio, 0, 5)
+                : '';
+
+            // Si hay más de una clase el mismo día, o siempre para mayor claridad del docente, adjuntamos el periodo horario
+            $etiquetaDia = $denominacionHorario !== ''
+                ? "{$nombreDia} ({$denominacionHorario})"
+                : $nombreDia;
+
+            // Agrupación para el colspan de meses (Nivel 1 del encabezado)
+            if (!isset($agrupacionMeses[$numMes])) {
+                $agrupacionMeses[$numMes] = [
+                    'mes'     => $nombreMes,
+                    'colspan' => 0
+                ];
+            }
+            $agrupacionMeses[$numMes]['colspan']++;
+
+            // Información de cada columna de clase (Niveles 2 y 3 del encabezado)
+            $columnasClases[] = [
+                'id_estudiante_asistencia' => $asistencia->id_estudiante_asistencia,
+                'fecha_completa'           => $carbonFecha->format('d/m/Y'),
+                'mes'                      => $nombreMes,
+                'dia_semana'               => $nombreDia,
+                'etiqueta_dia'             => $etiquetaDia,
+                'dia_numero'               => (int) $diaNumero,
+                'denominacion_horario'     => $denominacionHorario,
+                'hora_inicio'              => $horaInicio,
+                'es_multiple_en_fecha'     => ($conteoPorFecha[$asistencia->fecha] ?? 1) > 1,
+                'justificacion_otros'      => $asistencia->justificacion_otros,
+            ];
+
+            // Indexar detalles en memoria para acceso instantáneo O(1)
+            foreach ($asistencia->detalles_estudiantes_asistencias as $detalle) {
+                $mapaDetalles[$detalle->id_estudiante][$asistencia->id_estudiante_asistencia] = [
+                    'tipo'          => $detalle->tipo,
+                    'simbolo'       => $simbolosMapa[$detalle->tipo] ?? '-',
+                    'tiempo_atraso' => $detalle->tiempo_atraso,
+                ];
+            }
+        }
+
+        // 7. Construir las filas de estudiantes con sus asistencias por clase y sus 6 contadores
+        $filasEstudiantes = [];
+        foreach ($estudiantesInvolucrados as $index => $estudiante) {
+            $idEst = $estudiante->id_estudiante;
+            $estaEnListaActual = isset($mapaActuales[$idEst]) && $estudiante->estado == 1;
+
+            $contadores = [
+                'PRESENTE' => 0,
+                'FALTA'    => 0,
+                'ATRASO'   => 0,
+                'LICENCIA' => 0,
+                'PERMISO'  => 0,
+                'OTROS'    => 0,
+            ];
+
+            $celdasAsistencia = [];
+
+            foreach ($columnasClases as $col) {
+                $idAsis = $col['id_estudiante_asistencia'];
+
+                if (isset($mapaDetalles[$idEst][$idAsis])) {
+                    $registro = $mapaDetalles[$idEst][$idAsis];
+                    $tipo = $registro['tipo'];
+
+                    if (isset($contadores[$tipo])) {
+                        $contadores[$tipo]++;
+                    }
+
+                    $celdasAsistencia[] = [
+                        'id_estudiante_asistencia' => $idAsis,
+                        'registrado'               => true,
+                        'tipo'                     => $tipo,
+                        'simbolo'                  => $registro['simbolo'],
+                        'tiempo_atraso'            => $registro['tiempo_atraso'],
+                    ];
+                } else {
+                    // El estudiante no formaba parte de la lista en esa fecha (incorporación posterior o ya retirado)
+                    $celdasAsistencia[] = [
+                        'id_estudiante_asistencia' => $idAsis,
+                        'registrado'               => false,
+                        'tipo'                     => null,
+                        'simbolo'                  => '/',
+                        'tiempo_atraso'            => 0,
+                    ];
+                }
+            }
+
+            $filasEstudiantes[] = [
+                'numero'            => $index + 1,
+                'id_estudiante'     => $idEst,
+                'apellidos_nombres' => $estudiante->persona->apellidos_nombres,
+                'nombres_apellidos' => $estudiante->persona->nombres_apellidos,
+                'curso'             => $estudiante->curso?->curso ?? 'S/C',
+                'en_lista_actual'   => $estaEnListaActual, // false = pintar fila de color gris (Retirado)
+                'estado_etiqueta'   => $estaEnListaActual ? 'ACTIVO' : 'RETIRADO',
+                'asistencias'       => $celdasAsistencia,
+                'totales'           => $contadores,
+            ];
+        }
+
+        // 8. Estructurar los metadatos del Encabezado Institucional
+        $encabezado = [
+            'unidad_educativa' => 'FEDERICO FROEBEL',
+            'gestion_periodo'  => "{$lista_asignatura->periodo->gestion->anio} - {$lista_asignatura->periodo->periodo}",
+            'anio'             => $lista_asignatura->periodo->gestion->anio,
+            'periodo'          => $lista_asignatura->periodo->periodo,
+            'docente'          => $lista_asignatura->docente?->persona?->nombres_apellidos ?? 'SIN DOCENTE ASIGNADO',
+            'area'             => $asignatura->area?->area ?? 'SIN ÁREA',
+            'campo'            => $asignatura->area?->campo?->campo ?? 'SIN CAMPO',
+            'curso'            => $asignatura->asignatura,
+            'tipo_bloque'      => $asignatura->tipo_bloque,
+        ];
+
+        $planillaData = [
+            'id_lista_asignatura' => $lista_asignatura->id_lista_asignatura,
+            'encabezado'          => $encabezado,
+            'meses'               => array_values($agrupacionMeses),
+            'columnas'            => $columnasClases,
+            'estudiantes'         => $filasEstudiantes,
+        ];
+
+        // Si la petición se hace vía AJAX (por ejemplo, para refrescar o alimentar ExcelJS bajo demanda), responde JSON
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'data'    => $planillaData
+            ]);
+        }
+
+        // Renderiza la vista Blade pasando toda la estructura lista tanto para la tabla HTML como para @json($planillaData) en ExcelJS
+        return view('listas_asignaturas.planilla_asistencia', [
+            'head_title'       => "PLANILLA DE ASISTENCIA | {$asignatura->asignatura} ({$encabezado['gestion_periodo']})",
+            'lista_asignatura' => $lista_asignatura,
+            'planilla'         => $planillaData,
         ]);
     }
 }

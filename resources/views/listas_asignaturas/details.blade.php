@@ -5,10 +5,18 @@
         <h1 class="text-info fw-bold mb-0">
             <i class="fa-solid fa-duotone fa-clipboard-list-check me-2"></i>{{ $head_title }}
         </h1>
-        <a class="btn btn-secondary shadow-sm" href="{{ route('asignaturas.detalles', $lista_asignatura->id_asignatura) }}">
-            <i class="fa-solid fa-duotone fa-arrow-left me-1"></i>Volver a
-            <b>{{ $lista_asignatura->asignatura->asignatura }}</b>
-        </a>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-secondary shadow-sm"
+                href="{{ route('asignaturas.detalles', $lista_asignatura->id_asignatura) }}">
+                <i class="fa-solid fa-duotone fa-arrow-left me-1"></i>Volver a
+                <b>{{ $lista_asignatura->asignatura->asignatura }}</b>
+            </a>
+
+            <a class="btn btn-success shadow-sm"
+                href="{{ route('listas_asignaturas.planilla_asistencia', $lista_asignatura->id_lista_asignatura) }}">
+                <i class="fa-solid fa-duotone fa-table-list me-1"></i> Planilla de asistencia
+            </a>
+        </div>
     </div>
 
     @if (!empty($cambios) && count($cambios) > 0)

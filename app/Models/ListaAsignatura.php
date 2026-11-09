@@ -263,4 +263,55 @@ class ListaAsignatura extends Model
             ])
             ->get();
     }
+
+    /**
+     * Obtiene la lista de asignatura con todos los metadatos institucionales 
+     * (Gestión, Periodo, Docente, Área, Campo, Asignatura) y las asistencias 
+     * registradas estrictamente dentro de las fechas de inicio y fin del periodo.
+     */
+    public function get_datos_planilla_asistencia(int $id_lista_asignatura)
+    {
+        $lista = $this->with([
+            'asignatura:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',
+            'asignatura.area:id_area,id_campo,area,estado',
+            'asignatura.area.campo:id_campo,campo,estado',
+            'asignatura.curso:id_curso,curso,estado',
+
+            'periodo:id_periodo,id_gestion,periodo,fecha_inicio,fecha_fin,posicion_ordinal,estado',
+            'periodo.gestion:id_gestion,anio,estado',
+
+            'docente:id_docente,id_persona,estado',
+            'docente.persona:id_persona,apellido_paterno,apellido_materno,nombres,estado',
+        ])->findOrFail($id_lista_asignatura);
+
+        $fechaInicio = $lista->periodo->fecha_inicio;
+        $fechaFin = $lista->periodo->fecha_fin;
+
+        // Cargamos las asistencias registradas dentro del rango del periodo, 
+        // ordenadas cronológicamente por fecha y luego por hora_inicio del bloque horario
+        $lista->load([
+            'estudiantes_asistencias' => function ($query) use ($fechaInicio, $fechaFin) {
+                $query->select('estudiantes_asistencias.*')
+                    ->join(
+                        'horarios_asignaturas',
+                        'estudiantes_asistencias.id_horario_asignatura',
+                        '=',
+                        'horarios_asignaturas.id_horario_asignatura'
+                    )
+                    ->where('estudiantes_asistencias.estado', 1)
+                    ->when($fechaInicio && $fechaFin, function ($q) use ($fechaInicio, $fechaFin) {
+                        $q->whereDate('estudiantes_asistencias.fecha', '>=', $fechaInicio)
+                            ->whereDate('estudiantes_asistencias.fecha', '<=', $fechaFin);
+                    })
+                    ->with([
+                        'horario_asignatura:id_horario_asignatura,denominacion,hora_inicio,hora_fin,estado',
+                        'detalles_estudiantes_asistencias:id_estudiante_asistencia,id_estudiante,tipo,tiempo_atraso,id_estudiante_licencia'
+                    ])
+                    ->orderBy('estudiantes_asistencias.fecha', 'ASC')
+                    ->orderBy('horarios_asignaturas.hora_inicio', 'ASC');
+            }
+        ]);
+
+        return $lista;
+    }
 }

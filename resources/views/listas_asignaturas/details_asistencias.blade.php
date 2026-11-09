@@ -3,10 +3,17 @@
         <h5 class="fw-bold mb-0 text-info">
             <i class="fa-duotone fa-calendar-check me-1"></i>Historial de Clases y Asistencias
         </h5>
-        <a class="btn btn-success shadow-sm"
-            href="{{ route('estudiantes_asistencias.crear', $lista_asignatura->id_lista_asignatura) }}">
-            <i class="fa-solid fa-duotone fa-plus me-1"></i>Crear asistencia
-        </a>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-success shadow-sm"
+                href="{{ route('listas_asignaturas.planilla_asistencia', $lista_asignatura->id_lista_asignatura) }}">
+                <i class="fa-solid fa-duotone fa-table-list me-1"></i> Planilla de asistencia
+            </a>
+
+            <a class="btn btn-success shadow-sm"
+                href="{{ route('estudiantes_asistencias.crear', $lista_asignatura->id_lista_asignatura) }}">
+                <i class="fa-solid fa-duotone fa-plus me-1"></i>Crear asistencia
+            </a>
+        </div>
     </div>
 
     <div class="table-responsive">
