@@ -66,6 +66,23 @@
         color: #6c757d !important;
     }
 
+    .celda-asistencia {
+        min-width: 28px;
+        max-width: 34px;
+        text-align: center;
+        font-weight: 700;
+        cursor: default;
+    }
+
+    .celda-asistencia.celda-interactiva {
+        cursor: pointer;
+        transition: background-color 0.15s ease-in-out, transform 0.1s ease-in-out;
+    }
+
+    .celda-asistencia.celda-interactiva:hover {
+        background-color: rgba(13, 110, 253, 0.15) !important;
+    }
+
     /* ====================================================================
        REGLAS EXCLUSIVAS PARA IMPRESIÓN / CTRL + P / GUARDAR COMO PDF
        Fuerza modo claro independientemente de si el usuario está en dark mode

@@ -659,6 +659,9 @@ class ListaAsignaturaController extends Controller
             $horaInicio = $asistencia->horario_asignatura
                 ? substr($asistencia->horario_asignatura->hora_inicio, 0, 5)
                 : '';
+            $horaFin = $asistencia->horario_asignatura
+                ? substr($asistencia->horario_asignatura->hora_fin, 0, 5)
+                : '';
 
             // Si hay más de una clase el mismo día, o siempre para mayor claridad del docente, adjuntamos el periodo horario
             $etiquetaDia = $denominacionHorario !== ''
@@ -684,16 +687,28 @@ class ListaAsignaturaController extends Controller
                 'dia_numero'               => (int) $diaNumero,
                 'denominacion_horario'     => $denominacionHorario,
                 'hora_inicio'              => $horaInicio,
+                'hora_fin'                 => $horaFin,
                 'es_multiple_en_fecha'     => ($conteoPorFecha[$asistencia->fecha] ?? 1) > 1,
                 'justificacion_otros'      => $asistencia->justificacion_otros,
             ];
 
             // Indexar detalles en memoria para acceso instantáneo O(1)
             foreach ($asistencia->detalles_estudiantes_asistencias as $detalle) {
+                $licenciaObj = $detalle->estudiante_licencia;
+
                 $mapaDetalles[$detalle->id_estudiante][$asistencia->id_estudiante_asistencia] = [
-                    'tipo'          => $detalle->tipo,
-                    'simbolo'       => $simbolosMapa[$detalle->tipo] ?? '-',
-                    'tiempo_atraso' => $detalle->tiempo_atraso,
+                    'tipo'                  => $detalle->tipo,
+                    'simbolo'               => $simbolosMapa[$detalle->tipo] ?? '-',
+                    'tiempo_atraso'         => $detalle->tiempo_atraso,
+                    'justificacion_permiso' => $detalle->justificacion_permiso,
+                    'licencia'              => $licenciaObj ? [
+                        'id_estudiante_licencia' => $licenciaObj->id_estudiante_licencia,
+                        'tipo'                   => ucwords(str_replace('_', ' ', $licenciaObj->tipo)),
+                        'justificacion'          => $licenciaObj->justificacion,
+                        'fecha_inicio'           => date('d/m/Y H:i', strtotime($licenciaObj->fecha_inicio)),
+                        'fecha_fin'              => date('d/m/Y H:i', strtotime($licenciaObj->fecha_fin)),
+                        'evidencia'              => $licenciaObj->evidencia,
+                    ] : null,
                 ];
             }
         }
@@ -732,6 +747,8 @@ class ListaAsignaturaController extends Controller
                         'tipo'                     => $tipo,
                         'simbolo'                  => $registro['simbolo'],
                         'tiempo_atraso'            => $registro['tiempo_atraso'],
+                        'justificacion_permiso'    => $registro['justificacion_permiso'],
+                        'licencia'                 => $registro['licencia'],
                     ];
                 } else {
                     // El estudiante no formaba parte de la lista en esa fecha (incorporación posterior o ya retirado)
@@ -741,6 +758,8 @@ class ListaAsignaturaController extends Controller
                         'tipo'                     => null,
                         'simbolo'                  => '/',
                         'tiempo_atraso'            => 0,
+                        'justificacion_permiso'    => null,
+                        'licencia'                 => null,
                     ];
                 }
             }

@@ -427,10 +427,13 @@ class EstudianteAsistenciaController extends Controller
             'estudiantes.*.id_estudiante' => 'required|integer|exists:estudiantes,id_estudiante',
             'estudiantes.*.tipo' => 'required|string|in:PRESENTE,FALTA,ATRASO,LICENCIA,PERMISO,OTROS',
             'estudiantes.*.tiempo_atraso' => 'nullable|integer|min:0|max:60',
+            'estudiantes.*.justificacion_permiso' => 'required_if:estudiantes.*.tipo,PERMISO|nullable|string|max:100',
             'estudiantes.*.id_estudiante_licencia' => 'nullable|integer|exists:estudiantes_licencias,id_estudiante_licencia',
         ], [
             'fecha.after_or_equal' => "La fecha seleccionada no puede ser anterior al inicio del periodo ({$periodo->periodo}: {$periodo->fecha_inicio}).",
             'fecha.before_or_equal' => "La fecha seleccionada debe estar dentro del periodo ({$periodo->periodo}: hasta {$periodo->fecha_fin}) y no superar la fecha actual.",
+            'estudiantes.*.justificacion_permiso.required_if' => 'Debe ingresar una justificación para cada estudiante marcado con PERMISO.',
+            'estudiantes.*.justificacion_permiso.max' => 'La justificación del permiso no puede exceder los 100 caracteres.',
         ]);
 
         $esHorarioNoRegular = $request->boolean('es_horario_no_regular');
@@ -532,6 +535,9 @@ class EstudianteAsistenciaController extends Controller
                 $tipoAsistencia = $esModoOtros ? 'OTROS' : $estudianteReq['tipo'];
                 $idLicencia = $estudianteReq['id_estudiante_licencia'] ?? null;
                 $tiempoAtraso = $estudianteReq['tiempo_atraso'] ?? 0;
+                $justificacionPermiso = isset($estudianteReq['justificacion_permiso'])
+                    ? trim($estudianteReq['justificacion_permiso'])
+                    : null;
 
                 // Cruce exacto de fechas para licencias médicas/justificaciones
                 $licenciaAprobada = EstudianteLicencia::where('id_estudiante', $idEstudiante)
@@ -545,6 +551,7 @@ class EstudianteAsistenciaController extends Controller
                     $tipoAsistencia = 'LICENCIA';
                     $idLicencia = $licenciaAprobada->id_estudiante_licencia;
                     $tiempoAtraso = 0;
+                    $justificacionPermiso = null;
                 } else {
                     // Si no tiene licencia activa, nos aseguramos de limpiar cualquier id_estudiante_licencia residual
                     $idLicencia = null;
@@ -555,11 +562,17 @@ class EstudianteAsistenciaController extends Controller
                     $tiempoAtraso = 0;
                 }
 
+                // Consistencia de datos: Forzar null si el tipo final no es un Permiso ('PERMISO')
+                if ($tipoAsistencia !== 'PERMISO' || $justificacionPermiso === '') {
+                    $justificacionPermiso = null;
+                }
+
                 $detallesAsistencia[] = [
                     'id_estudiante_asistencia' => $asistencia->id_estudiante_asistencia,
                     'id_estudiante' => $idEstudiante,
                     'tipo' => $tipoAsistencia,
                     'tiempo_atraso' => $tiempoAtraso,
+                    'justificacion_permiso' => $justificacionPermiso,
                     'id_estudiante_licencia' => $idLicencia,
                 ];
             }
@@ -628,10 +641,13 @@ class EstudianteAsistenciaController extends Controller
             'estudiantes.*.id_estudiante' => 'required|integer|exists:estudiantes,id_estudiante',
             'estudiantes.*.tipo' => 'required|string|in:PRESENTE,FALTA,ATRASO,LICENCIA,PERMISO,OTROS',
             'estudiantes.*.tiempo_atraso' => 'nullable|integer|min:0|max:60',
+            'estudiantes.*.justificacion_permiso' => 'required_if:estudiantes.*.tipo,PERMISO|nullable|string|max:100',
             'estudiantes.*.id_estudiante_licencia' => 'nullable|integer|exists:estudiantes_licencias,id_estudiante_licencia',
         ], [
             'fecha.after_or_equal' => "La fecha seleccionada no puede ser anterior al inicio del periodo ({$periodo->periodo}: {$periodo->fecha_inicio}).",
             'fecha.before_or_equal' => "La fecha seleccionada debe estar dentro del periodo ({$periodo->periodo}: hasta {$periodo->fecha_fin}) y no superar la fecha actual.",
+            'estudiantes.*.justificacion_permiso.required_if' => 'Debe ingresar una justificación para cada estudiante marcado con PERMISO.',
+            'estudiantes.*.justificacion_permiso.max' => 'La justificación del permiso no puede exceder los 100 caracteres.',
         ]);
 
         $esHorarioNoRegular = $request->boolean('es_horario_no_regular');
@@ -736,6 +752,9 @@ class EstudianteAsistenciaController extends Controller
                 $tipoAsistencia = $esModoOtros ? 'OTROS' : $estudianteReq['tipo'];
                 $idLicencia = $estudianteReq['id_estudiante_licencia'] ?? null;
                 $tiempoAtraso = $estudianteReq['tiempo_atraso'] ?? 0;
+                $justificacionPermiso = isset($estudianteReq['justificacion_permiso'])
+                    ? trim($estudianteReq['justificacion_permiso'])
+                    : null;
 
                 // Cruce exacto de fechas para licencias médicas/justificaciones
                 $licenciaAprobada = EstudianteLicencia::where('id_estudiante', $idEstudiante)
@@ -749,6 +768,7 @@ class EstudianteAsistenciaController extends Controller
                     $tipoAsistencia = 'LICENCIA';
                     $idLicencia = $licenciaAprobada->id_estudiante_licencia;
                     $tiempoAtraso = 0;
+                    $justificacionPermiso = null;
                 } else {
                     $idLicencia = null;
                 }
@@ -758,11 +778,17 @@ class EstudianteAsistenciaController extends Controller
                     $tiempoAtraso = 0;
                 }
 
+                // Consistencia de datos: Forzar null si el tipo final no es un Permiso ('PERMISO')
+                if ($tipoAsistencia !== 'PERMISO' || $justificacionPermiso === '') {
+                    $justificacionPermiso = null;
+                }
+
                 $detallesAsistencia[] = [
                     'id_estudiante_asistencia' => $asistencia->id_estudiante_asistencia,
                     'id_estudiante' => $idEstudiante,
                     'tipo' => $tipoAsistencia,
                     'tiempo_atraso' => $tiempoAtraso,
+                    'justificacion_permiso' => $justificacionPermiso,
                     'id_estudiante_licencia' => $idLicencia,
                 ];
             }

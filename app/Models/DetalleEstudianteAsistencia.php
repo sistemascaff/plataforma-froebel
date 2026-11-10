@@ -18,6 +18,7 @@ class DetalleEstudianteAsistencia extends Model
         'id_estudiante',
         'tipo',
         'tiempo_atraso',
+        'justificacion_permiso',
         'id_estudiante_licencia'
     ];
 

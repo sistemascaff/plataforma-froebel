@@ -23,7 +23,7 @@ class EstudianteAsistencia extends Model
             'detalles_estudiantes_asistencias',
             'id_estudiante_asistencia',
             'id_estudiante'
-        )->withPivot(['tipo', 'tiempo_atraso', 'id_estudiante_licencia']);
+        )->withPivot(['tipo', 'tiempo_atraso', 'justificacion_permiso', 'id_estudiante_licencia']);
     }
 
     /** Relación FK con listas_asignaturas */

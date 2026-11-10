@@ -196,7 +196,7 @@
                                     <th style="width: 5%;">Perfil</th>
                                     <th>Estudiante</th>
                                     <th class="text-center">Tipo</th>
-                                    <th class="text-center" style="width: 18%;">Acciones</th>
+                                    <th class="text-center" style="width: 25%;">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -276,7 +276,7 @@
                                             @if ($tieneLicencia)
                                                 <span class="text-muted">No se puede modificar</span>
                                             @else
-                                                <div class="d-flex justify-content-center align-items-center gap-2 contenedor-acciones-fila"
+                                                <div class="d-flex flex-wrap justify-content-center align-items-center gap-2 contenedor-acciones-fila"
                                                     id="acciones_fila_{{ $index }}">
                                                     <div class="btn-group shadow-sm" role="group">
                                                         <!-- PRESENTE -->
@@ -326,6 +326,15 @@
                                                         id="tiempo_atraso_{{ $index }}" min="1"
                                                         max="60" placeholder="Min." title="Minutos de atraso"
                                                         style="display: none; width: 70px;">
+
+                                                    <!-- Campo de Justificación de Permiso (Oculto por defecto) -->
+                                                    <input type="text"
+                                                        class="form-control form-control-sm shadow-sm input-justificacion-permiso"
+                                                        name="estudiantes[{{ $index }}][justificacion_permiso]"
+                                                        id="justificacion_permiso_{{ $index }}" maxlength="100"
+                                                        placeholder="Motivo del permiso..."
+                                                        title="Justificación del permiso (Máx. 100 caracteres)"
+                                                        style="display: none; width: 170px;">
                                                 </div>
 
                                                 <!-- Etiqueta informativa cuando el modo OTROS está activo -->

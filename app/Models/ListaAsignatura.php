@@ -305,7 +305,8 @@ class ListaAsignatura extends Model
                     })
                     ->with([
                         'horario_asignatura:id_horario_asignatura,denominacion,hora_inicio,hora_fin,estado',
-                        'detalles_estudiantes_asistencias:id_estudiante_asistencia,id_estudiante,tipo,tiempo_atraso,id_estudiante_licencia'
+                        'detalles_estudiantes_asistencias:id_estudiante_asistencia,id_estudiante,tipo,tiempo_atraso,justificacion_permiso,id_estudiante_licencia',
+                        'detalles_estudiantes_asistencias.estudiante_licencia:id_estudiante_licencia,id_estudiante,tipo,justificacion,fecha_inicio,fecha_fin,evidencia,estado'
                     ])
                     ->orderBy('estudiantes_asistencias.fecha', 'ASC')
                     ->orderBy('horarios_asignaturas.hora_inicio', 'ASC');

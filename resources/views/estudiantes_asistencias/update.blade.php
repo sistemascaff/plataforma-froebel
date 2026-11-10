@@ -215,7 +215,7 @@
                                     <th style="width: 5%;">Perfil</th>
                                     <th>Estudiante</th>
                                     <th class="text-center">Estado Actual</th>
-                                    <th class="text-center" style="width: 18%;">Acciones</th>
+                                    <th class="text-center" style="width: 25%;">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -231,6 +231,7 @@
                                         $tieneLicencia = !is_null($licencia);
                                         $tipoActual = $detalle->tipo;
                                         $tiempoAtrasoActual = $detalle->tiempo_atraso ?? '';
+                                        $justificacionPermisoActual = $detalle->justificacion_permiso ?? '';
 
                                         // Si estaba en modo OTROS y el docente desmarca el switch en el frontend, por defecto el radio "PRESENTE" quedará preseleccionado
                                         $tipoRadioSeleccionado = in_array($tipoActual, [
@@ -277,9 +278,8 @@
                                                     <span class="badge bg-danger">Hasta
                                                         {{ date('d/m/Y H:i', strtotime($licencia->fecha_fin)) }}</span>
                                                     @if ($licencia->evidencia)
-                                                        <a href="{{ $licencia->evidencia }}"
-                                                            target="_blank" class="btn btn-sm btn-outline-info"
-                                                            data-bs-toggle="tooltip"
+                                                        <a href="{{ $licencia->evidencia }}" target="_blank"
+                                                            class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip"
                                                             title="Abrir archivo en Google Drive">
                                                             <i class="fa-brands fa-google-drive"></i> Ver
                                                         </a>
@@ -332,7 +332,7 @@
                                             @if ($tieneLicencia)
                                                 <span class="text-muted">No se puede modificar</span>
                                             @else
-                                                <div class="d-flex justify-content-center align-items-center gap-2 contenedor-acciones-fila"
+                                                <div class="d-flex flex-wrap justify-content-center align-items-center gap-2 contenedor-acciones-fila"
                                                     id="acciones_fila_{{ $index }}"
                                                     style="{{ $esModoOtrosInicial ? 'display: none !important;' : '' }}">
                                                     <div class="btn-group shadow-sm" role="group">
@@ -384,6 +384,7 @@
                                                                 class="fa fa-solid fa-duotone fa-file-signature"></i></label>
                                                     </div>
 
+                                                    <!-- Campo de Minutos de Atraso -->
                                                     <input type="number"
                                                         class="form-control form-control-sm shadow-sm input-tiempo-atraso"
                                                         name="estudiantes[{{ $index }}][tiempo_atraso]"
@@ -393,6 +394,17 @@
                                                         placeholder="Min." title="Minutos de atraso"
                                                         style="display: {{ !$esModoOtrosInicial && $tipoActual === 'ATRASO' ? 'block' : 'none' }}; width: 70px;"
                                                         {{ !$esModoOtrosInicial && $tipoActual === 'ATRASO' ? 'required' : '' }}>
+
+                                                    <!-- Campo de Justificación de Permiso -->
+                                                    <input type="text"
+                                                        class="form-control form-control-sm shadow-sm input-justificacion-permiso"
+                                                        name="estudiantes[{{ $index }}][justificacion_permiso]"
+                                                        id="justificacion_permiso_{{ $index }}" maxlength="100"
+                                                        value="{{ !$esModoOtrosInicial && $tipoActual === 'PERMISO' ? $justificacionPermisoActual : '' }}"
+                                                        placeholder="Motivo del permiso..."
+                                                        title="Justificación del permiso (Máx. 100 caracteres)"
+                                                        style="display: {{ !$esModoOtrosInicial && $tipoActual === 'PERMISO' ? 'block' : 'none' }}; width: 170px;"
+                                                        {{ !$esModoOtrosInicial && $tipoActual === 'PERMISO' ? 'required' : '' }}>
                                                 </div>
 
                                                 <!-- Etiqueta informativa cuando el modo OTROS está activo -->

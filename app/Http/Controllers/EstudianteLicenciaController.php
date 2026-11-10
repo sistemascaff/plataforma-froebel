@@ -124,6 +124,7 @@ class EstudianteLicenciaController extends Controller
                     ->update([
                         'tipo' => 'LICENCIA',
                         'tiempo_atraso' => 0,
+                        'justificacion_permiso' => null,
                         'id_estudiante_licencia' => $licencia->id_estudiante_licencia
                     ]);
             }
@@ -179,6 +180,7 @@ class EstudianteLicenciaController extends Controller
                             ->update([
                                 'tipo' => 'OTROS',
                                 'tiempo_atraso' => 0,
+                                'justificacion_permiso' => null,
                                 'id_estudiante_licencia' => null
                             ]);
                     }
@@ -191,6 +193,7 @@ class EstudianteLicenciaController extends Controller
                             ->update([
                                 'tipo' => 'FALTA',
                                 'tiempo_atraso' => 0,
+                                'justificacion_permiso' => null,
                                 'id_estudiante_licencia' => null
                             ]);
                     }
@@ -226,6 +229,7 @@ class EstudianteLicenciaController extends Controller
                     ->update([
                         'tipo' => 'LICENCIA',
                         'tiempo_atraso' => 0,
+                        'justificacion_permiso' => null,
                         'id_estudiante_licencia' => $licencia->id_estudiante_licencia
                     ]);
             }
@@ -296,6 +300,7 @@ class EstudianteLicenciaController extends Controller
                         ->update([
                             'tipo' => 'OTROS',
                             'tiempo_atraso' => 0,
+                            'justificacion_permiso' => null,
                             'id_estudiante_licencia' => null
                         ]);
                 }
@@ -308,6 +313,7 @@ class EstudianteLicenciaController extends Controller
                         ->update([
                             'tipo' => 'FALTA',
                             'tiempo_atraso' => 0,
+                            'justificacion_permiso' => null,
                             'id_estudiante_licencia' => null
                         ]);
                 }

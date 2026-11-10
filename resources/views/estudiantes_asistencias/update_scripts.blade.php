@@ -62,7 +62,7 @@
                 opt.textContent = `${h.denominacion} (${horaInicio} - ${horaFin}) - [NO REGULAR]`;
 
                 if (idPreseleccionar && parseInt(h.id_horario_asignatura) === parseInt(
-                    idPreseleccionar)) {
+                        idPreseleccionar)) {
                     opt.selected = true;
                 }
 
@@ -154,10 +154,11 @@
             });
         }
 
-        // Función auxiliar para actualizar el badge y el campo de atraso según el radio seleccionado
+        // Función auxiliar para actualizar el badge, el campo de atraso y la justificación de permiso según el radio seleccionado
         function actualizarEstadoVisualFila(index, valor, enfocarInput = false) {
             const badge = document.getElementById('badge_tipo_' + index);
             const inputAtraso = document.getElementById('tiempo_atraso_' + index);
+            const inputPermiso = document.getElementById('justificacion_permiso_' + index);
 
             if (!badge) return;
 
@@ -169,9 +170,19 @@
                     inputAtraso.required = false;
                     inputAtraso.value = '';
                 }
+                if (inputPermiso) {
+                    inputPermiso.style.display = 'none';
+                    inputPermiso.required = false;
+                    inputPermiso.value = '';
+                }
             } else if (valor === 'ATRASO') {
                 badge.className = 'badge bg-warning text-dark tipo';
                 badge.textContent = 'Atraso';
+                if (inputPermiso) {
+                    inputPermiso.style.display = 'none';
+                    inputPermiso.required = false;
+                    inputPermiso.value = '';
+                }
                 if (inputAtraso) {
                     inputAtraso.style.display = 'block';
                     inputAtraso.required = true;
@@ -185,6 +196,11 @@
                     inputAtraso.required = false;
                     inputAtraso.value = '';
                 }
+                if (inputPermiso) {
+                    inputPermiso.style.display = 'none';
+                    inputPermiso.required = false;
+                    inputPermiso.value = '';
+                }
             } else if (valor === 'PERMISO') {
                 badge.className = 'badge bg-primary tipo';
                 badge.textContent = 'Permiso';
@@ -193,10 +209,15 @@
                     inputAtraso.required = false;
                     inputAtraso.value = '';
                 }
+                if (inputPermiso) {
+                    inputPermiso.style.display = 'block';
+                    inputPermiso.required = true;
+                    if (enfocarInput) inputPermiso.focus();
+                }
             }
         }
 
-        // --- 1. Lógica visual para los Badges de Estado Individuales y Tiempo de Atraso ---
+        // --- 1. Lógica visual para los Badges de Estado Individuales, Tiempo de Atraso y Justificación de Permiso ---
         document.querySelectorAll('.radio-asistencia').forEach(radio => {
             radio.addEventListener('change', function() {
                 const index = this.dataset.index;
@@ -231,6 +252,8 @@
                         index);
                     const etiquetaOtros = document.getElementById('etiqueta_otros_' + index);
                     const inputAtraso = document.getElementById('tiempo_atraso_' + index);
+                    const inputPermiso = document.getElementById('justificacion_permiso_' +
+                        index);
                     const radiosFila = document.querySelectorAll(
                         `.radio-asistencia[data-index="${index}"]`);
 
@@ -244,6 +267,13 @@
                             inputAtraso.style.display = 'none';
                             inputAtraso.required = false;
                             inputAtraso.value = '';
+                        }
+
+                        // Ocultar y limpiar justificación de permiso si estuviera abierta
+                        if (inputPermiso) {
+                            inputPermiso.style.display = 'none';
+                            inputPermiso.required = false;
+                            inputPermiso.value = '';
                         }
 
                         // Actualizar el badge a OTROS y ocultar la botonera

@@ -365,7 +365,8 @@
                             `;
                         }
                         if (row.tipo === 'PERMISO') {
-                            return `<span class="text-primary fw-semibold">Permiso</span>`;
+                            const j = row.justificacion_permiso;
+                            return `<span class="text-primary fw-semibold">${j || 'Sin justificación'}</span>`;
                         }
                         return '';
                     }

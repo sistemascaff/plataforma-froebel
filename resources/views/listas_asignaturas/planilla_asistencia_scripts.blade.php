@@ -5,6 +5,194 @@
     document.addEventListener('DOMContentLoaded', function() {
         const PLANILLA = @json($planilla);
 
+        // Función auxiliar para escapar caracteres HTML por seguridad
+        function escaparHtml(texto) {
+            if (!texto) return '';
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return String(texto).replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // Evento de clic sobre las celdas de asistencia registradas
+        const tablaPlanillaWeb = document.getElementById('tabla-planilla-web');
+        if (tablaPlanillaWeb) {
+            tablaPlanillaWeb.addEventListener('click', function(e) {
+                const celdaTd = e.target.closest('.celda-interactiva');
+                if (!celdaTd) return;
+
+                const estIdx = parseInt(celdaTd.getAttribute('data-est-idx'), 10);
+                const colIdx = parseInt(celdaTd.getAttribute('data-col-idx'), 10);
+
+                const estudiante = PLANILLA.estudiantes?.[estIdx];
+                const columna = PLANILLA.columnas?.[colIdx];
+                const celda = estudiante?.asistencias?.[colIdx];
+
+                if (!estudiante || !columna || !celda || !celda.registrado) return;
+
+                // Configuración visual según el tipo de asistencia
+                const configTipo = {
+                    'PRESENTE': {
+                        badge: 'bg-success',
+                        icono: 'fa-check-circle',
+                        texto: 'PRESENTE (.)'
+                    },
+                    'FALTA': {
+                        badge: 'bg-danger',
+                        icono: 'fa-times-circle',
+                        texto: 'FALTA (F)'
+                    },
+                    'ATRASO': {
+                        badge: 'bg-warning text-dark',
+                        icono: 'fa-hourglass-half',
+                        texto: 'ATRASO (A)'
+                    },
+                    'LICENCIA': {
+                        badge: 'bg-info text-dark',
+                        icono: 'fa-file-certificate',
+                        texto: 'LICENCIA (L)'
+                    },
+                    'PERMISO': {
+                        badge: 'bg-primary',
+                        icono: 'fa-file-signature',
+                        texto: 'PERMISO (P)'
+                    },
+                    'OTROS': {
+                        badge: 'bg-secondary',
+                        icono: 'fa-calendar-star',
+                        texto: 'OTROS (O)'
+                    }
+                } [celda.tipo] || {
+                    badge: 'bg-secondary',
+                    icono: 'fa-question-circle',
+                    texto: celda.tipo
+                };
+
+                const rangoHoras = columna.hora_inicio && columna.hora_fin ?
+                    ` (${columna.hora_inicio} - ${columna.hora_fin})` :
+                    (columna.hora_inicio ? ` (${columna.hora_inicio})` : '');
+
+                const periodoHorario = columna.denominacion_horario ?
+                    `${escaparHtml(columna.denominacion_horario)}${rangoHoras}` :
+                    'N/A';
+
+                // Construcción de subdatos condicionales según el tipo de asistencia
+                let subdatosHtml = '';
+
+                if (celda.tipo === 'ATRASO') {
+                    const minutos = celda.tiempo_atraso > 0 ?
+                        `${celda.tiempo_atraso} minutos` :
+                        'Sin minutos especificados';
+                    subdatosHtml = `
+                        <div class="alert alert-warning mb-0 mt-3 py-2 px-3 text-start shadow-sm">
+                            <div class="fw-bold mb-1">
+                                <i class="fa-solid fa-duotone fa-hourglass-half me-1"></i>Detalle del Atraso:
+                            </div>
+                            <div><b>Tiempo de atraso:</b> ${minutos}</div>
+                        </div>`;
+                } else if (celda.tipo === 'PERMISO') {
+                    const motivoPermiso = celda.justificacion_permiso ?
+                        escaparHtml(celda.justificacion_permiso) :
+                        'Sin justificación registrada';
+                    subdatosHtml = `
+                        <div class="alert alert-primary mb-0 mt-3 py-2 px-3 text-start shadow-sm">
+                            <div class="fw-bold mb-1">
+                                <i class="fa-solid fa-duotone fa-file-signature me-1"></i>Detalle del Permiso:
+                            </div>
+                            <div><b>Justificación:</b> ${motivoPermiso}</div>
+                        </div>`;
+                } else if (celda.tipo === 'LICENCIA') {
+                    if (celda.licencia) {
+                        const btnEvidencia = celda.licencia.evidencia ?
+                            `<div class="mt-2 pt-2 border-top border-info-subtle text-end">
+                                <a href="${escaparHtml(celda.licencia.evidencia)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-info text-dark fw-bold shadow-sm">
+                                    <i class="fa-brands fa-google-drive me-1"></i>Ver Evidencia
+                                </a>
+                            </div>` :
+                            `<div class="mt-1 small text-muted fst-italic">Sin evidencia adjunta</div>`;
+
+                        subdatosHtml = `
+                            <div class="alert alert-info mb-0 mt-3 py-2 px-3 text-start shadow-sm">
+                                <div class="fw-bold mb-1">
+                                    <i class="fa-solid fa-duotone fa-file-certificate me-1"></i>Detalles de la Licencia:
+                                </div>
+                                <div class="mb-1"><b>Motivo:</b> ${escaparHtml(celda.licencia.tipo)}</div>
+                                <div class="mb-1"><b>Justificación:</b> ${escaparHtml(celda.licencia.justificacion)}</div>
+                                <div class="mb-1">
+                                    <span class="badge bg-primary me-1">Desde: ${escaparHtml(celda.licencia.fecha_inicio)}</span>
+                                    <span class="badge bg-danger">Hasta: ${escaparHtml(celda.licencia.fecha_fin)}</span>
+                                </div>
+                                ${btnEvidencia}
+                            </div>`;
+                    } else {
+                        subdatosHtml = `
+                            <div class="alert alert-info mb-0 mt-3 py-2 px-3 text-start shadow-sm">
+                                <i class="fa-solid fa-duotone fa-circle-info me-1"></i>Licencia registrada sin detalles adicionales vinculados.
+                            </div>`;
+                    }
+                } else if (celda.tipo === 'OTROS' && columna.justificacion_otros) {
+                    subdatosHtml = `
+                        <div class="alert alert-secondary mb-0 mt-3 py-2 px-3 text-start shadow-sm">
+                            <div class="fw-bold mb-1">
+                                <i class="fa-solid fa-duotone fa-calendar-star me-1"></i>Modalidad OTROS:
+                            </div>
+                            <div><b>Actividad:</b> ${escaparHtml(columna.justificacion_otros)}</div>
+                        </div>`;
+                }
+
+                const badgeRetirado = !estudiante.en_lista_actual ?
+                    `<span class="badge bg-secondary ms-1">RETIRADO</span>` :
+                    '';
+
+                const contenidoSwal = `
+                    <div class="text-start fs-6">
+                        <div class="p-3 rounded border bg-body-tertiary mb-3 shadow-sm">
+                            <div class="mb-2">
+                                <span class="text-muted small fw-bold d-block">ESTUDIANTE:</span>
+                                <span class="fw-bold text-info">${escaparHtml(estudiante.apellidos_nombres)}</span>
+                                ${badgeRetirado}
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <span class="text-muted small fw-bold d-block">FECHA:</span>
+                                    <span class="fw-semibold">${escaparHtml(columna.fecha_completa)}</span>
+                                </div>
+                                <div class="col-6">
+                                    <span class="text-muted small fw-bold d-block">DÍA:</span>
+                                    <span class="fw-semibold">${escaparHtml(columna.dia_semana)}</span>
+                                </div>
+                                <div class="col-12 mt-2">
+                                    <span class="text-muted small fw-bold d-block">PERIODO / HORARIO:</span>
+                                    <span class="fw-semibold">${periodoHorario}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center px-1">
+                            <span class="fw-bold text-muted">TIPO DE ASISTENCIA:</span>
+                            <span class="badge ${configTipo.badge} px-3 py-2 fs-6 shadow-sm">
+                                <i class="fa-solid fa-duotone ${configTipo.icono} me-1"></i>${configTipo.texto}
+                            </span>
+                        </div>
+
+                        ${subdatosHtml}
+                    </div>
+                `;
+
+                Swal.fire({
+                    theme: localStorage.getItem('theme') || 'dark',
+                    title: '<span class="fs-5 fw-bold text-info"><i class="fa-solid fa-duotone fa-clipboard-user me-2"></i>Detalle de Registro</span>',
+                    html: contenidoSwal,
+                    confirmButtonText: '<i class="fa-solid fa-check me-1"></i>Cerrar',
+                    confirmButtonColor: '#0d6efd',
+                });
+            });
+        }
+
         /**
          * Convierte el elemento <img> del logo institucional a Base64 PNG
          * para incrustarlo directamente a la izquierda del encabezado en ExcelJS.

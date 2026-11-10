@@ -74,7 +74,7 @@
                 <div class="row mt-3">
                     <div class="col-md-12">
                         <div class="alert alert-secondary mb-0 py-2">
-                            <i class="fa-duotone fa-file-certificate me-1"></i>**Asistencia Global por OTROS:**
+                            <i class="fa-duotone fa-file-certificate me-1"></i><strong>Asistencia Global por OTROS:</strong>
                             <span class="badge bg-dark">{{ $estudiante_asistencia->justificacion_otros }}</span>
                         </div>
                     </div>
@@ -279,6 +279,13 @@
                                                     <i class="fa-brands fa-google-drive"></i> Ver
                                                 </a>
                                             @endif
+                                        </div>
+                                    @elseif ($tipo === 'PERMISO' && !empty($detalle->justificacion_permiso))
+                                        <div class="mt-1">
+                                            <span class="badge bg-primary">
+                                                <i class="fa-duotone fa-file-signature me-1"></i>Motivo Permiso:
+                                                {{ $detalle->justificacion_permiso }}
+                                            </span>
                                         </div>
                                     @endif
                                 </td>

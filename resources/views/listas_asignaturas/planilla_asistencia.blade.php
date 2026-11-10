@@ -180,7 +180,7 @@
                         </thead>
 
                         <tbody>
-                            @foreach ($planilla['estudiantes'] as $est)
+                            @foreach ($planilla['estudiantes'] as $idxEst => $est)
                                 <tr class="{{ !$est['en_lista_actual'] ? 'fila-retirado' : '' }}">
                                     <td class="text-center col-sticky-num fw-bold">{{ $est['numero'] }}</td>
                                     <td class="col-sticky-nombre fw-semibold">
@@ -210,17 +210,24 @@
                                             if (!$celda['registrado']) {
                                                 $tooltip .= 'Sin registro en esta fecha';
                                             } elseif ($celda['tipo'] === 'ATRASO' && $celda['tiempo_atraso'] > 0) {
-                                                $tooltip .= "ATRASO ({$celda['tiempo_atraso']} min)";
+                                                $tooltip .= "ATRASO ({$celda['tiempo_atraso']} min) - Clic para ver detalles";
+                                            } elseif (
+                                                $celda['tipo'] === 'PERMISO' &&
+                                                !empty($celda['justificacion_permiso'])
+                                            ) {
+                                                $tooltip .= "PERMISO ({$celda['justificacion_permiso']}) - Clic para ver detalles";
                                             } elseif (
                                                 $celda['tipo'] === 'OTROS' &&
                                                 !empty($colInfo['justificacion_otros'])
                                             ) {
-                                                $tooltip .= "OTROS ({$colInfo['justificacion_otros']})";
+                                                $tooltip .= "OTROS ({$colInfo['justificacion_otros']}) - Clic para ver detalles";
                                             } else {
-                                                $tooltip .= $celda['tipo'];
+                                                $tooltip .= "{$celda['tipo']} - Clic para ver detalles";
                                             }
                                         @endphp
-                                        <td class="celda-asistencia {{ $colorClase }}" title="{{ $tooltip }}">
+                                        <td class="celda-asistencia {{ $colorClase }} {{ $celda['registrado'] ? 'celda-interactiva' : '' }}"
+                                            title="{{ $tooltip }}"
+                                            @if ($celda['registrado']) data-est-idx="{{ $idxEst }}" data-col-idx="{{ $idxCol }}" @endif>
                                             {{ $celda['simbolo'] }}
                                         </td>
                                     @endforeach
