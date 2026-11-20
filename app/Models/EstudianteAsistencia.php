@@ -187,7 +187,7 @@ class EstudianteAsistencia extends Model
                 fn($q, $valor) => $q->where('listas_asignaturas.id_periodo', $valor)
             )
             ->orderBy('estudiantes_asistencias.fecha', 'DESC')
-            ->orderBy('horarios_asignaturas.hora_inicio', 'ASC')
+            ->orderBy('horarios_asignaturas.hora_inicio', 'DESC')
             ->get();
     }
 

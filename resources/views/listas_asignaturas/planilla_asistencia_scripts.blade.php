@@ -4,6 +4,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const PLANILLA = @json($planilla);
+        const RUTA_DETALLE_ASISTENCIA = "{{ route('estudiantes_asistencias.detalles', ':id') }}";
 
         // Función auxiliar para escapar caracteres HTML por seguridad
         function escaparHtml(texto) {
@@ -148,6 +149,8 @@
                     `<span class="badge bg-secondary ms-1">RETIRADO</span>` :
                     '';
 
+                const urlDetalleAsistencia = RUTA_DETALLE_ASISTENCIA.replace(':id', celda.id_estudiante_asistencia);
+
                 const contenidoSwal = `
                     <div class="text-start fs-6">
                         <div class="p-3 rounded border bg-body-tertiary mb-3 shadow-sm">
@@ -180,6 +183,12 @@
                         </div>
 
                         ${subdatosHtml}
+
+                        <div class="mt-3 pt-3 border-top text-center">
+                            <a href="${urlDetalleAsistencia}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-info w-100 fw-bold shadow-sm">
+                                <i class="fa-solid fa-duotone fa-arrow-up-right-from-square me-1"></i>Abrir lista en nueva pestaña
+                            </a>
+                        </div>
                     </div>
                 `;
 

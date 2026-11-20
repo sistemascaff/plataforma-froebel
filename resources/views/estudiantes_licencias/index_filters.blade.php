@@ -7,6 +7,24 @@
     <div class="card-body">
         <div class="row g-3 align-items-end">
             <div class="col-md-3">
+                <label for="filter_rango_fechas" class="form-label text-muted fw-bold">Rango de fechas:</label>
+                <select class="form-select" id="filter_rango_fechas">
+                    <option value="">Todo</option>
+                    <option value="hoy">Hoy</option>
+                    <option value="esta_semana">Esta Semana</option>
+                    <option value="este_mes" selected>Este Mes</option>
+                    <option value="personalizado">Personalizado</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-none" id="filter_fecha_inicio_container">
+                <label for="filter_fecha_inicio" class="form-label text-muted fw-bold">Fecha de inicio:</label>
+                <input type="date" class="form-control" id="filter_fecha_inicio" value="{{ date('Y-m-d') }}">
+            </div>
+            <div class="col-md-3 d-none" id="filter_fecha_fin_container">
+                <label for="filter_fecha_fin" class="form-label text-muted fw-bold ">Fecha de fin:</label>
+                <input type="date" class="form-control" id="filter_fecha_fin" value="{{ date('Y-m-d') }}">
+            </div>
+            <div class="col-md-3">
                 <label for="filter_id_nivel" class="form-label text-muted fw-bold">Nivel:</label>
                 <select class="form-select" id="filter_id_nivel">
                     <option value="">Todos</option>

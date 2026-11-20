@@ -225,7 +225,7 @@ class Estudiante extends Model
             'estudiantes_asistencias.lista_asignatura.asignatura:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',
             'estudiantes_asistencias.horario_asignatura',
 
-            'estudiantes_licencias:id_estudiante_licencia,id_estudiante,tipo,justificacion,fecha_inicio,fecha_fin,evidencia,estado,fecha_registro',
+            'estudiantes_licencias:id_estudiante_licencia,id_estudiante,tipo,justificacion,fecha_inicio,fecha_fin,evidencia,solicitado_por,estado,fecha_registro',
 
             'creado:id_usuario,correo',
             'modificado:id_usuario,correo',

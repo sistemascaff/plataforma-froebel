@@ -3,13 +3,14 @@
         <table class="table table-bordered table-striped dataTable w-100" id="tabla-licencias">
             <thead>
                 <tr>
-                    <th class="text-center" scope="col" style="width: 5%;">#</th>
-                    <th scope="col" style="width: 15%;">Tipo de Licencia</th>
+                    <th class="text-center" scope="col">#</th>
+                    <th scope="col">Tipo de Licencia</th>
                     <th scope="col">Justificación</th>
-                    <th scope="col" style="width: 15%;">Fecha de Inicio</th>
-                    <th scope="col" style="width: 15%;">Fecha de Fin</th>
-                    <th class="text-center" scope="col" style="width: 10%;">Evidencia</th>
-                    <th scope="col" style="width: 15%;">F. Registro</th>
+                    <th scope="col">Fecha de Inicio</th>
+                    <th scope="col">Fecha de Fin</th>
+                    <th scope="col">Solicitado por</th>
+                    <th class="text-center" scope="col">Evidencia</th>
+                    <th scope="col">F. Registro</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,6 +34,7 @@
                                     {{ date('d/m/Y H:i', strtotime($licencia->fecha_fin)) }}
                                 </span>
                             </td>
+                            <td class="text-center align-middle">{{$licencia->solicitado_por}}</td>
                             <td class="text-center align-middle">
                                 @if ($licencia->evidencia)
                                     <a href="{{ $licencia->evidencia }}" target="_blank"

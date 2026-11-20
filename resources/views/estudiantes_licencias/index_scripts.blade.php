@@ -31,6 +31,17 @@
             $select.select2(configuracion);
         });
 
+        $('#filter_rango_fechas').on('change', function() {
+            const selectedValue = $(this).val();
+            if (selectedValue === 'personalizado') {
+                $('#filter_fecha_inicio_container').removeClass('d-none');
+                $('#filter_fecha_fin_container').removeClass('d-none');
+            } else {
+                $('#filter_fecha_inicio_container').addClass('d-none');
+                $('#filter_fecha_fin_container').addClass('d-none');
+            }
+        });
+
         function recargarEstudiantesSelect() {
             $.ajax({
                 url: "{{ route('estudiantes.listar') }}",
@@ -77,11 +88,16 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 data: function(d) {
+                    d.rango_fechas = $('#filter_rango_fechas').val();
                     d.id_nivel = $('#filter_id_nivel').val();
                     d.id_grado = $('#filter_id_grado').val();
                     d.id_curso = $('#filter_id_curso').val();
                     d.id_paralelo = $('#filter_id_paralelo').val();
                     d.estado = $('#filter_estado').val();
+                    if (d.rango_fechas === 'personalizado') {
+                        d.fecha_inicio = $('#filter_fecha_inicio').val();
+                        d.fecha_fin = $('#filter_fecha_fin').val();
+                    }
                 },
                 error: function(xhr, error, thrown) {
                     console.error("Error al cargar los datos:", error);

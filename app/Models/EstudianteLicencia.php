@@ -74,6 +74,23 @@ class EstudianteLicencia extends Model
                 'modificado:id_usuario,correo',
                 'eliminado:id_usuario,correo'
             ])
+            // ==========================================
+            // FILTROS DE RANGO DE FECHAS (ASISTENCIA)
+            // ==========================================
+            ->when(
+                $filtros['fecha_exacta'] ?? null,
+                fn($q, $fecha) => $q->whereDate('estudiantes_licencias.fecha_registro', $fecha)
+            )
+            ->when(
+                isset($filtros['fecha_inicio']) && isset($filtros['fecha_fin']),
+                fn($q) => $q->whereBetween('estudiantes_licencias.fecha_registro', [
+                    $filtros['fecha_inicio'],
+                    $filtros['fecha_fin']
+                ])
+            )
+            // ==========================================
+            // FILTROS ACADÉMICOS Y JERÁRQUICOS
+            // ==========================================
             ->when(
                 $filtros['nivel'] ?? null,
                 // Como ya se hizo el join con niveles se puede filtrar directamente en lugar de usar whereHas (y también es más rápido)
@@ -98,7 +115,6 @@ class EstudianteLicencia extends Model
             ->orderBy('estudiantes_licencias.id_estudiante_licencia', 'DESC')
             ->get();
     }
-
 
     public function get_estudiante_licencia($id_estudiante_licencia)
     {

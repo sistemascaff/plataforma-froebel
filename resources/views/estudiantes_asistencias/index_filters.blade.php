@@ -13,7 +13,16 @@
                     <option value="hoy" selected>Hoy</option>
                     <option value="esta_semana">Esta Semana</option>
                     <option value="este_mes">Este Mes</option>
+                    <option value="personalizado">Personalizado</option>
                 </select>
+            </div>
+            <div class="col-md-3 d-none" id="filter_fecha_inicio_container">
+                <label for="filter_fecha_inicio" class="form-label text-muted fw-bold">Fecha de inicio:</label>
+                <input type="date" class="form-control" id="filter_fecha_inicio" value="{{ date('Y-m-d') }}">
+            </div>
+            <div class="col-md-3 d-none" id="filter_fecha_fin_container">
+                <label for="filter_fecha_fin" class="form-label text-muted fw-bold ">Fecha de fin:</label>
+                <input type="date" class="form-control" id="filter_fecha_fin" value="{{ date('Y-m-d') }}">
             </div>
             <div class="col-md-3">
                 <label for="filter_id_nivel" class="form-label text-muted fw-bold">Nivel:</label>

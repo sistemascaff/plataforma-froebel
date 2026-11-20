@@ -141,7 +141,7 @@
 
                             // Información de Docente y Aula
                             let nombreDocente = item.lista.docente?.persona ?
-                                `${item.lista.docente.persona.apellido_paterno} ${item.lista.docente.persona.nombres}` :
+                                `${item.lista.docente.persona.nombres_apellidos}` :
                                 '<span class="text-muted">Docente no asignado</span>';
                             let aula = item.lista.asignatura?.aula?.aula ?
                                 `<span class="badge bg-light text-dark border ms-1"><i class="fa-duotone fa-door-open me-1"></i>${item.lista.asignatura.aula.aula}</span>` :
@@ -209,7 +209,7 @@
                             filasHtml += `
                             <tr class="${rowClass}">
                                 <td class="text-center align-middle">${index + 1}</td>
-                                <td class="align-middle fw-bold text-info">${item.horario.denominacion}</td>
+                                <td class="align-middle fw-bold">${item.horario.denominacion}</td>
                                 <td class="text-center align-middle">
                                     ${horaInicio} - ${horaFin}<br>
                                     <span class="badge bg-primary mt-1">${dateStr}</span>

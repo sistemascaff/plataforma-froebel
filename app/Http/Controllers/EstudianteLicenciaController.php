@@ -47,8 +47,35 @@ class EstudianteLicenciaController extends Controller
         $tipo_perfil = Auth::user()->persona?->tipo_perfil;
         $filtros = [];
         $licencias = null;
+        $now = now();
 
         // Filtros dinámicos (Desde la vista)
+        if ($request->filled('rango_fechas')) {
+            switch ($request->rango_fechas) {
+                case 'hoy':
+                    $filtros['fecha_exacta'] = $now->format('Y-m-d');
+                    break;
+
+                case 'esta_semana':
+                    // Rango de lunes a domingo de la semana en curso
+                    $filtros['fecha_inicio'] = $now->copy()->startOfWeek()->format('Y-m-d');
+                    $filtros['fecha_fin']    = $now->copy()->endOfWeek()->format('Y-m-d');
+                    break;
+
+                case 'este_mes':
+                    // Rango del primer al último día del mes en curso
+                    $filtros['fecha_inicio'] = $now->copy()->startOfMonth()->format('Y-m-d');
+                    $filtros['fecha_fin']    = $now->copy()->endOfMonth()->format('Y-m-d');
+                    break;
+                case 'personalizado':
+                    if ($request->filled('fecha_inicio') && $request->filled('fecha_fin')) {
+                        $filtros['fecha_inicio'] = $request->fecha_inicio;
+                        $filtros['fecha_fin']    = $request->fecha_fin;
+                    }
+                    break;
+            }
+        }
+
         if ($request->filled('id_nivel')) {
             $filtros['nivel'] = $request->id_nivel;
         }

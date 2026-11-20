@@ -10,6 +10,17 @@
             matcher: matchFlexible,
         });
 
+        $('#filter_rango_fechas').on('change', function() {
+            const selectedValue = $(this).val();
+            if (selectedValue === 'personalizado') {
+                $('#filter_fecha_inicio_container').removeClass('d-none');
+                $('#filter_fecha_fin_container').removeClass('d-none');
+            } else {
+                $('#filter_fecha_inicio_container').addClass('d-none');
+                $('#filter_fecha_fin_container').addClass('d-none');
+            }
+        });
+
         $("#dataTable").DataTable({
             processing: true,
             ajax: {
@@ -24,6 +35,10 @@
                     d.id_coordinacion = $('#filter_id_coordinacion').val();
                     d.id_docente = $('#filter_id_docente').val();
                     d.id_periodo = $('#filter_id_periodo').val();
+                    if (d.rango_fechas === 'personalizado') {
+                        d.fecha_inicio = $('#filter_fecha_inicio').val();
+                        d.fecha_fin = $('#filter_fecha_fin').val();
+                    }
                 },
                 error: function(xhr, error, thrown) {
                     console.error("Error al cargar los datos:", error);

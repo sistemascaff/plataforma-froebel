@@ -296,6 +296,12 @@ class EstudianteAsistenciaController extends Controller
                     $filtros['fecha_inicio'] = $now->copy()->startOfMonth()->format('Y-m-d');
                     $filtros['fecha_fin']    = $now->copy()->endOfMonth()->format('Y-m-d');
                     break;
+                case 'personalizado':
+                    if ($request->filled('fecha_inicio') && $request->filled('fecha_fin')) {
+                        $filtros['fecha_inicio'] = $request->fecha_inicio;
+                        $filtros['fecha_fin']    = $request->fecha_fin;
+                    }
+                    break;
             }
         }
 
