@@ -28,12 +28,12 @@
         </div>
         <div class="card-body">
             <div class="row g-3">
-                <div class="col-md-8">
+                <div class="col-md-9">
                     <label for="persona" class="form-label fw-bold">Selecciona la persona <span class="text-danger">*</span></label>
                     <select class="form-select" aria-label="Seleccione una persona" id="persona" name="persona_id" required {{ $prestamo_libro->estado == 0 ? 'disabled' : '' }}>
                     </select>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label for="celular" class="form-label fw-bold">Número de celular</label>
                     <input type="text" class="form-control" id="celular" name="celular" placeholder="Ej. 77001122 (Opcional)" value="{{ $prestamo_libro->celular ?? '' }}" {{ $prestamo_libro->estado == 0 ? 'disabled' : '' }}>
                 </div>

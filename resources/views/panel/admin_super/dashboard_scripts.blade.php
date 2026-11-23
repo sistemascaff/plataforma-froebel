@@ -34,7 +34,7 @@
                             const edad = anioActual - moment(persona.fecha_nacimiento)
                             .year();
                             const cursoInfo = persona.estudiante ?
-                                ` (${persona.estudiante.curso.curso})` : '';
+                                ` <span class="badge bg-info text-dark">${persona.estudiante.curso.curso}</span>` : '';
 
                             return `
                                 <li class="list-group-item d-flex justify-content-between align-items-center text-start bg-transparent">
@@ -57,7 +57,7 @@
                                     ${listaHtml}
                                 </ul>
                             `,
-                            confirmButtonText: '¡Genial!',
+                            confirmButtonText: '<i class="fa-solid fa-duotone fa-birthday-cake fa-bounce me-1"></i>¡Genial!',
                             confirmButtonColor: '#198754'
                         });
                     }

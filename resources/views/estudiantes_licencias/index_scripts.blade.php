@@ -10,20 +10,42 @@
     let chartCursos, chartTipos;
 
     $(document).ready(function() {
-        // --- Inicialización de select2 específica para esta vista ---
+        function formatearEstudiante(opcion) {
+            if (!opcion.id) {
+                return opcion.text;
+            }
+
+            let curso = $(opcion.element).data('curso');
+            let nombre = $(opcion.element).data('nombre');
+
+            // Respaldo por si algún option no tiene los atributos data-*
+            if (!curso || !nombre) {
+                return opcion.text;
+            }
+
+            return $(`<span><span class="badge bg-info text-dark">${curso}</span> ${nombre}</span>`);
+        }
+
         $('#filter_id_grado, #filter_id_curso, .select2').each(function() {
             let $select = $(this);
+            let isDark = localStorage.getItem('theme') === 'dark';
 
             let configuracion = {
                 width: '100%',
                 language: "es",
-                dropdownCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' :
-                    '',
-                selectionCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' :
-                    '',
+                dropdownCssClass: isDark ? 'bg-dark text-white' : '',
+                selectionCssClass: isDark ? 'bg-dark text-white' : '',
                 matcher: matchFlexible,
             };
 
+            // Aplicamos el template y el modal solo al select de estudiantes
+            if ($select.is('#id_estudiante')) {
+                configuracion.dropdownParent = $('#modal-formulario');
+                configuracion.templateResult = formatearEstudiante;
+                configuracion.templateSelection = formatearEstudiante;
+            }
+
+            // Configuración para todos los selects con la clase 'select2'
             if ($select.hasClass('select2')) {
                 configuracion.dropdownParent = $('#modal-formulario');
             }
@@ -55,11 +77,13 @@
                     $.each(response.data, function(i, estudiante) {
                         if (estudiante.estado == '0') return;
 
-                        let fila =
-                            `(${estudiante.curso.curso}) ${estudiante.persona.apellidos_nombres}`;
+                        let curso = estudiante.curso.curso;
+                        let nombre = estudiante.persona.apellidos_nombres;
 
                         $select.append(
-                            `<option value="${estudiante.id_estudiante}">${fila}</option>`
+                            `<option value="${estudiante.id_estudiante}" data-curso="${curso}" data-nombre="${nombre}">
+                                (${curso}) ${nombre}
+                            </option>`
                         );
                     });
 

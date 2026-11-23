@@ -102,6 +102,44 @@
 
             let catalogoEstudiantes = {};
 
+            let isDark = localStorage.getItem('theme') === 'dark';
+
+            // Formatea cada opción en la lista desplegable (con badge de curso, nombre, correo y estado)
+            function formatearResultadoEstudiante(opcion) {
+                if (!opcion.id) return opcion.text;
+
+                let est = catalogoEstudiantes[opcion.id];
+                if (!est) return opcion.text;
+
+                let badgeEnLista = opcion.disabled ?
+                    ' <span class="badge bg-secondary ms-1">Ya en lista</span>' :
+                    '';
+
+                return $(`
+                    <span>
+                        <span class="badge bg-info text-dark me-1">${est.curso}</span>
+                        <strong>${est.nombre}</strong>
+                        <small class="opacity-75"> - ${est.correo}</small>
+                        ${badgeEnLista}
+                    </span>
+                `);
+            }
+
+            // Formatea las etiquetas seleccionadas (más compacto para selección múltiple)
+            function formatearSeleccionEstudiante(opcion) {
+                if (!opcion.id) return opcion.text;
+
+                let est = catalogoEstudiantes[opcion.id];
+                if (!est) return opcion.text;
+
+                return $(`
+                    <span>
+                        <span class="badge bg-info text-dark me-1">${est.curso}</span>
+                        ${est.nombre}
+                    </span>
+                `);
+            }
+
             // 1. Inicializar Select2 Múltiple
             $('#estudiante').select2({
                 width: '100%',
@@ -109,9 +147,11 @@
                 placeholder: "Buscar y seleccionar uno o varios estudiantes...",
                 allowClear: true,
                 closeOnSelect: false, // Permite elegir varios sin que se cierre el desplegable
-                dropdownCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
-                selectionCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
+                dropdownCssClass: isDark ? 'bg-dark text-white' : '',
+                selectionCssClass: isDark ? 'bg-dark text-white' : '',
                 matcher: matchFlexible,
+                templateResult: formatearResultadoEstudiante,
+                templateSelection: formatearSeleccionEstudiante,
             });
 
             // 2. Cargar catálogo de estudiantes y sincronizar opciones disponibles
@@ -396,7 +436,7 @@
                                 });
                                 btn.prop('disabled', false).html(
                                     '<i class="fa-solid fa-duotone fa-floppy-disk me-1"></i>Guardar Cambios'
-                                    );
+                                );
                             }
                         });
                     }
@@ -487,7 +527,7 @@
                     error: function(xhr) {
                         btn.prop('disabled', false).html(
                             '<i class="fa-solid fa-duotone fa-check me-1"></i>Incorporar a la Lista'
-                            );
+                        );
                         let respuesta = xhr.responseJSON || {
                             message: "Error inesperado"
                         };

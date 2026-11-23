@@ -2,12 +2,58 @@
     $(document).ready(function() {
         const idPersonaSeleccionada = {{ $prestamo_libro->id_persona ?? 'null' }};
 
+        let isDark = localStorage.getItem('theme') === 'dark';
+
+        function formatearPersona(opcion) {
+            if (!opcion.id) return opcion.text;
+
+            const $el = $(opcion.element);
+            const nombre = $el.data('nombre');
+
+            // Respaldo por si no existen los atributos data-*
+            if (!nombre) return opcion.text;
+
+            const perfil = $el.data('perfil');
+            const curso = $el.data('curso');
+            const correo = $el.data('correo');
+            const total = parseInt($el.data('total')) || 0;
+            const debe = parseInt($el.data('debe')) || 0;
+
+            // 1. Badges de perfil y curso
+            const badgePerfil =
+                `<span class="badge bg-secondary bg-opacity-25 text-body border border-secondary border-opacity-25">${perfil}</span>`;
+            const badgeCurso = curso ? `<span class="badge bg-info text-dark">${curso}</span>` : '';
+
+            // 2. Formato de préstamos (solo si tiene historial)
+            let badgeLibros = '';
+            if (total > 0) {
+                const badgeDebe = debe > 0 ?
+                    `<span class="badge bg-danger ms-1">Debe ${debe}</span>` :
+                    `<span class="badge bg-success bg-opacity-25 text-success ms-1">Al día</span>`;
+
+                badgeLibros =
+                    `<span class="ms-2"><small class="opacity-75">Total: ${total}</small>${badgeDebe}</span>`;
+            }
+
+            return $(`
+                <span class="d-inline-flex align-items-center flex-wrap gap-1">
+                    ${badgePerfil}
+                    ${badgeCurso}
+                    <strong>${nombre}</strong>
+                    <small class="opacity-75">- ${correo}</small>
+                    ${badgeLibros}
+                </span>
+            `);
+        }
+
         $('#persona').select2({
             width: '100%',
             language: "es",
-            dropdownCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
-            selectionCssClass: localStorage.getItem('theme') == 'dark' ? 'bg-dark text-white' : '',
+            dropdownCssClass: isDark ? 'bg-dark text-white' : '',
+            selectionCssClass: isDark ? 'bg-dark text-white' : '',
             matcher: matchFlexible,
+            templateResult: formatearPersona,
+            templateSelection: formatearPersona,
         });
 
         function recargarPersonasSelect(idSeleccionado = null) {
@@ -27,13 +73,12 @@
                     });
 
                     $.each(personasOrdenadas, function(i, persona) {
-                        // Omitir personas inactivos
+                        // Omitir personas inactivas
                         if (persona.estado == '0') return;
 
-                        // Curso si es estudiante
-                        let curso = persona.estudiante ?
-                            ` - ${persona.estudiante.curso.curso}` :
-                            '';
+                        // Curso limpio para el data-* y con guion para el texto plano de búsqueda
+                        let cursoRaw = persona.estudiante?.curso?.curso || '';
+                        let cursoTexto = cursoRaw ? ` - ${cursoRaw}` : '';
 
                         // Información de préstamos
                         let datos_libros = persona.cantidad_total_prestamos > 0 ?
@@ -43,14 +88,24 @@
                         // Correo
                         let correo = persona.usuario?.correo || 'sin correo';
 
+                        // Texto plano para que matchFlexible siga buscando por todos los campos
                         let fila =
-                            `(${persona.tipo_perfil}${curso}) ${persona.apellidos_nombres} - ${correo}${datos_libros}`
+                            `(${persona.tipo_perfil}${cursoTexto}) ${persona.apellidos_nombres} - ${correo}${datos_libros}`
                             .trim();
 
+                        let totalPrestamos = persona.cantidad_total_prestamos ?? 0;
+                        let librosDebe = persona.cantidad_libros_debe ?? 0;
+
                         $select.append(
-                            `<option value="${persona.id_persona}">
-                        ${fila}
-                    </option>`
+                            `<option value="${persona.id_persona}"
+                                data-perfil="${persona.tipo_perfil}"
+                                data-curso="${cursoRaw}"
+                                data-nombre="${persona.apellidos_nombres}"
+                                data-correo="${correo}"
+                                data-total="${totalPrestamos}"
+                                data-debe="${librosDebe}">
+                                ${fila}
+                            </option>`
                         );
                     });
 
