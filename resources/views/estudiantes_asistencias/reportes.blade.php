@@ -16,82 +16,13 @@
             <h5 class="alert-heading fw-bold mb-1">Información del Reporte</h5>
             <p class="mb-0">
                 Por defecto, se muestra la información de <b>hoy</b>. Al aplicar los filtros,
-                tanto la tabla como los gráficos y tarjetas se recalcularán automáticamente en tiempo real.
+                tanto las tablas como los gráficos y tarjetas se recalcularán automáticamente en tiempo real.
             </p>
         </div>
     </div>
 
     {{-- PANEL DE FILTROS DINÁMICOS --}}
-    <div class="card shadow-sm mb-4">
-        <div class="card-header p-3">
-            <h5 class="fw-bold mb-0 text-primary">
-                <i class="fa-duotone fa-filter me-1"></i>Filtros de Búsqueda
-            </h5>
-        </div>
-        <div class="card-body">
-            <div class="row g-3 align-items-end">
-                <div class="col-md-3">
-                    <label for="fecha_inicio" class="form-label text-muted fw-bold">Desde Fecha:</label>
-                    <input type="date" class="form-control" id="fecha_inicio" value="{{ date('Y-m-d') }}">
-                </div>
-                <div class="col-md-3">
-                    <label for="fecha_fin" class="form-label text-muted fw-bold">Hasta Fecha:</label>
-                    <input type="date" class="form-control" id="fecha_fin" value="{{ date('Y-m-d') }}">
-                </div>
-                <div class="col-md-3">
-                    <label for="id_nivel" class="form-label text-muted fw-bold">Nivel:</label>
-                    <select class="form-select" id="id_nivel">
-                        <option value="">Todos</option>
-                        @if (isset($niveles))
-                            @foreach ($niveles as $nivel)
-                                <option value="{{ $nivel->id_nivel }}">{{ $nivel->nivel }}</option>
-                            @endforeach
-                        @endif
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="id_coordinacion" class="form-label text-muted fw-bold">Coordinación:</label>
-                    <select class="form-select" id="id_coordinacion">
-                        <option value="">Todos</option>
-                        @if (isset($coordinaciones))
-                            @foreach ($coordinaciones as $coordinacion)
-                                <option value="{{ $coordinacion->id_coordinacion }}">{{ $coordinacion->coordinacion }}
-                                </option>
-                            @endforeach
-                        @endif
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="id_curso" class="form-label text-muted fw-bold">Curso:</label>
-                    <select class="form-select" id="id_curso">
-                        <option value="">Todos</option>
-                        @if (isset($cursos))
-                            @foreach ($cursos as $curso)
-                                <option value="{{ $curso->id_curso }}">{{ $curso->curso }}</option>
-                            @endforeach
-                        @endif
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="id_docente" class="form-label text-muted fw-bold">Docente:</label>
-                    <select class="form-select" id="id_docente">
-                        <option value="">Todos</option>
-                        @if (isset($docentes))
-                            @foreach ($docentes as $docente)
-                                <option value="{{ $docente->id_docente }}">{{ $docente->persona?->nombres_apellidos }}
-                                </option>
-                            @endforeach
-                        @endif
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <button type="button" class="btn btn-primary w-100 shadow-sm" id="btn-filtrar">
-                        <i class="fa-duotone fa-search me-1"></i>Filtrar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    @include('estudiantes_asistencias.reportes_filters')
 
     {{-- A) TARJETAS DE MÉTRICAS --}}
     <div class="card p-3 mb-4 shadow-sm">
@@ -299,33 +230,82 @@
         </div>
     </div>
 
-    {{-- TABLA DE RESULTADOS --}}
+    {{-- TABLAS DE RESULTADOS (TABS) --}}
     <div class="card shadow-sm mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-bold text-info">
-                <i class="fa-solid fa-duotone fa-calendar-lines me-2"></i>
-                Reporte de incidencias
-            </h5>
+        <div class="card-header pb-0 border-bottom-0">
+            <ul class="nav nav-tabs card-header-tabs" id="tablasTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active fw-bold text-info" id="btn-tab-incidencias" data-bs-toggle="tab"
+                        data-bs-target="#tab-tabla-incidencias" type="button" role="tab">
+                        <i class="fa-solid fa-duotone fa-calendar-lines me-1"></i>
+                        Detalle de incidencias
+                        <span class="badge bg-secondary ms-1" id="badge-count-incidencias">0</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold text-info" id="btn-tab-ranking" data-bs-toggle="tab"
+                        data-bs-target="#tab-tabla-ranking" type="button" role="tab">
+                        <i class="fa-solid fa-duotone fa-ranking-star me-1"></i>
+                        Ranking por estudiante
+                        <span class="badge bg-info text-dark ms-1" id="badge-count-ranking">0</span>
+                    </button>
+                </li>
+            </ul>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped w-100" id="dataTable">
-                    <thead>
-                        <tr>
-                            <th class="text-center" style="width: 5%;">#</th>
-                            <th>Fecha</th>
-                            <th>Horario</th>
-                            <th>Curso</th>
-                            <th>Estudiante</th>
-                            <th>Asignatura</th>
-                            <th>Docente</th>
-                            <th class="text-center">Estado</th>
-                            <th class="text-center">Atraso</th>
-                            <th>Observaciones</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+            <div class="tab-content" id="tablasTabsContent">
+                {{-- TAB 1: REPORTE DETALLADO DE INCIDENCIAS --}}
+                <div class="tab-pane fade show active" id="tab-tabla-incidencias" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped w-100" id="dataTable">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" style="width: 5%;">#</th>
+                                    <th>Fecha</th>
+                                    <th>Horario</th>
+                                    <th>Curso</th>
+                                    <th>Estudiante</th>
+                                    <th>Asignatura</th>
+                                    <th>Docente</th>
+                                    <th class="text-center">Estado</th>
+                                    <th class="text-center">Atraso</th>
+                                    <th>Observaciones</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- TAB 2: RANKING POR ESTUDIANTE --}}
+                <div class="tab-pane fade" id="tab-tabla-ranking" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped w-100" id="table-ranking-estudiantes">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" style="width: 4%;">#</th>
+                                    <th>Curso</th>
+                                    <th>Estudiante</th>
+                                    <th class="text-center">Atrasos</th>
+                                    <th class="text-center">Faltas</th>
+                                    <th class="text-center">Suspendidos</th>
+                                    <th class="text-center table-danger text-danger"
+                                        title="Subtotal: Atrasos + Faltas + Suspendidos">
+                                        Disciplinarias
+                                    </th>
+                                    <th class="text-center">Licencias</th>
+                                    <th class="text-center">Permisos</th>
+                                    <th class="text-center table-info text-info" title="Subtotal: Licencias + Permisos">
+                                        Justificadas
+                                    </th>
+                                    <th class="text-center">Atrasos (Prom.)</th>
+                                    <th class="text-center table-secondary">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

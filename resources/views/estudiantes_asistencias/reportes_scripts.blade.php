@@ -13,15 +13,166 @@
             matcher: matchFlexible,
         });
 
-        // Inicialización de la Tabla
+        $('#filter_rango_fechas').on('change', function() {
+            const selectedValue = $(this).val();
+            if (selectedValue === 'personalizado') {
+                $('#filter_fecha_inicio_container').removeClass('d-none');
+                $('#filter_fecha_fin_container').removeClass('d-none');
+            } else {
+                $('#filter_fecha_inicio_container').addClass('d-none');
+                $('#filter_fecha_fin_container').addClass('d-none');
+            }
+        });
+
+        // Helper visual para contadores individuales de la tabla de ranking
+        const renderConteoBadge = (valor, type, badgeClass) => {
+            if (type === 'sort' || type === 'type') return valor;
+            if (valor > 0) {
+                return `<span class="badge ${badgeClass} px-2 py-1 shadow-sm">${valor}</span>`;
+            }
+            return `<span class="text-muted">0</span>`;
+        };
+
+        // 1. Inicialización de la Tabla de Ranking por Estudiante (se declara antes para estar lista en drawCallback)
+        let tablaRanking = $("#table-ranking-estudiantes").DataTable({
+            data: [],
+            columns: [{
+                    data: null,
+                    orderable: false,
+                    searchable: false,
+                    className: "text-center align-middle",
+                    render: (data, type, row, meta) => meta.row + 1
+                },
+                {
+                    data: "curso",
+                    className: "align-middle text-truncate",
+                    render: (data, type, row) => {
+                        if (type === 'sort' || type === 'type' || type === 'filter')
+                    return data;
+                        return `<span class="badge bg-info text-dark" title="${data}">${row.curso}</span>`;
+                    }
+                },
+                {
+                    data: "estudiante",
+                    className: "align-middle fw-bold"
+                },
+                {
+                    data: "atrasos",
+                    className: "text-center align-middle",
+                    render: (data, type) => renderConteoBadge(data, type, 'bg-warning text-dark')
+                },
+                {
+                    data: "faltas",
+                    className: "text-center align-middle",
+                    render: (data, type) => renderConteoBadge(data, type, 'bg-danger')
+                },
+                {
+                    data: "suspendidos",
+                    className: "text-center align-middle",
+                    render: (data, type) => renderConteoBadge(data, type,
+                        'bg-dark text-light border border-danger')
+                },
+                {
+                    data: "disciplinarias",
+                    className: "text-center align-middle fw-bold",
+                    createdCell: function(td, cellData) {
+                        if (cellData > 0) {
+                            $(td).addClass('table-danger');
+                        }
+                    },
+                    render: (data, type) => {
+                        if (type === 'sort' || type === 'type') return data;
+                        if (data > 0) {
+                            return `<span class="badge bg-danger fs-6 px-3 py-1 shadow-sm">${data}</span>`;
+                        }
+                        return `<span class="text-muted fw-normal">0</span>`;
+                    }
+                },
+                {
+                    data: "licencias",
+                    className: "text-center align-middle",
+                    render: (data, type) => renderConteoBadge(data, type, 'bg-info text-dark')
+                },
+                {
+                    data: "permisos",
+                    className: "text-center align-middle",
+                    render: (data, type) => renderConteoBadge(data, type, 'bg-primary')
+                },
+                {
+                    data: "justificadas",
+                    className: "text-center align-middle fw-bold",
+                    createdCell: function(td, cellData) {
+                        if (cellData > 0) {
+                            $(td).addClass('table-info');
+                        }
+                    },
+                    render: (data, type) => {
+                        if (type === 'sort' || type === 'type') return data;
+                        if (data > 0) {
+                            return `<span class="badge bg-info text-dark fs-6 px-3 py-1 shadow-sm">${data}</span>`;
+                        }
+                        return `<span class="text-muted fw-normal">0</span>`;
+                    }
+                },
+                {
+                    data: "promedio_mins",
+                    className: "text-center align-middle",
+                    render: (data, type, row) => {
+                        if (type === 'sort' || type === 'type') return data;
+                        if (row.atrasos === 0) {
+                            return ``;
+                        }
+                        return `
+                            <span class="fw-bold text-danger">${data} min</span>
+                            <br>
+                            <span class="text-muted small">${row.suma_mins} min total</span>
+                        `;
+                    }
+                },
+                {
+                    data: "total",
+                    className: "text-center align-middle fw-bold table-secondary",
+                    render: (data, type) => {
+                        if (type === 'sort' || type === 'type') return data;
+                        return `<span class="badge bg-secondary fs-6 px-3 py-1 shadow-sm">${data}</span>`;
+                    }
+                }
+            ],
+            drawCallback: function() {
+                // Recalcula la numeración (#) dinámicamente según el orden y búsqueda actual
+                let api = this.api();
+                api.column(0, {
+                    search: 'applied',
+                    order: 'applied'
+                }).nodes().each(function(cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            },
+            ...dtDefaults,
+            // Ajustes específicos para ver todas las columnas sin que se colapse automáticamente por responsividad, que sobreescriben a la constante dtDefaults.
+            responsive: false,
+            lengthChange: true,
+            autoWidth: false,
+            scrollX: true,
+            order: [
+                [6, 'desc'], // Primero por Subtotal Disciplinarias (desc)
+                [11, 'desc'] // Desempate por Total general (desc)
+            ],
+        });
+
+        // 2. Inicialización de la Tabla Principal de Incidencias
         let tablaReportes = $("#dataTable").DataTable({
             processing: true,
             ajax: {
                 url: "{{ route('estudiantes_asistencias.listar_reporte_incidencias') }}",
                 type: "GET",
                 data: function(d) {
-                    d.fecha_inicio = $('#fecha_inicio').val();
-                    d.fecha_fin = $('#fecha_fin').val();
+                    d.rango_fechas = $('#filter_rango_fechas').val();
+                    if (d.rango_fechas === 'personalizado') {
+                        d.fecha_inicio = $('#fecha_inicio').val();
+                        d.fecha_fin = $('#fecha_fin').val();
+                    }
+
                     d.id_nivel = $('#id_nivel').val();
                     d.id_coordinacion = $('#id_coordinacion').val();
                     d.id_curso = $('#id_curso').val();
@@ -51,7 +202,7 @@
                     objAsignaturas = {},
                     objDocentes = {};
 
-                // Helper para inicializar contadores con los 4 tipos de incidencia
+                // Helper para inicializar contadores con los 5 tipos de incidencia
                 const initIncidencias = () => ({
                     ATRASO: 0,
                     FALTA: 0,
@@ -70,9 +221,11 @@
                     // Ignorar por seguridad si llegara algún registro que no sea incidencia
                     if (!tiposValidos.includes(t)) return;
 
+                    let minsAtraso = 0;
                     if (t === 'ATRASO') {
                         kpiAtrasos++;
-                        sumaMins += (parseFloat(row.tiempo_atraso) || 0);
+                        minsAtraso = (parseFloat(row.tiempo_atraso) || 0);
+                        sumaMins += minsAtraso;
                     } else if (t === 'FALTA') {
                         kpiFaltas++;
                     } else if (t === 'LICENCIA') {
@@ -95,8 +248,11 @@
                     let estudiante = row.estudiante?.persona ?
                         row.estudiante.persona.apellidos_nombres :
                         'Desc.';
+                    let idEstudiante = row.id_estudiante ?? row.estudiante?.id_estudiante ??
+                        estudiante;
+                    let cursoCompleto = row.estudiante?.curso?.curso || 'Desc.';
                     let curso = row.estudiante?.curso?.curso ? window.Helpers.abreviarCurso(
-                        row.estudiante?.curso?.curso) : 'Desc.';
+                        row.estudiante.curso.curso) : 'Desc.';
                     let asignatura = row.estudiante_asistencia?.lista_asignatura?.asignatura
                         ?.asignatura || 'Desc.';
                     let docente = row.estudiante_asistencia?.lista_asignatura?.docente
@@ -109,9 +265,16 @@
                     objFechas[fecha] = (objFechas[fecha] || 0) + 1;
                     if (!objHorarios[horario]) objHorarios[horario] = initIncidencias();
 
-                    // Inicialización de acumuladores por entidad
-                    if (!objEstudiantes[estudiante]) objEstudiantes[estudiante] =
-                        initIncidencias();
+                    // Inicialización de acumuladores por entidad (Estudiantes agrupado por ID)
+                    if (!objEstudiantes[idEstudiante]) {
+                        objEstudiantes[idEstudiante] = {
+                            ...initIncidencias(),
+                            nombre: estudiante,
+                            curso: cursoCompleto,
+                            cursoAbreviado: curso,
+                            sumaMins: 0
+                        };
+                    }
                     if (!objCursos[curso]) objCursos[curso] = initIncidencias();
                     if (!objAsignaturas[asignatura]) objAsignaturas[asignatura] =
                         initIncidencias();
@@ -121,8 +284,11 @@
                     objHorarios[horario][t]++;
                     objHorarios[horario].Total++;
 
-                    objEstudiantes[estudiante][t]++;
-                    objEstudiantes[estudiante].Total++;
+                    objEstudiantes[idEstudiante][t]++;
+                    objEstudiantes[idEstudiante].Total++;
+                    if (t === 'ATRASO') {
+                        objEstudiantes[idEstudiante].sumaMins += minsAtraso;
+                    }
 
                     objCursos[curso][t]++;
                     objCursos[curso].Total++;
@@ -134,8 +300,9 @@
                     objDocentes[docente].Total++;
                 });
 
-                // 3. Pintar KPIs
-                const totalIncidencias = kpiAtrasos + kpiFaltas + kpiLicencias + kpiPermisos;
+                // 3. Pintar KPIs y badges de pestañas
+                const totalIncidencias = kpiAtrasos + kpiFaltas + kpiLicencias + kpiPermisos +
+                    kpiSuspendidos;
                 $('#kpi-total').text(totalIncidencias);
                 $('#kpi-atrasos').text(kpiAtrasos);
                 $('#kpi-faltas').text(kpiFaltas);
@@ -146,7 +313,36 @@
                 $('#kpi-minutos-promedio').text(kpiAtrasos > 0 ? (sumaMins / kpiAtrasos).toFixed(
                     1) : 0);
 
-                // Helper para generar los 4 datasets apilados (Atrasos, Faltas, Licencias, Permisos)
+                // 4. Actualizar Tabla de Ranking por Estudiante
+                const rankingEstudiantesData = Object.values(objEstudiantes).map(est => {
+                    const disciplinarias = est.ATRASO + est.FALTA + est.SUSPENDIDO;
+                    const justificadas = est.LICENCIA + est.PERMISO;
+                    const promedioMins = est.ATRASO > 0 ?
+                        parseFloat((est.sumaMins / est.ATRASO).toFixed(1)) : 0;
+
+                    return {
+                        curso: est.curso,
+                        curso_abreviado: est.cursoAbreviado,
+                        estudiante: est.nombre,
+                        atrasos: est.ATRASO,
+                        faltas: est.FALTA,
+                        suspendidos: est.SUSPENDIDO,
+                        disciplinarias: disciplinarias,
+                        licencias: est.LICENCIA,
+                        permisos: est.PERMISO,
+                        justificadas: justificadas,
+                        suma_mins: est.sumaMins,
+                        promedio_mins: promedioMins,
+                        total: est.Total
+                    };
+                });
+
+                $('#badge-count-incidencias').text(totalIncidencias);
+                $('#badge-count-ranking').text(rankingEstudiantesData.length);
+
+                tablaRanking.clear().rows.add(rankingEstudiantesData).draw();
+
+                // Helper para generar los 5 datasets apilados (Atrasos, Faltas, Licencias, Permisos, Suspendidos)
                 const buildStackedDatasets = (entriesArray, isObjectValues = false, radius =
                     4) => [{
                         label: 'Atrasos',
@@ -214,7 +410,8 @@
                 chartProporcion = initOrUpdateChart(chartProporcion, 'chart-proporcion', {
                     type: 'doughnut',
                     data: {
-                        labels: ['Atrasos', 'Faltas', 'Licencias', 'Permisos'],
+                        labels: ['Atrasos', 'Faltas', 'Licencias', 'Permisos',
+                            'Suspendidos'],
                         datasets: [{
                             data: [kpiAtrasos, kpiFaltas, kpiLicencias,
                                 kpiPermisos, kpiSuspendidos
@@ -259,7 +456,7 @@
                 // e) Rankings y Cursos (Ordenados por volumen de incidencias)
                 const topEstudiantes = getTopEntries(objEstudiantes, 20);
                 chartRanking = renderStackedBar(chartRanking, 'chart-ranking', topEstudiantes.map(
-                    e => e[0]), topEstudiantes, false, 'x');
+                    e => e[1].nombre), topEstudiantes, false, 'x');
 
                 const topDocentes = getTopEntries(objDocentes, 20);
                 chartDocentes = renderStackedBar(chartDocentes, 'chart-docentes', topDocentes.map(
@@ -359,7 +556,6 @@
                         `<span class="text-danger fw-bold">${data} min</span>` : ''
                 },
                 {
-                    // 
                     data: null,
                     className: "align-middle",
                     render: function(data, type, row) {
@@ -408,6 +604,19 @@
                 }
             ],
             ...dtDefaults,
+            // Ajustes específicos para ver todas las columnas sin que se colapse automáticamente por responsividad, que sobreescriben a la constante dtDefaults.
+            responsive: false,
+            lengthChange: true,
+            autoWidth: false,
+            scrollX: true,
+        });
+
+        // Reajustar anchos de columnas de DataTables al cambiar entre pestañas
+        $('#tablasTabs button[data-bs-toggle="tab"]').on('shown.bs.tab', function() {
+            $.fn.dataTable.tables({
+                visible: true,
+                api: true
+            }).columns.adjust();
         });
 
         $("#btn-filtrar").on("click", function(e) {

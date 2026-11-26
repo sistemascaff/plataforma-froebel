@@ -81,6 +81,20 @@ class DetalleEstudianteAsistencia extends Model
             ])
             // Solo incidencias
             ->whereIn('detalles_estudiantes_asistencias.tipo', ['ATRASO', 'FALTA', 'LICENCIA', 'PERMISO', 'SUSPENDIDO'])
+            // ==========================================
+            // FILTROS DE RANGO DE FECHAS (ASISTENCIA)
+            // ==========================================
+            ->when(
+                $filtros['fecha_exacta'] ?? null,
+                fn($q, $fecha) => $q->whereDate('estudiantes_asistencias.fecha', $fecha)
+            )
+            ->when(
+                isset($filtros['fecha_inicio']) && isset($filtros['fecha_fin']),
+                fn($q) => $q->whereBetween('estudiantes_asistencias.fecha', [
+                    $filtros['fecha_inicio'],
+                    $filtros['fecha_fin']
+                ])
+            )
 
             // ==========================================
             // FILTROS DINÁMICOS POR ROL
@@ -96,14 +110,6 @@ class DetalleEstudianteAsistencia extends Model
             ->when(
                 $filtros['docente'] ?? null,
                 fn($q, $valor) => $q->where('listas_asignaturas.id_docente', $valor)
-            )
-            ->when(
-                $filtros['fecha_inicio'] ?? null,
-                fn($q, $fecha) => $q->whereDate('estudiantes_asistencias.fecha', '>=', $fecha)
-            )
-            ->when(
-                $filtros['fecha_fin'] ?? null,
-                fn($q, $fecha) => $q->whereDate('estudiantes_asistencias.fecha', '<=', $fecha)
             )
             ->when(
                 $filtros['id_curso'] ?? null,
