@@ -24,6 +24,52 @@
             }
         });
 
+        // Catálogo maestro de estados para gráficos y filtros
+        const ESTADOS_CONFIG = [{
+                key: 'ATRASO',
+                label: 'Atrasos',
+                color: () => chartPalettes.incidencias.atraso
+            },
+            {
+                key: 'FALTA',
+                label: 'Faltas',
+                color: () => chartPalettes.incidencias.falta
+            },
+            {
+                key: 'LICENCIA',
+                label: 'Licencias',
+                color: () => chartPalettes.incidencias.licencia
+            },
+            {
+                key: 'PERMISO',
+                label: 'Permisos',
+                color: () => chartPalettes.incidencias.permiso
+            },
+            {
+                key: 'SUSPENDIDO',
+                label: 'Suspendidos',
+                color: () => chartPalettes.incidencias.suspendido
+            }
+        ];
+
+        const getEstadosActivos = () => $('.filter-estado:checked').map(function() {
+            return $(this).val();
+        }).get();
+
+        let estadosActivos = getEstadosActivos();
+
+        // Filtro reactivo en cliente exclusivo para la tabla principal (#dataTable)
+        $.fn.dataTable.ext.search.push(function(settings, searchData, dataIndex, rowData) {
+            if (settings.nTable.id !== 'dataTable') {
+                return true;
+            }
+
+            const tipo = rowData?.tipo || settings.aoData[dataIndex]?._aData?.tipo;
+            if (!tipo) return true;
+
+            return estadosActivos.includes(tipo);
+        });
+
         // Helper visual para contadores individuales de la tabla de ranking
         const renderConteoBadge = (valor, type, badgeClass) => {
             if (type === 'sort' || type === 'type') return valor;
@@ -48,7 +94,7 @@
                     className: "align-middle text-truncate",
                     render: (data, type, row) => {
                         if (type === 'sort' || type === 'type' || type === 'filter')
-                    return data;
+                            return data;
                         return `<span class="badge bg-info text-dark" title="${data}">${row.curso}</span>`;
                     }
                 },
@@ -313,6 +359,20 @@
                 $('#kpi-minutos-promedio').text(kpiAtrasos > 0 ? (sumaMins / kpiAtrasos).toFixed(
                     1) : 0);
 
+                // Atenuar visualmente las tarjetas KPI cuyos estados están desmarcados
+                $('#kpi-atrasos').closest('.card').toggleClass('opacity-50', !estadosActivos
+                    .includes('ATRASO'));
+                $('#kpi-minutos-total').closest('.card').toggleClass('opacity-50', !estadosActivos
+                    .includes('ATRASO'));
+                $('#kpi-faltas').closest('.card').toggleClass('opacity-50', !estadosActivos
+                    .includes('FALTA'));
+                $('#kpi-licencias').closest('.card').toggleClass('opacity-50', !estadosActivos
+                    .includes('LICENCIA'));
+                $('#kpi-permisos').closest('.card').toggleClass('opacity-50', !estadosActivos
+                    .includes('PERMISO'));
+                $('#kpi-suspendidos').closest('.card').toggleClass('opacity-50', !estadosActivos
+                    .includes('SUSPENDIDO'));
+
                 // 4. Actualizar Tabla de Ranking por Estudiante
                 const rankingEstudiantesData = Object.values(objEstudiantes).map(est => {
                     const disciplinarias = est.ATRASO + est.FALTA + est.SUSPENDIDO;
@@ -342,44 +402,21 @@
 
                 tablaRanking.clear().rows.add(rankingEstudiantesData).draw();
 
-                // Helper para generar los 5 datasets apilados (Atrasos, Faltas, Licencias, Permisos, Suspendidos)
+                // Solo incluir en los gráficos los estados que están activos en los checkboxes
+                const configsActivos = ESTADOS_CONFIG.filter(cfg => estadosActivos.includes(cfg
+                    .key));
+
+                // Helper para generar los datasets apilados dinámicamente según estados activos
                 const buildStackedDatasets = (entriesArray, isObjectValues = false, radius =
-                    4) => [{
-                        label: 'Atrasos',
-                        data: entriesArray.map(item => isObjectValues ? item.ATRASO : item[1]
-                            .ATRASO),
-                        backgroundColor: chartPalettes.incidencias.atraso,
-                        borderRadius: radius
-                    },
-                    {
-                        label: 'Faltas',
-                        data: entriesArray.map(item => isObjectValues ? item.FALTA : item[1]
-                            .FALTA),
-                        backgroundColor: chartPalettes.incidencias.falta,
-                        borderRadius: radius
-                    },
-                    {
-                        label: 'Licencias',
-                        data: entriesArray.map(item => isObjectValues ? item.LICENCIA : item[1]
-                            .LICENCIA),
-                        backgroundColor: chartPalettes.incidencias.licencia,
-                        borderRadius: radius
-                    },
-                    {
-                        label: 'Permisos',
-                        data: entriesArray.map(item => isObjectValues ? item.PERMISO : item[1]
-                            .PERMISO),
-                        backgroundColor: chartPalettes.incidencias.permiso,
-                        borderRadius: radius
-                    },
-                    {
-                        label: 'Suspendidos',
-                        data: entriesArray.map(item => isObjectValues ? item.SUSPENDIDO : item[
-                            1].SUSPENDIDO),
-                        backgroundColor: chartPalettes.incidencias.suspendido,
-                        borderRadius: radius
-                    }
-                ];
+                    4) => configsActivos.map(cfg => ({
+                    label: cfg.label,
+                    data: entriesArray.map(item => isObjectValues ? item[cfg.key] :
+                        item[1][
+                            cfg.key
+                        ]),
+                    backgroundColor: cfg.color(),
+                    borderRadius: radius
+                }));
 
                 // Helpers de utilidades
                 const trunc = (str, n) => str.length > n ? str.substring(0, n) + '...' : str;
@@ -407,22 +444,21 @@
                 };
 
                 // b) Proporción General (Dona)
+                const kpiPorTipo = {
+                    ATRASO: kpiAtrasos,
+                    FALTA: kpiFaltas,
+                    LICENCIA: kpiLicencias,
+                    PERMISO: kpiPermisos,
+                    SUSPENDIDO: kpiSuspendidos
+                };
+
                 chartProporcion = initOrUpdateChart(chartProporcion, 'chart-proporcion', {
                     type: 'doughnut',
                     data: {
-                        labels: ['Atrasos', 'Faltas', 'Licencias', 'Permisos',
-                            'Suspendidos'],
+                        labels: configsActivos.map(cfg => cfg.label),
                         datasets: [{
-                            data: [kpiAtrasos, kpiFaltas, kpiLicencias,
-                                kpiPermisos, kpiSuspendidos
-                            ],
-                            backgroundColor: [
-                                chartPalettes.incidencias.atraso,
-                                chartPalettes.incidencias.falta,
-                                chartPalettes.incidencias.licencia,
-                                chartPalettes.incidencias.permiso,
-                                chartPalettes.incidencias.suspendido
-                            ],
+                            data: configsActivos.map(cfg => kpiPorTipo[cfg.key]),
+                            backgroundColor: configsActivos.map(cfg => cfg.color()),
                             borderWidth: 0
                         }]
                     },
@@ -609,6 +645,45 @@
             lengthChange: true,
             autoWidth: false,
             scrollX: true,
+        });
+
+        // Sincroniza la visibilidad de columnas según los estados marcados y redibuja todo en cascada
+        const aplicarFiltroEstados = () => {
+            estadosActivos = getEstadosActivos();
+
+            const verAtraso = estadosActivos.includes('ATRASO');
+            const verFalta = estadosActivos.includes('FALTA');
+            const verSuspendido = estadosActivos.includes('SUSPENDIDO');
+            const verLicencia = estadosActivos.includes('LICENCIA');
+            const verPermiso = estadosActivos.includes('PERMISO');
+
+            // Columna "Atraso" (minutos) en la tabla principal
+            tablaReportes.column(8).visible(verAtraso, false);
+
+            // Columnas de estados y subtotales en la tabla de ranking
+            tablaRanking.column(3).visible(verAtraso, false);
+            tablaRanking.column(4).visible(verFalta, false);
+            tablaRanking.column(5).visible(verSuspendido, false);
+            tablaRanking.column(6).visible(verAtraso || verFalta || verSuspendido, false);
+            tablaRanking.column(7).visible(verLicencia, false);
+            tablaRanking.column(8).visible(verPermiso, false);
+            tablaRanking.column(9).visible(verLicencia || verPermiso, false);
+            tablaRanking.column(10).visible(verAtraso, false);
+
+            tablaReportes.columns.adjust().draw();
+            tablaRanking.columns.adjust();
+        };
+
+        $('.filter-estado').on('change', aplicarFiltroEstados);
+
+        $('#btn-estados-todos').on('click', function() {
+            $('.filter-estado').prop('checked', true);
+            aplicarFiltroEstados();
+        });
+
+        $('#btn-estados-ninguno').on('click', function() {
+            $('.filter-estado').prop('checked', false);
+            aplicarFiltroEstados();
         });
 
         // Reajustar anchos de columnas de DataTables al cambiar entre pestañas

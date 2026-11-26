@@ -76,5 +76,74 @@
                 </button>
             </div>
         </div>
+
+        {{-- FILTRO REACTIVO POR ESTADOS --}}
+        <div class="border-top pt-3 mt-3">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                <span class="text-muted fw-bold small text-uppercase">
+                    <i class="fa-duotone fa-sliders me-1"></i>Estados visibles:
+                </span>
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-outline-secondary" id="btn-estados-todos">
+                        <i class="fa-solid fa-check-double me-1"></i>Todos
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" id="btn-estados-ninguno">
+                        <i class="fa-solid fa-xmark me-1"></i>Ninguno
+                    </button>
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-3 align-items-center">
+                <div class="form-check form-switch m-0">
+                    <input class="form-check-input filter-estado" type="checkbox" role="switch" id="chk-estado-atraso"
+                        value="ATRASO" checked>
+                    <label class="form-check-label" for="chk-estado-atraso">
+                        <span class="badge bg-warning text-dark shadow-sm">
+                            <i class="fa-solid fa-duotone fa-hourglass-half me-1"></i>Atrasos
+                        </span>
+                    </label>
+                </div>
+
+                <div class="form-check form-switch m-0">
+                    <input class="form-check-input filter-estado" type="checkbox" role="switch" id="chk-estado-falta"
+                        value="FALTA" checked>
+                    <label class="form-check-label" for="chk-estado-falta">
+                        <span class="badge bg-danger shadow-sm">
+                            <i class="fa-solid fa-duotone fa-times-circle me-1"></i>Faltas
+                        </span>
+                    </label>
+                </div>
+
+                <div class="form-check form-switch m-0">
+                    <input class="form-check-input filter-estado" type="checkbox" role="switch"
+                        id="chk-estado-licencia" value="LICENCIA" checked>
+                    <label class="form-check-label" for="chk-estado-licencia">
+                        <span class="badge bg-info text-dark shadow-sm">
+                            <i class="fa-solid fa-duotone fa-file-certificate me-1"></i>Licencias
+                        </span>
+                    </label>
+                </div>
+
+                <div class="form-check form-switch m-0">
+                    <input class="form-check-input filter-estado" type="checkbox" role="switch"
+                        id="chk-estado-permiso" value="PERMISO" checked>
+                    <label class="form-check-label" for="chk-estado-permiso">
+                        <span class="badge bg-primary shadow-sm">
+                            <i class="fa-solid fa-duotone fa-file-signature me-1"></i>Permisos
+                        </span>
+                    </label>
+                </div>
+
+                <div class="form-check form-switch m-0">
+                    <input class="form-check-input filter-estado" type="checkbox" role="switch"
+                        id="chk-estado-suspendido" value="SUSPENDIDO" checked>
+                    <label class="form-check-label" for="chk-estado-suspendido">
+                        <span class="badge bg-dark text-light border border-danger shadow-sm">
+                            <i class="fa-solid fa-duotone fa-user-slash me-1"></i>Suspendidos
+                        </span>
+                    </label>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
