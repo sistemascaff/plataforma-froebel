@@ -11,6 +11,7 @@ use App\Models\Docente;
 use App\Models\Estudiante;
 use App\Models\EstudianteAsistencia;
 use App\Models\EstudianteLicencia;
+use App\Models\EstudianteSuspension;
 use App\Models\ListaAsignatura;
 use App\Models\HorarioAsignatura;
 use App\Models\Nivel;
@@ -164,8 +165,9 @@ class EstudianteAsistenciaController extends Controller
 
         $horarios = $a->horarios_asignaturas;
 
-        // 4. Obtener licencias vigentes en una sola consulta (ya con la nómina sincronizada)
+        // 4. Obtener licencias y suspensiones vigentes (ya con la nómina sincronizada)
         $estudiantes_licencias = [];
+        $estudiantes_suspensiones = [];
 
         if ($lista_asignatura->estudiantes->isNotEmpty()) {
             $estudiantesIds = $lista_asignatura->estudiantes->pluck('id_estudiante')->toArray();
@@ -177,9 +179,19 @@ class EstudianteAsistenciaController extends Controller
                 ->get()
                 ->groupBy('id_estudiante');
 
+            $suspensionesActivas = EstudianteSuspension::whereIn('id_estudiante', $estudiantesIds)
+                ->where('fecha_inicio', '<=', now())
+                ->where('fecha_fin', '>=', now())
+                ->where('estado', 1)
+                ->get()
+                ->groupBy('id_estudiante');
+
             foreach ($estudiantesIds as $id) {
                 if ($licenciasActivas->has($id)) {
                     $estudiantes_licencias[$id] = $licenciasActivas[$id];
+                }
+                if ($suspensionesActivas->has($id)) {
+                    $estudiantes_suspensiones[$id] = $suspensionesActivas[$id];
                 }
             }
         }
@@ -188,6 +200,7 @@ class EstudianteAsistenciaController extends Controller
             'head_title' => 'CREAR ASISTENCIA',
             'lista_asignatura' => $lista_asignatura,
             'estudiantes_licencias' => $estudiantes_licencias,
+            'estudiantes_suspensiones' => $estudiantes_suspensiones,
             'horarios' => $horarios,
             'cambios' => $cambios,
         ]);
@@ -201,6 +214,7 @@ class EstudianteAsistenciaController extends Controller
         $this->authorize('update', $asistencia);
 
         $estudiantes_licencias = [];
+        $estudiantes_suspensiones = [];
 
         // 2. Obtener horarios de la asignatura asociada
         $asignatura = Asignatura::with([
@@ -210,7 +224,7 @@ class EstudianteAsistenciaController extends Controller
 
         $horarios = $asignatura->horarios_asignaturas;
 
-        // 3. Obtener licencias vigentes en una sola consulta para la fecha de la asistencia
+        // 3. Obtener licencias y suspensiones vigentes para la fecha de la asistencia
         if ($asistencia->detalles_estudiantes_asistencias->isNotEmpty()) {
             $estudiantesIds = $asistencia->detalles_estudiantes_asistencias->pluck('id_estudiante')->toArray();
 
@@ -224,9 +238,19 @@ class EstudianteAsistenciaController extends Controller
                 ->get()
                 ->groupBy('id_estudiante');
 
+            $suspensionesActivas = EstudianteSuspension::whereIn('id_estudiante', $estudiantesIds)
+                ->where('fecha_inicio', '<=', $fechaAsistencia . ' 23:59:59')
+                ->where('fecha_fin', '>=', $fechaAsistencia . ' 00:00:00')
+                ->where('estado', 1)
+                ->get()
+                ->groupBy('id_estudiante');
+
             foreach ($estudiantesIds as $id) {
                 if ($licenciasActivas->has($id)) {
                     $estudiantes_licencias[$id] = $licenciasActivas[$id];
+                }
+                if ($suspensionesActivas->has($id)) {
+                    $estudiantes_suspensiones[$id] = $suspensionesActivas[$id];
                 }
             }
         }
@@ -235,6 +259,7 @@ class EstudianteAsistenciaController extends Controller
             'head_title' => 'ACTUALIZAR ASISTENCIA',
             'estudiante_asistencia' => $asistencia,
             'estudiantes_licencias' => $estudiantes_licencias,
+            'estudiantes_suspensiones' => $estudiantes_suspensiones,
             'horarios' => $horarios,
         ]);
     }
@@ -296,6 +321,7 @@ class EstudianteAsistenciaController extends Controller
                     $filtros['fecha_inicio'] = $now->copy()->startOfMonth()->format('Y-m-d');
                     $filtros['fecha_fin']    = $now->copy()->endOfMonth()->format('Y-m-d');
                     break;
+
                 case 'personalizado':
                     if ($request->filled('fecha_inicio') && $request->filled('fecha_fin')) {
                         $filtros['fecha_inicio'] = $request->fecha_inicio;
@@ -431,10 +457,11 @@ class EstudianteAsistenciaController extends Controller
             'justificacion_otros' => 'nullable|string|in:ACTIVIDAD CURRICULAR,ACTIVIDAD EXTRACURRICULAR',
             'estudiantes' => 'required|array|min:1',
             'estudiantes.*.id_estudiante' => 'required|integer|exists:estudiantes,id_estudiante',
-            'estudiantes.*.tipo' => 'required|string|in:PRESENTE,FALTA,ATRASO,LICENCIA,PERMISO,OTROS',
+            'estudiantes.*.tipo' => 'required|string|in:PRESENTE,FALTA,ATRASO,LICENCIA,PERMISO,OTROS,SUSPENDIDO',
             'estudiantes.*.tiempo_atraso' => 'nullable|integer|min:0|max:60',
             'estudiantes.*.justificacion_permiso' => 'required_if:estudiantes.*.tipo,PERMISO|nullable|string|max:100',
             'estudiantes.*.id_estudiante_licencia' => 'nullable|integer|exists:estudiantes_licencias,id_estudiante_licencia',
+            'estudiantes.*.id_estudiante_suspension' => 'nullable|integer|exists:estudiantes_suspensiones,id_estudiante_suspension',
         ], [
             'fecha.after_or_equal' => "La fecha seleccionada no puede ser anterior al inicio del periodo ({$periodo->periodo}: {$periodo->fecha_inicio}).",
             'fecha.before_or_equal' => "La fecha seleccionada debe estar dentro del periodo ({$periodo->periodo}: hasta {$periodo->fecha_fin}) y no superar la fecha actual.",
@@ -481,8 +508,8 @@ class EstudianteAsistenciaController extends Controller
                 ], 422);
             }
 
-            // En modo OTROS no pueden existir PRESENTES, FALTAS, ATRASOS ni PERMISOS mezclados (solo OTROS y LICENCIA por prioridad)
-            $tiposInvalidosEnOtros = $tiposEnviados->diff(['OTROS', 'LICENCIA']);
+            // En modo OTROS solo pueden coexistir OTROS, LICENCIA y SUSPENDIDO (por prioridad)
+            $tiposInvalidosEnOtros = $tiposEnviados->diff(['OTROS', 'LICENCIA', 'SUSPENDIDO']);
             if ($tiposInvalidosEnOtros->isNotEmpty()) {
                 return response()->json([
                     'success' => false,
@@ -510,9 +537,23 @@ class EstudianteAsistenciaController extends Controller
             $lista->loadMissing('estudiantes');
             $estudiantesValidos = $lista->estudiantes->pluck('id_estudiante')->toArray();
 
-            // 3. Preparar variables para el cruce de fechas con licencias
+            // 3. Preparar cruce exacto de fechas con suspensiones y licencias (2 consultas en lote)
             $inicioClase = Carbon::parse($request->fecha . ' ' . $horario->hora_inicio);
             $finClase = Carbon::parse($request->fecha . ' ' . $horario->hora_fin);
+
+            $suspensionesActivas = EstudianteSuspension::whereIn('id_estudiante', $estudiantesValidos)
+                ->where('estado', 1)
+                ->where('fecha_inicio', '<=', $finClase)
+                ->where('fecha_fin', '>=', $inicioClase)
+                ->get()
+                ->keyBy('id_estudiante');
+
+            $licenciasActivas = EstudianteLicencia::whereIn('id_estudiante', $estudiantesValidos)
+                ->where('estado', 1)
+                ->where('fecha_inicio', '<=', $finClase)
+                ->where('fecha_fin', '>=', $inicioClase)
+                ->get()
+                ->keyBy('id_estudiante');
 
             // 4. Inserción de la Tabla Cabecera (Maestro)
             $asistencia = new EstudianteAsistencia();
@@ -539,28 +580,27 @@ class EstudianteAsistenciaController extends Controller
 
                 // Si la clase fue declarada como OTROS, por defecto el alumno es OTROS (salvo que tenga licencia)
                 $tipoAsistencia = $esModoOtros ? 'OTROS' : $estudianteReq['tipo'];
-                $idLicencia = $estudianteReq['id_estudiante_licencia'] ?? null;
+                $idLicencia = null;
+                $idSuspension = null;
                 $tiempoAtraso = $estudianteReq['tiempo_atraso'] ?? 0;
                 $justificacionPermiso = isset($estudianteReq['justificacion_permiso'])
                     ? trim($estudianteReq['justificacion_permiso'])
                     : null;
 
-                // Cruce exacto de fechas para licencias médicas/justificaciones
-                $licenciaAprobada = EstudianteLicencia::where('id_estudiante', $idEstudiante)
-                    ->where('estado', 1)
-                    ->where('fecha_inicio', '<=', $finClase)
-                    ->where('fecha_fin', '>=', $inicioClase)
-                    ->first();
-
-                // Regla de Negocio: LICENCIA tiene prioridad absoluta sobre cualquier otro estado (incluido OTROS y PERMISO)
-                if ($licenciaAprobada) {
-                    $tipoAsistencia = 'LICENCIA';
-                    $idLicencia = $licenciaAprobada->id_estudiante_licencia;
+                // Regla de Negocio (Prioridad): SUSPENDIDO > LICENCIA > OTROS > Estados individuales
+                if (isset($suspensionesActivas[$idEstudiante])) {
+                    $tipoAsistencia = 'SUSPENDIDO';
+                    $idSuspension = $suspensionesActivas[$idEstudiante]->id_estudiante_suspension;
                     $tiempoAtraso = 0;
                     $justificacionPermiso = null;
-                } else {
-                    // Si no tiene licencia activa, nos aseguramos de limpiar cualquier id_estudiante_licencia residual
-                    $idLicencia = null;
+                } elseif (isset($licenciasActivas[$idEstudiante])) {
+                    $tipoAsistencia = 'LICENCIA';
+                    $idLicencia = $licenciasActivas[$idEstudiante]->id_estudiante_licencia;
+                    $tiempoAtraso = 0;
+                    $justificacionPermiso = null;
+                } elseif (in_array($tipoAsistencia, ['SUSPENDIDO', 'LICENCIA'])) {
+                    // Resguardo si el frontend envía SUSPENDIDO o LICENCIA sin registro activo vigente
+                    $tipoAsistencia = $esModoOtros ? 'OTROS' : 'FALTA';
                 }
 
                 // Consistencia de datos: Forzar 0 si el tipo final no es un Atraso ('ATRASO')
@@ -580,6 +620,7 @@ class EstudianteAsistenciaController extends Controller
                     'tiempo_atraso' => $tiempoAtraso,
                     'justificacion_permiso' => $justificacionPermiso,
                     'id_estudiante_licencia' => $idLicencia,
+                    'id_estudiante_suspension' => $idSuspension,
                 ];
             }
 
@@ -645,10 +686,11 @@ class EstudianteAsistenciaController extends Controller
             'justificacion_otros' => 'nullable|string|in:ACTIVIDAD CURRICULAR,ACTIVIDAD EXTRACURRICULAR',
             'estudiantes' => 'required|array|min:1',
             'estudiantes.*.id_estudiante' => 'required|integer|exists:estudiantes,id_estudiante',
-            'estudiantes.*.tipo' => 'required|string|in:PRESENTE,FALTA,ATRASO,LICENCIA,PERMISO,OTROS',
+            'estudiantes.*.tipo' => 'required|string|in:PRESENTE,FALTA,ATRASO,LICENCIA,PERMISO,OTROS,SUSPENDIDO',
             'estudiantes.*.tiempo_atraso' => 'nullable|integer|min:0|max:60',
             'estudiantes.*.justificacion_permiso' => 'required_if:estudiantes.*.tipo,PERMISO|nullable|string|max:100',
             'estudiantes.*.id_estudiante_licencia' => 'nullable|integer|exists:estudiantes_licencias,id_estudiante_licencia',
+            'estudiantes.*.id_estudiante_suspension' => 'nullable|integer|exists:estudiantes_suspensiones,id_estudiante_suspension',
         ], [
             'fecha.after_or_equal' => "La fecha seleccionada no puede ser anterior al inicio del periodo ({$periodo->periodo}: {$periodo->fecha_inicio}).",
             'fecha.before_or_equal' => "La fecha seleccionada debe estar dentro del periodo ({$periodo->periodo}: hasta {$periodo->fecha_fin}) y no superar la fecha actual.",
@@ -696,7 +738,7 @@ class EstudianteAsistenciaController extends Controller
                 ], 422);
             }
 
-            $tiposInvalidosEnOtros = $tiposEnviados->diff(['OTROS', 'LICENCIA']);
+            $tiposInvalidosEnOtros = $tiposEnviados->diff(['OTROS', 'LICENCIA', 'SUSPENDIDO']);
             if ($tiposInvalidosEnOtros->isNotEmpty()) {
                 return response()->json([
                     'success' => false,
@@ -725,9 +767,23 @@ class EstudianteAsistenciaController extends Controller
             $lista = ListaAsignatura::with('estudiantes')->findOrFail($asistencia->id_lista_asignatura);
             $estudiantesValidos = $lista->estudiantes->pluck('id_estudiante')->toArray();
 
-            // 3. Preparar variables para el cruce de fechas con licencias
+            // 3. Preparar cruce exacto de fechas con suspensiones y licencias (2 consultas en lote)
             $inicioClase = Carbon::parse($request->fecha . ' ' . $horario->hora_inicio);
             $finClase = Carbon::parse($request->fecha . ' ' . $horario->hora_fin);
+
+            $suspensionesActivas = EstudianteSuspension::whereIn('id_estudiante', $estudiantesValidos)
+                ->where('estado', 1)
+                ->where('fecha_inicio', '<=', $finClase)
+                ->where('fecha_fin', '>=', $inicioClase)
+                ->get()
+                ->keyBy('id_estudiante');
+
+            $licenciasActivas = EstudianteLicencia::whereIn('id_estudiante', $estudiantesValidos)
+                ->where('estado', 1)
+                ->where('fecha_inicio', '<=', $finClase)
+                ->where('fecha_fin', '>=', $inicioClase)
+                ->get()
+                ->keyBy('id_estudiante');
 
             // 4. Actualización de la Tabla Cabecera (Maestro)
             $asistencia->id_horario_asignatura = $request->id_horario;
@@ -756,27 +812,26 @@ class EstudianteAsistenciaController extends Controller
                 }
 
                 $tipoAsistencia = $esModoOtros ? 'OTROS' : $estudianteReq['tipo'];
-                $idLicencia = $estudianteReq['id_estudiante_licencia'] ?? null;
+                $idLicencia = null;
+                $idSuspension = null;
                 $tiempoAtraso = $estudianteReq['tiempo_atraso'] ?? 0;
                 $justificacionPermiso = isset($estudianteReq['justificacion_permiso'])
                     ? trim($estudianteReq['justificacion_permiso'])
                     : null;
 
-                // Cruce exacto de fechas para licencias médicas/justificaciones
-                $licenciaAprobada = EstudianteLicencia::where('id_estudiante', $idEstudiante)
-                    ->where('estado', 1)
-                    ->where('fecha_inicio', '<=', $finClase)
-                    ->where('fecha_fin', '>=', $inicioClase)
-                    ->first();
-
-                // Regla de Negocio: LICENCIA tiene prioridad absoluta sobre cualquier otro estado
-                if ($licenciaAprobada) {
-                    $tipoAsistencia = 'LICENCIA';
-                    $idLicencia = $licenciaAprobada->id_estudiante_licencia;
+                // Regla de Negocio (Prioridad): SUSPENDIDO > LICENCIA > OTROS > Estados individuales
+                if (isset($suspensionesActivas[$idEstudiante])) {
+                    $tipoAsistencia = 'SUSPENDIDO';
+                    $idSuspension = $suspensionesActivas[$idEstudiante]->id_estudiante_suspension;
                     $tiempoAtraso = 0;
                     $justificacionPermiso = null;
-                } else {
-                    $idLicencia = null;
+                } elseif (isset($licenciasActivas[$idEstudiante])) {
+                    $tipoAsistencia = 'LICENCIA';
+                    $idLicencia = $licenciasActivas[$idEstudiante]->id_estudiante_licencia;
+                    $tiempoAtraso = 0;
+                    $justificacionPermiso = null;
+                } elseif (in_array($tipoAsistencia, ['SUSPENDIDO', 'LICENCIA'])) {
+                    $tipoAsistencia = $esModoOtros ? 'OTROS' : 'FALTA';
                 }
 
                 // Consistencia de datos: Forzar 0 si el tipo final no es un Atraso ('ATRASO')
@@ -796,6 +851,7 @@ class EstudianteAsistenciaController extends Controller
                     'tiempo_atraso' => $tiempoAtraso,
                     'justificacion_permiso' => $justificacionPermiso,
                     'id_estudiante_licencia' => $idLicencia,
+                    'id_estudiante_suspension' => $idSuspension,
                 ];
             }
 

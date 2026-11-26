@@ -11,6 +11,7 @@ use App\Http\Controllers\DocenteController;
 use App\Http\Controllers\EstudianteAsistenciaController;
 use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\EstudianteLicenciaController;
+use App\Http\Controllers\EstudianteSuspensionController;
 use App\Http\Controllers\GestionController;
 use App\Http\Controllers\GradoController;
 use App\Http\Controllers\HorarioAsignaturaController;
@@ -108,6 +109,15 @@ Route::middleware(['session.acceso'])->group(function () {
 
         Route::controller(ListaAsignaturaController::class)->group(function () {
             Route::get('listas_asignaturas/horario_estudiante', 'horario_estudiante')->name('listas_asignaturas.horario_estudiante');
+        });
+
+        Route::controller(EstudianteSuspensionController::class)->group(function () {
+            Route::get('estudiantes_suspensiones', 'view_index')->name('estudiantes_suspensiones.index');
+            Route::get('estudiantes_suspensiones/listar', 'listar')->name('estudiantes_suspensiones.listar');
+            Route::get('estudiantes_suspensiones/{estudiante_suspension}', 'mostrar')->name('estudiantes_suspensiones.mostrar');
+            Route::post('estudiantes_suspensiones', 'create')->name('estudiantes_suspensiones.create');
+            Route::put('estudiantes_suspensiones/{estudiante_suspension}', 'update')->name('estudiantes_suspensiones.update');
+            Route::patch('estudiantes_suspensiones/{estudiante_suspension}', 'delete')->name('estudiantes_suspensiones.delete');
         });
     });
 

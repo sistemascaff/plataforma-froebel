@@ -184,7 +184,10 @@ class ListaAsignatura extends Model
                         },
                         'detalles_estudiantes_asistencias as otros_count' => function ($q) {
                             $q->where('tipo', 'OTROS');
-                        }
+                        },
+                        'detalles_estudiantes_asistencias as suspensiones_count' => function ($q) {
+                            $q->where('tipo', 'SUSPENDIDO');
+                        },
                     ])
                     ->orderBy('fecha', 'DESC'); // Ordenar del más reciente al más antiguo
             },
@@ -255,7 +258,14 @@ class ListaAsignatura extends Model
                         ->with([
                             'detalles_estudiantes_asistencias' => function ($qDetalle) use ($id_estudiante) {
                                 $qDetalle->where('id_estudiante', $id_estudiante)
-                                    ->select('id_estudiante_asistencia', 'id_estudiante', 'tipo', 'tiempo_atraso', 'id_estudiante_licencia');
+                                    ->select(
+                                        'id_estudiante_asistencia',
+                                        'id_estudiante',
+                                        'tipo',
+                                        'tiempo_atraso',
+                                        'id_estudiante_licencia',
+                                        'id_estudiante_suspension'
+                                    );
                             }
                         ]);
                 },
@@ -305,8 +315,9 @@ class ListaAsignatura extends Model
                     })
                     ->with([
                         'horario_asignatura:id_horario_asignatura,denominacion,hora_inicio,hora_fin,estado',
-                        'detalles_estudiantes_asistencias:id_estudiante_asistencia,id_estudiante,tipo,tiempo_atraso,justificacion_permiso,id_estudiante_licencia',
-                        'detalles_estudiantes_asistencias.estudiante_licencia:id_estudiante_licencia,id_estudiante,tipo,justificacion,fecha_inicio,fecha_fin,evidencia,estado'
+                        'detalles_estudiantes_asistencias:id_estudiante_asistencia,id_estudiante,tipo,tiempo_atraso,justificacion_permiso,id_estudiante_licencia,id_estudiante_suspension',
+                        'detalles_estudiantes_asistencias.estudiante_licencia:id_estudiante_licencia,id_estudiante,tipo,justificacion,fecha_inicio,fecha_fin,evidencia,estado',
+                        'detalles_estudiantes_asistencias.estudiante_suspension:id_estudiante_suspension,id_estudiante,motivo,fecha_inicio,fecha_fin,evidencia,estado'
                     ])
                     ->orderBy('estudiantes_asistencias.fecha', 'ASC')
                     ->orderBy('horarios_asignaturas.hora_inicio', 'ASC');

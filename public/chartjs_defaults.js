@@ -62,7 +62,8 @@ const chartPalettes = {
         atraso: '#ffc107',   // Warning
         falta: '#dc3545',    // Danger
         licencia: '#0dcaf0', // Info
-        permiso: '#0d6efd'   // Primary
+        permiso: '#0d6efd',  // Primary
+        suspendido: '#343a40' // Dark
     },
     ui: {
         primary: '#0d6efd',

@@ -34,7 +34,7 @@ class Estudiante extends Model
             'detalles_estudiantes_asistencias', // Nombre de la tabla pivote
             'id_estudiante',                    // FK de este modelo (Estudiante) en la tabla pivote
             'id_estudiante_asistencia'          // FK del modelo relacionado en la tabla pivote
-        )->withPivot(['tipo', 'tiempo_atraso', 'justificacion_permiso', 'id_estudiante_licencia'])
+        )->withPivot(['tipo', 'tiempo_atraso', 'justificacion_permiso', 'id_estudiante_licencia', 'id_estudiante_suspension'])
             // Agregamos el prefijo de tabla para evitar ambigüedades en SQL
             ->orderBy('estudiantes_asistencias.fecha', 'DESC');
     }
@@ -43,6 +43,13 @@ class Estudiante extends Model
     public function estudiantes_licencias()
     {
         return $this->hasMany(EstudianteLicencia::class, 'id_estudiante', 'id_estudiante')
+            ->orderBy('fecha_inicio', 'DESC');
+    }
+
+    /** Relación uno a muchos con estudiantes_suspensiones */
+    public function estudiantes_suspensiones()
+    {
+        return $this->hasMany(EstudianteSuspension::class, 'id_estudiante', 'id_estudiante')
             ->orderBy('fecha_inicio', 'DESC');
     }
 
@@ -226,6 +233,7 @@ class Estudiante extends Model
             'estudiantes_asistencias.horario_asignatura',
 
             'estudiantes_licencias:id_estudiante_licencia,id_estudiante,tipo,justificacion,fecha_inicio,fecha_fin,evidencia,solicitado_por,estado,fecha_registro',
+            'estudiantes_suspensiones:id_estudiante_suspension,id_estudiante,motivo,fecha_inicio,fecha_fin,estado',
 
             'creado:id_usuario,correo',
             'modificado:id_usuario,correo',
@@ -251,8 +259,8 @@ class Estudiante extends Model
                     )
                         // Hacemos join con horarios para poder ordenar por su hora_inicio
                         ->join('horarios_asignaturas', 'estudiantes_asistencias.id_horario_asignatura', '=', 'horarios_asignaturas.id_horario_asignatura')
-                        // Limitamos a las últimas 30 asistencias
-                        ->limit(30)
+                        // Limitamos a las últimas 50 asistencias
+                        ->limit(50)
                         // Orden jerárquico
                         ->orderBy('estudiantes_asistencias.fecha', 'DESC')
                         ->orderBy('horarios_asignaturas.hora_inicio', 'DESC');

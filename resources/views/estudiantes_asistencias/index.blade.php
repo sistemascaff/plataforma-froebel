@@ -84,6 +84,7 @@
                             <th class="text-center">Licencias</th>
                             <th class="text-center">Permisos</th>
                             <th class="text-center">Otros</th>
+                            <th class="text-center">Suspendidos</th>
                             <th class="text-center">Estado</th>
                             <th>F. Registro</th>
                             <th>F. Actualización</th>

@@ -209,6 +209,15 @@
                     }
                 },
                 {
+                    data: "suspendidos_count",
+                    className: "text-center align-middle",
+                    render: function(data, type, row, meta) {
+                        return data > 0 ?
+                            `<span class="badge bg-dark text-light border border-danger">${data}</span>` :
+                            `<span class="text-muted">0</span>`;
+                    }
+                },
+                {
                     data: "estado",
                     visible: false, //aún no se pueden eliminar asistencias
                     render: function(data, type, row) {
@@ -283,6 +292,11 @@
                 }
             ],
             ...dtDefaults,
+            // Ajustes específicos para ver todas las columnas sin que se colapse automáticamente por responsividad, que sobreescriben a la constante dtDefaults.
+            responsive: false,
+            lengthChange: true,
+            autoWidth: false,
+            scrollX: true,
         }).buttons().container().appendTo('#dataTable-export-buttons-container');
 
         $("#btn-filtrar").on("click", function(e) {

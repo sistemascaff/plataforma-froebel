@@ -179,6 +179,21 @@
                 </div>
             </div>
 
+            <!-- Suspendidos -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex align-items-center p-3">
+                        <div class="p-3 rounded bg-dark bg-opacity-10 text-danger border border-danger me-3">
+                            <i class="fa-duotone fa-user-slash fa-2xl"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small d-block mb-1">Suspendidos</span>
+                            <h3 id="kpi-suspendidos" class="fw-bold m-0 text-danger">0</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Atrasos (Tiempos) -->
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="card h-100 shadow-sm">

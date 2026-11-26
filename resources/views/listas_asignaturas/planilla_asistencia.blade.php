@@ -38,6 +38,7 @@
                 <span class="badge bg-warning text-dark ms-1">(A) Atraso</span>
                 <span class="badge bg-info text-dark ms-1">(L) Licencia</span>
                 <span class="badge bg-primary ms-1">(P) Permiso</span>
+                <span class="badge bg-dark text-light border border-danger ms-1">(S) Suspendido</span>
                 <span class="badge bg-secondary ms-1">(O) Otros</span>
                 <span class="badge border text-muted ms-1">(/) Sin registro / No inscrito en fecha</span>
             </div>
@@ -124,7 +125,7 @@
                                         {{ $grupoMes['mes'] }}
                                     </th>
                                 @endforeach
-                                <th colspan="6" class="fw-bold text-uppercase">RECUENTO</th>
+                                <th colspan="7" class="fw-bold text-uppercase">RECUENTO</th>
                             </tr>
 
                             {{-- NIVEL 2: DÍAS DE LA SEMANA (VERTICAL) Y ETIQUETAS DE RECUENTO (VERTICAL) --}}
@@ -149,6 +150,9 @@
                                 </th>
                                 <th class="table-secondary" title="Permisos (P)">
                                     <div class="th-vertical">PERMISOS (P)</div>
+                                </th>
+                                <th class="table-secondary" title="Suspendidos (S)">
+                                    <div class="th-vertical">SUSPENDIDOS (S)</div>
                                 </th>
                                 <th class="table-secondary" title="Otros (O)">
                                     <div class="th-vertical">OTROS (O)</div>
@@ -175,6 +179,7 @@
                                 <th class="table-secondary col-recuento text-danger">F</th>
                                 <th class="table-secondary col-recuento text-info">L</th>
                                 <th class="table-secondary col-recuento text-primary">P</th>
+                                <th class="table-secondary col-recuento">S</th>
                                 <th class="table-secondary col-recuento text-secondary">O</th>
                             </tr>
                         </thead>
@@ -202,6 +207,7 @@
                                                 'ATRASO' => 'text-warning',
                                                 'LICENCIA' => 'text-info',
                                                 'PERMISO' => 'text-primary',
+                                                'SUSPENDIDO' => 'celda-suspendido',
                                                 'OTROS' => 'text-secondary',
                                                 default => '',
                                             };
@@ -216,6 +222,11 @@
                                                 !empty($celda['justificacion_permiso'])
                                             ) {
                                                 $tooltip .= "PERMISO ({$celda['justificacion_permiso']}) - Clic para ver detalles";
+                                            } elseif (
+                                                $celda['tipo'] === 'SUSPENDIDO' &&
+                                                !empty($celda['suspension']['motivo'])
+                                            ) {
+                                                $tooltip .= "SUSPENDIDO ({$celda['suspension']['motivo']}) - Clic para ver detalles";
                                             } elseif (
                                                 $celda['tipo'] === 'OTROS' &&
                                                 !empty($colInfo['justificacion_otros'])
@@ -245,6 +256,10 @@
                                     </td>
                                     <td class="col-recuento {{ $est['totales']['PERMISO'] > 0 ? 'text-primary' : '' }}">
                                         {{ $est['totales']['PERMISO'] }}
+                                    </td>
+                                    <td
+                                        class="col-recuento {{ $est['totales']['SUSPENDIDO'] > 0 ? 'celda-suspendido' : '' }}">
+                                        {{ $est['totales']['SUSPENDIDO'] }}
                                     </td>
                                     <td class="col-recuento {{ $est['totales']['OTROS'] > 0 ? 'text-secondary' : '' }}">
                                         {{ $est['totales']['OTROS'] }}

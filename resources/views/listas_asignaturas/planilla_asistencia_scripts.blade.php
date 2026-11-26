@@ -62,6 +62,11 @@
                         icono: 'fa-file-signature',
                         texto: 'PERMISO (P)'
                     },
+                    'SUSPENDIDO': {
+                        badge: 'bg-dark text-white border border-danger',
+                        icono: 'fa-user-slash',
+                        texto: 'SUSPENDIDO (S)'
+                    },
                     'OTROS': {
                         badge: 'bg-secondary',
                         icono: 'fa-calendar-star',
@@ -135,6 +140,34 @@
                                 <i class="fa-solid fa-duotone fa-circle-info me-1"></i>Licencia registrada sin detalles adicionales vinculados.
                             </div>`;
                     }
+                } else if (celda.tipo === 'SUSPENDIDO') {
+                    if (celda.suspension) {
+                        const btnEvidencia = celda.suspension.evidencia ?
+                            `<div class="mt-2 pt-2 border-top border-danger-subtle text-end">
+                                <a href="${escaparHtml(celda.suspension.evidencia)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-danger text-white fw-bold shadow-sm">
+                                    <i class="fa-brands fa-google-drive me-1"></i>Ver Evidencia
+                                </a>
+                            </div>` :
+                            `<div class="mt-1 small text-muted fst-italic">Sin evidencia adjunta</div>`;
+
+                        subdatosHtml = `
+                            <div class="alert alert-danger mb-0 mt-3 py-2 px-3 text-start shadow-sm">
+                                <div class="fw-bold mb-1">
+                                    <i class="fa-solid fa-duotone fa-user-slash me-1"></i>Detalles de la Suspensión:
+                                </div>
+                                <div class="mb-1"><b>Motivo:</b> ${escaparHtml(celda.suspension.motivo)}</div>
+                                <div class="mb-1">
+                                    <span class="badge bg-primary me-1">Desde: ${escaparHtml(celda.suspension.fecha_inicio)}</span>
+                                    <span class="badge bg-danger">Hasta: ${escaparHtml(celda.suspension.fecha_fin)}</span>
+                                </div>
+                                ${btnEvidencia}
+                            </div>`;
+                    } else {
+                        subdatosHtml = `
+                            <div class="alert alert-danger mb-0 mt-3 py-2 px-3 text-start shadow-sm">
+                                <i class="fa-solid fa-duotone fa-circle-info me-1"></i>Suspensión registrada sin detalles adicionales vinculados.
+                            </div>`;
+                    }
                 } else if (celda.tipo === 'OTROS' && columna.justificacion_otros) {
                     subdatosHtml = `
                         <div class="alert alert-secondary mb-0 mt-3 py-2 px-3 text-start shadow-sm">
@@ -149,7 +182,8 @@
                     `<span class="badge bg-secondary ms-1">RETIRADO</span>` :
                     '';
 
-                const urlDetalleAsistencia = RUTA_DETALLE_ASISTENCIA.replace(':id', celda.id_estudiante_asistencia);
+                const urlDetalleAsistencia = RUTA_DETALLE_ASISTENCIA.replace(':id', celda
+                    .id_estudiante_asistencia);
 
                 const contenidoSwal = `
                     <div class="text-start fs-6">
@@ -297,7 +331,7 @@
                     const colInicioClases = 3; // Columna C (1=A: N°, 2=B: Nombre Completo)
                     const colFinClases = colInicioClases + totalClases - 1;
                     const colInicioRecuento = colFinClases + 1;
-                    const colFinTabla = colInicioRecuento + 5; // 6 columnas de recuento
+                    const colFinTabla = colInicioRecuento + 6; // 7 columnas de recuento
 
                     // ================================================================
                     // A. ENCABEZADO INSTITUCIONAL CON LOGO A LA IZQUIERDA (Filas 1 a 4)
@@ -470,7 +504,7 @@
                         cursorCol = finGrupo + 1;
                     });
 
-                    // Encabezado RECUENTO combinado en las 6 columnas finales
+                    // Encabezado RECUENTO combinado en las 7 columnas finales
                     sheet.mergeCells(filaMes, colInicioRecuento, filaMes, colFinTabla);
                     const cellRecuento = sheet.getCell(filaMes, colInicioRecuento);
                     cellRecuento.value = 'RECUENTO';
@@ -521,7 +555,7 @@
                         };
                     });
 
-                    // 3. Columnas de los 6 Recuentos
+                    // 3. Columnas de los 7 Recuentos
                     const recuentosConfig = [{
                             titulo: 'PRESENTES',
                             sigla: '.'
@@ -541,6 +575,10 @@
                         {
                             titulo: 'PERMISOS',
                             sigla: 'P'
+                        },
+                        {
+                            titulo: 'SUSPENDIDOS',
+                            sigla: 'S'
                         },
                         {
                             titulo: 'OTROS',
@@ -633,6 +671,7 @@
                             est.totales.ATRASO,
                             est.totales.LICENCIA,
                             est.totales.PERMISO,
+                            est.totales.SUSPENDIDO,
                             est.totales.OTROS
                         ];
 
@@ -651,6 +690,7 @@
                             };
                         });
 
+                        // 1. Primero pintar fila gris si el estudiante está retirado
                         if (!est.en_lista_actual) {
                             for (let c = 1; c <= colFinTabla; c++) {
                                 row.getCell(c).fill = {
@@ -662,6 +702,28 @@
                                 };
                             }
                         }
+
+                        // 2. Pintar de negro con texto blanco cualquier celda con estado SUSPENDIDO
+                        est.asistencias.forEach((celda, idx) => {
+                            if (celda.tipo === 'SUSPENDIDO') {
+                                const cAsis = row.getCell(colInicioClases + idx);
+                                cAsis.fill = {
+                                    type: 'pattern',
+                                    pattern: 'solid',
+                                    fgColor: {
+                                        argb: 'FF000000'
+                                    }
+                                };
+                                cAsis.font = {
+                                    name: 'Arial',
+                                    size: 8,
+                                    bold: true,
+                                    color: {
+                                        argb: 'FFFFFFFF'
+                                    }
+                                };
+                            }
+                        });
 
                         filaActual++;
                     });
@@ -704,7 +766,7 @@
                     }
 
                     sheet.getColumn(1).width =
-                        9; // Espacio suficiente para N° y el logo en la esquina superior
+                    9; // Espacio suficiente para N° y el logo en la esquina superior
                     sheet.getColumn(2).width = 36; // Nombre Completo
                     for (let c = colInicioClases; c <= colFinClases; c++) {
                         sheet.getColumn(c).width = 3.8;

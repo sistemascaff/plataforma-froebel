@@ -198,6 +198,12 @@
                                                 <i class="fa-duotone fa-calendar-star me-1"></i>${tipo}
                                             </span>`;
                                         break;
+                                    case 'SUSPENDIDO':
+                                        estadoAsistenciaHtml =
+                                            `<span class="badge bg-dark text-light border border-danger">
+                                                <i class="fa-duotone fa-user-slash me-1"></i>${tipo}
+                                            </span>`;
+                                        break;
                                     default:
                                         estadoAsistenciaHtml =
                                             `<span class="badge bg-secondary">

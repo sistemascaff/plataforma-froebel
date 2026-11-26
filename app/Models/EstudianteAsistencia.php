@@ -23,7 +23,7 @@ class EstudianteAsistencia extends Model
             'detalles_estudiantes_asistencias',
             'id_estudiante_asistencia',
             'id_estudiante'
-        )->withPivot(['tipo', 'tiempo_atraso', 'justificacion_permiso', 'id_estudiante_licencia']);
+        )->withPivot(['tipo', 'tiempo_atraso', 'justificacion_permiso', 'id_estudiante_licencia', 'id_estudiante_suspension']);
     }
 
     /** Relación FK con listas_asignaturas */
@@ -64,7 +64,7 @@ class EstudianteAsistencia extends Model
 
     public function get_all_estudiantes_asistencias()
     {
-        return $this::select('estudiantes_asistencias.*') // Previene colisión de columnas
+        return $this::select('estudiantes_asistencias.*')
             ->join('horarios_asignaturas', 'estudiantes_asistencias.id_horario_asignatura', '=', 'horarios_asignaturas.id_horario_asignatura')
             ->with([
                 'lista_asignatura:id_lista_asignatura,id_asignatura,id_periodo,id_docente,estado',
@@ -99,11 +99,13 @@ class EstudianteAsistencia extends Model
                 'detalles_estudiantes_asistencias as permisos_count' => function ($query) {
                     $query->where('tipo', 'PERMISO');
                 },
+                'detalles_estudiantes_asistencias as suspendidos_count' => function ($query) {
+                    $query->where('tipo', 'SUSPENDIDO');
+                },
                 'detalles_estudiantes_asistencias as otros_count' => function ($query) {
                     $query->where('tipo', 'OTROS');
                 }
             ])
-            // Ordenamiento compuesto respetando las relaciones
             ->orderBy('estudiantes_asistencias.fecha', 'DESC')
             ->orderBy('horarios_asignaturas.hora_inicio', 'DESC')
             ->get();
@@ -111,7 +113,7 @@ class EstudianteAsistencia extends Model
 
     public function get_estudiantes_asistencias(array $filtros = [])
     {
-        return $this::select('estudiantes_asistencias.*') // Previene colisión de columnas
+        return $this::select('estudiantes_asistencias.*')
             ->join('horarios_asignaturas', 'estudiantes_asistencias.id_horario_asignatura', '=', 'horarios_asignaturas.id_horario_asignatura')
             ->join('listas_asignaturas', 'estudiantes_asistencias.id_lista_asignatura', '=', 'listas_asignaturas.id_lista_asignatura')
             ->join('asignaturas', 'listas_asignaturas.id_asignatura', '=', 'asignaturas.id_asignatura')
@@ -147,6 +149,9 @@ class EstudianteAsistencia extends Model
                 },
                 'detalles_estudiantes_asistencias as permisos_count' => function ($query) {
                     $query->where('tipo', 'PERMISO');
+                },
+                'detalles_estudiantes_asistencias as suspendidos_count' => function ($query) {
+                    $query->where('tipo', 'SUSPENDIDO');
                 },
                 'detalles_estudiantes_asistencias as otros_count' => function ($query) {
                     $query->where('tipo', 'OTROS');
@@ -209,6 +214,7 @@ class EstudianteAsistencia extends Model
             'detalles_estudiantes_asistencias.estudiante.persona.usuario:id_usuario,id_persona,url_foto_perfil,estado',
             'detalles_estudiantes_asistencias.estudiante.curso:id_curso,id_grado,id_paralelo,curso,estado',
             'detalles_estudiantes_asistencias.estudiante_licencia:id_estudiante_licencia,id_estudiante,tipo,justificacion,fecha_inicio,fecha_fin,evidencia,estado',
+            'detalles_estudiantes_asistencias.estudiante_suspension:id_estudiante_suspension,id_estudiante,motivo,fecha_inicio,fecha_fin,evidencia,estado',
 
             'lista_asignatura:id_lista_asignatura,id_asignatura,id_periodo,id_docente,estado',
             'lista_asignatura.asignatura:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',

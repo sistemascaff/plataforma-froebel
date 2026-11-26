@@ -19,7 +19,8 @@ class DetalleEstudianteAsistencia extends Model
         'tipo',
         'tiempo_atraso',
         'justificacion_permiso',
-        'id_estudiante_licencia'
+        'id_estudiante_licencia',
+        'id_estudiante_suspension'
     ];
 
     // Relación hacia el estudiante
@@ -32,6 +33,12 @@ class DetalleEstudianteAsistencia extends Model
     public function estudiante_licencia()
     {
         return $this->belongsTo(EstudianteLicencia::class, 'id_estudiante_licencia');
+    }
+
+    // Relación hacia la suspensión
+    public function estudiante_suspension()
+    {
+        return $this->belongsTo(EstudianteSuspension::class, 'id_estudiante_suspension');
     }
 
     // Relación hacia la asistencia
@@ -69,10 +76,11 @@ class DetalleEstudianteAsistencia extends Model
                 'estudiante_asistencia.lista_asignatura.asignatura:id_asignatura,id_materia,id_area,id_aula,id_nivel,id_coordinacion,id_curso,asignatura,tipo_calificacion,tipo_bloque,estado',
                 'estudiante_asistencia.lista_asignatura.docente:id_docente,id_persona,id_nivel,id_coordinacion,estado',
                 'estudiante_asistencia.lista_asignatura.docente.persona:id_persona,id_colegio,apellido_paterno,apellido_materno,nombres',
-                'estudiante_licencia:id_estudiante_licencia,id_estudiante,tipo,justificacion,fecha_inicio,fecha_fin,evidencia,solicitado_por,estado'
+                'estudiante_licencia:id_estudiante_licencia,id_estudiante,tipo,justificacion,fecha_inicio,fecha_fin,evidencia,solicitado_por,estado',
+                'estudiante_suspension:id_estudiante_suspension,id_estudiante,motivo,fecha_inicio,fecha_fin,evidencia,estado'
             ])
             // Solo incidencias
-            ->whereIn('detalles_estudiantes_asistencias.tipo', ['ATRASO', 'FALTA', 'LICENCIA', 'PERMISO'])
+            ->whereIn('detalles_estudiantes_asistencias.tipo', ['ATRASO', 'FALTA', 'LICENCIA', 'PERMISO', 'SUSPENDIDO'])
 
             // ==========================================
             // FILTROS DINÁMICOS POR ROL

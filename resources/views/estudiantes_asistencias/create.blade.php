@@ -165,7 +165,8 @@
                                 <div class="col-md-6 text-muted small mt-3 mt-md-4">
                                     <i class="fa-duotone fa-circle-info me-1"></i>
                                     Al activar esta opción, todos los estudiantes (excepto aquellos con
-                                    <strong>Licencia</strong> vigente) serán registrados automáticamente con el estado
+                                    <strong>Suspensión</strong> o <strong>Licencia</strong> vigente) serán registrados
+                                    automáticamente con el estado
                                     <strong>OTROS</strong>.
                                 </div>
                             </div>
@@ -202,8 +203,14 @@
                             <tbody>
                                 @foreach ($lista_asignatura->estudiantes as $index => $estudiante)
                                     @php
-                                        // Verificación segura utilizando isset para evitar errores
-                                        $tieneLicencia = isset($estudiantes_licencias[$estudiante->id_estudiante]);
+                                        $tieneSuspension = isset($estudiantes_suspensiones[$estudiante->id_estudiante]);
+                                        $suspension = $tieneSuspension
+                                            ? $estudiantes_suspensiones[$estudiante->id_estudiante]->first()
+                                            : null;
+
+                                        $tieneLicencia =
+                                            !$tieneSuspension &&
+                                            isset($estudiantes_licencias[$estudiante->id_estudiante]);
                                         $licencia = $tieneLicencia
                                             ? $estudiantes_licencias[$estudiante->id_estudiante]->first()
                                             : null;
@@ -232,7 +239,25 @@
                                                     <i class="fa-solid fa-duotone fa-clock-rotate-left"></i>
                                                 </button>
                                             </div>
-                                            @if ($tieneLicencia)
+                                            @if ($tieneSuspension)
+                                                <div class="mt-2">
+                                                    <span class="badge bg-dark text-light border border-danger mb-1">
+                                                        <i class="fa-duotone fa-user-slash me-1"></i>Suspensión:
+                                                        {{ $suspension->motivo }}
+                                                    </span><br>
+                                                    <span class="badge bg-primary">Desde
+                                                        {{ date('d/m/Y H:i', strtotime($suspension->fecha_inicio)) }}</span>
+                                                    <span class="badge bg-danger">Hasta
+                                                        {{ date('d/m/Y H:i', strtotime($suspension->fecha_fin)) }}</span>
+                                                    @if ($suspension->evidencia)
+                                                        <a href="{{ $suspension->evidencia }}" target="_blank"
+                                                            class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip"
+                                                            title="Abrir archivo en Google Drive">
+                                                            <i class="fa-brands fa-google-drive"></i> Ver
+                                                        </a>
+                                                    @endif
+                                                </div>
+                                            @elseif ($tieneLicencia)
                                                 <div class="mt-2">
                                                     <span class="badge bg-info text-dark mb-1">Licencia:
                                                         {{ ucwords(str_replace('_', ' ', $licencia->tipo)) }}
@@ -255,8 +280,15 @@
                                         <td class="text-center align-middle">
                                             <input type="hidden" name="estudiantes[{{ $index }}][id_estudiante]"
                                                 value="{{ $estudiante->id_estudiante }}">
-
-                                            @if ($tieneLicencia)
+                                            @if ($tieneSuspension)
+                                                <span
+                                                    class="badge bg-dark text-light border border-danger tipo">Suspendido</span>
+                                                <input type="hidden"
+                                                    name="estudiantes[{{ $index }}][id_estudiante_suspension]"
+                                                    value="{{ $suspension->id_estudiante_suspension }}">
+                                                <input type="hidden" name="estudiantes[{{ $index }}][tipo]"
+                                                    value="SUSPENDIDO">
+                                            @elseif ($tieneLicencia)
                                                 <span class="badge bg-info text-dark tipo">Licencia</span>
                                                 <input type="hidden"
                                                     name="estudiantes[{{ $index }}][id_estudiante_licencia]"
@@ -273,7 +305,7 @@
                                             @endif
                                         </td>
                                         <td class="text-center align-middle">
-                                            @if ($tieneLicencia)
+                                            @if ($tieneSuspension || $tieneLicencia)
                                                 <span class="text-muted">No se puede modificar</span>
                                             @else
                                                 <div class="d-flex flex-wrap justify-content-center align-items-center gap-2 contenedor-acciones-fila"

@@ -86,6 +86,12 @@
                                     badgeText = 'Otros';
                                     iconClass = 'fa-calendar-star';
                                     break;
+                                case 'SUSPENDIDO':
+                                    badgeClass = 'bg-dark text-light border border-danger';
+                                    badgeText = 'Suspendido';
+                                    iconClass = 'fa-user-slash';
+                                    break;
+
                                 default:
                                     badgeClass = 'bg-secondary';
                                     badgeText = 'Desconocido';

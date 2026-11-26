@@ -184,7 +184,8 @@
                                 <div class="col-md-6 text-muted small mt-3 mt-md-4">
                                     <i class="fa-duotone fa-circle-info me-1"></i>
                                     Al mantener activa esta opción, todos los estudiantes (excepto aquellos con
-                                    <strong>Licencia</strong> vigente) serán registrados automáticamente con el estado
+                                    <strong>Suspensión</strong> o <strong>Licencia</strong> vigente) serán registrados
+                                    automáticamente con el estado
                                     <strong>OTROS</strong>.
                                 </div>
                             </div>
@@ -222,18 +223,28 @@
                                 @foreach ($estudiante_asistencia->detalles_estudiantes_asistencias as $index => $detalle)
                                     @php
                                         $estudiante = $detalle->estudiante;
-                                        // Prioridad: Licencia ya asignada en el detalle, o licencia activa hallada en la BD para esa fecha
-                                        $licencia =
-                                            $detalle->estudiante_licencia ??
-                                            (isset($estudiantes_licencias[$estudiante->id_estudiante])
-                                                ? $estudiantes_licencias[$estudiante->id_estudiante]->first()
+
+                                        // Prioridad 1: Suspensión ya asignada en el detalle, o suspensión activa para esa fecha
+                                        $suspension =
+                                            $detalle->estudiante_suspension ??
+                                            (isset($estudiantes_suspensiones[$estudiante->id_estudiante])
+                                                ? $estudiantes_suspensiones[$estudiante->id_estudiante]->first()
                                                 : null);
+                                        $tieneSuspension = !is_null($suspension);
+
+                                        // Prioridad 2: Licencia ya asignada en el detalle, o licencia activa para esa fecha
+                                        $licencia = !$tieneSuspension
+                                            ? $detalle->estudiante_licencia ??
+                                                (isset($estudiantes_licencias[$estudiante->id_estudiante])
+                                                    ? $estudiantes_licencias[$estudiante->id_estudiante]->first()
+                                                    : null)
+                                            : null;
                                         $tieneLicencia = !is_null($licencia);
+
                                         $tipoActual = $detalle->tipo;
                                         $tiempoAtrasoActual = $detalle->tiempo_atraso ?? '';
                                         $justificacionPermisoActual = $detalle->justificacion_permiso ?? '';
 
-                                        // Si estaba en modo OTROS y el docente desmarca el switch en el frontend, por defecto el radio "PRESENTE" quedará preseleccionado
                                         $tipoRadioSeleccionado = in_array($tipoActual, [
                                             'PRESENTE',
                                             'ATRASO',
@@ -267,7 +278,25 @@
                                                     <i class="fa-solid fa-duotone fa-clock-rotate-left"></i>
                                                 </button>
                                             </div>
-                                            @if ($tieneLicencia)
+                                            @if ($tieneSuspension)
+                                                <div class="mt-2">
+                                                    <span class="badge bg-dark text-light border border-danger mb-1">
+                                                        <i class="fa-duotone fa-user-slash me-1"></i>Suspensión:
+                                                        {{ $suspension->motivo }}
+                                                    </span><br>
+                                                    <span class="badge bg-primary">Desde
+                                                        {{ date('d/m/Y H:i', strtotime($suspension->fecha_inicio)) }}</span>
+                                                    <span class="badge bg-danger">Hasta
+                                                        {{ date('d/m/Y H:i', strtotime($suspension->fecha_fin)) }}</span>
+                                                    @if ($suspension->evidencia)
+                                                        <a href="{{ $suspension->evidencia }}" target="_blank"
+                                                            class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip"
+                                                            title="Abrir archivo en Google Drive">
+                                                            <i class="fa-brands fa-google-drive"></i> Ver
+                                                        </a>
+                                                    @endif
+                                                </div>
+                                            @elseif ($tieneLicencia)
                                                 <div class="mt-2">
                                                     <span class="badge bg-info text-dark mb-1">Licencia:
                                                         {{ ucwords(str_replace('_', ' ', $licencia->tipo)) }}
@@ -291,7 +320,15 @@
                                             <input type="hidden" name="estudiantes[{{ $index }}][id_estudiante]"
                                                 value="{{ $estudiante->id_estudiante }}">
 
-                                            @if ($tieneLicencia)
+                                            @if ($tieneSuspension)
+                                                <span
+                                                    class="badge bg-dark text-light border border-danger tipo">Suspendido</span>
+                                                <input type="hidden"
+                                                    name="estudiantes[{{ $index }}][id_estudiante_suspension]"
+                                                    value="{{ $suspension->id_estudiante_suspension }}">
+                                                <input type="hidden" name="estudiantes[{{ $index }}][tipo]"
+                                                    value="SUSPENDIDO">
+                                            @elseif ($tieneLicencia)
                                                 <span class="badge bg-info text-dark tipo">Licencia</span>
                                                 <input type="hidden"
                                                     name="estudiantes[{{ $index }}][id_estudiante_licencia]"
@@ -306,6 +343,7 @@
                                                         'FALTA' => 'bg-danger',
                                                         'PERMISO' => 'bg-primary',
                                                         'OTROS' => 'bg-secondary',
+                                                        'SUSPENDIDO' => 'bg-dark text-light border border-danger',
                                                         default => 'bg-success',
                                                     };
 
@@ -315,6 +353,7 @@
                                                         'FALTA' => 'Falta',
                                                         'PERMISO' => 'Permiso',
                                                         'OTROS' => 'Otros',
+                                                        'SUSPENDIDO' => 'Suspendido',
                                                         default => 'Presente',
                                                     };
                                                 @endphp
@@ -329,7 +368,7 @@
                                             @endif
                                         </td>
                                         <td class="text-center align-middle">
-                                            @if ($tieneLicencia)
+                                            @if ($tieneSuspension || $tieneLicencia)
                                                 <span class="text-muted">No se puede modificar</span>
                                             @else
                                                 <div class="d-flex flex-wrap justify-content-center align-items-center gap-2 contenedor-acciones-fila"

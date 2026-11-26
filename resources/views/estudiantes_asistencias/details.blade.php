@@ -90,6 +90,7 @@
         $faltas = $estudiante_asistencia->detalles_estudiantes_asistencias->where('tipo', 'FALTA')->count();
         $licencias = $estudiante_asistencia->detalles_estudiantes_asistencias->where('tipo', 'LICENCIA')->count();
         $permisos = $estudiante_asistencia->detalles_estudiantes_asistencias->where('tipo', 'PERMISO')->count();
+        $suspendidos = $estudiante_asistencia->detalles_estudiantes_asistencias->where('tipo', 'SUSPENDIDO')->count();
         $otros = $estudiante_asistencia->detalles_estudiantes_asistencias->where('tipo', 'OTROS')->count();
     @endphp
 
@@ -192,6 +193,23 @@
                     </div>
                 </div>
             </div>
+
+            @if ($suspendidos > 0)
+                <!-- Suspendidos -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body d-flex align-items-center p-3">
+                            <div class="p-3 rounded bg-dark bg-opacity-10 text-danger border border-danger me-3">
+                                <i class="fa-duotone fa-user-slash fa-2xl"></i>
+                            </div>
+                            <div>
+                                <span class="text-muted small d-block mb-1">Suspendidos</span>
+                                <h3 class="fw-bold m-0 text-danger">{{ $suspendidos }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 
@@ -226,6 +244,7 @@
                                     'LICENCIA' => 'bg-info text-dark',
                                     'PERMISO' => 'bg-primary',
                                     'OTROS' => 'bg-secondary',
+                                    'SUSPENDIDO' => 'bg-dark text-light border border-danger',
                                     default => 'bg-secondary',
                                 };
 
@@ -240,6 +259,7 @@
                                     'OTROS' => 'Otros (' .
                                         ($estudiante_asistencia->justificacion_otros ?? 'General') .
                                         ')',
+                                    'SUSPENDIDO' => 'Suspendido',
                                     default => 'Desconocido',
                                 };
 
@@ -250,6 +270,7 @@
                                     'LICENCIA' => 'fa-file-certificate',
                                     'PERMISO' => 'fa-file-signature',
                                     'OTROS' => 'fa-calendar-star',
+                                    'SUSPENDIDO' => 'fa-user-slash',
                                     default => 'fa-question-circle',
                                 };
                             @endphp
@@ -262,7 +283,25 @@
                                 </td>
                                 <td class="align-middle fw-bold">
                                     {{ $detalle->estudiante->persona->apellidos_nombres }}
-                                    @if ($detalle->estudiante_licencia)
+                                    @if ($detalle->estudiante_suspension)
+                                        <div class="mt-1">
+                                            <span class="badge bg-dark text-light border border-danger mb-1">
+                                                <i class="fa-duotone fa-user-slash me-1"></i>Suspensión:
+                                                {{ $detalle->estudiante_suspension->motivo }}
+                                            </span><br>
+                                            <span class="badge bg-primary">Desde
+                                                {{ date('d/m/Y H:i', strtotime($detalle->estudiante_suspension->fecha_inicio)) }}</span>
+                                            <span class="badge bg-danger">Hasta
+                                                {{ date('d/m/Y H:i', strtotime($detalle->estudiante_suspension->fecha_fin)) }}</span>
+                                            @if ($detalle->estudiante_suspension->evidencia)
+                                                <a href="{{ $detalle->estudiante_suspension->evidencia }}"
+                                                    target="_blank" class="btn btn-sm btn-outline-info"
+                                                    data-bs-toggle="tooltip" title="Abrir archivo en Google Drive">
+                                                    <i class="fa-brands fa-google-drive"></i> Ver
+                                                </a>
+                                            @endif
+                                        </div>
+                                    @elseif ($detalle->estudiante_licencia)
                                         <div class="mt-1">
                                             <span class="badge bg-info text-dark mb-1">Licencia:
                                                 {{ ucwords(str_replace('_', ' ', $detalle->estudiante_licencia->tipo)) }}

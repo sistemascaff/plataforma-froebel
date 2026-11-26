@@ -41,6 +41,7 @@
                                     'LICENCIA' => 'bg-info text-dark',
                                     'PERMISO' => 'bg-primary',
                                     'OTROS' => 'bg-secondary',
+                                    'SUSPENDIDO' => 'bg-dark text-light border border-danger',
                                     default => 'bg-secondary',
                                 };
 
@@ -58,6 +59,7 @@
                                     'LICENCIA' => '<i class="fa-solid fa-duotone fa-file-medical me-1"></i>',
                                     'PERMISO' => '<i class="fa-solid fa-duotone fa-file-signature me-1"></i>',
                                     'OTROS' => '<i class="fa-solid fa-duotone fa-calendar-star me-1"></i>',
+                                    'SUSPENDIDO' => '<i class="fa-solid fa-duotone fa-user-slash me-1"></i>',
                                     default => '<i class="fa-solid fa-duotone fa-question-circle me-1"></i>',
                                 };
                             @endphp

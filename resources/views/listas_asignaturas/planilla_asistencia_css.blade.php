@@ -83,6 +83,17 @@
         background-color: rgba(13, 110, 253, 0.15) !important;
     }
 
+    /* Celda de estudiante suspendido: fondo negro y texto blanco */
+    .tabla-planilla td.celda-suspendido,
+    .tabla-planilla tr.fila-retirado td.celda-suspendido {
+        background-color: #000000 !important;
+        color: #ffffff !important;
+    }
+
+    .tabla-planilla td.celda-suspendido.celda-interactiva:hover {
+        background-color: #212529 !important;
+    }
+
     /* ====================================================================
        REGLAS EXCLUSIVAS PARA IMPRESIÓN / CTRL + P / GUARDAR COMO PDF
        Fuerza modo claro independientemente de si el usuario está en dark mode
@@ -210,6 +221,13 @@
         .tabla-planilla tr.fila-retirado td {
             background-color: #d9d9d9 !important;
             color: #333333 !important;
+        }
+
+        /* Mantener fondo negro y texto blanco para celdas de suspensión al imprimir */
+        .tabla-planilla td.celda-suspendido,
+        .tabla-planilla tr.fila-retirado td.celda-suspendido {
+            background-color: #000000 !important;
+            color: #ffffff !important;
         }
 
         /* Preservar colores semánticos de asistencias y recuentos sobre el fondo claro */

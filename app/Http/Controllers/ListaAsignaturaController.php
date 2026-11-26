@@ -639,6 +639,7 @@ class ListaAsignaturaController extends Controller
             'LICENCIA' => 'L',
             'PERMISO'  => 'P',
             'OTROS'    => 'O',
+            'SUSPENDIDO' => 'S',
         ];
 
         $columnasClases = [];
@@ -695,6 +696,7 @@ class ListaAsignaturaController extends Controller
             // Indexar detalles en memoria para acceso instantáneo O(1)
             foreach ($asistencia->detalles_estudiantes_asistencias as $detalle) {
                 $licenciaObj = $detalle->estudiante_licencia;
+                $suspensionObj = $detalle->estudiante_suspension;
 
                 $mapaDetalles[$detalle->id_estudiante][$asistencia->id_estudiante_asistencia] = [
                     'tipo'                  => $detalle->tipo,
@@ -708,6 +710,13 @@ class ListaAsignaturaController extends Controller
                         'fecha_inicio'           => date('d/m/Y H:i', strtotime($licenciaObj->fecha_inicio)),
                         'fecha_fin'              => date('d/m/Y H:i', strtotime($licenciaObj->fecha_fin)),
                         'evidencia'              => $licenciaObj->evidencia,
+                    ] : null,
+                    'suspension'            => $suspensionObj ? [
+                        'id_estudiante_suspension' => $suspensionObj->id_estudiante_suspension,
+                        'motivo'                   => $suspensionObj->motivo,
+                        'fecha_inicio'             => date('d/m/Y H:i', strtotime($suspensionObj->fecha_inicio)),
+                        'fecha_fin'                => date('d/m/Y H:i', strtotime($suspensionObj->fecha_fin)),
+                        'evidencia'                => $suspensionObj->evidencia,
                     ] : null,
                 ];
             }
@@ -726,6 +735,7 @@ class ListaAsignaturaController extends Controller
                 'LICENCIA' => 0,
                 'PERMISO'  => 0,
                 'OTROS'    => 0,
+                'SUSPENDIDO' => 0,
             ];
 
             $celdasAsistencia = [];
@@ -749,6 +759,7 @@ class ListaAsignaturaController extends Controller
                         'tiempo_atraso'            => $registro['tiempo_atraso'],
                         'justificacion_permiso'    => $registro['justificacion_permiso'],
                         'licencia'                 => $registro['licencia'],
+                        'suspension'               => $registro['suspension'],
                     ];
                 } else {
                     // El estudiante no formaba parte de la lista en esa fecha (incorporación posterior o ya retirado)
@@ -760,6 +771,7 @@ class ListaAsignaturaController extends Controller
                         'tiempo_atraso'            => 0,
                         'justificacion_permiso'    => null,
                         'licencia'                 => null,
+                        'suspension'               => null,
                     ];
                 }
             }

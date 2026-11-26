@@ -53,3 +53,14 @@
         </a>
     </div>
 </div>
+
+<div class="row">
+    <div class="col-6 col-md-4 col-lg-2 d-flex justify-content-center my-3">
+        <a class="btn btn-sq-lg btn-info" href="{{ route('estudiantes_suspensiones.index') }}">
+            <div>
+                <i class="fa-solid fa-duotone fa-user-slash fa-2xl"></i>
+                <br>Gestión de suspensiones de estudiantes
+            </div>
+        </a>
+    </div>
+</div>

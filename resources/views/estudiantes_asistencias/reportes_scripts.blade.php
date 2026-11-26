@@ -42,6 +42,7 @@
                     kpiFaltas = 0,
                     kpiLicencias = 0,
                     kpiPermisos = 0,
+                    kpiSuspendidos = 0,
                     sumaMins = 0;
                 let objFechas = {},
                     objHorarios = {},
@@ -56,10 +57,11 @@
                     FALTA: 0,
                     LICENCIA: 0,
                     PERMISO: 0,
+                    SUSPENDIDO: 0,
                     Total: 0
                 });
 
-                const tiposValidos = ['ATRASO', 'FALTA', 'LICENCIA', 'PERMISO'];
+                const tiposValidos = ['ATRASO', 'FALTA', 'LICENCIA', 'PERMISO', 'SUSPENDIDO'];
 
                 // 2. Iteración sobre la data filtrada
                 filteredData.forEach(row => {
@@ -77,6 +79,8 @@
                         kpiLicencias++;
                     } else if (t === 'PERMISO') {
                         kpiPermisos++;
+                    } else if (t === 'SUSPENDIDO') {
+                        kpiSuspendidos++;
                     }
 
                     // Extracción segura de datos
@@ -137,13 +141,14 @@
                 $('#kpi-faltas').text(kpiFaltas);
                 $('#kpi-licencias').text(kpiLicencias);
                 $('#kpi-permisos').text(kpiPermisos);
+                $('#kpi-suspendidos').text(kpiSuspendidos);
                 $('#kpi-minutos-total').text(sumaMins);
                 $('#kpi-minutos-promedio').text(kpiAtrasos > 0 ? (sumaMins / kpiAtrasos).toFixed(
                     1) : 0);
 
                 // Helper para generar los 4 datasets apilados (Atrasos, Faltas, Licencias, Permisos)
                 const buildStackedDatasets = (entriesArray, isObjectValues = false, radius =
-                4) => [{
+                    4) => [{
                         label: 'Atrasos',
                         data: entriesArray.map(item => isObjectValues ? item.ATRASO : item[1]
                             .ATRASO),
@@ -170,6 +175,13 @@
                             .PERMISO),
                         backgroundColor: chartPalettes.incidencias.permiso,
                         borderRadius: radius
+                    },
+                    {
+                        label: 'Suspendidos',
+                        data: entriesArray.map(item => isObjectValues ? item.SUSPENDIDO : item[
+                            1].SUSPENDIDO),
+                        backgroundColor: chartPalettes.incidencias.suspendido,
+                        borderRadius: radius
                     }
                 ];
 
@@ -179,7 +191,7 @@
                 // Helper para ordenar por Total y extraer un Top N
                 const getTopEntries = (dataMap, limit = undefined) => {
                     let sorted = Object.entries(dataMap).sort((a, b) => b[1].Total - a[1]
-                    .Total);
+                        .Total);
                     return limit ? sorted.slice(0, limit) : sorted;
                 };
 
@@ -205,12 +217,14 @@
                         labels: ['Atrasos', 'Faltas', 'Licencias', 'Permisos'],
                         datasets: [{
                             data: [kpiAtrasos, kpiFaltas, kpiLicencias,
-                                kpiPermisos],
+                                kpiPermisos, kpiSuspendidos
+                            ],
                             backgroundColor: [
                                 chartPalettes.incidencias.atraso,
                                 chartPalettes.incidencias.falta,
                                 chartPalettes.incidencias.licencia,
-                                chartPalettes.incidencias.permiso
+                                chartPalettes.incidencias.permiso,
+                                chartPalettes.incidencias.suspendido
                             ],
                             borderWidth: 0
                         }]
@@ -333,6 +347,8 @@
                             return `<span class="badge bg-info text-dark px-3 py-2 shadow-sm"><i class="fa-solid fa-duotone fa-file-certificate me-1"></i>Licencia</span>`;
                         if (data === 'PERMISO')
                             return `<span class="badge bg-primary px-3 py-2 shadow-sm"><i class="fa-solid fa-duotone fa-file-signature me-1"></i>Permiso</span>`;
+                        if (data === 'SUSPENDIDO')
+                            return `<span class="badge bg-dark text-light border border-danger px-3 py-2 shadow-sm"><i class="fa-solid fa-duotone fa-user-slash me-1"></i>Suspendido</span>`;
                         return `<span class="badge bg-secondary px-3 py-2 shadow-sm">-</span>`;
                     }
                 },
@@ -343,6 +359,7 @@
                         `<span class="text-danger fw-bold">${data} min</span>` : ''
                 },
                 {
+                    // 
                     data: null,
                     className: "align-middle",
                     render: function(data, type, row) {
@@ -367,6 +384,24 @@
                         if (row.tipo === 'PERMISO') {
                             const j = row.justificacion_permiso;
                             return `<span class="text-primary fw-semibold">${j || 'Sin justificación'}</span>`;
+                        }
+                        if (row.tipo === 'SUSPENDIDO' && row.estudiante_suspension) {
+                            const s = row.estudiante_suspension;
+                            const urlEvidencia = s.evidencia;
+                            const btnEvidencia = urlEvidencia ? `
+                            <br>
+                            <a href="${urlEvidencia}" target="_blank"
+                                class="btn btn-sm btn-outline-info mt-1" data-bs-toggle="tooltip"
+                                title="Abrir archivo en Google Drive">
+                                <i class="fa-brands fa-google-drive"></i> Ver
+                            </a>` : '';
+                            return `
+                                <span class="d-inline-block text-danger fw-semibold" style="max-width: 220px;"
+                                    title="${s.motivo}">
+                                    ${s.motivo || 'Sin motivo registrado'}
+                                </span>
+                                ${btnEvidencia}
+                            `;
                         }
                         return '';
                     }
