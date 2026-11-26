@@ -65,7 +65,8 @@
                                 <th class="text-center table-info text-info" title="Subtotal: Licencias + Permisos">
                                     Justificadas
                                 </th>
-                                <th class="text-center">Atrasos (Prom.)</th>
+                                <th class="text-center">Atrasos (Σ)</th>
+                                <th class="text-center">Atrasos (x̄)</th>
                                 <th class="text-center table-secondary">Total</th>
                             </tr>
                         </thead>

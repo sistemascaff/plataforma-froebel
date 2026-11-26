@@ -161,18 +161,21 @@
                     }
                 },
                 {
+                    data: "suma_mins",
+                    className: "text-center align-middle",
+                    render: (data, type, row) => {
+                        if (type === 'sort' || type === 'type') return data;
+                        if (row.atrasos === 0) return '';
+                        return `<span class="fw-semibold text-danger">${data}</span>`;
+                    }
+                },
+                {
                     data: "promedio_mins",
                     className: "text-center align-middle",
                     render: (data, type, row) => {
                         if (type === 'sort' || type === 'type') return data;
-                        if (row.atrasos === 0) {
-                            return ``;
-                        }
-                        return `
-                            <span class="fw-bold text-danger">${data} min</span>
-                            <br>
-                            <span class="text-muted small">${row.suma_mins} min total</span>
-                        `;
+                        if (row.atrasos === 0) return '';
+                        return `<span class="fw-bold text-danger">${data}</span>`;
                     }
                 },
                 {
@@ -202,7 +205,7 @@
             scrollX: true,
             order: [
                 [6, 'desc'], // Primero por Subtotal Disciplinarias (desc)
-                [11, 'desc'] // Desempate por Total general (desc)
+                [12, 'desc'] // Desempate por Total general (desc)
             ],
         });
 
@@ -668,7 +671,8 @@
             tablaRanking.column(7).visible(verLicencia, false);
             tablaRanking.column(8).visible(verPermiso, false);
             tablaRanking.column(9).visible(verLicencia || verPermiso, false);
-            tablaRanking.column(10).visible(verAtraso, false);
+            tablaRanking.column(10).visible(verAtraso, false); // Atrasos (Σ)
+            tablaRanking.column(11).visible(verAtraso, false); // Atrasos (x̄)
 
             tablaReportes.columns.adjust().draw();
             tablaRanking.columns.adjust();
