@@ -9,6 +9,8 @@ use App\Models\Aula;
 use App\Models\Coordinacion;
 use App\Models\Curso;
 use App\Models\Docente;
+use App\Models\Gestion;
+use App\Models\HorarioAsignatura;
 use App\Models\ListaAsignatura;
 use App\Models\Materia;
 use App\Models\Nivel;
@@ -88,9 +90,22 @@ class AsignaturaController extends Controller
         // Recargamos el modelo para incluir las listas recién creadas
         $asignaturaModel = (new Asignatura())->get_asignatura($asignatura);
 
+        // Gestiones disponibles para el selector de la cuadrícula de horarios
+        $gestiones = Gestion::select('id_gestion', 'anio', 'estado')
+            ->orderBy('anio', 'DESC')
+            ->get();
+
+        $anioActual = (int) date('Y');
+        $gestionDefecto = $gestiones->firstWhere('anio', $anioActual) ?? $gestiones->first();
+
         return view('asignaturas.details', [
             'head_title' => 'ASIGNATURA: ' . $asignaturaModel->asignatura,
             'asignatura' => $asignaturaModel,
+            'gestiones' => $gestiones,
+            'id_gestion_defecto' => $gestionDefecto?->id_gestion,
+            'anio_actual' => $anioActual,
+            'es_admin' => $tipo_perfil === 'ADMINISTRADOR',
+            'puede_editar_horarios' => Auth::user()->can('update', $asignaturaModel),
         ]);
     }
 
@@ -287,6 +302,53 @@ class AsignaturaController extends Controller
 
         $agregar = $request->input('agregar', []);
         $eliminar = $request->input('eliminar', []);
+
+        $idsHorarios = collect($agregar)
+            ->merge($eliminar)
+            ->pluck('id_horario_asignatura')
+            ->unique()
+            ->values();
+
+        if ($idsHorarios->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se recibieron cambios para guardar.',
+            ], 422);
+        }
+
+        // Validación de integridad (nivel, estado y permisos por gestión)
+        $horariosInvolucrados = HorarioAsignatura::with('gestion:id_gestion,anio,estado')
+            ->whereIn('id_horario_asignatura', $idsHorarios)
+            ->get()
+            ->keyBy('id_horario_asignatura');
+
+        $esAdmin = Auth::user()->persona?->tipo_perfil === 'ADMINISTRADOR';
+        $anioActual = (int) date('Y');
+        $idsAgregar = collect($agregar)->pluck('id_horario_asignatura')->unique()->all();
+
+        foreach ($horariosInvolucrados as $horario) {
+            if ((int) $horario->id_nivel !== (int) $asignaturaModel->id_nivel) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Uno o más horarios no corresponden al nivel de esta asignatura.',
+                ], 422);
+            }
+
+            $anioGestion = (int) ($horario->gestion?->anio ?? 0);
+            if (! $esAdmin && $anioGestion < $anioActual) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Solo el perfil ADMINISTRADOR puede modificar horarios de gestiones pasadas ({$anioGestion}).",
+                ], 403);
+            }
+
+            if (in_array($horario->id_horario_asignatura, $idsAgregar) && (int) $horario->estado !== 1) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "No se puede asignar el horario archivado ({$horario->denominacion}).",
+                ], 422);
+            }
+        }
 
         DB::beginTransaction();
         try {

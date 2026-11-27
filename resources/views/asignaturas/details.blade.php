@@ -95,13 +95,39 @@
 
     <!-- Horarios de la Asignatura -->
     <div class="card shadow-sm mb-4">
-        <div class="card-header p-4 d-flex justify-content-between align-items-center">
-            <h4 class="fw-bold mb-0 text-info">
-                <i class="fa-duotone fa-calendar-clock me-2"></i>Horarios de la Asignatura
-            </h4>
-            <button type="button" class="btn btn-primary shadow-sm" id="btn-guardar-horarios">
-                <i class="fa-solid fa-duotone fa-floppy-disk me-1"></i>Guardar cambios
-            </button>
+        <div class="card-header p-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <h4 class="fw-bold mb-0 text-info">
+                    <i class="fa-duotone fa-calendar-clock me-2"></i>Horarios de la Asignatura
+                </h4>
+                <span class="badge bg-secondary d-none" id="badge-solo-lectura-horarios">
+                    <i class="fa-duotone fa-lock me-1"></i>Solo lectura
+                </span>
+            </div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <div class="input-group input-group-sm shadow-sm" style="width: auto;">
+                    <label class="input-group-text fw-bold" for="filtro-gestion-horarios">
+                        <i class="fa-duotone fa-calendar me-1"></i>Gestión
+                    </label>
+                    <select class="form-select" id="filtro-gestion-horarios" style="min-width: 120px;">
+                        @forelse ($gestiones as $gestion)
+                            <option value="{{ $gestion->id_gestion }}" data-anio="{{ $gestion->anio }}"
+                                data-estado="{{ $gestion->estado }}"
+                                {{ $gestion->id_gestion == $id_gestion_defecto ? 'selected' : '' }}>
+                                {{ $gestion->anio }}{{ $gestion->anio == $anio_actual ? ' (Actual)' : '' }}
+                            </option>
+                        @empty
+                            <option value="">Sin gestiones</option>
+                        @endforelse
+                    </select>
+                </div>
+
+                @if ($puede_editar_horarios)
+                    <button type="button" class="btn btn-primary shadow-sm" id="btn-guardar-horarios">
+                        <i class="fa-solid fa-duotone fa-floppy-disk me-1"></i>Guardar cambios
+                    </button>
+                @endif
+            </div>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">

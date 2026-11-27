@@ -157,9 +157,23 @@ class EstudianteAsistenciaController extends Controller
             'estudiantes.curso'
         ]);
 
-        // 3. Obtener horarios de la asignatura
+        // 3. Obtener horarios activos de la asignatura correspondientes a la gestión del periodo
+        $id_gestion = $lista_asignatura->periodo->id_gestion;
+
         $a = Asignatura::with([
-            'horarios_asignaturas:id_horario_asignatura,id_nivel,id_gestion,denominacion,hora_inicio,hora_fin,estado',
+            'horarios_asignaturas' => function ($q) use ($id_gestion) {
+                $q->select(
+                    'horarios_asignaturas.id_horario_asignatura',
+                    'horarios_asignaturas.id_nivel',
+                    'horarios_asignaturas.id_gestion',
+                    'horarios_asignaturas.denominacion',
+                    'horarios_asignaturas.hora_inicio',
+                    'horarios_asignaturas.hora_fin',
+                    'horarios_asignaturas.estado'
+                )
+                    ->where('horarios_asignaturas.id_gestion', $id_gestion)
+                    ->where('horarios_asignaturas.estado', 1);
+            },
             'horarios_asignaturas.gestion:id_gestion,anio,estado'
         ])->findOrFail($lista_asignatura->id_asignatura);
 
@@ -216,9 +230,27 @@ class EstudianteAsistenciaController extends Controller
         $estudiantes_licencias = [];
         $estudiantes_suspensiones = [];
 
-        // 2. Obtener horarios de la asignatura asociada
+        // 2. Obtener horarios de la asignatura correspondientes a la gestión del periodo
+        $id_gestion = $asistencia->lista_asignatura->periodo->id_gestion;
+        $id_horario_actual = $asistencia->id_horario_asignatura;
+
         $asignatura = Asignatura::with([
-            'horarios_asignaturas:id_horario_asignatura,id_nivel,id_gestion,denominacion,hora_inicio,hora_fin,estado',
+            'horarios_asignaturas' => function ($q) use ($id_gestion, $id_horario_actual) {
+                $q->select(
+                    'horarios_asignaturas.id_horario_asignatura',
+                    'horarios_asignaturas.id_nivel',
+                    'horarios_asignaturas.id_gestion',
+                    'horarios_asignaturas.denominacion',
+                    'horarios_asignaturas.hora_inicio',
+                    'horarios_asignaturas.hora_fin',
+                    'horarios_asignaturas.estado'
+                )
+                    ->where('horarios_asignaturas.id_gestion', $id_gestion)
+                    ->where(function ($sub) use ($id_horario_actual) {
+                        $sub->where('horarios_asignaturas.estado', 1)
+                            ->orWhere('horarios_asignaturas.id_horario_asignatura', $id_horario_actual);
+                    });
+            },
             'horarios_asignaturas.gestion:id_gestion,anio,estado'
         ])->findOrFail($asistencia->lista_asignatura->id_asignatura);
 
@@ -493,12 +525,20 @@ class EstudianteAsistenciaController extends Controller
         $esHorarioNoRegular = $request->boolean('es_horario_no_regular');
         $horario = HorarioAsignatura::findOrFail($request->id_horario);
 
+        // Validar que el horario pertenezca a la misma gestión del periodo de la lista
+        if ((int) $horario->id_gestion !== (int) $periodo->id_gestion) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El horario seleccionado no corresponde a la gestión del periodo académico de esta lista.'
+            ], 422);
+        }
+
         // Validación de integridad del horario seleccionado (Regular vs No Regular)
         if ($esHorarioNoRegular) {
-            if ((int) $horario->id_nivel !== (int) $lista->asignatura->id_nivel) {
+            if ((int) $horario->id_nivel !== (int) $lista->asignatura->id_nivel || (int) $horario->estado !== 1) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'El horario no regular seleccionado no pertenece al nivel académico de la asignatura.'
+                    'message' => 'El horario no regular seleccionado no está activo o no pertenece al nivel académico de la asignatura.'
                 ], 422);
             }
         } else {
@@ -722,6 +762,14 @@ class EstudianteAsistenciaController extends Controller
         $esHorarioNoRegular = $request->boolean('es_horario_no_regular');
         $horario = HorarioAsignatura::findOrFail($request->id_horario);
         $asignatura = $asistencia->lista_asignatura->asignatura;
+
+        // Validar que el horario pertenezca a la misma gestión del periodo de la asistencia
+        if ((int) $horario->id_gestion !== (int) $periodo->id_gestion) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El horario seleccionado no corresponde a la gestión del periodo académico de esta asistencia.'
+            ], 422);
+        }
 
         // Validación de integridad del horario seleccionado (Regular vs No Regular)
         if ($esHorarioNoRegular) {

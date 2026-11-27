@@ -205,6 +205,18 @@ class ListaAsignatura extends Model
      */
     public function get_horario_semanal_docente(int $id_docente, string $fecha_hoy, string $inicio_semana, string $fin_semana)
     {
+        $ids_gestion = Periodo::where('estado', 1)
+            ->whereDate('fecha_inicio', '<=', $fecha_hoy)
+            ->whereDate('fecha_fin', '>=', $fecha_hoy)
+            ->pluck('id_gestion')
+            ->unique()
+            ->values()
+            ->toArray();
+
+        if (empty($ids_gestion)) {
+            return collect();
+        }
+
         return $this::where('id_docente', $id_docente)
             ->whereHas('periodo', function ($q) use ($fecha_hoy) {
                 $q->where('estado', 1)
@@ -214,15 +226,17 @@ class ListaAsignatura extends Model
             ->where('estado', 1)
             ->with([
                 'asignatura:id_asignatura,asignatura,tipo_bloque,estado',
-                'asignatura.horarios_asignaturas' => function ($q) {
-                    $q->where('estado', 1)->orderBy('hora_inicio', 'ASC');
+                'asignatura.horarios_asignaturas' => function ($q) use ($ids_gestion) {
+                    $q->where('horarios_asignaturas.estado', 1)
+                        ->whereIn('horarios_asignaturas.id_gestion', $ids_gestion)
+                        ->orderBy('horarios_asignaturas.hora_inicio', 'ASC');
                 },
                 'estudiantes_asistencias' => function ($q) use ($inicio_semana, $fin_semana) {
                     // Traemos TODAS las asistencias de la semana actual
                     $q->whereBetween('fecha', [$inicio_semana, $fin_semana])
                         ->select('id_estudiante_asistencia', 'id_lista_asignatura', 'id_horario_asignatura', 'fecha');
                 },
-                'periodo:id_periodo,id_gestion,periodo,estado' // Aseguramos traer el periodo para la vista
+                'periodo:id_periodo,id_gestion,periodo,estado'
             ])
             ->get();
     }
@@ -234,6 +248,18 @@ class ListaAsignatura extends Model
      */
     public function get_horario_semanal_estudiante(int $id_estudiante, string $fecha_hoy, string $inicio_semana, string $fin_semana)
     {
+        $ids_gestion = Periodo::where('estado', 1)
+            ->whereDate('fecha_inicio', '<=', $fecha_hoy)
+            ->whereDate('fecha_fin', '>=', $fecha_hoy)
+            ->pluck('id_gestion')
+            ->unique()
+            ->values()
+            ->toArray();
+
+        if (empty($ids_gestion)) {
+            return collect();
+        }
+
         return $this::whereHas('estudiantes', function ($q) use ($id_estudiante) {
             $q->where('estudiantes.id_estudiante', $id_estudiante);
         })
@@ -246,8 +272,10 @@ class ListaAsignatura extends Model
             ->with([
                 'asignatura:id_asignatura,id_aula,asignatura,tipo_bloque,estado',
                 'asignatura.aula:id_aula,aula',
-                'asignatura.horarios_asignaturas' => function ($q) {
-                    $q->where('estado', 1)->orderBy('hora_inicio', 'ASC');
+                'asignatura.horarios_asignaturas' => function ($q) use ($ids_gestion) {
+                    $q->where('horarios_asignaturas.estado', 1)
+                        ->whereIn('horarios_asignaturas.id_gestion', $ids_gestion)
+                        ->orderBy('horarios_asignaturas.hora_inicio', 'ASC');
                 },
                 'docente:id_docente,id_persona,estado',
                 'docente.persona:id_persona,apellido_paterno,apellido_materno,nombres',

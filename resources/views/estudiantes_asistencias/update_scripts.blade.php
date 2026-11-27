@@ -1,6 +1,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const idNivelAsignatura = {{ $estudiante_asistencia->lista_asignatura->asignatura->id_nivel }};
+        const idGestionPeriodo = {{ $estudiante_asistencia->lista_asignatura->periodo->id_gestion }};
         const idHorarioGuardado = {{ $estudiante_asistencia->id_horario_asignatura }};
         const selectHorario = document.getElementById('id_horario_asignatura');
         const switchHorarioNoRegular = document.getElementById('switch_horario_no_regular');
@@ -92,11 +93,14 @@
                 .then(res => {
                     const lista = res.data || [];
 
-                    // Filtrar horarios activos del mismo nivel y excluir recesos/recreos
+                    // Filtrar horarios del mismo nivel y gestión (activos o el guardado originalmente) y excluir recesos
                     horariosNivelCache = lista.filter(h => {
                         const desc = (h.denominacion || '').toLowerCase();
                         const esReceso = desc.includes('receso') || desc.includes('recreo');
-                        return h.id_nivel == idNivelAsignatura && h.estado == 1 && !esReceso;
+                        return h.id_nivel == idNivelAsignatura &&
+                            h.id_gestion == idGestionPeriodo &&
+                            (h.estado == 1 || h.id_horario_asignatura == idHorarioGuardado) &&
+                            !esReceso;
                     });
 
                     // Orden cronológico por hora_inicio

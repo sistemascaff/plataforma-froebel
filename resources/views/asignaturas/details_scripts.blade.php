@@ -18,73 +18,26 @@
         // ─── Datos del blade ──────────────────────────────────────────────────────
         const idAsignatura = {{ $asignatura->id_asignatura }};
         const idNivel = {{ $asignatura->nivel->id_nivel }};
+        const anioActual = {{ $anio_actual }};
+        const esAdmin = @json($es_admin);
+        const puedeEditarAsignatura = @json($puede_editar_horarios);
 
         // ─── Estado base (BD) para calcular deltas de guardado ────────────────────
         let horariosBD = [];
         @foreach ($asignatura->horarios_asignaturas as $ha)
             horariosBD.push({
                 id_horario_asignatura: {{ $ha->id_horario_asignatura }},
+                id_gestion: {{ $ha->id_gestion }},
                 dia_semana: {{ $ha->pivot->dia_semana }}
             });
         @endforeach
 
+        let todosLosHorarios = [];
+        let gestionActualSeleccionada = $('#filtro-gestion-horarios').val();
+
         // ─── Funciones y Renderizado de Cuadrícula ────────────────────────────────
         cargarDocentesSelect();
         cargarCuadriculaHorarios();
-
-        function cargarCuadriculaHorarios() {
-            $.ajax({
-                url: "{{ route('horarios_asignaturas.listar') }}",
-                type: "GET",
-                dataType: "json",
-                success: function(response) {
-                    let $tbody = $('#horarios-grid-body');
-                    $tbody.empty();
-
-                    // Filtrar activos y del nivel correspondiente
-                    let horariosNivel = response.data.filter(h => h.id_nivel == idNivel && h
-                        .estado == 1);
-
-                    // Asegurar orden cronológico
-                    horariosNivel.sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
-
-                    horariosNivel.forEach(function(horario) {
-                        let desc = horario.denominacion.toLowerCase();
-                        let esReceso = desc.includes("receso") || desc.includes("recreo");
-
-                        let filaHTML = `<tr>
-                            <td class="text-start ps-3 fw-bold border-end">
-                                ${horario.denominacion}<br>
-                                <small class="text-muted fw-normal"><i class="fa-duotone fa-clock me-1"></i>${horario.hora_inicio} - ${horario.hora_fin}</small>
-                            </td>`;
-
-                        if (esReceso) {
-                            // Fila completa bloqueada para el receso
-                            filaHTML += `<td colspan="6" class="bg-secondary-subtle text-secondary fw-bold align-middle" style="pointer-events:none;">
-                                            <i class="fa-duotone fa-mug-hot me-1"></i>${horario.denominacion.toUpperCase()}
-                                         </td>`;
-                        } else {
-                            // Columnas de días interactivos (1=Lunes a 6=Sábado)
-                            for (let dia = 1; dia <= 6; dia++) {
-                                let isChecked = horariosBD.some(h => h
-                                    .id_horario_asignatura == horario
-                                    .id_horario_asignatura && h.dia_semana == dia);
-                                let checkedAttr = isChecked ? 'checked' : '';
-
-                                filaHTML += `<td class="align-middle">
-                                                <input class="form-check-input check-horario fs-4 shadow-sm" type="checkbox" 
-                                                    data-horario="${horario.id_horario_asignatura}" 
-                                                    data-dia="${dia}" 
-                                                    ${checkedAttr} style="cursor: pointer;">
-                                             </td>`;
-                            }
-                        }
-                        filaHTML += `</tr>`;
-                        $tbody.append(filaHTML);
-                    });
-                }
-            });
-        }
 
         function cargarDocentesSelect() {
             $.ajax({
@@ -104,13 +57,32 @@
                 }
             });
         }
+        
+        function obtenerGestionSeleccionada() {
+            const $opt = $('#filtro-gestion-horarios option:selected');
+            return {
+                id_gestion: $opt.val() ? parseInt($opt.val(), 10) : null,
+                anio: $opt.data('anio') ? parseInt($opt.data('anio'), 10) : 0,
+                estado: $opt.data('estado') !== undefined ? parseInt($opt.data('estado'), 10) : 0
+            };
+        }
 
-        // ─── Guardar Cuadrícula (Delta Calculator) ────────────────────────────────
-        $('#btn-guardar-horarios').on('click', function() {
+        function puedeEditarGestionSeleccionada() {
+            const {
+                id_gestion,
+                anio
+            } = obtenerGestionSeleccionada();
+            if (!id_gestion || !puedeEditarAsignatura) return false;
+            return esAdmin || anio >= anioActual;
+        }
+
+        function calcularDeltasActuales() {
             let agregar = [];
             let eliminar = [];
+            const {
+                id_gestion
+            } = obtenerGestionSeleccionada();
 
-            // Analizamos todas las casillas renderizadas
             $('.check-horario').each(function() {
                 let id_horario = $(this).data('horario');
                 let dia_semana = $(this).data('dia');
@@ -122,15 +94,190 @@
                 if (isChecked && !wasChecked) {
                     agregar.push({
                         id_horario_asignatura: id_horario,
+                        id_gestion: id_gestion,
                         dia_semana: dia_semana
                     });
                 } else if (!isChecked && wasChecked) {
                     eliminar.push({
                         id_horario_asignatura: id_horario,
+                        id_gestion: id_gestion,
                         dia_semana: dia_semana
                     });
                 }
             });
+
+            return {
+                agregar,
+                eliminar
+            };
+        }
+
+        function cargarCuadriculaHorarios() {
+            $.ajax({
+                url: "{{ route('horarios_asignaturas.listar') }}",
+                type: "GET",
+                dataType: "json",
+                success: function(response) {
+                    todosLosHorarios = response.data || [];
+                    renderizarCuadriculaHorarios();
+                },
+                error: function() {
+                    $('#horarios-grid-body').html(`
+                        <tr>
+                            <td colspan="7" class="py-4 text-danger">
+                                <i class="fa-duotone fa-triangle-exclamation me-2"></i>
+                                No se pudo cargar la cuadrícula de horarios.
+                            </td>
+                        </tr>
+                    `);
+                }
+            });
+        }
+
+        function renderizarCuadriculaHorarios() {
+            const $tbody = $('#horarios-grid-body');
+            $tbody.empty();
+
+            const {
+                id_gestion,
+                anio
+            } = obtenerGestionSeleccionada();
+            const puedeEditar = puedeEditarGestionSeleccionada();
+
+            // Mostrar/ocultar controles según permisos de la gestión seleccionada
+            $('#badge-solo-lectura-horarios').toggleClass('d-none', puedeEditar);
+
+            if (!id_gestion) {
+                $('#btn-guardar-horarios').addClass('d-none');
+                $tbody.html(`
+                    <tr>
+                        <td colspan="7" class="py-4 text-muted">
+                            <i class="fa-duotone fa-calendar-xmark me-2"></i>
+                            No existen gestiones registradas.
+                        </td>
+                    </tr>
+                `);
+                return;
+            }
+
+            // Filtrar por nivel y gestión seleccionada:
+            // Incluimos activos (estado == 1) y, para no perder historial, cualquier bloque ya asignado a esta asignatura
+            let horariosFiltrados = todosLosHorarios.filter(h =>
+                h.id_nivel == idNivel &&
+                h.id_gestion == id_gestion &&
+                (h.estado == 1 || horariosBD.some(hb => hb.id_horario_asignatura == h
+                    .id_horario_asignatura))
+            );
+
+            // Asegurar orden cronológico
+            horariosFiltrados.sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
+
+            if (horariosFiltrados.length === 0) {
+                $('#btn-guardar-horarios').addClass('d-none');
+                $tbody.html(`
+                    <tr>
+                        <td colspan="7" class="py-4 text-muted">
+                            <i class="fa-duotone fa-calendar-xmark me-2"></i>
+                            No existen bloques horarios configurados para este nivel en la gestión <b>${anio}</b>.
+                        </td>
+                    </tr>
+                `);
+                return;
+            }
+
+            $('#btn-guardar-horarios').toggleClass('d-none', !puedeEditar);
+
+            horariosFiltrados.forEach(function(horario) {
+                let desc = horario.denominacion.toLowerCase();
+                let esReceso = desc.includes("receso") || desc.includes("recreo");
+                let estaArchivado = horario.estado != 1;
+                let badgeArchivado = estaArchivado ?
+                    ' <span class="badge bg-secondary ms-1">Archivado</span>' :
+                    '';
+
+                let filaHTML = `<tr class="${estaArchivado ? 'table-secondary opacity-75' : ''}">
+                    <td class="text-start ps-3 fw-bold border-end">
+                        ${horario.denominacion}${badgeArchivado}<br>
+                        <small class="text-muted fw-normal"><i class="fa-duotone fa-clock me-1"></i>${horario.hora_inicio} - ${horario.hora_fin}</small>
+                    </td>`;
+
+                if (esReceso) {
+                    filaHTML += `<td colspan="6" class="bg-secondary-subtle text-secondary fw-bold align-middle" style="pointer-events:none;">
+                                    <i class="fa-duotone fa-mug-hot me-1"></i>${horario.denominacion.toUpperCase()}
+                                 </td>`;
+                } else {
+                    for (let dia = 1; dia <= 6; dia++) {
+                        let isChecked = horariosBD.some(h => h.id_horario_asignatura == horario
+                            .id_horario_asignatura && h.dia_semana == dia);
+                        let checkedAttr = isChecked ? 'checked' : '';
+
+                        // Un bloque archivado no debe poder marcarse de nuevo (solo desmarcarse si ya estaba marcado y el usuario puede editar)
+                        let bloquearCasilla = !puedeEditar || (estaArchivado && !isChecked);
+                        let disabledAttr = bloquearCasilla ? 'disabled' : '';
+                        let cursorStyle = bloquearCasilla ? 'cursor: not-allowed;' : 'cursor: pointer;';
+
+                        filaHTML += `<td class="align-middle">
+                                        <input class="form-check-input check-horario fs-4 shadow-sm" type="checkbox"
+                                            data-horario="${horario.id_horario_asignatura}"
+                                            data-dia="${dia}"
+                                            ${checkedAttr} ${disabledAttr} style="${cursorStyle}">
+                                     </td>`;
+                    }
+                }
+                filaHTML += `</tr>`;
+                $tbody.append(filaHTML);
+            });
+        }
+
+        // Cambio de gestión en el selector con protección de cambios sin guardar
+        $('#filtro-gestion-horarios').on('change', function() {
+            const nuevaGestion = $(this).val();
+            const {
+                agregar,
+                eliminar
+            } = calcularDeltasActuales();
+
+            if (agregar.length > 0 || eliminar.length > 0) {
+                Swal.fire({
+                    theme: localStorage.getItem('theme') || 'light',
+                    title: 'Cambios sin guardar',
+                    text: 'Tienes modificaciones pendientes en la gestión actual. Si cambias de gestión, se descartarán.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, cambiar y descartar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        gestionActualSeleccionada = nuevaGestion;
+                        renderizarCuadriculaHorarios();
+                    } else {
+                        $('#filtro-gestion-horarios').val(gestionActualSeleccionada);
+                    }
+                });
+            } else {
+                gestionActualSeleccionada = nuevaGestion;
+                renderizarCuadriculaHorarios();
+            }
+        });
+
+        // ─── Guardar Cuadrícula (Delta Calculator) ────────────────────────────────
+        $('#btn-guardar-horarios').on('click', function() {
+            if (!puedeEditarGestionSeleccionada()) {
+                Swal.fire({
+                    theme: localStorage.getItem('theme') || 'light',
+                    icon: 'error',
+                    title: 'Acción no permitida',
+                    text: 'No tienes permisos para modificar los horarios de esta gestión.',
+                });
+                return;
+            }
+
+            const {
+                agregar,
+                eliminar
+            } = calcularDeltasActuales();
 
             if (agregar.length === 0 && eliminar.length === 0) {
                 Swal.fire({
@@ -142,7 +289,10 @@
                 return;
             }
 
-            let resumen = '';
+            const {
+                anio
+            } = obtenerGestionSeleccionada();
+            let resumen = `<span class="badge bg-info text-dark mb-2">Gestión ${anio}</span><br>`;
             if (agregar.length > 0) resumen +=
                 `<b class="text-success">+ ${agregar.length} periodo(s) agregado(s)</b><br>`;
             if (eliminar.length > 0) resumen +=
@@ -272,7 +422,7 @@
                         message: 'Error desconocido'
                     };
                     let htmlError = respuesta.errors ? Object.values(respuesta.errors)
-                    .flat().join('<br>') : (respuesta.message || 'Error inesperado.');
+                        .flat().join('<br>') : (respuesta.message || 'Error inesperado.');
                     Swal.fire({
                         theme: localStorage.getItem('theme') || 'dark',
                         title: 'Error',
